@@ -12,8 +12,6 @@ namespace STELLAREST_2D
         private Vector2 _moveDir;
         private float _joystickRadius;
 
-        public PlayerController PlayerController { get; set; }
-
         private void Start()
         {
             _joystickRadius = (_background.GetComponent<RectTransform>().sizeDelta / 2).x;
@@ -37,7 +35,7 @@ namespace STELLAREST_2D
             _handler.transform.position = _touchPosition;
             _moveDir = Vector2.zero;
 
-            PlayerController.MoveDir = _moveDir;
+            Managers.GameManager.MoveDir = _moveDir;
             ActiveJoystick(false);
         }
 
@@ -48,12 +46,16 @@ namespace STELLAREST_2D
             float moveDist = Mathf.Min(magnitude, _joystickRadius);
             
             _moveDir = touchDir.normalized;
+
+            // 1.피타고라스로 AB 벡터의 크기를 구함
+            // 2.AB벡터를 AB벡터의 크기로 나눈 벡터가 normalized 벡터임.
+            // 3. normalized 벡터를 피타고라스로 검증해보면 실제로 크기가 1인 벡터임.
             // _moveDir = (touchDir / magnitude); // normalized vector 구하기
 
             Vector2 newHandlerPosition = _touchPosition + (_moveDir * moveDist);
             _handler.transform.position = newHandlerPosition;
 
-            PlayerController.MoveDir = touchDir;
+            Managers.GameManager.MoveDir = _moveDir;
         }
 
         private void ActiveJoystick(bool isActive)

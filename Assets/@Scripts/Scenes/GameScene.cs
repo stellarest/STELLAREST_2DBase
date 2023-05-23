@@ -33,9 +33,7 @@ namespace STELLAREST_2D
             _slime.transform.parent = go.transform;
             _goblin.transform.parent = go.transform;
 
-            var playerController = _slime.AddComponent<PlayerController>(); // Add Component
-            _joystick.GetComponent<UI_Joystick>().PlayerController = playerController;
-
+            _slime.AddComponent<PlayerController>(); // Add Component
             Camera.main.GetComponent<CameraController>().Target = _slime;
         }
     }

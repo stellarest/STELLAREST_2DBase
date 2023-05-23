@@ -11,7 +11,7 @@ namespace STELLAREST_2D
         {
             get
             {
-                if (Instance == null)
+                if (_instance == null)
                 {
                     GameObject go = GameObject.Find("@Managers");
                     if (go == null)
@@ -30,30 +30,30 @@ namespace STELLAREST_2D
 
         #region Contents
         private GameManager _gameManager = new GameManager();
-        public static GameManager GameManager => _instance?._gameManager;
+        public static GameManager GameManager => Instance?._gameManager;
 
         private ObjectManager _objectManager = new ObjectManager();
-        public static ObjectManager ObjectManager => _instance?._objectManager;
+        public static ObjectManager ObjectManager => Instance?._objectManager;
 
         private PoolManager _poolManager = new PoolManager();
-        public static PoolManager PoolManager => _instance?._poolManager;
+        public static PoolManager PoolManager => Instance?._poolManager;
         #endregion
 
         #region Core
         private DataManager _dataManager = new DataManager();
-        public static DataManager DataManager => _instance?._dataManager;
+        public static DataManager DataManager => Instance?._dataManager;
 
         private ResourceManager _resourceManager = new ResourceManager();
-        public static ResourceManager ResourceManager => _instance?._resourceManager;
+        public static ResourceManager ResourceManager => Instance?._resourceManager;
 
         private SceneManagerEx _sceneManagerEx = new SceneManagerEx();
-        public static SceneManagerEx SceneManagerEx => _instance?._sceneManagerEx;
+        public static SceneManagerEx SceneManagerEx => Instance?._sceneManagerEx;
 
         private SoundManager _soundManager = new SoundManager();
-        public static SoundManager SoundManager => _instance?._soundManager;
+        public static SoundManager SoundManager => Instance?._soundManager;
 
         private UIManager _uiManager = new UIManager();
-        public static UIManager UIManager => _instance?._uiManager;
+        public static UIManager UIManager => Instance?._uiManager;
         #endregion
     }
 }
