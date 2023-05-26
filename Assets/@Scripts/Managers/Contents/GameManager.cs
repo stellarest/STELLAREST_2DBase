@@ -5,6 +5,7 @@ namespace STELLAREST_2D
 {
     public class GameManager
     {
+        public PlayerController Player { get => Managers.Object?.Player; }
         private Vector2 _moveDir;
         public Action<Vector2> OnMoveChanged;
 

@@ -4,37 +4,61 @@ namespace STELLAREST_2D
 {
     public class GameScene : MonoBehaviour
     {
-        [SerializeField] private GameObject _snakePrefab;
-        private GameObject _snake;
-        [SerializeField] private GameObject _slimePrefab;
-        private GameObject _slime;
-        [SerializeField] private GameObject _goblinPrefab;
-        private GameObject _goblin;
-        [SerializeField] private GameObject _joystickPrefab;
-        private GameObject _joystick;
-
         private void Start()
         {
-            _snake = UnityEngine.Object.Instantiate(_snakePrefab);
-            _snake.name = _snakePrefab.name;
+            Managers.Resource.LoadAllAsync<GameObject>("Prefabs", (delegate (string key, int count, int totalCount)
+            {
+                Debug.Log($"Key : {key}, Count : {count} / TotalCount : {totalCount}");
 
-            _slime = UnityEngine.Object.Instantiate(_slimePrefab);
-            _slime.name = _slimePrefab.name;
+                if (count == totalCount)
+                    StartLoaded();
+            }));
+        }
 
-            _goblin = UnityEngine.Object.Instantiate(_goblinPrefab);
-            _goblin.name = _goblinPrefab.name;
+        private SpawningPool _spawningPool;
+        private void StartLoaded()
+        {
+            _spawningPool = gameObject.AddComponent<SpawningPool>();
+            var player = Managers.Object.Spawn<PlayerController>();
+            
+            // for (int i = 0; i < 10; ++i)
+            // {
+            //     MonsterController mc = Managers.Object.Spawn<MonsterController>(Random.Range(0, 2));
+            //     mc.transform.position = new Vector2(Random.Range(-5, 5), Random.Range(-5, 5));
+            // }
 
-            _joystick = UnityEngine.Object.Instantiate(_joystickPrefab);
-            //_joystick.name = _joystickPrefab.name;
-            _joystick.name = "@UI_Joystick";
+            var joystick = Managers.Resource.Instantiate("UI_Joystick.prefab");
+            joystick.name = "@UI_Joystick";
 
-            GameObject go = new GameObject() { name = "@Monsters"};
-            _snake.transform.parent = go.transform;
-            _slime.transform.parent = go.transform;
-            _goblin.transform.parent = go.transform;
+            var map = Managers.Resource.Instantiate("Map.prefab");
+            map.name = "@Map";
+            Camera.main.GetComponent<CameraController>().Target = player.gameObject;
+        }
 
-            _slime.AddComponent<PlayerController>(); // Add Component
-            Camera.main.GetComponent<CameraController>().Target = _slime;
+        private void StartLoaded2()
+        {
+            // Managers.ResourceManager.LoadAsync<GameObjecT>("Snake_01", (go =>
+            // {
+            // }));
+            // Managers.ResourceManager.LoadAsync<GameObject>("Snake_01", (delegate(GameObject go)
+            // {
+            //     // TODO
+            // }));
+            // GameObject go = new GameObject() { name = "@Monsters" };
+
+
+
+            var player = Managers.Resource.Instantiate("Slime_01.prefab");
+            player.AddComponent<PlayerController>();
+
+            var snake = Managers.Resource.Instantiate("Snake_01.prefab");
+            var goblin = Managers.Resource.Instantiate("Goblin_01.prefab");
+            var joystick = Managers.Resource.Instantiate("UI_Joystick.prefab");
+            joystick.name = "@UI_Joystick";
+
+            var map = Managers.Resource.Instantiate("Map.prefab");
+            map.name = "@Map";
+            Camera.main.GetComponent<CameraController>().Target = player;
         }
     }
 }

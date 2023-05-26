@@ -6,12 +6,13 @@ namespace STELLAREST_2D
 {
     public class Managers : MonoBehaviour
     {
+        private static bool isApplicationQuitting = false;
         private static Managers _instance = null;
         public static Managers Instance
         {
             get
             {
-                if (_instance == null)
+                if (isApplicationQuitting == false && _instance == null)
                 {
                     GameObject go = GameObject.Find("@Managers");
                     if (go == null)
@@ -30,30 +31,35 @@ namespace STELLAREST_2D
 
         #region Contents
         private GameManager _gameManager = new GameManager();
-        public static GameManager GameManager => Instance?._gameManager;
+        public static GameManager Game => Instance?._gameManager;
 
         private ObjectManager _objectManager = new ObjectManager();
-        public static ObjectManager ObjectManager => Instance?._objectManager;
+        public static ObjectManager Object => Instance?._objectManager;
 
         private PoolManager _poolManager = new PoolManager();
-        public static PoolManager PoolManager => Instance?._poolManager;
+        public static PoolManager Pool => Instance?._poolManager;
         #endregion
 
         #region Core
         private DataManager _dataManager = new DataManager();
-        public static DataManager DataManager => Instance?._dataManager;
+        public static DataManager Data => Instance?._dataManager;
 
         private ResourceManager _resourceManager = new ResourceManager();
-        public static ResourceManager ResourceManager => Instance?._resourceManager;
+        public static ResourceManager Resource => Instance?._resourceManager;
 
         private SceneManagerEx _sceneManagerEx = new SceneManagerEx();
-        public static SceneManagerEx SceneManagerEx => Instance?._sceneManagerEx;
+        public static SceneManagerEx Scene => Instance?._sceneManagerEx;
 
         private SoundManager _soundManager = new SoundManager();
-        public static SoundManager SoundManager => Instance?._soundManager;
+        public static SoundManager Sound => Instance?._soundManager;
 
         private UIManager _uiManager = new UIManager();
-        public static UIManager UIManager => Instance?._uiManager;
+        public static UIManager UI => Instance?._uiManager;
         #endregion
+
+        private void OnApplicationQuit()
+        {
+            isApplicationQuitting = true;
+        }
     }
 }

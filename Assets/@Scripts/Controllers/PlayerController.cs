@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace STELLAREST_2D
 {
-    public class PlayerController : MonoBehaviour
+    public class PlayerController : CreatureController
     {
         private Vector2 _moveDir = Vector2.zero;
         public Vector2 MoveDir
@@ -11,11 +11,10 @@ namespace STELLAREST_2D
             set { _moveDir = value.normalized; }
         }
 
-        private float _speed = 5f;
-
         private void Start()
         {
-            Managers.GameManager.OnMoveChanged += OnMoveChangedHandler;
+            Managers.Game.OnMoveChanged += OnMoveChangedHandler;
+            _speed = 5f;
         }
 
         private void Update()
@@ -25,8 +24,8 @@ namespace STELLAREST_2D
 
         private void OnDestroy()
         {
-            if (Managers.GameManager != null)
-                Managers.GameManager.OnMoveChanged -= OnMoveChangedHandler;
+            if (Managers.Game != null)
+                Managers.Game.OnMoveChanged -= OnMoveChangedHandler;
         }
 
         public void MovePlayerByController()
@@ -38,6 +37,23 @@ namespace STELLAREST_2D
         private void OnMoveChangedHandler(Vector2 moveDir)
         {
             this._moveDir = moveDir;
+        }
+
+        private void OnCollisionEnter2D(Collision2D other)
+        {
+            MonsterController target = other.gameObject.GetComponent<MonsterController>();
+            if (target == null)
+                return;
+        }
+
+        public override void OnDamaged(BaseController attacker, int damage)
+        {
+            base.OnDamaged(attacker, damage);
+            Debug.Log($"OnDamaged !! Current : {Hp}");
+
+            // TEMP
+            CreatureController cc = attacker as CreatureController;
+            cc?.OnDamaged(this, 10000);
         }
     }
 }
