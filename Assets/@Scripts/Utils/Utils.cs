@@ -50,5 +50,19 @@ namespace STELLAREST_2D
 
             return null;
         }
+
+        public static Vector2 GenerateMonsterSpawnPosition(Vector2 characterPosition, float minDistance = 10.0f, float maxDistance = 20.0f)
+        {
+            float angle = Random.Range(0, 360) * Mathf.Deg2Rad;
+            float distance = Random.Range(minDistance, maxDistance);
+
+            float xDist = Mathf.Cos(angle) * distance;
+            float yDist = Mathf.Sin(angle) * distance;
+
+            // charactet 중심으로 원형의 범위 내에서 랜덤하게 스폰
+            Vector2 spawnPosition = characterPosition + new Vector2(xDist, yDist);
+            
+            return spawnPosition;
+        }
     }
 }

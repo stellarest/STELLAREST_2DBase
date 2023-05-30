@@ -27,6 +27,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - PreLoad
+  - m_GUID: b5a2f0d7c1f48444eb8ba166ed00dcdf
+    m_Address: MonsterData.json
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PreLoad
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 5fe9837c25d584a8f982c68806a1aa98, type: 2}
   m_SchemaSet:

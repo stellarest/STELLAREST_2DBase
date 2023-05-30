@@ -20,22 +20,19 @@ namespace STELLAREST_2D
         private SpawningPool _spawningPool;
         private void StartLoaded()
         {
-            _spawningPool = gameObject.AddComponent<SpawningPool>();
-            var player = Managers.Object.Spawn<PlayerController>(Vector3.zero);
-            
-            // for (int i = 0; i < 10; ++i)
-            // {
-            //     MonsterController mc = Managers.Object.Spawn<MonsterController>(Random.Range(0, 2));
-            //     mc.transform.position = new Vector2(Random.Range(-5, 5), Random.Range(-5, 5));
-            // }
+            Managers.Data.Init();
 
+            _spawningPool = gameObject.AddComponent<SpawningPool>();
+            var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, 1);
+
+            
             var joystick = Managers.Resource.Instantiate(Define.LOAD_JOYSTICK_PREFAB);
             joystick.name = "@UI_Joystick";
 
             var map = Managers.Resource.Instantiate(Define.LOAD_MAP_PREFAB);
             map.name = "@Map";
             Camera.main.GetComponent<CameraController>().Target = player.gameObject;
-            
+        
             // DATA TEST
             // TextAsset playerData = Managers.Resource.Load<TextAsset>("PlayerData.json");
             // JObject json = JObject.Parse(playerData.text); // Parse로 해야함            
@@ -48,9 +45,6 @@ namespace STELLAREST_2D
             //     Debug.Log($"Lv1 : {playerData.level}, HP : {playerData.maxHp}");
             // }
             // Debug.Log("=============================");
-
-            // Data Test2
-            Managers.Data.Init();
         }
 
         private void StartLoaded2() // LEGACY

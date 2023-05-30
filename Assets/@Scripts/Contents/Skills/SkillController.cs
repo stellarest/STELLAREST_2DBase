@@ -7,7 +7,7 @@ namespace STELLAREST_2D
     public class SkillController : BaseController
     {
         public Define.SkillType SkillType { get; set; }
-        public Data.SkillData SkillData { get; protected set; }
+        public Data.SkillData SkillData { get; set; }
         
         private Coroutine _coDestroy;
 

@@ -1,12 +1,48 @@
+using UnityEngine;
 
 namespace STELLAREST_2D
 {
     public class CreatureController : BaseController
     {
-        // 나한테 걸린 버프 목록 (언젠가 추가할때)
-        protected float _speed = 1f;
-        public int Hp { get; set; } = 100;
-        public int MaxHp { get; set; } = 100;
+        private int _hp;
+        public int Hp 
+        { 
+            get => _hp; 
+            protected set 
+            { 
+                _hp = value; 
+            }
+        }
+
+        private int _maxHP;
+        public int MaxHp 
+        { 
+            get => _maxHP; 
+            protected set
+            {
+                _maxHP = value;
+            } 
+        }
+
+        private float _moveSpeed;
+        public float MoveSpeed 
+        { 
+            get => _moveSpeed; 
+            protected set
+            {
+                _moveSpeed = value;
+            }
+        }
+
+        private Vector2 _moveDir;
+        public Vector2 MoveDir 
+        { 
+            get => _moveDir; 
+            protected set
+            {
+                _moveDir = value.normalized;
+            }
+        }
 
         public virtual void OnDamaged(BaseController attacker, int damage)
         {

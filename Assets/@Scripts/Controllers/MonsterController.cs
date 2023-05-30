@@ -5,6 +5,20 @@ namespace STELLAREST_2D
 {
     public class MonsterController : CreatureController
     {
+        private Data.MonsterData _monsterData;
+        public Data.MonsterData MonsterData 
+        { 
+            get => _monsterData; 
+            set
+            {
+                _monsterData = value; // 고유의 몬스터 데이터 전부
+                // 크리처 공용 데이터
+                this.MaxHp = _monsterData.maxHp;
+                this.Hp = this.MaxHp;
+                this.MoveSpeed = _monsterData.moveSpeed;
+            } 
+        }
+
         public override bool Init()
         {
             // if (base.Init() == false)
@@ -12,8 +26,7 @@ namespace STELLAREST_2D
             base.Init();
 
             ObjectType = Define.ObjectType.Monster;
-            Debug.Log("MC INIT");
-
+            // Debug.Log("MC INIT");
             return true;            
         }
 
@@ -24,7 +37,7 @@ namespace STELLAREST_2D
                 return;
 
             Vector3 toPlayer = pc.transform.position - transform.position;
-            Vector3 newPos = transform.position + (toPlayer.normalized * Time.deltaTime * _speed);
+            Vector3 newPos = transform.position + (toPlayer.normalized * Time.deltaTime * MoveSpeed);
             //transform.position = newPos;
             GetComponent<Rigidbody2D>().MovePosition(newPos);
             GetComponent<SpriteRenderer>().flipX = toPlayer.x > 0;

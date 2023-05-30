@@ -11,7 +11,8 @@ namespace STELLAREST_2D.Data
     {
         public int level;
         public int maxHp;
-        public int attack;
+        public int attack; // Skill의 Attack으로 뺴야할듯. 그러나 캐릭터마다 특성을 부여하려면 있어야될수도. 일단 냅두자.
+        public float moveSpeed;
         public int totalExp;
     }
 
@@ -26,15 +27,19 @@ namespace STELLAREST_2D.Data
         public string prefab;
         public int damage;
         public float speed;
+    }
 
-        /*
-          "templateID" : "1",
-          "name" : "FireBall",
-          "type" : "Projectile",
-          "prefab" : "FireProjectile.prefab",
-          "damage" : "1000",
-          "speed" : "3f"
-        */
+    [System.Serializable]
+    public class MonsterData
+    {
+        public int templateID;
+        public string name;
+        public Define.MonsterType type = Define.MonsterType.None;
+        public string prefab;
+        public int maxHp;
+        public int attack;
+        public float moveSpeed;
+        public int exp;
     }
 
     [System.Serializable]
@@ -46,7 +51,7 @@ namespace STELLAREST_2D.Data
         {
             if (stats.Count == 0)
             {
-                Debug.LogWarning("Load failed PlayerData.json !!");
+                Debug.LogError("@@@@@ Load failed PlayerData.json !! @@@@@");
                 return null;
             }
             else
@@ -63,21 +68,45 @@ namespace STELLAREST_2D.Data
     [System.Serializable]
     public class SkillDataLoader : ILoader<int, SkillData>
     {
-        //public List<SkillData> skills = new List<SkillData>();
-        public SkillData skillDataSingle = new SkillData();
+        public List<SkillData> skills = new List<SkillData>();
 
         public Dictionary<int, SkillData> MakeDict()
         {
-            Dictionary<int, SkillData> dict = new Dictionary<int, SkillData>();
-
-            // foreach (SkillData skill in skills)
-            //     dict.Add(skill.templateID, skill);
-            if (skillDataSingle == null)
-                Debug.LogWarning("Load failed SkillData.json");
+            if (skills.Count == 0)
+            {
+                Debug.LogError("@@@@@ Load failed SkillData.json !! @@@@@");
+                return null;
+            }
             else
                 Debug.Log("<color=cyan> Load success SkillData.json </color>");
 
-            dict.Add(skillDataSingle.templateID, skillDataSingle);
+            Dictionary<int, SkillData> dict = new Dictionary<int, SkillData>();
+            foreach (SkillData skill in skills)
+                dict.Add(skill.templateID, skill);
+
+            return dict;
+        }
+    }
+
+    [SerializeField]
+    public class MonsterDataLoader : ILoader<int, MonsterData>
+    {
+        public List<MonsterData> monsters = new List<MonsterData>();
+
+        public Dictionary<int, MonsterData> MakeDict()
+        {
+            if (monsters.Count == 0)
+            {
+                Debug.LogError("@@@@@ Load failed MonsterData.json !! @@@@@");
+                return null;
+            }
+            else
+                Debug.Log("<color=cyan> Load success MonsterData.json </color>");
+
+            Dictionary<int, MonsterData> dict = new Dictionary<int, MonsterData>();
+            foreach (MonsterData monster in monsters)
+                dict.Add(monster.templateID, monster);
+
             return dict;
         }
     }

@@ -18,17 +18,10 @@ namespace STELLAREST_2D
             return true;
         }
 
-        public void SetInfo(int templateID, CreatureController owner, Vector3 moveDir)
+        public void SetInfo(CreatureController owner, Vector3 moveDir)
         {
-            if (Managers.Data.SkillDict.TryGetValue(templateID, out Data.SkillData data) == false)
-            {
-                Debug.LogWarning($"@@@ ProjectileController::SetInfo Failed !! templateID : {templateID} @@@");
-                return;
-            }
-
             this._owner = owner;
             this._moveDir = moveDir;
-            SkillData = data;
         }
 
         public override void UpdateController()
@@ -47,6 +40,7 @@ namespace STELLAREST_2D
                 return;
 
             // this(투사체)가 아니라 owner로. 나중에 어그로 이런거 고려하려면
+            // *** SetInfo하기전에 먼저 충돌되면 문제가 발생할 수도 있다. ***
             mc.OnDamaged(_owner, damage: SkillData.damage);
             StopDestroy();
 

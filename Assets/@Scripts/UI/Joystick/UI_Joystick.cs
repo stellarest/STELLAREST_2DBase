@@ -11,7 +11,6 @@ namespace STELLAREST_2D
         private Vector2 _touchPosition;
         private Vector2 _moveDir;
         private float _joystickRadius;
-        private bool _touchStart = false;
 
         private void Start()
         {

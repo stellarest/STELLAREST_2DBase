@@ -14,7 +14,7 @@ namespace STELLAREST_2D
         public override bool Init()
         {
             base.Init();
-            Debug.Log("GC INIT");
+            // Debug.Log("GC INIT");
             return true;
         }
 

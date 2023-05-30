@@ -16,31 +16,34 @@ namespace STELLAREST_2D
     {
         public Dictionary<int, Data.PlayerData> PlayerDict { get; private set; } = new Dictionary<int, Data.PlayerData>();
         public Dictionary<int, Data.SkillData> SkillDict { get; private set; } = new Dictionary<int, Data.SkillData>();
+        public Dictionary<int, Data.MonsterData> MonsterDict { get; private set; } = new Dictionary<int, Data.MonsterData>();
 
+        #region JObject Datas
         private JObject jsonPlayerData = new JObject();
+        private JObject jsonSkillData = new JObject();
+        private JObject jsonMonsterData = new JObject();
+        #endregion
 
         public void Init()
         {
             PlayerDict = LoadJson<Data.PlayerDataLoader, int, Data.PlayerData>("PlayerData.json").MakeDict();
             SkillDict = LoadJson<Data.SkillDataLoader, int, Data.SkillData>("SkillData.json").MakeDict();
+            MonsterDict = LoadJson<Data.MonsterDataLoader, int, Data.MonsterData>("MonsterData.json").MakeDict();
         }
 
         private T LoadJson<T, Key, Value>(string path) where T : ILoader<Key, Value>
         {
             TextAsset textAsset = Managers.Resource.Load<TextAsset>($"{path}");
-
-            // Debug.Log(textAsset.text);
-
-            //jsonPlayerData = JObject.Parse(textAsset.text);
+            SetJObjects<T>(textAsset.text);
 
             // FromJson<PlayerDataLoader>으로 DeSerialize되면서 객체화됨
             // 그리고 자동으로, PlayerDataLoader.stats에 json Data가 차곡 차곡 들어감.
             return UnityEngine.JsonUtility.FromJson<T>(textAsset.text);
         }
 
+        #region Data_Debug
         #if UNITY_EDITOR
         public void PrintPlayerJsonData() => Debug.Log("<color=green>" + jsonPlayerData.ToString() + "</color>");
-
         public void PrintSkillData()
         {
             Debug.Log("==============");
@@ -53,7 +56,18 @@ namespace STELLAREST_2D
             Debug.Log("==============");
         }
 
+        private void SetJObjects<T>(string text)
+        {
+            System.Type type = typeof(T);
+            if (type == typeof(Data.PlayerDataLoader))
+                jsonPlayerData = JObject.Parse(text);
+            else if (type == typeof(Data.SkillDataLoader))
+                jsonSkillData = JObject.Parse(text);
+            else if (type == typeof(Data.MonsterDataLoader))
+                jsonMonsterData = JObject.Parse(text);
+        }
         #endif
+        #endregion
 
         /*
         	public void Init()

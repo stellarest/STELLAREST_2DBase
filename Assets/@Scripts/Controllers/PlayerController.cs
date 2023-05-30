@@ -7,12 +7,25 @@ namespace STELLAREST_2D
 {
     public class PlayerController : CreatureController
     {
-        private Vector2 _moveDir = Vector2.zero;
-        public Vector2 MoveDir
+        private Data.PlayerData _playerData;
+        public Data.PlayerData PlayerData
         {
-            get => _moveDir;
-            set { _moveDir = value.normalized; }
+            get => _playerData;
+            set
+            {
+                _playerData = value; // 플레이어의 고유 데이터까지 전부 다 담아낼거 하나
+                this.MaxHp = _playerData.maxHp;
+                this.Hp = this.MaxHp;
+                this.MoveSpeed = _playerData.moveSpeed;
+            }
         }
+
+        // private Vector2 _moveDir = Vector2.zero;
+        // public Vector2 MoveDir
+        // {
+        //     get => _moveDir;
+        //     set { MoveDir = value.normalized; }
+        // }
 
         public float EnvCollectDist { get; private set; } = 1f;
         
@@ -25,16 +38,23 @@ namespace STELLAREST_2D
             //     return false;
             base.Init();
             Debug.Log("PC INIT");
-            Managers.Game.OnMoveChanged += OnMoveDirChangedHandler;
-            _speed = 5f;
 
+            Managers.Game.OnMoveChanged += OnMoveDirChangedHandler;
+
+            GetIndicator();
             StartProjectile();
+            //StartEgoSword();
 
             return true;
         }
 
         private void GetIndicator()
         {
+            if (_indicator == null)
+                _indicator = Utils.FindChild<Transform>(this.gameObject, Define.PLAYER_INDICATOR, true);
+
+            if (_fireSocket == null)
+                _fireSocket = Utils.FindChild<Transform>(this.gameObject, Define.PLYAER_FIRE_SOCKET, true);
         }
 
         private void Update()
@@ -51,12 +71,12 @@ namespace STELLAREST_2D
 
         public void MovePlayerByController()
         {
-            Vector3 dir = _moveDir.normalized * _speed * Time.deltaTime;
+            Vector3 dir = MoveDir.normalized * MoveSpeed * Time.deltaTime;
             transform.position += dir;
 
             // if (_moveDir != Vector2.zero)
             //     _indicator.eulerAngles = new Vector3(0, 0, Mathf.Atan2(-dir.x, dir.y) * 180f / Mathf.PI);
-            if (_moveDir != Vector2.zero)
+            if (MoveDir != Vector2.zero)
                 _indicator.eulerAngles = new Vector3(0, 0, Mathf.Atan2(-dir.x, dir.y) * Mathf.Rad2Deg);
 
             GetComponent<Rigidbody2D>().velocity = Vector3.zero;
@@ -71,23 +91,22 @@ namespace STELLAREST_2D
                             GatherObjects(transform.position, EnvCollectDist + 0.5f).ToList();
 
             // 맵안에 있는 잼들은 디폴트로 시간이 지나면 다 죽임.
-            foreach (GemController gem in allSpawnedGems)
-                gem.Alive = false;
+            foreach (GemController allSpawnedGem in allSpawnedGems)
+                allSpawnedGem.Alive = false;
 
             // 플레이어가 이동하다가 발견된 잼은 살림
-            foreach (var foundGem in findGems)
+            foreach (var findGem in findGems)
             {
-                GemController gc = foundGem.GetComponent<GemController>();
+                GemController gc = findGem.GetComponent<GemController>();
                 gc.Alive = true;
 
-                Vector3 dir = foundGem.transform.position - transform.position;
+                Vector3 dir = findGem.transform.position - transform.position;
                 if (dir.sqrMagnitude <= sqrCollectDist)
                 {
                     Managers.Game.Gem += 1;
                     Managers.Object.Despawn(gc);
                 }
             }
-
             //Debug.Log($"Find Gem : {findGems.Count} / Total Gem : {allSpawnedGems.Count}");
         }
 
@@ -114,7 +133,7 @@ namespace STELLAREST_2D
 
         private void OnMoveDirChangedHandler(Vector2 moveDir)
         {
-            this._moveDir = moveDir;
+            this.MoveDir = moveDir;
         }
 
         private void OnCollisionEnter2D(Collision2D other)
@@ -127,14 +146,13 @@ namespace STELLAREST_2D
         public override void OnDamaged(BaseController attacker, int damage)
         {
             base.OnDamaged(attacker, damage);
-            Debug.Log($"OnDamaged !! Current : {Hp}");
 
             // TEMP
             CreatureController cc = attacker as CreatureController;
             cc?.OnDamaged(this, 10000);
         }
 
-        // TEMP
+        // TEMP : FireProjectile
         private Coroutine _coFireProjectile;
         private void StartProjectile()
         {
@@ -152,13 +170,24 @@ namespace STELLAREST_2D
             {
                 // 나중에 총구모양 있으면 총구 모양 위치에다가
                 ProjectileController pc = Managers.Object.
-                                Spawn<ProjectileController>(_fireSocket.position, 1);
+                                Spawn<ProjectileController>(_fireSocket.position, (int)Define.PlayerSkillTemplateID.FireBall);
                 yield return new WaitUntil(() => (pc != null)); // 이 코루틴 하나로 다해결
-                                
-                pc.SetInfo(1, this, (_fireSocket.position - _indicator.position).normalized);
-
+                pc.SetInfo(this, (_fireSocket.position - _indicator.position).normalized);
+                
                 yield return wait;
             }
+        }
+
+        // TEMP : EgoSword
+        private EgoSwordController _egoSword;
+        private void StartEgoSword()
+        {
+            if (_egoSword.IsValid())
+                return;
+            
+            _egoSword = Managers.Object.Spawn<EgoSwordController>(_indicator.position, Define.EGO_SWORD_ID);
+            _egoSword.transform.SetParent(_indicator);
+            _egoSword.ActivateSkill();
         }
     }
 }
