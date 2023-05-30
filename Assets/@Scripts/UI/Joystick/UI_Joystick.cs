@@ -11,11 +11,12 @@ namespace STELLAREST_2D
         private Vector2 _touchPosition;
         private Vector2 _moveDir;
         private float _joystickRadius;
+        private bool _touchStart = false;
 
         private void Start()
         {
             _joystickRadius = (_background.GetComponent<RectTransform>().sizeDelta / 2).x;
-            // ActiveJoystick(false);
+            ActiveJoystick(false);
         }
 
         public void OnPointerClick(UnityEngine.EventSystems.PointerEventData eventData)
@@ -24,6 +25,8 @@ namespace STELLAREST_2D
 
         public void OnPointerDown(UnityEngine.EventSystems.PointerEventData eventData)
         {
+            ActiveJoystick(true);
+
             // ActiveJoystick(true);
             _background.transform.position = eventData.position;
             _handler.transform.position = eventData.position;
@@ -36,7 +39,7 @@ namespace STELLAREST_2D
             _moveDir = Vector2.zero;
 
             Managers.Game.MoveDir = _moveDir;
-            // ActiveJoystick(false);
+            ActiveJoystick(false);
         }
 
         public void OnDrag(UnityEngine.EventSystems.PointerEventData eventData)

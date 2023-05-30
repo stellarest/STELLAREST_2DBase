@@ -1,11 +1,33 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace STELLAREST_2D
+namespace STELLAREST_2D.Test
 {
     public class Test : MonoBehaviour
     {
         public Dictionary<string, int> tDict = new Dictionary<string, int>();
+
+        [ContextMenu("TestListAddRange")]
+        private void TestListAddRange()
+        {
+            List<int> lst1 = new List<int>() { 1, 2, 3 };
+            HashSet<int> hash = new HashSet<int>() { 4, 5, 6, 7} ;
+            lst1.AddRange(hash);
+
+            Debug.Log("lst1.AddRange(hashSet)");
+            for (int i = 0; i < lst1.Count; ++i)
+                Debug.Log(lst1[i]);
+        }
+
+        [ContextMenu("TestStringReplace")]
+        private void TestStringReplace()
+        {
+            string key = "EXPGem_01.sprite";
+            string loadKey = key.Replace(".sprite", "");
+            loadKey = loadKey.Replace("EXP", "Gold"); // GoldGem_01
+            Debug.Log(loadKey);
+        }
 
         [ContextMenu("TEST_DICT")]
         private void TEST_DICT()

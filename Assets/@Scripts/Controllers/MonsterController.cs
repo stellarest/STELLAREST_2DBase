@@ -7,10 +7,12 @@ namespace STELLAREST_2D
     {
         public override bool Init()
         {
-            if (base.Init() == false)
-                return false;
+            // if (base.Init() == false)
+            //     return false;
+            base.Init();
 
             ObjectType = Define.ObjectType.Monster;
+            Debug.Log("MC INIT");
 
             return true;            
         }
@@ -31,7 +33,9 @@ namespace STELLAREST_2D
         private void OnCollisionEnter2D(Collision2D other)
         {
             PlayerController target = other.gameObject.GetComponent<PlayerController>();
-            if (target == null)
+            if (target.IsValid() == false)
+                return;
+            if (this.IsValid() == false) // 풀링은 되어 있지만 이미 꺼져있을 경우
                 return;
 
             if (_coDotDamage != null)
@@ -43,10 +47,10 @@ namespace STELLAREST_2D
         private void OnCollisionExit2D(Collision2D other)
         {
             PlayerController target = other.gameObject.GetComponent<PlayerController>();
-            if (target == null)
+            if (target.IsValid() == false)
                 return;
-            // if (target.isActiveAndEnabled == false)
-            //     return;
+            if (this.IsValid() == false) // 풀링된(InActive) 상태에서 StartCoroutine 호출하면 안됨
+                return;
 
             if (_coDotDamage != null)
                 StopCoroutine(_coDotDamage);
@@ -71,6 +75,8 @@ namespace STELLAREST_2D
             if (_coDotDamage != null)
                 StopCoroutine(_coDotDamage);
             _coDotDamage = null;
+
+            GemController gc = Managers.Object.Spawn<GemController>(transform.position);
 
             //Managers.Object.Despawn<MonsterController>(this);
             Managers.Object.Despawn(this);

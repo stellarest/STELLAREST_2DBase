@@ -10,35 +10,35 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
-  m_Name: Prefabs
+  m_Name: Skills
   m_EditorClassIdentifier: 
-  m_GroupName: Prefabs
+  m_GroupName: Skills
   m_Data:
     m_SerializedData: []
-  m_GUID: 1d9d9460b9f8147548adc255065330ff
+  m_GUID: de4b3ba98ad8b4c9b8eb9fc7af8db43b
   m_SerializeEntries:
-  - m_GUID: dc5e008c904fb45c1b7278872e26c09d
-    m_Address: Snake_01.prefab
+  - m_GUID: be65551eecc7ea64589c7932ed258169
+    m_Address: EgoSword.prefab
     m_ReadOnly: 0
     m_SerializedLabels:
     - PreLoad
-  - m_GUID: 0970692134cd648c0ae794bd9be22cea
-    m_Address: Slime_01.prefab
+  - m_GUID: 8d1423bbe53d13d4fa74d492091e28ac
+    m_Address: FireProjectile.prefab
     m_ReadOnly: 0
     m_SerializedLabels:
     - PreLoad
-  - m_GUID: 631db44bb58044cba9dfce25f557cc23
-    m_Address: Goblin_01.prefab
+  - m_GUID: db777e5a207ad754aa4ed7029488e149
+    m_Address: MonsterProjectile.prefab
     m_ReadOnly: 0
     m_SerializedLabels:
     - PreLoad
-  - m_GUID: 1b0f6b21b16f74eadb7a8d27a7b78f74
-    m_Address: Map.prefab
+  - m_GUID: d51d297148b2ce84ab2b7a9be55de48e
+    m_Address: PoisonField_AOE_01.prefab
     m_ReadOnly: 0
     m_SerializedLabels:
     - PreLoad
-  - m_GUID: e7cc55eb297b849e5970e35980d1427c
-    m_Address: EXPGem.prefab
+  - m_GUID: 54ca42f653b65a34c9a5fc40bb9d2c78
+    m_Address: WindCutter.prefab
     m_ReadOnly: 0
     m_SerializedLabels:
     - PreLoad
@@ -46,5 +46,5 @@ MonoBehaviour:
   m_Settings: {fileID: 11400000, guid: 5fe9837c25d584a8f982c68806a1aa98, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: 395884a7ddd1d4357b916c167d95e460, type: 2}
-    - {fileID: 11400000, guid: 7b637657002f14d54922969640a3f68c, type: 2}
+    - {fileID: 11400000, guid: f5106af0a450a49b8ac61a06951239f7, type: 2}
+    - {fileID: 11400000, guid: 1d9853050f50e4839a222f6bfa93619e, type: 2}

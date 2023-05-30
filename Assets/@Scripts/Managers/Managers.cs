@@ -23,6 +23,8 @@ namespace STELLAREST_2D
 
                     DontDestroyOnLoad(go);
                     _instance = go.GetComponent<Managers>();
+
+                    Object.Init();
                 }
 
                 return _instance;

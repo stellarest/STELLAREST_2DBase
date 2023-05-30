@@ -22,5 +22,14 @@ namespace STELLAREST_2D
             _init = true;
             return true;
         }
+
+        private void Update()
+        {
+            UpdateController();
+        }
+
+        public virtual void UpdateController()
+        {
+        }
     }
 }

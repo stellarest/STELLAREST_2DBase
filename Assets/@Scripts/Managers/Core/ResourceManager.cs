@@ -59,8 +59,17 @@ namespace STELLAREST_2D
                 return;
             }
 
+            // texture to sprite
+            string loadKey = key;
+            if (key.Contains(".sprite"))
+            {
+                // Debug.Log("key origin : " + key); // EXPGem_01.sprite
+                loadKey = $"{key}[{key.Replace(".sprite", "")}]";
+            }
+            // Debug.Log("loadKey : " + loadKey); // EXPGem_01.sprite[EXPGem_01]
+
             // 없으면 비동기 로딩 시작
-            var asyncOperation = Addressables.LoadAssetAsync<T>(key);
+            var asyncOperation = Addressables.LoadAssetAsync<T>(loadKey);
             asyncOperation.Completed += (result => 
             {
                 _resources.Add(key, result.Result);

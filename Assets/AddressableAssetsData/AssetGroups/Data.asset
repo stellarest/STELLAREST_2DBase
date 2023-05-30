@@ -10,15 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
-  m_Name: UI Prefabs
+  m_Name: Data
   m_EditorClassIdentifier: 
-  m_GroupName: UI Prefabs
+  m_GroupName: Data
   m_Data:
     m_SerializedData: []
-  m_GUID: 04bbe39e0c9fb47c5a8299e59391b475
+  m_GUID: c136452aac03d440f810bda6c796ab4c
   m_SerializeEntries:
-  - m_GUID: b5e8e9485ce2e460fac10faa692f314e
-    m_Address: UI_Joystick.prefab
+  - m_GUID: 0d992e9d73bd54fe5bf925871a3545b2
+    m_Address: PlayerData.json
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PreLoad
+  - m_GUID: 002231b03590845b797b572470588049
+    m_Address: SkillData.json
     m_ReadOnly: 0
     m_SerializedLabels:
     - PreLoad
@@ -26,5 +31,5 @@ MonoBehaviour:
   m_Settings: {fileID: 11400000, guid: 5fe9837c25d584a8f982c68806a1aa98, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: 107ece35d630d432d91d5fb4327c3dee, type: 2}
-    - {fileID: 11400000, guid: 9ce00e4c661a5402abb6a93dd2bf9e06, type: 2}
+    - {fileID: 11400000, guid: 186dfe1f319d84370923fa6de6204561, type: 2}
+    - {fileID: 11400000, guid: 43324832776714228891d5599f695112, type: 2}
