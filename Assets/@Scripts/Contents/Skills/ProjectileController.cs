@@ -6,15 +6,12 @@ namespace STELLAREST_2D
     {
         private CreatureController _owner;
         private Vector3 _moveDir; // 방향 속도 등등 나중에 데이터 시트에서 불러와야함.
-        private float _speed = 10.0f;
         private float _lifetype = 10.0f;
 
         public override bool Init()
         {
             base.Init();
-
             StartDestroy(_lifetype);
-
             return true;
         }
 
@@ -28,7 +25,7 @@ namespace STELLAREST_2D
         {
             base.UpdateController();
 
-            transform.position += _moveDir * _speed * Time.deltaTime;
+            transform.position += _moveDir * Speed * Time.deltaTime;
         }
 
         private void OnTriggerEnter2D(Collider2D other)
@@ -41,7 +38,7 @@ namespace STELLAREST_2D
 
             // this(투사체)가 아니라 owner로. 나중에 어그로 이런거 고려하려면
             // *** SetInfo하기전에 먼저 충돌되면 문제가 발생할 수도 있다. ***
-            mc.OnDamaged(_owner, damage: SkillData.damage);
+            mc.OnDamaged(_owner, damage: Damage);
             StopDestroy();
 
             Managers.Object.Despawn(this);

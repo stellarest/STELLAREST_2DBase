@@ -21,12 +21,9 @@ namespace STELLAREST_2D
 
         public override bool Init()
         {
-            // if (base.Init() == false)
-            //     return false;
             base.Init();
-
             ObjectType = Define.ObjectType.Monster;
-            // Debug.Log("MC INIT");
+
             return true;            
         }
 

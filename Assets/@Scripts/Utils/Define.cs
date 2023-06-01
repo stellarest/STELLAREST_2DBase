@@ -41,6 +41,12 @@ namespace STELLAREST_2D
             Boss,
         }
 
+        public enum MonsterTemplateID
+        {
+            Snake = 1,
+            Goblin = 2,
+        }
+
         public enum MonsterTemplateMinMaxID
         {
             Min = 1,
@@ -60,14 +66,14 @@ namespace STELLAREST_2D
         public const string PLAYER_INDICATOR = "Indicator";
         public const string PLYAER_FIRE_SOCKET = "FireSocket";
 
-        // 나중에 데이터 시트로 빼주기전까지 Define으로 하드코딩해도 됨
-        public const int EGO_SWORD_ID = 10;
+        // // 나중에 데이터 시트로 빼주기전까지 Define으로 하드코딩해도 됨
+        // public const int EGO_SWORD_ID = 10;
 
         public const string LOAD_PLAYER_PREFAB = "Slime_01.prefab";
         public const string LOAD_GOBLIN_PREFAB = "Goblin_01.prefab";
         public const string LOAD_SNAKE_PREFAB = "Snake_01.prefab";
         public const string LOAD_JOYSTICK_PREFAB = "UI_Joystick.prefab";
-        public const string LOAD_MAP_PREFAB = "Map.prefab";
+        public const string LOAD_MAP_PREFAB = "Map_01.prefab";
         public const string LOAD_PLAYER_JSON_DATA = "PlayerData.json";
         public const string LOAD_EXP_GEM_PREFAB = "EXPGem.prefab";
         public const string LOAD_FIRE_PROJECTILE_PREFAB = "FireProjectile.prefab";

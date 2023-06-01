@@ -4,7 +4,7 @@ namespace STELLAREST_2D
 {
     public class CreatureController : BaseController
     {
-        private int _hp;
+        [SerializeField] private int _hp;
         public int Hp 
         { 
             get => _hp; 

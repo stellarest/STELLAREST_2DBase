@@ -6,8 +6,60 @@ namespace STELLAREST_2D
 {
     public class SkillController : BaseController
     {
-        public Define.SkillType SkillType { get; set; }
-        public Data.SkillData SkillData { get; set; }
+        /*
+            "templateID" : "1",
+            "name" : "FireBall",
+            "type" : "2",
+            "prefab" : "FireProjectile.prefab",
+            "damage" : "1000",
+            "speed" : "3f"
+        */
+
+        private Define.SkillType _skillType = Define.SkillType.None;
+        public Define.SkillType SkillType
+        {
+            get => _skillType;
+            protected set
+            {
+                _skillType = value;
+            }
+        }
+
+        private int _damage;
+        public int Damage
+        {
+            get => _damage;
+            protected set
+            {
+                _damage = value;
+            }
+        }
+
+        private float _speed;
+        public float Speed
+        {
+            get => _speed;
+            protected set
+            {
+                _speed = value;
+            }
+        }
+
+        private Data.SkillData _skillData;
+        public Data.SkillData SkillData 
+        { 
+            get => _skillData; 
+            set
+            {
+                _skillData = value;
+                _skillType = _skillData.type;
+                _damage = _skillData.damage;
+                if (_skillType == Define.SkillType.Melee)
+                    _speed = 0f;
+                else if (_skillType == Define.SkillType.Projectile)
+                    _speed = _skillData.speed;
+            } 
+        }
         
         private Coroutine _coDestroy;
 

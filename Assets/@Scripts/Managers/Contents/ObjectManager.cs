@@ -19,6 +19,9 @@ namespace STELLAREST_2D
 
         public T Spawn<T>(Vector3 position, int templateID = 0) where T : BaseController
         {
+            // templateID : 단순히 데이터가 있고 없고의 체크용으로만 사용하고
+            // 직접적인 데이터는 모두 Init에서 가져온다.
+
             System.Type type = typeof(T);
             if (type == typeof(PlayerController))
             {
@@ -78,7 +81,7 @@ namespace STELLAREST_2D
                 go.transform.position = position;
 
                 MonsterController mc = go.GetOrAddComponent<MonsterController>();
-                mc.MonsterData = monsterData;
+                mc.MonsterData = monsterData; // 여기서 다시 에너지가 채워지네 ;; 풀에서 꺼내면서
                 //mc.Init();
                 Monsters.Add(mc);
 
@@ -105,7 +108,11 @@ namespace STELLAREST_2D
 
                 if (type == typeof(EgoSwordController))
                 {
-                    // TODO...
+                    EgoSwordController ec = go.GetOrAddComponent<EgoSwordController>();
+                    ec.SkillData = skillData; // 데미지를 미리 여기서 설정
+                    ec.SetChildInfo(skillData);
+                    ec.Init();
+                    return ec as T;
                 }
             }
 

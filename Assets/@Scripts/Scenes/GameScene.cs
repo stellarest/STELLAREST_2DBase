@@ -25,7 +25,6 @@ namespace STELLAREST_2D
             _spawningPool = gameObject.AddComponent<SpawningPool>();
             var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, 1);
 
-            
             var joystick = Managers.Resource.Instantiate(Define.LOAD_JOYSTICK_PREFAB);
             joystick.name = "@UI_Joystick";
 

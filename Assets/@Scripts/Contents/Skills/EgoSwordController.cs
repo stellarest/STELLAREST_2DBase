@@ -25,9 +25,15 @@ namespace STELLAREST_2D
                 _swingParticles[i].GetComponent<Rigidbody2D>().simulated = false;
 
             for (int i = 0; i < _swingParticles.Length; ++i)
-                _swingParticles[i].gameObject.GetOrAddComponent<EgoSwordChild>().SetInfo(Managers.Object.Player, 100);
+                _swingParticles[i].gameObject.GetOrAddComponent<EgoSwordChild>().SetOwner(Managers.Object.Player);
 
             return true;
+        }
+
+        public void SetChildInfo(Data.SkillData skillData)
+        {
+            for (int i = 0; i < _swingParticles.Length; ++i)
+                _swingParticles[i].gameObject.GetComponent<EgoSwordChild>().SetInfo(skillData);
         }
 
         public void ActivateSkill()
@@ -35,7 +41,7 @@ namespace STELLAREST_2D
             StartCoroutine(CoSwingSword());
         }
 
-        private float CoolTime = 2.0f;
+        private float CoolTime = 0.5f;
         private IEnumerator CoSwingSword()
         {
             while (true)
@@ -48,20 +54,17 @@ namespace STELLAREST_2D
                 yield return new WaitForSeconds(_swingParticles[(int)SwingType.First].main.duration);
                 TurnOnPhysics(SwingType.First, false);
 
-
                 SetParticles(SwingType.Second);
                 _swingParticles[(int)SwingType.Second].Play();
                 TurnOnPhysics(SwingType.Second, true);
                 yield return new WaitForSeconds(_swingParticles[(int)SwingType.Second].main.duration);
                 TurnOnPhysics(SwingType.Second, false);
 
-
                 SetParticles(SwingType.Third);
                 _swingParticles[(int)SwingType.Third].Play();
                 TurnOnPhysics(SwingType.Third, true);
                 yield return new WaitForSeconds(_swingParticles[(int)SwingType.Third].main.duration);
                 TurnOnPhysics(SwingType.Third, false);
-
 
                 SetParticles(SwingType.Fourth);
                 _swingParticles[(int)SwingType.Fourth].Play();

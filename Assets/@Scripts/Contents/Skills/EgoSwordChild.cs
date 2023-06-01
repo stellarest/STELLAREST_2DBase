@@ -9,14 +9,19 @@ namespace STELLAREST_2D
         private BaseController _owner;
         private int _damage;
 
-        public void SetInfo(BaseController owner, int damage)
+        public void SetOwner(BaseController owner)
         {
             this._owner = owner;
-            this._damage = damage;
+        }
+
+        public void SetInfo(Data.SkillData skillData)
+        {
+            _damage = skillData.damage;
         }
 
         private void OnTriggerEnter2D(Collider2D other)
         {
+             // 당연히 몬스터한테도 이 스킬이 붙을수도 있음. 그땐 여기를 세분화하면 됨
             MonsterController mc = other.gameObject.GetComponent<MonsterController>();
             if (mc.IsValid() == false)
                 return;

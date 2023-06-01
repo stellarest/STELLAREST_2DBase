@@ -32,8 +32,8 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - PreLoad
-  - m_GUID: 1b0f6b21b16f74eadb7a8d27a7b78f74
-    m_Address: Map.prefab
+  - m_GUID: c429e5c56afc5cb48ab7d751f1cf7b1c
+    m_Address: Map_01.prefab
     m_ReadOnly: 0
     m_SerializedLabels:
     - PreLoad

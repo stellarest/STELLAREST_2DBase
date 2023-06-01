@@ -14,6 +14,7 @@ namespace STELLAREST_2D
             set
             {
                 _playerData = value; // 플레이어의 고유 데이터까지 전부 다 담아낼거 하나
+                // 아래는 크리처 공용 셋팅
                 this.MaxHp = _playerData.maxHp;
                 this.Hp = this.MaxHp;
                 this.MoveSpeed = _playerData.moveSpeed;
@@ -34,16 +35,15 @@ namespace STELLAREST_2D
 
         public override bool Init()
         {
-            // if (base.Init() == false) // 풀링이 안되는 녀석이므로. 흠...
-            //     return false;
-            base.Init();
-            Debug.Log("PC INIT");
+            if (base.Init() == false)
+                return true;
 
+            Debug.Log("### PC INIT SUCCESS ###");
             Managers.Game.OnMoveChanged += OnMoveDirChangedHandler;
 
             GetIndicator();
-            StartProjectile();
-            //StartEgoSword();
+            //StartProjectile();
+            StartEgoSword();
 
             return true;
         }
@@ -148,8 +148,8 @@ namespace STELLAREST_2D
             base.OnDamaged(attacker, damage);
 
             // TEMP
-            CreatureController cc = attacker as CreatureController;
-            cc?.OnDamaged(this, 10000);
+            // CreatureController cc = attacker as CreatureController;
+            // cc?.OnDamaged(this, 10000);
         }
 
         // TEMP : FireProjectile
@@ -185,7 +185,7 @@ namespace STELLAREST_2D
             if (_egoSword.IsValid())
                 return;
             
-            _egoSword = Managers.Object.Spawn<EgoSwordController>(_indicator.position, Define.EGO_SWORD_ID);
+            _egoSword = Managers.Object.Spawn<EgoSwordController>(_indicator.position, (int)Define.PlayerSkillTemplateID.EgoSword);
             _egoSword.transform.SetParent(_indicator);
             _egoSword.ActivateSkill();
         }
