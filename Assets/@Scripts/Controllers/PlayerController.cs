@@ -7,8 +7,8 @@ namespace STELLAREST_2D
 {
     public class PlayerController : CreatureController
     {
-        private Data.PlayerData _playerData;
-        public Data.PlayerData PlayerData
+        private Data.PlayerStatData _playerData;
+        public Data.PlayerStatData PlayerData
         {
             get => _playerData;
             set
@@ -37,12 +37,11 @@ namespace STELLAREST_2D
         {
             if (base.Init() == false)
                 return true;
-
             Debug.Log("### PC INIT SUCCESS ###");
-            Managers.Game.OnMoveChanged += OnMoveDirChangedHandler;
+            Managers.Game.OnMoveDirChanged += OnMoveDirChangedHandler;
 
             GetIndicator();
-            //StartProjectile();
+            StartProjectile();
             StartEgoSword();
 
             return true;
@@ -51,10 +50,12 @@ namespace STELLAREST_2D
         private void GetIndicator()
         {
             if (_indicator == null)
-                _indicator = Utils.FindChild<Transform>(this.gameObject, Define.PLAYER_INDICATOR, true);
+                _indicator = Utils.FindChild<Transform>(this.gameObject, 
+                    Define.PlayerData.INDICATOR, true);
 
             if (_fireSocket == null)
-                _fireSocket = Utils.FindChild<Transform>(this.gameObject, Define.PLYAER_FIRE_SOCKET, true);
+                _fireSocket = Utils.FindChild<Transform>(this.gameObject, 
+                    Define.PlayerData.FIRE_SOCKET, true);
         }
 
         private void Update()
@@ -66,7 +67,7 @@ namespace STELLAREST_2D
         private void OnDestroy()
         {
             if (Managers.Game != null)
-                Managers.Game.OnMoveChanged -= OnMoveDirChangedHandler;
+                Managers.Game.OnMoveDirChanged -= OnMoveDirChangedHandler;
         }
 
         public void MovePlayerByController()
@@ -170,7 +171,8 @@ namespace STELLAREST_2D
             {
                 // 나중에 총구모양 있으면 총구 모양 위치에다가
                 ProjectileController pc = Managers.Object.
-                                Spawn<ProjectileController>(_fireSocket.position, (int)Define.PlayerSkillTemplateID.FireBall);
+                                Spawn<ProjectileController>(_fireSocket.position, 
+                                (int)Define.PlayerData.SkillTemplateIDs.FireBall);
                 yield return new WaitUntil(() => (pc != null)); // 이 코루틴 하나로 다해결
                 pc.SetInfo(this, (_fireSocket.position - _indicator.position).normalized);
                 
@@ -185,7 +187,9 @@ namespace STELLAREST_2D
             if (_egoSword.IsValid())
                 return;
             
-            _egoSword = Managers.Object.Spawn<EgoSwordController>(_indicator.position, (int)Define.PlayerSkillTemplateID.EgoSword);
+            // Debug.Log("### Spawn Ego Sword ###");
+            _egoSword = Managers.Object.Spawn<EgoSwordController>(_indicator.position, 
+                                        (int)Define.PlayerData.SkillTemplateIDs.EgoSword);
             _egoSword.transform.SetParent(_indicator);
             _egoSword.ActivateSkill();
         }

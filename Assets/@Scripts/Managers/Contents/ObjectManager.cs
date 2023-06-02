@@ -25,7 +25,7 @@ namespace STELLAREST_2D
             System.Type type = typeof(T);
             if (type == typeof(PlayerController))
             {
-                if (Managers.Data.PlayerDict.TryGetValue(templateID, out Data.PlayerData playerData) == false)
+                if (Managers.Data.PlayerStatDict.TryGetValue(templateID, out Data.PlayerStatData playerData) == false)
                 {
                     Debug.LogError($"@@@@@ PlayerDict load failed, templateID : {templateID} @@@@@");
                     return null;
@@ -33,7 +33,7 @@ namespace STELLAREST_2D
 
                 // ***** PlayerPrefab은 PlayerJsonData 파일에 없으므로 일단 Define.LOAD_PLAYER_PREFAB으로 호출
                 // 나중에 캐릭터별로 프리팹 네임 필요할수도있음
-                GameObject go = Managers.Resource.Instantiate(Define.LOAD_PLAYER_PREFAB);
+                GameObject go = Managers.Resource.Instantiate(Define.PlayerData.Prefabs.SLIME);
                 go.name = "Player";
                 go.transform.position = position;
 
@@ -46,7 +46,7 @@ namespace STELLAREST_2D
             }
             else if (type == typeof(GemController)) // 현재 Gem과 관련된 아이템 데이터 시트가 없으므로 임시 코드
             {
-                GameObject go = Managers.Resource.Instantiate(Define.LOAD_EXP_GEM_PREFAB, pooling: true);
+                GameObject go = Managers.Resource.Instantiate(Define.GameData.Prefabs.EXP_GEM, pooling: true);
                 go.transform.position = position;
 
                 GemController gc = go.GetOrAddComponent<GemController>();
@@ -56,7 +56,7 @@ namespace STELLAREST_2D
                 if (changeSprite)
                 {
                     spriteKey = Random.Range(0, 2) == 0 ?
-                                Define.LOAD_EXP_GEM_YELLOW_SPRITE : Define.LOAD_EXP_GEM_BLUE_SPRITE;
+                                Define.GameData.Sprites.EXP_GEM_BLUE : Define.GameData.Sprites.EXP_GEM_BLUE;
 
                     Sprite yellowOrBlue = Managers.Resource.Load<Sprite>(spriteKey);
                     if (yellowOrBlue != null)
@@ -120,6 +120,7 @@ namespace STELLAREST_2D
         }
 
 
+        // TEMP && LEGACY
         public T Spawn2<T>(Vector3 position, int templateID = 0) where T : BaseController
         {
             // TemplateID가 0이 아닌것은 모두 체크
@@ -127,7 +128,7 @@ namespace STELLAREST_2D
             if (type == typeof(PlayerController))
             {
                 // TODO : use DataSheet
-                GameObject go = Managers.Resource.Instantiate(Define.LOAD_PLAYER_PREFAB);
+                GameObject go = Managers.Resource.Instantiate(Define.PlayerData.Prefabs.SLIME);
                 go.name = "Player";
                 go.transform.position = position;
 
@@ -140,7 +141,7 @@ namespace STELLAREST_2D
             else if (type == typeof(MonsterController))
             {
                 // TODO : use DataSheet
-                string name = (templateID == 0 ? Define.LOAD_GOBLIN_PREFAB : Define.LOAD_SNAKE_PREFAB);
+                string name = (templateID == 0 ? Define.MonsterData.Prefabs.GOBLIN : Define.MonsterData.Prefabs.SNAKE);
                 GameObject go = Managers.Resource.Instantiate(name, pooling: true);
                 go.transform.position = position;
 
@@ -152,7 +153,7 @@ namespace STELLAREST_2D
             }
             else if (type == typeof(GemController))
             {
-                GameObject go = Managers.Resource.Instantiate(Define.LOAD_EXP_GEM_PREFAB, pooling: true);
+                GameObject go = Managers.Resource.Instantiate(Define.GameData.Prefabs.EXP_GEM, pooling: true);
                 go.transform.position = position;
 
                 GemController gc = go.GetOrAddComponent<GemController>();
@@ -162,7 +163,7 @@ namespace STELLAREST_2D
                 if (changeSprite)
                 {
                     spriteKey = Random.Range(0, 2) == 0 ?
-                                Define.LOAD_EXP_GEM_YELLOW_SPRITE : Define.LOAD_EXP_GEM_BLUE_SPRITE;
+                                Define.GameData.Sprites.EXP_GEM_YELLOW : Define.GameData.Sprites.EXP_GEM_BLUE;
 
                     Sprite yellowOrBlue = Managers.Resource.Load<Sprite>(spriteKey);
                     if (yellowOrBlue != null)

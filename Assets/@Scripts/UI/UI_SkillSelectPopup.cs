@@ -4,7 +4,8 @@ using UnityEngine;
 
 namespace STELLAREST_2D
 {
-    public class PoisonFieldController : MonoBehaviour
+    public class UI_SkillSelectPopup : UI_Base
     {
+        
     }
 }

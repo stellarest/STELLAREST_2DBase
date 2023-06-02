@@ -7,19 +7,42 @@ namespace STELLAREST_2D
     {
         public PlayerController Player { get => Managers.Object?.Player; }
         public int Gold { get; set; }
-        public int Gem { get; set; }
+
+        private int _gem = 0;
+        public event Action<int> OnGemCountChanged;
+        public int Gem 
+        { 
+            get => _gem; 
+            set
+            {
+                _gem = value;
+                OnGemCountChanged?.Invoke(_gem);
+            }
+        }
 
         private Vector2 _moveDir;
-        public Action<Vector2> OnMoveChanged;
-
+        public event Action<Vector2> OnMoveDirChanged;
         public Vector2 MoveDir
         {
             get => _moveDir;
             set
             {
                 _moveDir = value;
-                OnMoveChanged?.Invoke(_moveDir);
+                OnMoveDirChanged?.Invoke(_moveDir);
             }
         }
+
+        private int _killCount;
+        public event Action<int> OnKillCountChanged;
+        public int KillCount
+        {
+            get => _killCount;
+            set
+            {
+                _killCount = value;
+                OnKillCountChanged?.Invoke(KillCount);
+            }
+        }
+
     }
 }

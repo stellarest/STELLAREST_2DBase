@@ -22,7 +22,7 @@ namespace STELLAREST_2D
         public override bool Init()
         {
             base.Init();
-            ObjectType = Define.ObjectType.Monster;
+            ObjectType = Define.GameData.ObjectType.Monster;
 
             return true;            
         }
@@ -81,7 +81,8 @@ namespace STELLAREST_2D
         protected override void OnDead()
         {
             base.OnDead();
-
+            Managers.Game.KillCount++;
+            
             if (_coDotDamage != null)
                 StopCoroutine(_coDotDamage);
             _coDotDamage = null;

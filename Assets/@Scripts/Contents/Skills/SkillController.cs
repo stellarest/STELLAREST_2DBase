@@ -15,8 +15,8 @@ namespace STELLAREST_2D
             "speed" : "3f"
         */
 
-        private Define.SkillType _skillType = Define.SkillType.None;
-        public Define.SkillType SkillType
+        private Define.GameData.SkillType _skillType = Define.GameData.SkillType.None;
+        public Define.GameData.SkillType SkillType
         {
             get => _skillType;
             protected set
@@ -54,9 +54,9 @@ namespace STELLAREST_2D
                 _skillData = value;
                 _skillType = _skillData.type;
                 _damage = _skillData.damage;
-                if (_skillType == Define.SkillType.Melee)
+                if (_skillType == Define.GameData.SkillType.Melee)
                     _speed = 0f;
-                else if (_skillType == Define.SkillType.Projectile)
+                else if (_skillType == Define.GameData.SkillType.Projectile)
                     _speed = _skillData.speed;
             } 
         }

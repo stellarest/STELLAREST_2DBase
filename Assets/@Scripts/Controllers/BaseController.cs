@@ -4,7 +4,7 @@ namespace STELLAREST_2D
 {
     public class BaseController : MonoBehaviour
     {
-        public Define.ObjectType ObjectType { get; protected set; }
+        public Define.GameData.ObjectType ObjectType { get; protected set; }
 
         private void Awake()
         {

@@ -7,7 +7,7 @@ using UnityEngine;
 namespace STELLAREST_2D.Data
 {
     [System.Serializable]
-    public class PlayerData
+    public class PlayerStatData
     {
         public int level;
         public int maxHp;
@@ -15,7 +15,9 @@ namespace STELLAREST_2D.Data
         public float moveSpeed;
         public int totalExp;
     }
-
+    
+    // *** 스킬 자체는 플레이어, 몬스터 공용인데
+    // 로드할 부분만 Define.Datas에서 따로 정리
     [System.Serializable]
     public class SkillData
     {
@@ -23,7 +25,7 @@ namespace STELLAREST_2D.Data
         public string name;
         //public string type;
         //[JsonConverter(typeof(StringEnumConverter))] --> Serialize 할 때 쓰는 것임. enumType 제이슨 가독성을 위해서.
-        public Define.SkillType type = Define.SkillType.None; // enum type이 안들어와지면 string으로 임시적으로 받아와서 넣어주면 된다고함 
+        public Define.GameData.SkillType type = Define.GameData.SkillType.None; // enum type이 안들어와지면 string으로 임시적으로 받아와서 넣어주면 된다고함 
         public string prefab;
         public int damage;
         public float speed;
@@ -34,7 +36,7 @@ namespace STELLAREST_2D.Data
     {
         public int templateID;
         public string name;
-        public Define.MonsterType type = Define.MonsterType.None;
+        public Define.MonsterData.Type type = Define.MonsterData.Type.None;
         public string prefab;
         public int maxHp;
         public int attack;
@@ -43,22 +45,22 @@ namespace STELLAREST_2D.Data
     }
 
     [System.Serializable]
-    public class PlayerDataLoader : ILoader<int, PlayerData>
+    public class PlayerDataLoader : ILoader<int, PlayerStatData>
     {
-        public List<PlayerData> stats = new List<PlayerData>();
+        public List<PlayerStatData> stats = new List<PlayerStatData>();
 
-        public Dictionary<int, PlayerData> MakeDict()
+        public Dictionary<int, PlayerStatData> MakeDict()
         {
             if (stats.Count == 0)
             {
-                Debug.LogError("@@@@@ Load failed PlayerData.json !! @@@@@");
+                Debug.LogError("@@@@@ Load failed PlayerStatData.json !! @@@@@");
                 return null;
             }
             else
-                Debug.Log("<color=cyan> Load success PlayerData.json </color>");
+                Debug.Log("<color=cyan> Load success PlayerStatData.json </color>");
 
-            Dictionary<int, PlayerData> dict = new Dictionary<int, PlayerData>();
-            foreach (PlayerData stat in stats)
+            Dictionary<int, PlayerStatData> dict = new Dictionary<int, PlayerStatData>();
+            foreach (PlayerStatData stat in stats)
                 dict.Add(stat.level, stat);
 
             return dict;

@@ -6,7 +6,7 @@ namespace STELLAREST_2D
 {
     public class EgoSwordController : SkillController
     {
-        [SerializeField] private ParticleSystem[] _swingParticles;
+        private ParticleSystem[] _swingParticles;
 
         protected enum SwingType
         {
@@ -18,14 +18,26 @@ namespace STELLAREST_2D
 
         public override bool Init()
         {
-            base.Init();
+            if (base.Init() == false)
+                return true;
+            Debug.Log("##### EGO SWORD INIT #####");
 
-            // Active 될 때 까지 콜라이더 물리적용 X
+            _swingParticles = new ParticleSystem[4];
             for (int i = 0; i < _swingParticles.Length; ++i)
+            {
+                //string childObjectName = "EgoSword_Melee_";
+                string childObjectName = Define.PlayerData.EGO_SWORD_CHILD_BASE;
+                childObjectName += (i + 1).ToString("D2");
+                _swingParticles[i] = Utils.FindChild(gameObject, childObjectName).GetComponent<ParticleSystem>();
                 _swingParticles[i].GetComponent<Rigidbody2D>().simulated = false;
-
-            for (int i = 0; i < _swingParticles.Length; ++i)
                 _swingParticles[i].gameObject.GetOrAddComponent<EgoSwordChild>().SetOwner(Managers.Object.Player);
+            }
+            // Active 될 때 까지 콜라이더 물리적용 X
+            // for (int i = 0; i < _swingParticles.Length; ++i)
+            //     _swingParticles[i].GetComponent<Rigidbody2D>().simulated = false;
+
+            // for (int i = 0; i < _swingParticles.Length; ++i)
+            //     _swingParticles[i].gameObject.GetOrAddComponent<EgoSwordChild>().SetOwner(Managers.Object.Player);
 
             return true;
         }

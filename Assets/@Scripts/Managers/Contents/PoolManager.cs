@@ -44,7 +44,8 @@ namespace STELLAREST_2D
         public GameObject OnCreate()
         {
             GameObject go = UnityEngine.Object.Instantiate(_prefab);
-            go.transform.parent = Root;
+            go.transform.SetParent(Root);
+            //go.transform.parent = Root;
             go.name = _prefab.name;
             return go;
         }

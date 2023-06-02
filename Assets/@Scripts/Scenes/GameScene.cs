@@ -21,14 +21,23 @@ namespace STELLAREST_2D
         private void StartLoaded()
         {
             Managers.Data.Init();
+            Managers.UI.ShowFixedSceneUI<UI_GameScene>();
+
+            Managers.Game.OnKillCountChanged -= OnKillCountChangedHandler;
+            Managers.Game.OnKillCountChanged += OnKillCountChangedHandler;
+
+            Managers.Game.OnGemCountChanged -= OnGemCountChangedHandler;
+            Managers.Game.OnGemCountChanged += OnGemCountChangedHandler;
 
             _spawningPool = gameObject.AddComponent<SpawningPool>();
-            var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, 1);
+            Debug.Log("##### PC SPAWN IN GAMESCENE #####");
+            var player = Managers.Object.Spawn<PlayerController>
+                    (Vector3.zero, Define.PlayerData.INITIAL_SPAWN_TEMPLATE_ID);
 
-            var joystick = Managers.Resource.Instantiate(Define.LOAD_JOYSTICK_PREFAB);
+            var joystick = Managers.Resource.Instantiate(Define.UIData.Prefabs.JOYSTICK);
             joystick.name = "@UI_Joystick";
 
-            var map = Managers.Resource.Instantiate(Define.LOAD_MAP_PREFAB);
+            var map = Managers.Resource.Instantiate(Define.GameData.Prefabs.MAP_01);
             map.name = "@Map";
             Camera.main.GetComponent<CameraController>().Target = player.gameObject;
         
@@ -44,6 +53,38 @@ namespace STELLAREST_2D
             //     Debug.Log($"Lv1 : {playerData.level}, HP : {playerData.maxHp}");
             // }
             // Debug.Log("=============================");
+        }
+
+        public void OnKillCountChangedHandler(int killCount)
+        {
+            Managers.UI.GetFixedSceneUI<UI_GameScene>().SetKillCount(killCount);
+
+            if (killCount == 5)
+            {
+                Debug.Log("BOSS MON INCOMING");
+            }
+        }
+
+        private int _collectedGemCount = 0;
+        private int _remainingTotalGemCount = 10;
+        public void OnGemCountChangedHandler(int gemCount)
+        {
+            _collectedGemCount++;
+            if (_collectedGemCount == _remainingTotalGemCount)
+            {
+                Managers.UI.ShowPopup<UI_SkillSelectPopup>();
+                _collectedGemCount = 0;
+                _remainingTotalGemCount *= 2;
+            }
+
+            // *** 인자 둘 중 하나는 무조건 float
+            Managers.UI.GetFixedSceneUI<UI_GameScene>().SetGemCountRatio(_collectedGemCount / (float)_remainingTotalGemCount);
+        }
+
+        private void OnDestroy()
+        {
+            if (Managers.Game != null)
+                Managers.Game.OnGemCountChanged -= OnGemCountChangedHandler;
         }
 
         private void StartLoaded2() // LEGACY
