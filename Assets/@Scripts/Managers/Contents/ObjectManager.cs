@@ -1,4 +1,6 @@
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace STELLAREST_2D
@@ -80,12 +82,20 @@ namespace STELLAREST_2D
                 GameObject go = Managers.Resource.Instantiate(monsterData.prefab, pooling: true);
                 go.transform.position = position;
 
-                MonsterController mc = go.GetOrAddComponent<MonsterController>();
-                mc.MonsterData = monsterData; // 여기서 다시 에너지가 채워지네 ;; 풀에서 꺼내면서
-                //mc.Init();
-                Monsters.Add(mc);
-
-                return mc as T;
+                if (monsterData.type == Define.MonsterData.Type.Normal)
+                {
+                    MonsterController mc = go.GetOrAddComponent<MonsterController>();
+                    mc.MonsterData = monsterData; // 여기서 다시 에너지가 채워지네 ;; 풀에서 꺼내면서 // //mc.Init();
+                    Monsters.Add(mc);
+                    return mc as T;
+                }
+                else if (monsterData.type == Define.MonsterData.Type.Boss)
+                {
+                    BossController bc = go.GetOrAddComponent<BossController>();
+                    bc.MonsterData = monsterData;
+                    Monsters.Add(bc);
+                    return bc as T;
+                }
             }
             else if (typeof(T).IsSubclassOf(typeof(SkillController)))
             {
@@ -119,115 +129,20 @@ namespace STELLAREST_2D
             return null;
         }
 
-
-        // TEMP && LEGACY
-        public T Spawn2<T>(Vector3 position, int templateID = 0) where T : BaseController
-        {
-            // TemplateID가 0이 아닌것은 모두 체크
-            System.Type type = typeof(T);
-            if (type == typeof(PlayerController))
-            {
-                // TODO : use DataSheet
-                GameObject go = Managers.Resource.Instantiate(Define.PlayerData.Prefabs.SLIME);
-                go.name = "Player";
-                go.transform.position = position;
-
-                PlayerController pc = go.GetOrAddComponent<PlayerController>();
-                //pc.Init();
-                Player = pc;
-
-                return pc as T;
-            }
-            else if (type == typeof(MonsterController))
-            {
-                // TODO : use DataSheet
-                string name = (templateID == 0 ? Define.MonsterData.Prefabs.GOBLIN : Define.MonsterData.Prefabs.SNAKE);
-                GameObject go = Managers.Resource.Instantiate(name, pooling: true);
-                go.transform.position = position;
-
-                MonsterController mc = go.GetOrAddComponent<MonsterController>();
-                //mc.Init();
-                Monsters.Add(mc);
-
-                return mc as T;
-            }
-            else if (type == typeof(GemController))
-            {
-                GameObject go = Managers.Resource.Instantiate(Define.GameData.Prefabs.EXP_GEM, pooling: true);
-                go.transform.position = position;
-
-                GemController gc = go.GetOrAddComponent<GemController>();
-
-                bool changeSprite = Random.Range(0, 2) == 0 ? true : false;
-                string spriteKey = "";
-                if (changeSprite)
-                {
-                    spriteKey = Random.Range(0, 2) == 0 ?
-                                Define.GameData.Sprites.EXP_GEM_YELLOW : Define.GameData.Sprites.EXP_GEM_BLUE;
-
-                    Sprite yellowOrBlue = Managers.Resource.Load<Sprite>(spriteKey);
-                    if (yellowOrBlue != null)
-                        gc.GetComponent<SpriteRenderer>().sprite = yellowOrBlue;
-
-                }
-                //gc.Init();
-                GridController.Add(go);
-                Gems.Add(gc);
-
-                return gc as T;
-            }
-            else if (typeof(T).IsSubclassOf(typeof(ProjectileController))) // 미친 씨샵 개좋음
-            {
-                // 나중에 데이터는 위에다가 몰빵해야함
-                if (Managers.Data.SkillDict.TryGetValue(templateID, out Data.SkillData skillData) == false)
-                {
-                    Debug.LogError($"Projectile Spawn Failed !! templateID : {templateID}");
-                    return null;
-                }
-
-                // *** 현재 인자로 받는 templateID는 아직 제대로 활용 안하는중. 데이터 정리할 때 같이 하면 됨.
-                GameObject go = Managers.Resource.Instantiate(skillData.prefab, pooling: true);
-                go.transform.position = position;
-
-                ProjectileController pc = go.GetOrAddComponent<ProjectileController>();
-                Projectiles.Add(pc); // 안해도됨
-                // pc.Init();
-
-                return pc as T;
-            }
-            else if (type == typeof(EgoSwordController) || typeof(T).IsSubclassOf(typeof(SkillController)))
-            {
-                if (Managers.Data.SkillDict.TryGetValue(templateID, out Data.SkillData skillData) == false)
-                {
-                    Debug.LogError("@@@ Spawn Skill Failed @@@");
-                    return null;
-                }
-
-                GameObject go = Managers.Resource.Instantiate(skillData.prefab, pooling: true);
-                go.transform.position = position;
-
-                T t = go.GetOrAddComponent<T>();
-                t.Init();
-
-                return t;
-            }
-
-            return null;
-        }
-
         public void Despawn<T>(T obj) where T : BaseController
         {
             if (obj.IsValid() == false)
             {
                 // 혹시라도 디스폰을 한번 더 한다면 체크
-                Debug.Log("<color=magenta>##### Why are you despawning again ???? #####</color>");
+                Debug.Log("<color=magenta>##### Already despawned #####</color>");
+                return;
             }
 
             System.Type type = typeof(T);
             if (type == typeof(PlayerController))
             {
             }
-            else if (type == typeof(MonsterController))
+            else if (typeof(T).IsSubclassOf(typeof(CreatureController)))
             {
                 Monsters.Remove(obj as MonsterController);
                 Managers.Resource.Destroy(obj.gameObject);
@@ -242,6 +157,20 @@ namespace STELLAREST_2D
             {
                 Projectiles.Remove(obj as ProjectileController);
                 Managers.Resource.Destroy(obj.gameObject);
+            }
+        }
+
+        public void DespawnAllMonsters()
+        {
+            // foreach(var mon in Monsters)
+            //     Managers.Object.Despawn(mon);
+            var monsters = Monsters.ToList();
+            foreach (var monster in monsters)
+            {
+                if (monster.IsValid() == false)
+                    continue;
+
+                Despawn<MonsterController>(monster);
             }
         }
     }

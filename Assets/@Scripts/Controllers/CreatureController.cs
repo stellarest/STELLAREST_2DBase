@@ -46,6 +46,9 @@ namespace STELLAREST_2D
 
         public virtual void OnDamaged(BaseController attacker, int damage)
         {
+            if (Hp <= 0)
+                return;
+
             Hp -= damage;
             if (Hp <= 0)
             {

@@ -39,6 +39,22 @@ namespace STELLAREST_2D
                 Etc,
             }
 
+            public enum StageType
+            {
+                Normal,
+                Boss,
+            }
+
+            // 나중에 뭐 움직이면서 스킬까지 쓰고싶다면
+            // 별도의 스테이트를 하나 더 만들어서 해야한다.
+            public enum CreatureState
+            {
+                Idle,
+                Moving,
+                Skill,
+                Dead,
+            }
+
             public static class Prefabs
             {
                 public const string EXP_GEM = "EXPGem.prefab";
@@ -98,10 +114,11 @@ namespace STELLAREST_2D
                 Max = 3 // Exclusive
             }
 
-            public enum TemplateIDs
+            public enum TemplateID
             {
                 Snake = 1,
                 Goblin = 2,
+                Boss_01 = 101,
             }
 
             public enum Type

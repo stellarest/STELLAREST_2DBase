@@ -54,7 +54,6 @@ namespace STELLAREST_2D
                 Time.timeScale = 0;
             else
                 Time.timeScale = 1;
-            
         }
     }
 }

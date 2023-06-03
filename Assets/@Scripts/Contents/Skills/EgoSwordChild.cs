@@ -26,6 +26,7 @@ namespace STELLAREST_2D
             if (mc.IsValid() == false)
                 return;
             
+            // 데미지를 줬으면, 데미지를 해당 대상에게 건네주는게 훨씬 편함
             mc.OnDamaged(_owner, _damage);
         }
     }

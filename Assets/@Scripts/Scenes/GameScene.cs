@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using Newtonsoft.Json.Linq;
 
@@ -18,6 +20,33 @@ namespace STELLAREST_2D
         }
 
         private SpawningPool _spawningPool;
+        private Define.GameData.StageType _stageType;
+        public Define.GameData.StageType StageType
+        {
+            get => _stageType;
+            set
+            {
+                _stageType = value;
+                if (_spawningPool != null)
+                {
+                    switch (value)
+                    {
+                        case Define.GameData.StageType.Normal:
+                            {
+                                _spawningPool.Stopped = false;
+                            }
+                            break;
+
+                        case Define.GameData.StageType.Boss:
+                            {
+                                _spawningPool.Stopped = true;
+                            }
+                            break;
+                    }
+                }
+            }
+        }
+
         private void StartLoaded()
         {
             Managers.Data.Init();
@@ -59,10 +88,22 @@ namespace STELLAREST_2D
         {
             Managers.UI.GetFixedSceneUI<UI_GameScene>().SetKillCount(killCount);
 
+            // 마찬가지로 나중에 데이터로 관리
             if (killCount == 5)
             {
-                Debug.Log("BOSS MON INCOMING");
+                // Debug.Log("BOSS MON INCOMING");
+                StageType = Define.GameData.StageType.Boss;
+                StartCoroutine(CoIncomingBoss());
             }
+        }
+
+        private IEnumerator CoIncomingBoss()
+        {
+            yield return new WaitForSeconds(1.0f);
+            Managers.Object.DespawnAllMonsters(); // 죽이자마자 전부 DespawnAllMonster해서 IsVaild() == false에 걸렸었던것
+            Vector2 spawnPos = Utils.GenerateMonsterSpawnPosition(Managers.Object.Player.transform.position, 5f, 10f);
+            Managers.Object.Spawn<MonsterController>(spawnPos, (int)Define.MonsterData.TemplateID.Boss_01); // 3 is BOSS_ID
+            //Managers.Object.Spawn<BossController>(spawnPos, 3);
         }
 
         private int _collectedGemCount = 0;
