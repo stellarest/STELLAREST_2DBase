@@ -31,6 +31,10 @@ namespace STELLAREST_2D
         public float EnvCollectDist { get; private set; } = 1f;
         
         [SerializeField] private Transform _indicator;
+        public Transform Indicator => _indicator;
+        public Vector3 FireSocket => _fireSocket.position;
+        public Vector3 ShootDir => (_fireSocket.position - _indicator.position).normalized;
+
         [SerializeField] private Transform _fireSocket;
 
         public override bool Init()
@@ -41,8 +45,14 @@ namespace STELLAREST_2D
             Managers.Game.OnMoveDirChanged += OnMoveDirChangedHandler;
 
             GetIndicator();
-            StartProjectile();
-            StartEgoSword();
+            // StartProjectile();
+            // StartEgoSword();
+            
+            // TODO
+            // 원래는 처음에 UI에서 고르는것으로 해야되지만.. 일단 이렇게
+            FireballSkill fs = Skills.AddSkill<FireballSkill>(transform.position);
+            // 부모 자식으로 붙이던지 알아서..
+            EgoSword es = Skills.AddSkill<EgoSword>(_indicator.position);
 
             return true;
         }
@@ -111,26 +121,6 @@ namespace STELLAREST_2D
             //Debug.Log($"Find Gem : {findGems.Count} / Total Gem : {allSpawnedGems.Count}");
         }
 
-        private void CollectEnv2() // LEGACY
-        {
-            float sqrCollectDist = EnvCollectDist * EnvCollectDist;
-
-            // ToList로 사본을 먼저 만들고 순회
-            List<GemController> gems = Managers.Object.Gems.ToList();
-            foreach (GemController gem in gems)
-            {
-                Vector3 dir = gem.transform.position - transform.position;
-                if (dir.sqrMagnitude <= sqrCollectDist)
-                {
-                    Managers.Game.Gem += 1;
-                    Managers.Object.Despawn(gem);
-                }
-            }
-
-            // (선택)0.5f : 오브젝트의 크기를 더하면 된다. 구슬의 중심점만 닿으면 되면 빼도 됨.
-            var findGems = Managers.Object.GridController.GatherObjects(transform.position, EnvCollectDist + 0.5f);
-            Debug.Log($"Search Gems : {findGems.Count} / Total Gems : {gems.Count}");
-        }
 
         private void OnMoveDirChangedHandler(Vector2 moveDir)
         {
@@ -153,45 +143,66 @@ namespace STELLAREST_2D
             // cc?.OnDamaged(this, 10000);
         }
 
-        // TEMP : FireProjectile
-        private Coroutine _coFireProjectile;
-        private void StartProjectile()
-        {
-            if (_coFireProjectile != null)
-                StopCoroutine(_coFireProjectile);
+        // private void CollectEnv2() // LEGACY
+        // {
+        //     float sqrCollectDist = EnvCollectDist * EnvCollectDist;
 
-            _coFireProjectile = StartCoroutine(CoStartProjectile());
-        }
+        //     // ToList로 사본을 먼저 만들고 순회
+        //     List<GemController> gems = Managers.Object.Gems.ToList();
+        //     foreach (GemController gem in gems)
+        //     {
+        //         Vector3 dir = gem.transform.position - transform.position;
+        //         if (dir.sqrMagnitude <= sqrCollectDist)
+        //         {
+        //             Managers.Game.Gem += 1;
+        //             Managers.Object.Despawn(gem);
+        //         }
+        //     }
 
-        private IEnumerator CoStartProjectile()
-        {
-            // 몇 초 마다 한 번씩 쏜다 -> 데이터 시트에서 꺼내온다. 지금은 0.5초
-            WaitForSeconds wait = new WaitForSeconds(0.5f);
-            while (true)
-            {
-                // 나중에 총구모양 있으면 총구 모양 위치에다가
-                ProjectileController pc = Managers.Object.
-                                Spawn<ProjectileController>(_fireSocket.position, 
-                                (int)Define.PlayerData.SkillTemplateIDs.FireBall);
-                yield return new WaitUntil(() => (pc != null)); // 이 코루틴 하나로 다해결
-                pc.SetInfo(this, (_fireSocket.position - _indicator.position).normalized);
+        //     // (선택)0.5f : 오브젝트의 크기를 더하면 된다. 구슬의 중심점만 닿으면 되면 빼도 됨.
+        //     var findGems = Managers.Object.GridController.GatherObjects(transform.position, EnvCollectDist + 0.5f);
+        //     Debug.Log($"Search Gems : {findGems.Count} / Total Gems : {gems.Count}");
+        // }
+
+        // // TEMP : FireProjectile
+        // private Coroutine _coFireProjectile;
+        // private void StartProjectile()
+        // {
+        //     if (_coFireProjectile != null)
+        //         StopCoroutine(_coFireProjectile);
+
+        //     _coFireProjectile = StartCoroutine(CoStartProjectile());
+        // }
+
+        // private IEnumerator CoStartProjectile()
+        // {
+        //     // 몇 초 마다 한 번씩 쏜다 -> 데이터 시트에서 꺼내온다. 지금은 0.5초
+        //     WaitForSeconds wait = new WaitForSeconds(0.5f);
+        //     while (true)
+        //     {
+        //         // 나중에 총구모양 있으면 총구 모양 위치에다가
+        //         ProjectileController pc = Managers.Object.
+        //                         Spawn<ProjectileController>(_fireSocket.position, 
+        //                         (int)Define.PlayerData.SkillTemplateIDs.FireBall);
+        //         yield return new WaitUntil(() => (pc != null)); // 이 코루틴 하나로 다해결
+        //         pc.SetInfo(this, (_fireSocket.position - _indicator.position).normalized);
                 
-                yield return wait;
-            }
-        }
+        //         yield return wait;
+        //     }
+        // }
 
-        // TEMP : EgoSword
-        private EgoSwordController _egoSword;
-        private void StartEgoSword()
-        {
-            if (_egoSword.IsValid())
-                return;
+        // // TEMP : EgoSword
+        // private EgoSwordController _egoSword;
+        // private void StartEgoSword()
+        // {
+        //     if (_egoSword.IsValid())
+        //         return;
             
-            // Debug.Log("### Spawn Ego Sword ###");
-            _egoSword = Managers.Object.Spawn<EgoSwordController>(_indicator.position, 
-                                        (int)Define.PlayerData.SkillTemplateIDs.EgoSword);
-            _egoSword.transform.SetParent(_indicator);
-            _egoSword.ActivateSkill();
-        }
+        //     // Debug.Log("### Spawn Ego Sword ###");
+        //     _egoSword = Managers.Object.Spawn<EgoSwordController>(_indicator.position, 
+        //                                 (int)Define.PlayerData.SkillTemplateIDs.EgoSword);
+        //     _egoSword.transform.SetParent(_indicator);
+        //     _egoSword.ActivateSkill();
+        // }
     }
 }

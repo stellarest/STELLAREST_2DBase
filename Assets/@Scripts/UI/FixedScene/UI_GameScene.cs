@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using UnityEngine;
 using TMPro;
 
-namespace STELLAREST_2D
+namespace STELLAREST_2D.UI
 {
     public class UI_GameScene : UI_Base
     {

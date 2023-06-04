@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace STELLAREST_2D
 {
-    public class SkillController : BaseController
+    public class SkillBase : BaseController
     {
         /*
             "templateID" : "1",
@@ -15,6 +15,20 @@ namespace STELLAREST_2D
             "speed" : "3f"
         */
 
+        public SkillBase(Define.GameData.SkillType skillType)
+        {
+            SkillType = skillType; // 이미 받는중...
+            // 하지만 이렇게하면 SkillBase를 상속받은 모든 애들은 기본 생성자가 막히기 때문에 여기에 모두 필수적으로 전달해야함
+        }
+
+        public virtual void ActivateSkill(){ }
+        protected virtual void GenerateProjectile(int templateID, CreatureController owner, Vector3 startPos, Vector3 dir, Vector3 targetPos)
+        {
+            ProjectileController pc = Managers.Object.Spawn<ProjectileController>(startPos, templateID);
+            pc.SetInfo(owner, dir);
+        }
+
+        public CreatureController Owner { get; set; }
         private Define.GameData.SkillType _skillType = Define.GameData.SkillType.None;
         public Define.GameData.SkillType SkillType
         {
@@ -24,6 +38,9 @@ namespace STELLAREST_2D
                 _skillType = value;
             }
         }
+
+        public int SkillLevel { get; set; } = 0;
+        public bool IsLearnedSkill => SkillLevel > 0;
 
         private int _damage;
         public int Damage
@@ -54,11 +71,8 @@ namespace STELLAREST_2D
                 _skillData = value;
                 _skillType = _skillData.type;
                 _damage = _skillData.damage;
-                if (_skillType == Define.GameData.SkillType.Melee)
-                    _speed = 0f;
-                else if (_skillType == Define.GameData.SkillType.Projectile)
-                    _speed = _skillData.speed;
-            } 
+                _speed = _skillData.speed;
+            }
         }
         
         private Coroutine _coDestroy;

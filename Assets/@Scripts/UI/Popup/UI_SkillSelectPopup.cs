@@ -8,7 +8,8 @@ namespace STELLAREST_2D
     {
         [SerializeField] private Transform _grid;
 
-        // 
+        // 당장은 필요 없지만, 꼭 있어야함
+        // 뭘 눌렀는지 판단하거나, 들고있는 템 현황을 보거나, 시간 제한 아이템이거나 등등
         private List<UI_SkillCardItem> _skillCardItems = new List<UI_SkillCardItem>();
 
         private void Start()

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Newtonsoft.Json.Linq;
 
+using STELLAREST_2D.UI; // 이 스크립트에서 UI 스크립트 사용 중을 간편하게 확인할 수 있어서 .UI의 네임을 추가해주었다
+
 namespace STELLAREST_2D
 {
     public class GameScene : MonoBehaviour

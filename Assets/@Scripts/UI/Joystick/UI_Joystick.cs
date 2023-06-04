@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-namespace STELLAREST_2D
+namespace STELLAREST_2D // UI가 맞긴한데 조금 애매하니까 일단 .UI를 빼자
 {
     public class UI_Joystick : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, IPointerUpHandler, IDragHandler
     {

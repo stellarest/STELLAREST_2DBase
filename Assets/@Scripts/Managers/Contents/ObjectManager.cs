@@ -23,7 +23,6 @@ namespace STELLAREST_2D
         {
             // templateID : 단순히 데이터가 있고 없고의 체크용으로만 사용하고
             // 직접적인 데이터는 모두 Init에서 가져온다.
-
             System.Type type = typeof(T);
             if (type == typeof(PlayerController))
             {
@@ -33,7 +32,6 @@ namespace STELLAREST_2D
                     return null;
                 }
 
-                // ***** PlayerPrefab은 PlayerJsonData 파일에 없으므로 일단 Define.LOAD_PLAYER_PREFAB으로 호출
                 // 나중에 캐릭터별로 프리팹 네임 필요할수도있음
                 GameObject go = Managers.Resource.Instantiate(Define.PlayerData.Prefabs.SLIME);
                 go.name = "Player";
@@ -97,7 +95,7 @@ namespace STELLAREST_2D
                     return bc as T;
                 }
             }
-            else if (typeof(T).IsSubclassOf(typeof(SkillController)))
+            else if (type == typeof(ProjectileController))
             {
                 if (Managers.Data.SkillDict.TryGetValue(templateID, out Data.SkillData skillData) == false)
                 {
@@ -108,22 +106,25 @@ namespace STELLAREST_2D
                 GameObject go = Managers.Resource.Instantiate(skillData.prefab, pooling: true);
                 go.transform.position = position;
 
-                if (type == typeof(ProjectileController))
+                ProjectileController pc = go.GetOrAddComponent<ProjectileController>();
+                pc.SkillData = skillData;
+                Projectiles.Add(pc);
+                return pc as T;
+            }
+            else if (typeof(T).IsSubclassOf(typeof(SkillBase)))
+            {
+                if (Managers.Data.SkillDict.TryGetValue(templateID, out Data.SkillData skillData) == false)
                 {
-                    ProjectileController pc = go.GetOrAddComponent<ProjectileController>();
-                    pc.SkillData = skillData; // 데미지를 미리 여기서 설정
-                    Projectiles.Add(pc);
-                    return pc as T;
+                    Debug.LogError($"@@@@@ SkillDict load failed, templateID : {templateID} @@@@@");
+                    return null;
                 }
 
-                if (type == typeof(EgoSwordController))
-                {
-                    EgoSwordController ec = go.GetOrAddComponent<EgoSwordController>();
-                    ec.SkillData = skillData; // 데미지를 미리 여기서 설정
-                    ec.SetChildInfo(skillData);
-                    ec.Init();
-                    return ec as T;
-                }
+                GameObject go = Managers.Resource.Instantiate(skillData.prefab, pooling: true);
+                go.transform.position = position;
+                T t = go.GetOrAddComponent<T>();
+                t.Init();
+
+                return t;
             }
 
             return null;

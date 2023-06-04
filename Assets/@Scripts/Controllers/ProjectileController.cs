@@ -2,16 +2,20 @@ using UnityEngine;
 
 namespace STELLAREST_2D
 {
-    public class ProjectileController : SkillController
+    public class ProjectileController : SkillBase
     {
         private CreatureController _owner;
         private Vector3 _moveDir; // 방향 속도 등등 나중에 데이터 시트에서 불러와야함.
-        private float _lifetype = 10.0f;
+        private float _lifetime = 10.0f; // 데이터로 빼야함
+
+        public ProjectileController() : base(Define.GameData.SkillType.None)
+        {
+        }
 
         public override bool Init()
         {
             base.Init();
-            StartDestroy(_lifetype);
+            StartDestroy(_lifetime);
             return true;
         }
 

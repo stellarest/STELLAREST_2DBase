@@ -10,7 +10,17 @@ namespace STELLAREST_2D
         {
             base.Init();
 
-            CreatureState = Define.GameData.CreatureState.Moving;
+            //CreatureState = Define.GameData.CreatureState.Moving;
+
+            // 무조건 일단 Skill로 시작 가능
+            CreatureState = Define.GameData.CreatureState.Skill;
+            Skills.AddSkill<Move>(transform.position);
+            Skills.AddSkill<Dash>(transform.position);
+            // 만약에 3단 대쉬를 만든다면? 
+            // Dash 내부적으로 수정해주거나
+            Skills.AddSkill<Dash>(transform.position);
+            Skills.AddSkill<Dash>(transform.position); // 이런식으로 대쉬를 두번 더 추가해주면 됨
+            Skills.StartNextSequenceSkill();
 
             return true;
         }
@@ -34,7 +44,8 @@ namespace STELLAREST_2D
 
                 case Define.GameData.CreatureState.Skill:
                     {
-                        _animator.Play("Attack"); // 일단 Attack
+                        //_animator.Play("Attack"); // 일단 Attack
+                        // 어차피 Skill별로 애니메이션이 재생이 될것이므로 (탕탕이니까 가능)
                     }
                     break;
 
@@ -46,36 +57,37 @@ namespace STELLAREST_2D
             }
         }
 
-        // Boss Collider의 영역 + Player Collider의 영역으로 정하던지 데이터 시트로 빼서 정하던지
-        private float _range = 2f;
-        // 필요한건 재정의하고 필요없는건 걍 안만들고 냅둠. Idle은 사용 안할 예정
-        protected override void UpdateMoving()
-        {
-            // base.UpdateMoving(); 필요없
-            PlayerController pc = Managers.Object.Player;
-            if (pc.IsValid() == false)
-                return;
+        // 아래와 같이 UpdateState가 없어도 이제 항상 스킬 상태로 모든 것을 관리할 수 있게 되었다 (탕탕이니까 가능한 것)
+        // // Boss Collider의 영역 + Player Collider의 영역으로 정하던지 데이터 시트로 빼서 정하던지
+        // private float _range = 2f;
+        // // 필요한건 재정의하고 필요없는건 걍 안만들고 냅둠. Idle은 사용 안할 예정
+        // protected override void UpdateMoving()
+        // {
+        //     // base.UpdateMoving(); 필요없
+        //     PlayerController pc = Managers.Object.Player;
+        //     if (pc.IsValid() == false)
+        //         return;
 
-            Vector3 dir = pc.transform.position - transform.position;
-            if (dir.magnitude < _range)
-            {
-                // 평타 또는 돌진 스킬 등을 랜덤으로 날림
-                CreatureState = Define.GameData.CreatureState.Skill;
+        //     Vector3 dir = pc.transform.position - transform.position;
+        //     if (dir.magnitude < _range)
+        //     {
+        //         // 평타 또는 돌진 스킬 등을 랜덤으로 날림
+        //         CreatureState = Define.GameData.CreatureState.Skill;
                 
-                // _animator.runtimeAnimatorController.animationClips; // 이런식으로 얻어올 수 있다고 함
-                // 아니면 상수로 때려 박던지
-                float animLength = 0.41f;
-                Wait(animLength);
-            }
-        }
+        //         // _animator.runtimeAnimatorController.animationClips; // 이런식으로 얻어올 수 있다고 함
+        //         // 아니면 상수로 때려 박던지
+        //         float animLength = 0.41f;
+        //         Wait(animLength);
+        //     }
+        // }
 
-        // deltaTime이용해서 일정 시간 지나면 다시 Moving으로 돌아오게하던지. 코루틴 쓰던지
-        protected override void UpdateSkill()
-        {
-            GetComponent<Rigidbody2D>().velocity = Vector2.zero;
-            if (_coWait == null)
-                CreatureState = Define.GameData.CreatureState.Moving;
-        }
+        // // deltaTime이용해서 일정 시간 지나면 다시 Moving으로 돌아오게하던지. 코루틴 쓰던지
+        // protected override void UpdateSkill()
+        // {
+        //     GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+        //     if (_coWait == null)
+        //         CreatureState = Define.GameData.CreatureState.Moving;
+        // }
 
         protected override void UpdateDead()
         {

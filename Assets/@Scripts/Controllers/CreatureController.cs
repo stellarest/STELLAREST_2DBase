@@ -4,6 +4,8 @@ namespace STELLAREST_2D
 {
     public class CreatureController : BaseController
     {
+        public SkillBook Skills { get; protected set; } // 몬스터도 공용으로 써야하므로.
+
         [SerializeField] private int _hp;
         public int Hp 
         { 
@@ -42,6 +44,15 @@ namespace STELLAREST_2D
             {
                 _moveDir = value.normalized;
             }
+        }
+
+        public override bool Init()
+        {
+            base.Init();
+
+            Skills = gameObject.GetOrAddComponent<SkillBook>();
+
+            return true;
         }
 
         public virtual void OnDamaged(BaseController attacker, int damage)

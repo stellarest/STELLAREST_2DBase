@@ -7,21 +7,22 @@ namespace STELLAREST_2D
     // public const int EGO_SWORD_ID = 10;
     public static class Define
     {
+        public enum UIEvent
+        {
+            Click,
+            Pressed,
+            PointerDown,
+            PointerUp,
+            BeginDrag,
+            Drag,
+            EndDrag,
+        }
+
         #region Game Data
         public static class GameData
         {
-            public enum Scene
-            {
-                Unknown,
-                DevScene,
-                GameScene,
-            }
-
-            public enum Sound
-            {
-                BGM,
-                Effect,
-            }
+            public enum Scene { Unknown, DevScene, GameScene, }
+            public enum Sound { BGM, Effect,}
 
             public enum ObjectType
             {
@@ -34,9 +35,8 @@ namespace STELLAREST_2D
             public enum SkillType
             {
                 None,
-                Melee,
-                Projectile,
-                Etc,
+                Sequence, // 액티브 스킬
+                Repeat, // 무한정 발포
             }
 
             public enum StageType
@@ -77,8 +77,13 @@ namespace STELLAREST_2D
         }
         #endregion
 
+        #region Skill Data
+        public static class SkillData
+        {
+        }
+        #endregion
 
-        #region Player Data IDs
+        #region Player Data
         public static class PlayerData
         {
             public enum SkillTemplateIDs
@@ -105,7 +110,7 @@ namespace STELLAREST_2D
         #endregion
 
 
-        #region Monster Data IDs
+        #region Monster Data
         public static class MonsterData
         {
             public enum MinMaxTemplateIDs
@@ -144,7 +149,7 @@ namespace STELLAREST_2D
         #endregion
 
 
-        #region UI Data IDs
+        #region UI Data
         public static class UIData
         {
             public static class Prefabs
