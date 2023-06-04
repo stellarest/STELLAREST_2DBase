@@ -7,6 +7,7 @@ using STELLAREST_2D.UI;
 
 namespace STELLAREST_2D
 {
+    // 그 애니메이션 에셋 중에서 Animator Extension 했던거 기억나는데 나중에 뭐였는지 찾아볼것
     public static class Extension
     {
         public static T GetOrAddComponent<T>(this GameObject go) where T : UnityEngine.Component

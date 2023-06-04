@@ -12,7 +12,7 @@ namespace STELLAREST_2D.UI
         // UI 오브젝트에 달려있는 이름을 기억한다. 이것을 Enum으로 쭈욱 파준다.
         private enum GameObjects
         {
-            ContentObject,
+            ContentObject, // 반드시 게임 오브젝트의 이름이랑 같아야 함
             ResultRewardScrollContentObject,
             ResultGoldObject,
             ResultKillObject,
@@ -20,7 +20,7 @@ namespace STELLAREST_2D.UI
 
         private enum Texts
         {
-            GameResultPopupTitleText,
+            GameResultPopupTitleText, // 반드시 게임 오브젝트의 이름이랑 같아야 함
             ResultStageValueText,
             ResultSurvivalTimeText,
             ResultSurvivalTimeValueText,
@@ -31,7 +31,7 @@ namespace STELLAREST_2D.UI
 
         private enum Buttons
         {
-            StatisticsButton,
+            StatisticsButton, // 반드시 게임 오브젝트의 이름이랑 같아야 함
             ConfirmButton,
         }
 
@@ -52,10 +52,12 @@ namespace STELLAREST_2D.UI
             GetButton((int)Buttons.StatisticsButton).gameObject.BindEvent(() => Debug.Log("OnClickStatisticsButton")); // 일단 람다로 TEMP 처리
             GetButton((int)Buttons.ConfirmButton).gameObject.BindEvent(() => Debug.Log("OnClickConfirmButton"));
 
+            RefreshUI();
+
             return true;
         }
 
-        public void SetInfo()
+        public void SetInfo() // 나중에 이런저런 인자를 넘겨주면 리프레쉬
         {
             RefreshUI();
         }
@@ -65,6 +67,7 @@ namespace STELLAREST_2D.UI
             if (_init == false)
                 return;
 
+            // 한번에 정보 취합
             GetText((int)Texts.GameResultPopupTitleText).text = "Game Result";
             GetText((int)Texts.ResultStageValueText).text = "4 STAGE";
             GetText((int)Texts.ResultSurvivalTimeText).text = "Survival Time";
