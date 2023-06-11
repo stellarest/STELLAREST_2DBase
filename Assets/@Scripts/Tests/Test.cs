@@ -18,6 +18,14 @@ namespace STELLAREST_2D.Test
             // }));
         }
 
+        public Transform From;
+        public Transform To;
+        private void Update()
+        {
+            float angle = Vector2.SignedAngle(From.position, To.position);
+            Debug.Log(angle);
+        }
+
         // public Dictionary<string, int> tDict = new Dictionary<string, int>();
 
         // [ContextMenu("TestListAddRange")]

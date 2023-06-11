@@ -41,7 +41,7 @@ namespace STELLAREST_2D
             while (Vector3.Distance(_rigidBody.position, targetPos) > 0.2f) // Dash가 끝날때까지 체크
             {
                 Vector2 dirVec = targetPos - _rigidBody.position;
-                Vector2 nextVec = dirVec.normalized * 5f * Time.fixedDeltaTime;
+                Vector2 nextVec = dirVec.normalized * 5f * Time.fixedDeltaTime; // Speed가 제대로 설정되어있지 않아서 5f 일단 때려박음
                 _rigidBody.MovePosition(_rigidBody.position + nextVec);
 
                 yield return null;

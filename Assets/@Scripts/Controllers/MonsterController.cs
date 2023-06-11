@@ -6,9 +6,8 @@ namespace STELLAREST_2D
     public class MonsterController : CreatureController
     {
         #region State Pattern
-
-        private Define.GameData.CreatureState _creatureState = Define.GameData.CreatureState.Moving;
-        public virtual Define.GameData.CreatureState CreatureState
+        private Define.CreatureState _creatureState = Define.CreatureState.Moving;
+        public virtual Define.CreatureState CreatureState
         {
             get => _creatureState;
             set
@@ -32,25 +31,25 @@ namespace STELLAREST_2D
 
             switch (CreatureState)
             {
-                case Define.GameData.CreatureState.Idle:
+                case Define.CreatureState.Idle:
                     {
                         UpdateIdle(); // 무조건 딴건 안하고 UpdateIdle만 실행
                     }
                     break;
 
-                case Define.GameData.CreatureState.Moving:
+                case Define.CreatureState.Moving:
                     {
                         UpdateMoving();
                     }
                     break;
 
-                case Define.GameData.CreatureState.Skill:
+                case Define.CreatureState.Skill:
                     {
                         UpdateSkill();
                     }
                     break;
 
-                case Define.GameData.CreatureState.Dead:
+                case Define.CreatureState.Dead:
                     {
                         UpdateDead();
                     }
@@ -65,27 +64,13 @@ namespace STELLAREST_2D
 
         #endregion
 
-        private Data.MonsterData _monsterData;
-        public Data.MonsterData MonsterData
-        {
-            get => _monsterData;
-            set
-            {
-                _monsterData = value; // 고유의 몬스터 데이터 전부
-                // 크리처 공용 데이터
-                this.MaxHp = _monsterData.maxHp;
-                this.Hp = this.MaxHp;
-                this.MoveSpeed = _monsterData.moveSpeed;
-            }
-        }
-
         public override bool Init()
         {
             base.Init();
 
             _animator = GetComponent<Animator>();
-            ObjectType = Define.GameData.ObjectType.Monster;
-            CreatureState = Define.GameData.CreatureState.Moving;
+            ObjectType = Define.ObjectType.Monster;
+            CreatureState = Define.CreatureState.Moving;
 
             return true;
         }
@@ -94,7 +79,7 @@ namespace STELLAREST_2D
         {
             // 물리 기반(FixedUpdate) 이동이라 이 부분은 옮기기 싫다고 한다면 Moving 상태일때만 이 코드가 실행 되도록
             // 이런식으로 편하게 유동적으로 코드를 작성하면됨
-            if (CreatureState != Define.GameData.CreatureState.Moving)
+            if (CreatureState != Define.CreatureState.Moving)
                 return;
 
             PlayerController pc = Managers.Game.Player;
@@ -106,6 +91,11 @@ namespace STELLAREST_2D
             //transform.position = newPos;
             GetComponent<Rigidbody2D>().MovePosition(newPos);
             GetComponent<SpriteRenderer>().flipX = toPlayer.x > 0;
+        }
+
+        public override void SetInfo(int templateID)
+        {
+            base.SetInfo(templateID);
         }
 
         private void OnCollisionEnter2D(Collision2D other)
@@ -136,6 +126,7 @@ namespace STELLAREST_2D
         }
 
         private Coroutine _coDotDamage;
+
         public IEnumerator CoStartDotDamage(PlayerController target)
         {
             while (true)

@@ -14,12 +14,14 @@ namespace STELLAREST_2D
         {
             if (base.Init() == false)
                 return true;
-            Debug.Log("##### EGO SWORD INIT #####");
+            
+            Debug.Log("### EgoSword INIT ###");
+
             _swingParticles = new ParticleSystem[4];
             for (int i = 0; i < _swingParticles.Length; ++i)
             {
                 //string childObjectName = "EgoSword_Melee_";
-                string childObjectName = Define.PlayerData.EGO_SWORD_CHILD_BASE;
+                string childObjectName = Define.PlayerController.EGO_SWORD_CHILD;
                 childObjectName += (i + 1).ToString("D2");
                 _swingParticles[i] = Utils.FindChild(gameObject, childObjectName).GetComponent<ParticleSystem>();
             }
@@ -32,18 +34,22 @@ namespace STELLAREST_2D
             WaitForSeconds wait = new WaitForSeconds(CoolTime);
             while (true)
             {
+                Owner.PAC.MeleeSlash();
                 SetParticles(SwingType.First);
                 _swingParticles[(int)SwingType.First].gameObject.SetActive(true);
                 yield return new WaitForSeconds(_swingParticles[(int)SwingType.First].main.duration);
 
+                Owner.PAC.MeleeSlash();
                 SetParticles(SwingType.Second);
                 _swingParticles[(int)SwingType.Second].gameObject.SetActive(true);
                 yield return new WaitForSeconds(_swingParticles[(int)SwingType.Second].main.duration);
 
+                Owner.PAC.MeleeSlash();
                 SetParticles(SwingType.Third);
                 _swingParticles[(int)SwingType.Third].gameObject.SetActive(true);
                 yield return new WaitForSeconds(_swingParticles[(int)SwingType.Third].main.duration);
 
+                Owner.PAC.MeleeJab();
                 SetParticles(SwingType.Fourth);
                 _swingParticles[(int)SwingType.Fourth].gameObject.SetActive(true);
                 yield return new WaitForSeconds(_swingParticles[(int)SwingType.Fourth].main.duration);
@@ -73,6 +79,7 @@ namespace STELLAREST_2D
                 return;
             
             // TEMP
+            // ObjManager에서 skillInfo 못받아오는중
             Damage = 1000;
             mc.OnDamaged(Owner, Damage);
         }

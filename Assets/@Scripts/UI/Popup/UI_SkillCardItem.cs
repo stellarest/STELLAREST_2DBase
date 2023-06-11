@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace STELLAREST_2D
+namespace STELLAREST_2D.UI
 {
     public class UI_SkillCardItem : UI_Base
     {

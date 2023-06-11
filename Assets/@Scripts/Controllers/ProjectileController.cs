@@ -8,10 +8,6 @@ namespace STELLAREST_2D
         private Vector3 _moveDir; // 방향 속도 등등 나중에 데이터 시트에서 불러와야함.
         private float _lifetime = 10.0f; // 데이터로 빼야함
 
-        public ProjectileController() : base(Define.GameData.SkillType.None)
-        {
-        }
-
         public override bool Init()
         {
             base.Init();
@@ -28,8 +24,7 @@ namespace STELLAREST_2D
         public override void UpdateController()
         {
             base.UpdateController();
-
-            transform.position += _moveDir * Speed * Time.deltaTime;
+            transform.position += _moveDir * ProjectileSpeed * Time.deltaTime;
         }
 
         private void OnTriggerEnter2D(Collider2D other)

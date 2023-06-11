@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-using STELLAREST_2D.UI;
+using STELLAREST_2D.UI; // UI 스크립트 불러오는중
 
 namespace STELLAREST_2D
 {

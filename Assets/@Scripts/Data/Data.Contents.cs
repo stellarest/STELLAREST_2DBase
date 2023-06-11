@@ -1,73 +1,77 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using UnityEngine;
 
+// ENV
+// - EXP GEM
+// - SOUL
 namespace STELLAREST_2D.Data
 {
-    [System.Serializable]
-    public class PlayerStatData
+    [Serializable]
+    public class CreatureData
     {
-        public int level;
-        public int maxHp;
-        public int attack; // Skill의 Attack으로 뺴야할듯. 그러나 캐릭터마다 특성을 부여하려면 있어야될수도. 일단 냅두자.
-        public float moveSpeed;
-        public int totalExp;
-    }
-    
-    // *** 스킬 자체는 플레이어, 몬스터 공용인데
-    // 로드할 부분만 Define.Datas에서 따로 정리
-    [System.Serializable]
-    public class SkillData
-    {
-        public int templateID;
-        public string name;
-        //public string type;
-        //[JsonConverter(typeof(StringEnumConverter))] --> Serialize 할 때 쓰는 것임. enumType 제이슨 가독성을 위해서.
-        public Define.GameData.SkillType type = Define.GameData.SkillType.None; // enum type이 안들어와지면 string으로 임시적으로 받아와서 넣어주면 된다고함 
-        public string prefab;
-        public int damage;
-        public float speed;
+        /*
+            TemplateID
+            101000 ~ ... : Player Characters
+            201000 ~ ... : Normal Monsters
+            301000 ~ ... : Middle Boss Monsters
+            401000 ~ ... : Boss Monsters
+        */
+
+        public int TemplateID;
+        public string Name;
+        public string PrefabLabel;
+        public Define.SkillType DefaultSkillType;
+        public int MaxHp;
+        public int Strength; // 힘
+        public float MoveSpeed;
+        public float Luck;
+        public Define.WeaponType WeaponType;
+        public string IconLabel;
     }
 
-    [System.Serializable]
-    public class MonsterData
+    [Serializable]
+    public class CreatureDataLoader : ILoader<int, CreatureData>
     {
-        public int templateID;
-        public string name;
-        public Define.MonsterData.Type type = Define.MonsterData.Type.None;
-        public string prefab;
-        public int maxHp;
-        public int attack;
-        public float moveSpeed;
-        public int exp;
-    }
-
-    [System.Serializable]
-    public class PlayerDataLoader : ILoader<int, PlayerStatData>
-    {
-        public List<PlayerStatData> stats = new List<PlayerStatData>();
-
-        public Dictionary<int, PlayerStatData> MakeDict()
+        public List<CreatureData> creatures = new List<CreatureData>();
+        public Dictionary<int, CreatureData> MakeDict()
         {
-            if (stats.Count == 0)
+            if (creatures.Count == 0)
             {
-                Debug.LogError("@@@@@ Load failed PlayerStatData.json !! @@@@@");
-                return null;
+                Debug.LogAssertion("!!!!! Failed to load CreatureData.json !!!!!");
+                Debug.Break();
             }
-            else
-                Debug.Log("<color=cyan> Load success PlayerStatData.json </color>");
 
-            Dictionary<int, PlayerStatData> dict = new Dictionary<int, PlayerStatData>();
-            foreach (PlayerStatData stat in stats)
-                dict.Add(stat.level, stat);
+            Dictionary<int, CreatureData> dict = new Dictionary<int, CreatureData>();
+            foreach (var creature in creatures)
+                dict.Add(creature.TemplateID, creature);
 
+            Debug.Log("<color=cyan>##### Load success CreatureData.json</color> #####");
             return dict;
         }
     }
 
-    [System.Serializable]
+    #region TEMP SkillData
+    [Serializable]
+    public class SkillData
+    {
+        // Skill
+        // - InGame Acquired
+        // ---> Sequence
+        // ---> Repeated
+
+        public int TemplateID;
+        public string Name;
+        public string PrefabLabel;
+        public int Damage;
+        public float ProjectileSpeed; // Projectile
+        public float CoolTime;
+    }
+
+    [Serializable]
     public class SkillDataLoader : ILoader<int, SkillData>
     {
         public List<SkillData> skills = new List<SkillData>();
@@ -76,40 +80,17 @@ namespace STELLAREST_2D.Data
         {
             if (skills.Count == 0)
             {
-                Debug.LogError("@@@@@ Load failed SkillData.json !! @@@@@");
-                return null;
+                Debug.LogError("!!!!! Failed to load SkillData.json !!!!!");
+                Debug.Break();
             }
-            else
-                Debug.Log("<color=cyan> Load success SkillData.json </color>");
 
             Dictionary<int, SkillData> dict = new Dictionary<int, SkillData>();
             foreach (SkillData skill in skills)
-                dict.Add(skill.templateID, skill);
+                dict.Add(skill.TemplateID, skill);
 
+            Debug.Log("<color=cyan>##### Load success SkillData.json</color> #####");
             return dict;
         }
     }
-
-    [SerializeField]
-    public class MonsterDataLoader : ILoader<int, MonsterData>
-    {
-        public List<MonsterData> monsters = new List<MonsterData>();
-
-        public Dictionary<int, MonsterData> MakeDict()
-        {
-            if (monsters.Count == 0)
-            {
-                Debug.LogError("@@@@@ Load failed MonsterData.json !! @@@@@");
-                return null;
-            }
-            else
-                Debug.Log("<color=cyan> Load success MonsterData.json </color>");
-
-            Dictionary<int, MonsterData> dict = new Dictionary<int, MonsterData>();
-            foreach (MonsterData monster in monsters)
-                dict.Add(monster.templateID, monster);
-
-            return dict;
-        }
-    }
+    #endregion
 }

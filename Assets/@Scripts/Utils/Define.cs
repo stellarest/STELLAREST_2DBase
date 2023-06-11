@@ -5,159 +5,86 @@ namespace STELLAREST_2D
     // Sprite Renderer Order in Layer도 Define에서 해주는게 좋긴함.
     // 나중에 데이터 시트로 빼주기전까지 Define으로 하드코딩해도 됨
     // public const int EGO_SWORD_ID = 10;
+    // 필요한 Define은 여기서 찾는다
     public static class Define
     {
-        public enum UIEvent
-        {
-            Click,
-            Pressed,
-            PointerDown,
-            PointerUp,
-            BeginDrag,
-            Drag,
-            EndDrag,
+        public enum UIEvent { Click, Pressed, PointerDown, PointerUp, BeginDrag, Drag, EndDrag, }
+        public enum Scene { Unknown, DevScene, GameScene, }
+        public enum Sound { BGM, Effect, }
+        public enum ObjectType { Player, Monster, Projectile, Env, }
+        public enum SkillType 
+        { 
+            None = -1, Gary_DefaultRepeat = 10001, Temp_EgoSword = 90001, FireBall = 90002, 
         }
 
-        #region Game Data
-        public static class GameData
+        public enum StageType { Normal, MiddleBoss, Boss, }
+        public enum CreatureState { Idle, Moving, Skill, Dead, }
+        public enum WeaponType { None = 0, Melee1H = 1, Melee2H = 2, MeleePaired = 3, Bow = 4, Firearm1H = 5, Firearm2H = 6, }
+
+        public static class LoadDatas
         {
-            public enum Scene { Unknown, DevScene, GameScene, }
-            public enum Sound { BGM, Effect,}
-
-            public enum ObjectType
+            // 모두 플레이팹 데이터 테이블에서 불러와야한다
+            public const string CREATURES = "CreatureData.json";
+            public const string STAGES = "Stage.json";
+            public const string SKILLS = "SkillsData.json";
+        }
+        
+        public static class TemplateIDs
+        {
+            public enum Player
             {
-                Player,
-                Monster,
-                Projectile,
-                Env,
+                GARY = 101000,
             }
 
-            public enum SkillType
+            public enum Monster
             {
-                None,
-                Sequence, // 액티브 스킬
-                Repeat, // 무한정 발포
+                Snake = 201000,
+                Goblin = 201001,
             }
 
-            public enum StageType
+            public enum MiddleBoss
             {
-                Normal,
-                Boss,
+                EmptyInNow = -1,
             }
 
-            // 나중에 뭐 움직이면서 스킬까지 쓰고싶다면
-            // 별도의 스테이트를 하나 더 만들어서 해야한다.
-            public enum CreatureState
+            public enum Boss
             {
-                Idle,
-                Moving,
-                Skill,
-                Dead,
+                Gnoll = 401000,
             }
 
-            public static class Prefabs
+            public enum Skill
             {
-                public const string EXP_GEM = "EXPGem.prefab";
-                public const string MAP_01 = "Map_01.prefab";
-            }
-
-            public static class Sprites
-            {
-                public const string EXP_GEM_GREEN = "EXPGem_01.sprite";
-                public const string EXP_GEM_YELLOW = "EXPGem_02.sprite";
-                public const string EXP_GEM_BLUE = "EXPGem_03.sprite";
-            }
-
-            public static class Json
-            {
-                // ***** 쿨타임 데이터 시트 로드 적용해야하는데 지금 파이어볼이랑 소드 로직이 조금 달라서
-                // 일단 그대로 진행. 나중에 수업에서 스킬북 비슷한거 만들어질수도 있어서
-                public const string SKILLS_DATA = "SkillsData.json";
+                FireBall = 10001,
+                EgoSword = 10002,
             }
         }
-        #endregion
 
-        #region Skill Data
-        public static class SkillData
+        // 나중에 데이터 시트로 빼서 어드레서블에서 세팅하고 불러와서 사용해도 됨(사실 이 부분이 없어야함)
+        public static class PrefabLabels
         {
+            public const string NONE = "";
+            public const string TEST_MAP = "Map_01.prefab";
+            public const string JOYSTICK = "UI_Joystick.prefab";
+            public const string EXP_GEM = "EXPGem.prefab";
         }
-        #endregion
 
-        #region Player Data
-        public static class PlayerData
+        public static class SpriteLabels
         {
-            public enum SkillTemplateIDs
-            {
-                FireBall = 1,
-                EgoSword = 10,
-            }
+            public const string EXP_GEM_GREEN = "EXPGem_01.sprite";
+            public const string EXP_GEM_YELLOW = "EXPGem_02.sprite";
+            public const string EXP_GEM_BLUE = "EXPGem_03.sprite";
+        }
 
-            public static class Prefabs
-            {
-                public const string SLIME = "Slime_01.prefab";
-            }
-
-            public static class Json
-            {
-                public const string STATS = "PlayerStatData.json";
-            }
-
-            public const int INITIAL_SPAWN_TEMPLATE_ID = 1;
-            public const string EGO_SWORD_CHILD_BASE = "EgoSword_Melee_";
+        public static class PlayerController
+        {
+            public const string RIFLE_GRAB_POINT = "ArmR[1]";
+            public const string FIRE_TRANSFORM = "FireTransform";
+            public const string EGO_SWORD_CHILD = "EgoSword_Melee_";
             public const string INDICATOR = "Indicator";
             public const string FIRE_SOCKET = "FireSocket";
+            public const float SCALE_X = 0.8f; // Initial ScaleX : 0.8f
+            public const float SCALE_Y = 0.8f; // Initial ScaleY : 0.8f
+            public const float SCALE_Z = 1f;
         }
-        #endregion
-
-
-        #region Monster Data
-        public static class MonsterData
-        {
-            public enum MinMaxTemplateIDs
-            {
-                Min = 1,
-                Max = 3 // Exclusive
-            }
-
-            public enum TemplateID
-            {
-                Snake = 1,
-                Goblin = 2,
-                Boss_01 = 101,
-            }
-
-            public enum Type
-            {
-                None,
-                Normal,
-                Rare,
-                Boss,
-            }
-
-            public static class Prefabs
-            {
-                public const string GOBLIN = "Goblin_01.prefab";
-                public const string SNAKE = "Snake_01.prefab";
-            }
-
-            public static class Json
-            {
-                public const string MONSTERS_DATA = "MonstersData.json";
-            }
-
-        }
-        #endregion
-
-
-        #region UI Data
-        public static class UIData
-        {
-            public static class Prefabs
-            {
-                // *** UI JOYSTICK도 Sort Order 있음
-                public const string JOYSTICK = "UI_Joystick.prefab";
-            }
-        }
-        #endregion
     }
 }

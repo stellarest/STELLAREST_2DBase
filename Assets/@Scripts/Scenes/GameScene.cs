@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Newtonsoft.Json.Linq;
 
-using STELLAREST_2D.UI; // 이 스크립트에서 UI 스크립트 사용 중을 간편하게 확인할 수 있어서 .UI의 네임을 추가해주었다
+using STELLAREST_2D.UI; // 이 스크립트에서 UI 스크립트 사용중을 간편하게 확인할 수 있어서 .UI의 네임을 추가해주었다
 
 namespace STELLAREST_2D
 {
@@ -16,14 +16,19 @@ namespace STELLAREST_2D
                 // 굳이 count / totalCount를 적어놓은 이유는 처음에 로딩화면, 로딩바에서 1,2,3,4,5... 이를 이용해 퍼센테이지로 표현 가능
                 // 이런 프로세스바를 나중에 구현하기 위함
                 Debug.Log($"Key : {key}, Count : {count} / TotalCount : {totalCount}");
+                SetPrefabLabel(key);
                 if (count == totalCount)
                     StartLoaded();
             }));
         }
+        private void SetPrefabLabel(string primaryKey)
+        {
+            Debug.Log($"<color=white>Set Primary Key : {primaryKey}</color>");
+        }
 
         private SpawningPool _spawningPool;
-        private Define.GameData.StageType _stageType;
-        public Define.GameData.StageType StageType
+        private Define.StageType _stageType;
+        public Define.StageType StageType
         {
             get => _stageType;
             set
@@ -33,13 +38,13 @@ namespace STELLAREST_2D
                 {
                     switch (value)
                     {
-                        case Define.GameData.StageType.Normal:
+                        case Define.StageType.Normal:
                             {
                                 _spawningPool.Stopped = false;
                             }
                             break;
 
-                        case Define.GameData.StageType.Boss:
+                        case Define.StageType.Boss:
                             {
                                 _spawningPool.Stopped = true;
                             }
@@ -51,6 +56,8 @@ namespace STELLAREST_2D
 
         private void StartLoaded()
         {
+            Screen.sleepTimeout = SleepTimeout.NeverSleep;
+            
             Managers.Data.Init();
             Managers.UI.ShowFixedSceneUI<UI_GameScene>();
 
@@ -60,41 +67,33 @@ namespace STELLAREST_2D
             Managers.Game.OnGemCountChanged -= OnGemCountChangedHandler;
             Managers.Game.OnGemCountChanged += OnGemCountChangedHandler;
 
-            _spawningPool = gameObject.AddComponent<SpawningPool>();
-            Debug.Log("##### PC SPAWN IN GAMESCENE #####");
-            var player = Managers.Object.Spawn<PlayerController>
-                    (Vector3.zero, Define.PlayerData.INITIAL_SPAWN_TEMPLATE_ID);
+            // Spawn Test Map
+            var testMap = Managers.Resource.Instantiate(Define.PrefabLabels.TEST_MAP);
+            testMap.name = "@TestMap";
 
-            var joystick = Managers.Resource.Instantiate(Define.UIData.Prefabs.JOYSTICK);
-            joystick.name = "@UI_Joystick";
-
-            var map = Managers.Resource.Instantiate(Define.GameData.Prefabs.MAP_01);
-            map.name = "@Map";
+            // Spawn Player
+            var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.GARY);
             Camera.main.GetComponent<CameraController>().Target = player.gameObject;
-        
-            // DATA TEST
-            // TextAsset playerData = Managers.Resource.Load<TextAsset>("PlayerData.json");
-            // JObject json = JObject.Parse(playerData.text); // Parse로 해야함            
-            //Debug.Log(json.ToString());
 
-            // Debug.Log("=============================");
-            // Managers.Data.Init();
-            // foreach (var playerData in Managers.Data.PlayerDict.Values)
-            // {
-            //     Debug.Log($"Lv1 : {playerData.level}, HP : {playerData.maxHp}");
-            // }
-            // Debug.Log("=============================");
+            // Spawn Joystick
+            var joystick = Managers.Resource.Instantiate(Define.PrefabLabels.JOYSTICK);
+            joystick.name = "@Joystick"; // UI_Joystick라고 하기엔 좀 애매함
+
+            // Create Spawning Pool
+            // _spawningPool = gameObject.AddComponent<SpawningPool>();
+
+            // Camera Target
         }
 
         public void OnKillCountChangedHandler(int killCount)
         {
             Managers.UI.GetFixedSceneUI<UI_GameScene>().SetKillCount(killCount);
 
-            // 마찬가지로 나중에 데이터로 관리
+            // 마찬가지로 스테이지 데이터로 관리
             if (killCount == 5)
             {
                 // Debug.Log("BOSS MON INCOMING");
-                StageType = Define.GameData.StageType.Boss;
+                StageType = Define.StageType.Boss;
                 StartCoroutine(CoIncomingBoss());
             }
         }
@@ -104,7 +103,7 @@ namespace STELLAREST_2D
             yield return new WaitForSeconds(1.0f);
             Managers.Object.DespawnAllMonsters(); // 죽이자마자 전부 DespawnAllMonster해서 IsVaild() == false에 걸렸었던것
             Vector2 spawnPos = Utils.GenerateMonsterSpawnPosition(Managers.Object.Player.transform.position, 5f, 10f);
-            Managers.Object.Spawn<MonsterController>(spawnPos, (int)Define.MonsterData.TemplateID.Boss_01); // 3 is BOSS_ID
+            Managers.Object.Spawn<MonsterController>(spawnPos, (int)Define.TemplateIDs.Boss.Gnoll); // 3 is BOSS_ID
             //Managers.Object.Spawn<BossController>(spawnPos, 3);
         }
 
@@ -130,28 +129,28 @@ namespace STELLAREST_2D
                 Managers.Game.OnGemCountChanged -= OnGemCountChangedHandler;
         }
 
-        private void StartLoaded2() // LEGACY
-        {
-            // Managers.ResourceManager.LoadAsync<GameObjecT>("Snake_01", (go =>
-            // {
-            // }));
-            // Managers.ResourceManager.LoadAsync<GameObject>("Snake_01", (delegate(GameObject go)
-            // {
-            //     // TODO
-            // }));
-            // GameObject go = new GameObject() { name = "@Monsters" };
+        // private void StartLoaded2() // LEGACY
+        // {
+        //     // Managers.ResourceManager.LoadAsync<GameObjecT>("Snake_01", (go =>
+        //     // {
+        //     // }));
+        //     // Managers.ResourceManager.LoadAsync<GameObject>("Snake_01", (delegate(GameObject go)
+        //     // {
+        //     //     // TODO
+        //     // }));
+        //     // GameObject go = new GameObject() { name = "@Monsters" };
 
-            // var player = Managers.Resource.Instantiate("Slime_01.prefab");
-            // player.AddComponent<PlayerController>();
+        //     // var player = Managers.Resource.Instantiate("Slime_01.prefab");
+        //     // player.AddComponent<PlayerController>();
 
-            // var snake = Managers.Resource.Instantiate("Snake_01.prefab");
-            // var goblin = Managers.Resource.Instantiate("Goblin_01.prefab");
-            // var joystick = Managers.Resource.Instantiate("UI_Joystick.prefab");
-            // joystick.name = "@UI_Joystick";
+        //     // var snake = Managers.Resource.Instantiate("Snake_01.prefab");
+        //     // var goblin = Managers.Resource.Instantiate("Goblin_01.prefab");
+        //     // var joystick = Managers.Resource.Instantiate("UI_Joystick.prefab");
+        //     // joystick.name = "@UI_Joystick";
 
-            // var map = Managers.Resource.Instantiate("Map.prefab");
-            // map.name = "@Map";
-            // Camera.main.GetComponent<CameraController>().Target = player;
-        }
+        //     // var map = Managers.Resource.Instantiate("Map.prefab");
+        //     // map.name = "@Map";
+        //     // Camera.main.GetComponent<CameraController>().Target = player;
+        // }
     }
 }

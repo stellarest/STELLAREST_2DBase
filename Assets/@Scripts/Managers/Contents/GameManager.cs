@@ -21,7 +21,6 @@ namespace STELLAREST_2D
         }
 
         private Vector2 _moveDir;
-        public event Action<Vector2> OnMoveDirChanged;
         public Vector2 MoveDir
         {
             get => _moveDir;
@@ -31,6 +30,7 @@ namespace STELLAREST_2D
                 OnMoveDirChanged?.Invoke(_moveDir);
             }
         }
+        public event Action<Vector2> OnMoveDirChanged;
 
         private int _killCount;
         public event Action<int> OnKillCountChanged;

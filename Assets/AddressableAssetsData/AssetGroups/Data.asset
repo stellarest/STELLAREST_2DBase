@@ -22,13 +22,8 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - PreLoad
-  - m_GUID: d1db5bcad223e4157a57772b204bc4a7
-    m_Address: MonstersData.json
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - PreLoad
-  - m_GUID: 1eddedf4d91a54c63a8cc83a3250c4e7
-    m_Address: PlayerStatData.json
+  - m_GUID: 95df00dbd9e2a4f83bd3311a6ab80d6e
+    m_Address: CreatureData.json
     m_ReadOnly: 0
     m_SerializedLabels:
     - PreLoad

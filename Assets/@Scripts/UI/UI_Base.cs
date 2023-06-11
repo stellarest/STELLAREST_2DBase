@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace STELLAREST_2D
+namespace STELLAREST_2D.UI
 {
     public class UI_Base : MonoBehaviour
     {

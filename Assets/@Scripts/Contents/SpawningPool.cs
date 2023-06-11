@@ -38,8 +38,8 @@ namespace STELLAREST_2D
             //Vector3 randPos = new Vector2(Random.Range(-5, 5), Random.Range(-5, 5));
             Vector3 randPos = Utils.GenerateMonsterSpawnPosition(Managers.Game.Player.transform.position, 10f, 15f);
             MonsterController mc = Managers.Object.Spawn<MonsterController>(randPos, 
-                        Random.Range((int)Define.MonsterData.MinMaxTemplateIDs.Min, 
-                        (int)Define.MonsterData.MinMaxTemplateIDs.Max));
+                        Random.Range((int)Define.TemplateIDs.Monster.Snake, 
+                        (int)Define.TemplateIDs.Monster.Goblin));
         }
     }
 }

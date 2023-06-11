@@ -47,6 +47,41 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - PreLoad
+  - m_GUID: dbf0beef0e64441c0b6b53da60d1cea5
+    m_Address: P_Bow.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PreLoad
+  - m_GUID: b8ae6e8e97413402fb9bc74de2c20993
+    m_Address: P_Gun.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PreLoad
+  - m_GUID: a7faae423139a4d7ba6087e426ec75c0
+    m_Address: P_Gary_Melee1H.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PreLoad
+  - m_GUID: 845514501fe2941da99a4bbbb35b969d
+    m_Address: P_Rifle.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PreLoad
+  - m_GUID: e3c29a2d2f7c74361b9e26f807e92d2f
+    m_Address: P_TwoHandSword.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PreLoad
+  - m_GUID: f7ce819d5cfb04595a8521e4cd61a017
+    m_Address: P_TwoKnife.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PreLoad
+  - m_GUID: f20509a15c258417689ecbc5b7fd3471
+    m_Address: P_Rifle_Copy.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PreLoad
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 5fe9837c25d584a8f982c68806a1aa98, type: 2}
   m_SchemaSet:

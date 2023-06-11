@@ -13,14 +13,17 @@ namespace STELLAREST_2D
             //CreatureState = Define.GameData.CreatureState.Moving;
 
             // 무조건 일단 Skill로 시작 가능
-            CreatureState = Define.GameData.CreatureState.Skill;
-            Skills.AddSkill<Move>(transform.position);
-            Skills.AddSkill<Dash>(transform.position);
-            // 만약에 3단 대쉬를 만든다면? 
-            // Dash 내부적으로 수정해주거나
-            Skills.AddSkill<Dash>(transform.position);
-            Skills.AddSkill<Dash>(transform.position); // 이런식으로 대쉬를 두번 더 추가해주면 됨
-            Skills.StartNextSequenceSkill();
+            CreatureState = Define.CreatureState.Skill;
+            // Skills.AddSkill<Move>(transform.position);
+            // Skills.AddSkill<Dash>(transform.position);
+            // // 만약에 3단 대쉬를 만든다면? 
+            // // Dash 내부적으로 수정해주거나
+            // Skills.AddSkill<Dash>(transform.position);
+            // Skills.AddSkill<Dash>(transform.position); // 이런식으로 대쉬를 두번 더 추가해주면 됨
+            SkillBook.StartNextSequenceSkill();
+
+            // 그래서 보스는 SequenceSkill 방식으로 만들고 일반 쫄몹은 원래 썼던 State Pattern이나
+            // 그냥 플레이어만 졸졸졸 쫓아다니는 방식으로 만들어도 되고 진짜로 진짜로 마음대로 만들어주면 됨
 
             return true;
         }
@@ -30,26 +33,26 @@ namespace STELLAREST_2D
             // base.UpdateAnimation(); 필요없
             switch (CreatureState)
             {
-                case Define.GameData.CreatureState.Idle:
+                case Define.CreatureState.Idle:
                     {
                         _animator.Play("Idle");
                     }
                     break;
 
-                case Define.GameData.CreatureState.Moving:
+                case Define.CreatureState.Moving:
                     {
                         _animator.Play("Moving");
                     }
                     break;
 
-                case Define.GameData.CreatureState.Skill:
+                case Define.CreatureState.Skill:
                     {
                         //_animator.Play("Attack"); // 일단 Attack
                         // 어차피 Skill별로 애니메이션이 재생이 될것이므로 (탕탕이니까 가능)
                     }
                     break;
 
-                case Define.GameData.CreatureState.Dead:
+                case Define.CreatureState.Dead:
                     {
                         _animator.Play("Death");
                     }
@@ -125,7 +128,7 @@ namespace STELLAREST_2D
 
         protected override void OnDead()
         {
-            CreatureState = Define.GameData.CreatureState.Dead; // 애니메이션부터 틀어주고
+            CreatureState = Define.CreatureState.Dead; // 애니메이션부터 틀어주고
             GetComponent<Rigidbody2D>().velocity = Vector2.zero;
             Debug.Log("### PLAY BOSS DEATH ANIM ###");
             Wait(2.0f);

@@ -19,129 +19,86 @@ namespace STELLAREST_2D
             GridController = UnityEngine.GameObject.Find("@Grid").GetComponent<GridController>();
         }
 
-        public T Spawn<T>(Vector3 position, int templateID = 0) where T : BaseController
+        public T Spawn<T>(Vector3 position, int templateID = -1) where T : BaseController
         {
-            // templateID : 단순히 데이터가 있고 없고의 체크용으로만 사용하고
-            // 직접적인 데이터는 모두 Init에서 가져온다.
             System.Type type = typeof(T);
-            if (type == typeof(PlayerController))
+            if (typeof(T).IsSubclassOf(typeof(CreatureController)))
             {
-                if (Managers.Data.PlayerStatDict.TryGetValue(templateID, out Data.PlayerStatData playerData) == false)
+                if (type == typeof(PlayerController))
                 {
-                    Debug.LogError($"@@@@@ PlayerDict load failed, templateID : {templateID} @@@@@");
-                    return null;
+                    GameObject go = Managers.Resource.Instantiate(Managers.Data.CreatureDict[templateID].PrefabLabel, pooling: false);
+                    go.transform.position = position;
+                    PlayerController pc = go.GetOrAddComponent<PlayerController>();
+                    pc.SetInfo(templateID);
+                    Player = pc;
+
+                    return pc as T;
                 }
 
-                // 나중에 캐릭터별로 프리팹 네임 필요할수도있음
-                GameObject go = Managers.Resource.Instantiate(Define.PlayerData.Prefabs.SLIME);
-                go.name = "Player";
-                go.transform.position = position;
+                if (type == typeof(MonsterController))
+                {
+                    GameObject go = Managers.Resource.Instantiate(Managers.Data.CreatureDict[templateID].PrefabLabel, pooling: true);
+                    go.transform.position = position;
+                    MonsterController mc = go.GetOrAddComponent<MonsterController>();
+                    mc.SetInfo(templateID);
+                    Monsters.Add(mc);
 
-                PlayerController pc = go.GetOrAddComponent<PlayerController>();
-                pc.PlayerData = playerData;
-                Player = pc;
-                // pc.Init();
-
-                return pc as T;
+                    return mc as T;
+                }
             }
-            else if (type == typeof(GemController)) // 현재 Gem과 관련된 아이템 데이터 시트가 없으므로 임시 코드
+            else if (type == typeof(GemController))
             {
-                GameObject go = Managers.Resource.Instantiate(Define.GameData.Prefabs.EXP_GEM, pooling: true);
+                GameObject go = Managers.Resource.Instantiate(Define.PrefabLabels.EXP_GEM, pooling: true);
                 go.transform.position = position;
 
                 GemController gc = go.GetOrAddComponent<GemController>();
-
                 bool changeSprite = Random.Range(0, 2) == 0 ? true : false;
                 string spriteKey = "";
                 if (changeSprite)
                 {
                     spriteKey = Random.Range(0, 2) == 0 ?
-                                Define.GameData.Sprites.EXP_GEM_BLUE : Define.GameData.Sprites.EXP_GEM_BLUE;
+                                Define.SpriteLabels.EXP_GEM_BLUE : Define.SpriteLabels.EXP_GEM_YELLOW;
 
                     Sprite yellowOrBlue = Managers.Resource.Load<Sprite>(spriteKey);
                     if (yellowOrBlue != null)
                         gc.GetComponent<SpriteRenderer>().sprite = yellowOrBlue;
 
                 }
-                //gc.Init();
                 GridController.Add(go);
                 Gems.Add(gc);
 
                 return gc as T;
             }
-            else if (typeof(T).IsSubclassOf(typeof(CreatureController))) // 일단 모든 몬스터로 퉁침
+            else if (typeof(T).IsSubclassOf(typeof(SkillBase)))
             {
-                if (Managers.Data.MonsterDict.TryGetValue(templateID, out Data.MonsterData monsterData) == false)
-                {
-                    Debug.LogError($"@@@@@ MonsterDict load failed, templateID : {templateID} @@@@@");
-                    return null;
-                }
-
-                GameObject go = Managers.Resource.Instantiate(monsterData.prefab, pooling: true);
-                go.transform.position = position;
-
-                if (monsterData.type == Define.MonsterData.Type.Normal)
-                {
-                    MonsterController mc = go.GetOrAddComponent<MonsterController>();
-                    mc.MonsterData = monsterData; // 여기서 다시 에너지가 채워지네 ;; 풀에서 꺼내면서 // //mc.Init();
-                    Monsters.Add(mc);
-                    return mc as T;
-                }
-                else if (monsterData.type == Define.MonsterData.Type.Boss)
-                {
-                    BossController bc = go.GetOrAddComponent<BossController>();
-                    bc.MonsterData = monsterData;
-                    Monsters.Add(bc);
-                    return bc as T;
-                }
+                
             }
             else if (type == typeof(ProjectileController))
             {
-                if (Managers.Data.SkillDict.TryGetValue(templateID, out Data.SkillData skillData) == false)
-                {
-                    Debug.LogError($"@@@@@ SkillDict load failed, templateID : {templateID} @@@@@");
-                    return null;
-                }
+                // GameObject go = Managers.Resource.Instantiate(skillData.prefab, pooling: true);
+                // go.transform.position = position;
 
-                GameObject go = Managers.Resource.Instantiate(skillData.prefab, pooling: true);
-                go.transform.position = position;
-
-                ProjectileController pc = go.GetOrAddComponent<ProjectileController>();
-                pc.SkillData = skillData;
-                Projectiles.Add(pc);
-                return pc as T;
-            }
-            else if (typeof(T).IsSubclassOf(typeof(SkillBase)))
-            {
-                if (Managers.Data.SkillDict.TryGetValue(templateID, out Data.SkillData skillData) == false)
-                {
-                    Debug.LogError($"@@@@@ SkillDict load failed, templateID : {templateID} @@@@@");
-                    return null;
-                }
-
-                GameObject go = Managers.Resource.Instantiate(skillData.prefab, pooling: true);
-                go.transform.position = position;
-                T t = go.GetOrAddComponent<T>();
-                t.Init();
-
-                return t;
+                // ProjectileController pc = go.GetOrAddComponent<ProjectileController>();
+                // Projectiles.Add(pc);
+                // return pc as T;
             }
 
             return null;
         }
 
+
         public void Despawn<T>(T obj) where T : BaseController
         {
             if (obj.IsValid() == false)
             {
-                // 혹시라도 디스폰을 한번 더 한다면 체크
-                Debug.Log("<color=magenta>##### Already despawned #####</color>");
+                Debug.Log("<color=magenta>##### Already despawned #####</color>"); // 단순 체크용
                 return;
             }
 
             System.Type type = typeof(T);
             if (type == typeof(PlayerController))
             {
+                // TODO
             }
             else if (typeof(T).IsSubclassOf(typeof(CreatureController)))
             {
@@ -154,7 +111,7 @@ namespace STELLAREST_2D
                 Managers.Resource.Destroy(obj.gameObject);
                 GridController.Remove(obj.gameObject);
             }
-            else if (type == typeof(ProjectileController) || typeof(T).IsSubclassOf(typeof(ProjectileController)))
+            else if (type == typeof(ProjectileController))
             {
                 Projectiles.Remove(obj as ProjectileController);
                 Managers.Resource.Destroy(obj.gameObject);
@@ -163,8 +120,6 @@ namespace STELLAREST_2D
 
         public void DespawnAllMonsters()
         {
-            // foreach(var mon in Monsters)
-            //     Managers.Object.Despawn(mon);
             var monsters = Monsters.ToList();
             foreach (var monster in monsters)
             {
@@ -174,5 +129,119 @@ namespace STELLAREST_2D
                 Despawn<MonsterController>(monster);
             }
         }
+
+
+        ///// LEGACY
+        // public T Spawn3<T>(Vector3 position, int templateID = 0) where T : BaseController
+        // {
+        //     // templateID : 단순히 데이터가 있고 없고의 체크용으로만 사용하고
+        //     // 직접적인 데이터는 모두 Init에서 가져온다.
+        //     System.Type type = typeof(T);
+        //     if (type == typeof(PlayerController))
+        //     {
+        //         if (Managers.Data.PlayerStatDict.TryGetValue(templateID, out Data.PlayerStatData playerData) == false)
+        //         {
+        //             Debug.LogError($"@@@@@ PlayerDict load failed, templateID : {templateID} @@@@@");
+        //             return null;
+        //         }
+
+        //         // 나중에 캐릭터별로 프리팹 네임 필요할수도있음
+        //         GameObject go = Managers.Resource.Instantiate(Define.PrefabLabels.NONE);
+        //         go.name = "Player";
+        //         go.transform.position = position;
+
+        //         PlayerController pc = go.GetOrAddComponent<PlayerController>();
+        //         //pc.PlayerData = playerData;
+        //         Player = pc;
+        //         // pc.Init();
+
+        //         return pc as T;
+        //     }
+        //     else if (type == typeof(GemController)) // 현재 Gem과 관련된 아이템 데이터 시트가 없으므로 임시 코드
+        //     {
+        //         GameObject go = Managers.Resource.Instantiate(Define.PrefabLabels.EXP_GEM, pooling: true);
+        //         go.transform.position = position;
+
+        //         GemController gc = go.GetOrAddComponent<GemController>();
+
+        //         bool changeSprite = Random.Range(0, 2) == 0 ? true : false;
+        //         string spriteKey = "";
+        //         if (changeSprite)
+        //         {
+        //             spriteKey = Random.Range(0, 2) == 0 ?
+        //                         Define.SpriteLabels.EXP_GEM_BLUE : Define.SpriteLabels.EXP_GEM_BLUE;
+
+        //             Sprite yellowOrBlue = Managers.Resource.Load<Sprite>(spriteKey);
+        //             if (yellowOrBlue != null)
+        //                 gc.GetComponent<SpriteRenderer>().sprite = yellowOrBlue;
+
+        //         }
+        //         //gc.Init();
+        //         GridController.Add(go);
+        //         Gems.Add(gc);
+
+        //         return gc as T;
+        //     }
+        //     else if (typeof(T).IsSubclassOf(typeof(CreatureController))) // 일단 모든 몬스터로 퉁침
+        //     {
+        //         if (Managers.Data.MonsterDict.TryGetValue(templateID, out Data.MonsterData monsterData) == false)
+        //         {
+        //             Debug.LogError($"@@@@@ MonsterDict load failed, templateID : {templateID} @@@@@");
+        //             return null;
+        //         }
+
+        //         GameObject go = Managers.Resource.Instantiate(monsterData.prefab, pooling: true);
+        //         go.transform.position = position;
+
+        //         if (monsterData.type == Define.MonsterData.Type.Normal)
+        //         {
+        //             MonsterController mc = go.GetOrAddComponent<MonsterController>();
+        //             mc.MonsterData = monsterData; // 여기서 다시 에너지가 채워지네 ;; 풀에서 꺼내면서 // //mc.Init();
+        //             Monsters.Add(mc);
+        //             return mc as T;
+        //         }
+        //         else if (monsterData.type == Define.MonsterData.Type.Boss)
+        //         {
+        //             BossController bc = go.GetOrAddComponent<BossController>();
+        //             bc.MonsterData = monsterData;
+        //             Monsters.Add(bc);
+        //             return bc as T;
+        //         }
+        //     }
+        //     else if (type == typeof(ProjectileController))
+        //     {
+        //         if (Managers.Data.SkillDict.TryGetValue(templateID, out Data.SkillData skillData) == false)
+        //         {
+        //             Debug.LogError($"@@@@@ SkillDict load failed, templateID : {templateID} @@@@@");
+        //             return null;
+        //         }
+
+        //         GameObject go = Managers.Resource.Instantiate(skillData.prefab, pooling: true);
+        //         go.transform.position = position;
+
+        //         ProjectileController pc = go.GetOrAddComponent<ProjectileController>();
+        //         pc.SkillData = skillData;
+        //         Projectiles.Add(pc);
+        //         return pc as T;
+        //     }
+        //     else if (typeof(T).IsSubclassOf(typeof(SkillBase)))
+        //     {
+        //         if (Managers.Data.SkillDict.TryGetValue(templateID, out Data.SkillData skillData) == false)
+        //         {
+        //             Debug.LogError($"@@@@@ SkillDict load failed, templateID : {templateID} @@@@@");
+        //             return null;
+        //         }
+
+        //         GameObject go = Managers.Resource.Instantiate(skillData.prefab, pooling: true);
+        //         go.transform.position = position;
+
+        //         T t = go.GetOrAddComponent<T>();
+        //         t.Init();
+
+        //         return t;
+        //     }
+
+        //     return null;
+        // }
     }
 }
