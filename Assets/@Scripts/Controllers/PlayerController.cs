@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Assets.HeroEditor.Common.Scripts.CharacterScripts;
 
 namespace STELLAREST_2D
 {
@@ -17,14 +18,27 @@ namespace STELLAREST_2D
 
         public Vector3 ShootDir => (_fireSocket.position - _indicator.position).normalized;
         //public PlayerAnimationController PAC { get; protected set; }
+        public float TurningAngle { get; private set; }
+
+        private GameObject _animChildObject;
+        public Vector3 AnimationLocalScale => _animChildObject.transform.localScale;
+        
+        private AnimationEvents _animEvents;
+        public AnimationEvents AnimEvents => _animEvents;
+
+        private bool _getReady = false;
 
         public override bool Init()
         {
             base.Init();
-            
-            Debug.Log("### PC INIT ###");
+            Debug.Log("### PC::INIT ###");
             Managers.Game.OnMoveDirChanged += OnMoveDirChangedHandler;
 
+            _animChildObject = Utils.FindChild(gameObject, "Animation");
+            _animEvents = _animChildObject.GetComponent<AnimationEvents>();
+            PAC = gameObject.GetOrAddComponent<PlayerAnimationController>();
+
+            //Debug.Log(_animationObject.name);
             // StartProjectile();
             // StartEgoSword();
 
@@ -33,7 +47,6 @@ namespace STELLAREST_2D
             // FireballSkill fs = Skills.AddSkill<FireballSkill>(transform.position);
             // // 부모 자식으로 붙이던지 알아서..
             // EgoSword es = Skills.AddSkill<EgoSword>(_indicator.position);
-
             return true;
         }
 
@@ -57,7 +70,8 @@ namespace STELLAREST_2D
 
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                SkillBook.ActivateSkillManually<EgoSword>((int)Define.SkillType.Gary_DefaultRepeat);
+                // SkillBook.ActivateSkill<Melee1HSwing>((int)Define.SkillType.Melee1HSwing);
+                SkillBook.ActivateRepeatSkill((int)Define.TemplateIDs.SkillType.Lionel_Ultimate_Swing);
             }
 
             // if (Input.GetKeyDown(KeyCode.T))
@@ -68,19 +82,31 @@ namespace STELLAREST_2D
 
         public override void SetInfo(int templateID)
         {
-            Debug.Log("### PC SET INFO ###");
+            Debug.Log("### PC::SET INFO ###");
             base.SetInfo(templateID);
-            PAC = gameObject.GetOrAddComponent<PlayerAnimationController>();
+            // PAC = gameObject.GetOrAddComponent<PlayerAnimationController>();
+            // _animEvents = _animChildObject.GetComponent<AnimationEvents>();
 
             GetIndicator();
-            SetInitialSkill(CreatureName);
+            SetInitialSkill();
         }
 
-        private void SetInitialSkill(string creatureName)
+        public void Attack(float attackSpeed = 1f)
         {
-            if (creatureName.Contains("Gary"))
+            switch (TemplateID)
             {
-                if (Managers.Data.SkillDict.TryGetValue((int)Define.SkillType.Gary_DefaultRepeat, 
+                case (int)Define.TemplateIDs.Player.Lionel_Ultimate:
+                    PAC.MeleeSlash(attackSpeed);
+                    break;
+            }
+        }
+
+        private void SetInitialSkill()
+        {
+            // 개선해야함
+            if (CreatureName.Contains(Define.PlayerController.LIONEL_ULTIMATE))
+            {
+                if (Managers.Data.SkillDict.TryGetValue((int)Define.TemplateIDs.SkillType.Lionel_Ultimate_Swing,
                                                         out Data.SkillData skillData) == false)
                 {
                     Debug.LogAssertion("@@@ Failed to load Skill Data @@@");
@@ -88,8 +114,8 @@ namespace STELLAREST_2D
                 }
 
                 this.SkillData = skillData;
-                EgoSword egoSword = SkillBook.AddSkill<EgoSword>(SkillData, _indicator.position, this, transform);
-                //egoSword.ActivateSkill();
+                MeleeSwing meleeSwing = SkillBook.AddSkill<MeleeSwing>(skillData, _indicator.position, this, transform);
+                //meleeSwing.ActivateSkill();
             }
         }
 
@@ -104,14 +130,20 @@ namespace STELLAREST_2D
             Vector3 dir = MoveDir.normalized * MoveSpeed * Time.deltaTime;
             transform.position += dir;
 
-            // Get Degrees = 180f * PI = Rad2Deg
+            // Get Degrees = 180f / PI = Rad2Deg
             // if (_moveDir != Vector2.zero)
             //     _indicator.eulerAngles = new Vector3(0, 0, Mathf.Atan2(-dir.x, dir.y) * 180f / Mathf.PI);
             if (MoveDir != Vector2.zero)
             {
+                if (_getReady == false)
+                {
+                    PAC.Ready();
+                    _getReady = true;
+                }
+
                 float degree = Mathf.Atan2(-dir.x, dir.y) * Mathf.Rad2Deg;
                 _indicator.eulerAngles = new Vector3(0, 0, degree);
-                Turn(degree);
+                Turn(degree); // 존나 상관있네
             }
 
             RigidBody.velocity = Vector3.zero;
@@ -119,9 +151,12 @@ namespace STELLAREST_2D
 
         private void Turn(float angle)
         {
-            Vector3 turnChara = new Vector3(Mathf.Sign(angle) * Define.PlayerController.SCALE_X * -1f,
+            TurningAngle = Mathf.Sign(angle); // 각도 양수1, 음수-1
+            Vector3 turnChara = new Vector3(TurningAngle * Define.PlayerController.SCALE_X * -1f,
                                         Define.PlayerController.SCALE_Y, Define.PlayerController.SCALE_Z);
-            transform.localScale = turnChara;
+            //transform.localScale = turnChara;
+            _animChildObject.transform.localScale = turnChara;
+
             //WeaponController.UpdateWeapon(WeaponType, angle);
         }
 
@@ -159,7 +194,8 @@ namespace STELLAREST_2D
             if (moveDir == Vector2.zero)
             {
                 PAC.Idle();
-                _indicator.gameObject.SetActive(false);
+                //_indicator.gameObject.SetActive(false);
+                _indicator.gameObject.SetActive(true); // 각도 확인용
             }
             else
             {

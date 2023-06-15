@@ -39,8 +39,6 @@ namespace STELLAREST_2D
         }
 
         public CreatureController Owner { get; set; }
-        private Define.SkillType _skillType = Define.SkillType.None;
-        public Define.SkillType SkillType { get => _skillType; protected set { _skillType = value; } }
 
         public int SkillLevel { get; set; } = 0;
         public bool IsLearnedSkill => SkillLevel > 0;
@@ -55,6 +53,14 @@ namespace STELLAREST_2D
 
         private float _coolTime;
         public float CoolTime { get => _coolTime; protected set { _coolTime = value; } }
+
+        public override bool Init()
+        {
+            if (SkillData == null)
+                return false;
+
+            return true;
+        }
 
         private Coroutine _coDestroy;
         public void StartDestroy(float delaySeconds)

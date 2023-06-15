@@ -17,6 +17,16 @@ namespace STELLAREST_2D
             }
         }
 
+        private Define.MonsterState _monsterState = Define.MonsterState.Walk;
+        public Define.MonsterState MonsterState
+        {
+            get => _monsterState;
+            set
+            {
+                _monsterState = value;
+            }
+        }
+
         // 몬스터마다 재정의 가능
         protected Animator _animator;
         public virtual void UpdateAnimation()
@@ -68,89 +78,90 @@ namespace STELLAREST_2D
         {
             base.Init();
 
-            _animator = GetComponent<Animator>();
-            ObjectType = Define.ObjectType.Monster;
-            CreatureState = Define.CreatureState.Moving;
+            // _animator = GetComponent<Animator>();
+            // ObjectType = Define.ObjectType.Monster;
+            // CreatureState = Define.CreatureState.Moving;
+            MAC = gameObject.GetOrAddComponent<MonsterAnimationController>();
 
             return true;
         }
 
-        private void FixedUpdate()
-        {
-            // 물리 기반(FixedUpdate) 이동이라 이 부분은 옮기기 싫다고 한다면 Moving 상태일때만 이 코드가 실행 되도록
-            // 이런식으로 편하게 유동적으로 코드를 작성하면됨
-            if (CreatureState != Define.CreatureState.Moving)
-                return;
+        // private void FixedUpdate()
+        // {
+        //     // 물리 기반(FixedUpdate) 이동이라 이 부분은 옮기기 싫다고 한다면 Moving 상태일때만 이 코드가 실행 되도록
+        //     // 이런식으로 편하게 유동적으로 코드를 작성하면됨
+        //     if (CreatureState != Define.CreatureState.Moving)
+        //         return;
 
-            PlayerController pc = Managers.Game.Player;
-            if (pc == null)
-                return;
+        //     PlayerController pc = Managers.Game.Player;
+        //     if (pc == null)
+        //         return;
 
-            Vector3 toPlayer = pc.transform.position - transform.position;
-            Vector3 newPos = transform.position + (toPlayer.normalized * Time.deltaTime * MoveSpeed);
-            //transform.position = newPos;
-            GetComponent<Rigidbody2D>().MovePosition(newPos);
-            GetComponent<SpriteRenderer>().flipX = toPlayer.x > 0;
-        }
+        //     Vector3 toPlayer = pc.transform.position - transform.position;
+        //     Vector3 newPos = transform.position + (toPlayer.normalized * Time.deltaTime * MoveSpeed);
+        //     //transform.position = newPos;
+        //     GetComponent<Rigidbody2D>().MovePosition(newPos);
+        //     GetComponent<SpriteRenderer>().flipX = toPlayer.x > 0;
+        // }
 
         public override void SetInfo(int templateID)
         {
             base.SetInfo(templateID);
         }
 
-        private void OnCollisionEnter2D(Collision2D other)
-        {
-            PlayerController target = other.gameObject.GetComponent<PlayerController>();
-            if (target.IsValid() == false)
-                return;
-            if (this.IsValid() == false) // 풀링은 되어 있지만 이미 꺼져있을 경우
-                return;
+        // private void OnCollisionEnter2D(Collision2D other)
+        // {
+        //     PlayerController target = other.gameObject.GetComponent<PlayerController>();
+        //     if (target.IsValid() == false)
+        //         return;
+        //     if (this.IsValid() == false) // 풀링은 되어 있지만 이미 꺼져있을 경우
+        //         return;
 
-            if (_coDotDamage != null)
-                StopCoroutine(_coDotDamage);
+        //     if (_coDotDamage != null)
+        //         StopCoroutine(_coDotDamage);
 
-            _coDotDamage = StartCoroutine(CoStartDotDamage(target));
-        }
+        //     _coDotDamage = StartCoroutine(CoStartDotDamage(target));
+        // }
 
-        private void OnCollisionExit2D(Collision2D other)
-        {
-            PlayerController target = other.gameObject.GetComponent<PlayerController>();
-            if (target.IsValid() == false)
-                return;
-            if (this.IsValid() == false) // 풀링된(InActive) 상태에서 StartCoroutine 호출하면 안됨
-                return;
+        // private void OnCollisionExit2D(Collision2D other)
+        // {
+        //     PlayerController target = other.gameObject.GetComponent<PlayerController>();
+        //     if (target.IsValid() == false)
+        //         return;
+        //     if (this.IsValid() == false) // 풀링된(InActive) 상태에서 StartCoroutine 호출하면 안됨
+        //         return;
 
-            if (_coDotDamage != null)
-                StopCoroutine(_coDotDamage);
-            _coDotDamage = null;
-        }
+        //     if (_coDotDamage != null)
+        //         StopCoroutine(_coDotDamage);
+        //     _coDotDamage = null;
+        // }
 
-        private Coroutine _coDotDamage;
+        // private Coroutine _coDotDamage;
 
-        public IEnumerator CoStartDotDamage(PlayerController target)
-        {
-            while (true)
-            {
-                // *** 데미지는 무조건 피해자쪽에서 처리하는것이 좋다 ***
-                target.OnDamaged(this, 2); // 도트 데미지 예시..
-                yield return new WaitForSeconds(0.1f);
-            }
-        }
+        // public IEnumerator CoStartDotDamage(PlayerController target)
+        // {
+        //     while (true)
+        //     {
+        //         // *** 데미지는 무조건 피해자쪽에서 처리하는것이 좋다 ***
+        //         target.OnDamaged(this, 2); // 도트 데미지 예시..
+        //         yield return new WaitForSeconds(0.1f);
+        //     }
+        // }
 
-        protected override void OnDead()
-        {
-            // 보스는 여기 안탐
-            base.OnDead();
-            Managers.Game.KillCount++;
+        // protected override void OnDead()
+        // {
+        //     // 보스는 여기 안탐
+        //     base.OnDead();
+        //     Managers.Game.KillCount++;
 
-            if (_coDotDamage != null)
-                StopCoroutine(_coDotDamage);
-            _coDotDamage = null;
+        //     if (_coDotDamage != null)
+        //         StopCoroutine(_coDotDamage);
+        //     _coDotDamage = null;
 
-            GemController gc = Managers.Object.Spawn<GemController>(transform.position);
+        //     GemController gc = Managers.Object.Spawn<GemController>(transform.position);
 
-            //Managers.Object.Despawn<MonsterController>(this);
-            Managers.Object.Despawn(this);
-        }
+        //     //Managers.Object.Despawn<MonsterController>(this);
+        //     Managers.Object.Despawn(this);
+        // }
     }
 }

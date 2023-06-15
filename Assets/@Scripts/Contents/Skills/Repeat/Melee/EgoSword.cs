@@ -8,8 +8,6 @@ namespace STELLAREST_2D
     {
         private ParticleSystem[] _swingParticles;
 
-        protected enum SwingType { First, Second, Third, Fourth }
-
         public override bool Init()
         {
             if (base.Init() == false)
@@ -18,13 +16,13 @@ namespace STELLAREST_2D
             Debug.Log("### EgoSword INIT ###");
 
             _swingParticles = new ParticleSystem[4];
-            for (int i = 0; i < _swingParticles.Length; ++i)
-            {
-                //string childObjectName = "EgoSword_Melee_";
-                string childObjectName = Define.PlayerController.EGO_SWORD_CHILD;
-                childObjectName += (i + 1).ToString("D2");
-                _swingParticles[i] = Utils.FindChild(gameObject, childObjectName).GetComponent<ParticleSystem>();
-            }
+            // for (int i = 0; i < _swingParticles.Length; ++i)
+            // {
+            //     //string childObjectName = "EgoSword_Melee_";
+            //     string childObjectName = Define.PlayerController.EGO_SWORD_CHILD;
+            //     childObjectName += (i + 1).ToString("D2");
+            //     _swingParticles[i] = Utils.FindChild(gameObject, childObjectName).GetComponent<ParticleSystem>();
+            // }
 
             return true;
         }

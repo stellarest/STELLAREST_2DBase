@@ -24,7 +24,7 @@ namespace STELLAREST_2D.Data
         public int TemplateID;
         public string Name;
         public string PrefabLabel;
-        public Define.SkillType DefaultSkillType;
+        public Define.TemplateIDs.SkillType DefaultSkillType;
         public int MaxHp;
         public int Strength; // 힘
         public float MoveSpeed;
@@ -41,7 +41,7 @@ namespace STELLAREST_2D.Data
         {
             if (creatures.Count == 0)
             {
-                Debug.LogAssertion("!!!!! Failed to load CreatureData.json !!!!!");
+                Debug.LogAssertion("!!! Failed to load CreatureData.json !!!");
                 Debug.Break();
             }
 
@@ -49,7 +49,7 @@ namespace STELLAREST_2D.Data
             foreach (var creature in creatures)
                 dict.Add(creature.TemplateID, creature);
 
-            Debug.Log("<color=cyan>##### Load success CreatureData.json</color> #####");
+            Debug.Log("<color=cyan>### Success to load CreatureData.json</color> ###");
             return dict;
         }
     }
@@ -80,7 +80,7 @@ namespace STELLAREST_2D.Data
         {
             if (skills.Count == 0)
             {
-                Debug.LogError("!!!!! Failed to load SkillData.json !!!!!");
+                Debug.LogError("!!! Failed to load SkillData.json !!!");
                 Debug.Break();
             }
 
@@ -88,7 +88,7 @@ namespace STELLAREST_2D.Data
             foreach (SkillData skill in skills)
                 dict.Add(skill.TemplateID, skill);
 
-            Debug.Log("<color=cyan>##### Load success SkillData.json</color> #####");
+            Debug.Log("<color=cyan>### Success to load SkillData.json</color> ###");
             return dict;
         }
     }

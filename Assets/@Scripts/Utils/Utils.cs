@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace STELLAREST_2D
@@ -63,6 +64,26 @@ namespace STELLAREST_2D
             Vector2 spawnPosition = characterPosition + new Vector2(xDist, yDist);
             
             return spawnPosition;
+        }
+    }
+
+    public static class TempPrefabKeyLoader
+    {
+        public static readonly string SLIME;
+        public static readonly string SNAKE;
+        public static readonly string GOBLIN;
+        public static readonly string TEST_MAP;
+        public static readonly string EXP_GEM;
+        public static readonly string BOSS;
+
+        static TempPrefabKeyLoader()
+        {
+            SLIME = Managers.Data.GetPrefabKey("Slime");
+            SNAKE = Managers.Data.GetPrefabKey("Snake");
+            GOBLIN = Managers.Data.GetPrefabKey("Goblin");
+            TEST_MAP = Managers.Data.GetPrefabKey("TestMap");
+            EXP_GEM = Managers.Data.GetPrefabKey("EXPGem");
+            BOSS = Managers.Data.GetPrefabKey("Boss");
         }
     }
 }

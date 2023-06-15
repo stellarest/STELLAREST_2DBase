@@ -12,13 +12,11 @@ namespace STELLAREST_2D
         public enum Scene { Unknown, DevScene, GameScene, }
         public enum Sound { BGM, Effect, }
         public enum ObjectType { Player, Monster, Projectile, Env, }
-        public enum SkillType 
-        { 
-            None = -1, Gary_DefaultRepeat = 10001, Temp_EgoSword = 90001, FireBall = 90002, 
-        }
 
         public enum StageType { Normal, MiddleBoss, Boss, }
         public enum CreatureState { Idle, Moving, Skill, Dead, }
+
+        public enum MonsterState { Idle = 0, Ready = 1, Walk = 2, Run = 3, Attack = 4, Death = 5 }
         public enum WeaponType { None = 0, Melee1H = 1, Melee2H = 2, MeleePaired = 3, Bow = 4, Firearm1H = 5, Firearm2H = 6, }
 
         public static class LoadDatas
@@ -28,34 +26,39 @@ namespace STELLAREST_2D
             public const string STAGES = "Stage.json";
             public const string SKILLS = "SkillsData.json";
         }
-        
+
         public static class TemplateIDs
         {
             public enum Player
             {
-                GARY = 101000,
+                Gary_Default = 101001,
+                Gary_Ultimate = 101002,
+
+                Reina_Default = 201001,
+                Reina_Ultimate = 201002,
+
+                Kenneth_Default = 301001,
+                Kenneth_Ultimate = 301002,
+
+                Lionel_Ultimate = 104002,
+                Dwight_Ultimate = 501002,
+                Chloe_Ultimate = 601002,
+            }
+
+            public enum SkillType
+            {
+                None = -1,
+                Gary_Default_Swing = 10001,
+                Gary_Ultimate_Swing = 10002,
+                Kenneth_Default_Swing = 300001,
+                Kenneth_Ultimate_Swing = 300002,
+                Lionel_Ultimate_Swing = 400002,
             }
 
             public enum Monster
             {
-                Snake = 201000,
-                Goblin = 201001,
-            }
-
-            public enum MiddleBoss
-            {
-                EmptyInNow = -1,
-            }
-
-            public enum Boss
-            {
-                Gnoll = 401000,
-            }
-
-            public enum Skill
-            {
-                FireBall = 10001,
-                EgoSword = 10002,
+                RedChicken = 201000,
+                Chicken = 201001,
             }
         }
 
@@ -77,13 +80,17 @@ namespace STELLAREST_2D
 
         public static class PlayerController
         {
+            public const string GARY_DEFAULT = "Gary_Default";
+            public const string GARY_ULTIMATE = "Gary_Ultimate";
+            public const string LIONEL_ULTIMATE = "Lionel_Ultimate";
+
             public const string RIFLE_GRAB_POINT = "ArmR[1]";
             public const string FIRE_TRANSFORM = "FireTransform";
-            public const string EGO_SWORD_CHILD = "EgoSword_Melee_";
+
             public const string INDICATOR = "Indicator";
             public const string FIRE_SOCKET = "FireSocket";
-            public const float SCALE_X = 0.8f; // Initial ScaleX : 0.8f
-            public const float SCALE_Y = 0.8f; // Initial ScaleY : 0.8f
+            public const float SCALE_X = 1f; // Initial ScaleX : 0.8f
+            public const float SCALE_Y = 1f; // Initial ScaleY : 0.8f
             public const float SCALE_Z = 1f;
         }
     }

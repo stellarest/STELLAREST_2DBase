@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace STELLAREST_2D
@@ -31,6 +32,14 @@ namespace STELLAREST_2D
             // FromJson<PlayerDataLoader>으로 DeSerialize되면서 객체화됨
             // 그리고 자동으로, PlayerDataLoader.stats에 json Data가 차곡 차곡 들어감.
             return UnityEngine.JsonUtility.FromJson<T>(textAsset.text);
+        }
+
+        public HashSet<string> PrefabKeys = new HashSet<string>();
+        public string GetPrefabKey(string key) => PrefabKeys.FirstOrDefault(s => s.Contains(key));
+        public void PrintAllPrefabKeys()
+        {
+            foreach(string key in PrefabKeys) 
+                Debug.Log("KEY : " + key);
         }
     }
 }

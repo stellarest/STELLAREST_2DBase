@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace STELLAREST_2D
@@ -17,27 +18,36 @@ namespace STELLAREST_2D
 
         public T AddSkill<T>(Data.SkillData skillData, Vector3 position, CreatureController owner, Transform parent = null) where T : SkillBase
         {
-            if (skillData.TemplateID == (int)Define.SkillType.Gary_DefaultRepeat)
+            switch (skillData.TemplateID)
             {
-                // ***** Load Prefab
-                GameObject go = Managers.Resource.Instantiate(skillData.PrefabLabel, pooling: false);
-                go.transform.position = position;
-                go.transform.SetParent(parent);
-                
-                EgoSword egoSword = go.GetComponent<EgoSword>();
-                egoSword.SkillData = skillData;
-                egoSword.Owner = owner;
+                case (int)Define.TemplateIDs.SkillType.Gary_Default_Swing:
+                case (int)Define.TemplateIDs.SkillType.Gary_Ultimate_Swing:
+                case (int)Define.TemplateIDs.SkillType.Kenneth_Default_Swing:
+                case (int)Define.TemplateIDs.SkillType.Kenneth_Ultimate_Swing:
+                case (int)Define.TemplateIDs.SkillType.Lionel_Ultimate_Swing:
+                    {
+                        GameObject go = Managers.Resource.Instantiate(skillData.PrefabLabel, pooling: false);
+                        go.transform.position = position;
+                        go.transform.SetParent(parent);
 
-                Skills.Add(egoSword);
-                RepeatSkills.Add(egoSword);
-                
-                return egoSword as T;
+                        MeleeSwing meleeSwing = go.GetOrAddComponent<MeleeSwing>();
+                        meleeSwing.SkillData = skillData;
+                        meleeSwing.Owner = owner;
+                        meleeSwing.Init();
+
+                        Skills.Add(meleeSwing);
+                        RepeatSkills.Add(meleeSwing);
+
+                        Debug.Log("Spawn Skill");
+
+                        return meleeSwing as T;
+                    }
             }
 
             return null;
         }
 
-        public T ActivateSkillManually<T>(int templateID) where T : SkillBase
+        public T ActivateSkill<T>(int templateID) where T : SkillBase
         {
             System.Type type = typeof(T);
             if (typeof(T).IsSubclassOf(typeof(RepeatSkill)))
@@ -54,6 +64,16 @@ namespace STELLAREST_2D
 
             return null;
         }
+
+        public void ActivateRepeatSkill(int templateID)
+        {
+            RepeatSkill skill = RepeatSkills.FirstOrDefault(s => s.SkillData.TemplateID == templateID);
+            if (skill != null)
+                skill.ActivateSkill();
+            else
+                Debug.LogWarning("@@@ Failed to activate skill !! @@@");
+        }
+
 
         // public T AddSkill3<T>(int templateID, Vector3 position, Transform parent = null) where T : SkillBase
         // {

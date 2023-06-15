@@ -10,6 +10,8 @@ namespace STELLAREST_2D
     // Fireball, EgoSword가 동시에 발동됨
     public abstract class RepeatSkill : SkillBase
     {
+        protected enum SwingType { First, Second, Third, Fourth, Fifth, Max }
+
         //public float CoolTime { get; set; } = 1.0f; // 데이터로 빼야함. 무적권
         private Coroutine _coSkill;
         public override void ActivateSkill()

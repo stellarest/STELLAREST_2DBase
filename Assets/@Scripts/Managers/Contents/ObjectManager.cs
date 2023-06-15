@@ -69,10 +69,6 @@ namespace STELLAREST_2D
 
                 return gc as T;
             }
-            else if (typeof(T).IsSubclassOf(typeof(SkillBase)))
-            {
-                
-            }
             else if (type == typeof(ProjectileController))
             {
                 // GameObject go = Managers.Resource.Instantiate(skillData.prefab, pooling: true);

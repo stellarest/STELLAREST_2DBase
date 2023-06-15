@@ -5,6 +5,7 @@ namespace STELLAREST_2D
     public class CreatureController : BaseController
     {
         public PlayerAnimationController PAC { get; protected set; }
+        public MonsterAnimationController MAC { get; protected set; }
 
         public Data.CreatureData CreatureData { get; protected set; }
         public Data.SkillData SkillData { get; protected set; }
@@ -15,6 +16,7 @@ namespace STELLAREST_2D
         protected WeaponController WeaponController { get; set; }
 
         public string CreatureName { get; protected set; }
+        public int TemplateID { get; set; }
         private int _hp;
         public int Hp { get => _hp; set { _hp = value; } }
 
@@ -42,7 +44,7 @@ namespace STELLAREST_2D
             }
 
             this.CreatureData = creatureData;
-            gameObject.name = creatureData.Name;
+            //gameObject.name = "@Player_" + creatureData.Name;
             SetInitialStat(creatureData);
 
             RigidBody = gameObject.GetComponent<Rigidbody2D>();
@@ -77,6 +79,7 @@ namespace STELLAREST_2D
 
         public virtual void SetInitialStat(Data.CreatureData creatureData)
         {
+            TemplateID = creatureData.TemplateID;
             CreatureName = creatureData.Name;
             _maxHp = creatureData.MaxHp;
             _hp = MaxHp;

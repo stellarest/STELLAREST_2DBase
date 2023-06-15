@@ -10,20 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
-  m_Name: Prefabs
+  m_Name: Monster
   m_EditorClassIdentifier: 
-  m_GroupName: Prefabs
+  m_GroupName: Monster
   m_Data:
     m_SerializedData: []
-  m_GUID: 1d9d9460b9f8147548adc255065330ff
+  m_GUID: bb1363b59a0cd494fa96dde06fa7f313
   m_SerializeEntries:
-  - m_GUID: c429e5c56afc5cb48ab7d751f1cf7b1c
-    m_Address: TestMap.prefab
+  - m_GUID: 64170a249f1f94daf8ae8e9b785e862c
+    m_Address: Chicken_01.prefab
     m_ReadOnly: 0
     m_SerializedLabels:
     - PreLoad
-  - m_GUID: e7cc55eb297b849e5970e35980d1427c
-    m_Address: EXPGem.prefab
+  - m_GUID: 75f04540378e6446488e6cb029afe49c
+    m_Address: Chicken_02.prefab
     m_ReadOnly: 0
     m_SerializedLabels:
     - PreLoad
@@ -31,5 +31,5 @@ MonoBehaviour:
   m_Settings: {fileID: 11400000, guid: 5fe9837c25d584a8f982c68806a1aa98, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: 395884a7ddd1d4357b916c167d95e460, type: 2}
-    - {fileID: 11400000, guid: 7b637657002f14d54922969640a3f68c, type: 2}
+    - {fileID: 11400000, guid: 868e859588433498192609ac6b860fde, type: 2}
+    - {fileID: 11400000, guid: a65de2501d0a8498291214959de32f5e, type: 2}

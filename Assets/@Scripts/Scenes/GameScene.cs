@@ -24,6 +24,7 @@ namespace STELLAREST_2D
         private void SetPrefabLabel(string primaryKey)
         {
             Debug.Log($"<color=white>Set Primary Key : {primaryKey}</color>");
+            Managers.Data.PrefabKeys.Add(primaryKey);
         }
 
         private SpawningPool _spawningPool;
@@ -68,11 +69,13 @@ namespace STELLAREST_2D
             Managers.Game.OnGemCountChanged += OnGemCountChangedHandler;
 
             // Spawn Test Map
-            var testMap = Managers.Resource.Instantiate(Define.PrefabLabels.TEST_MAP);
+            //var testMap = Managers.Resource.Instantiate(Define.PrefabLabels.TEST_MAP);
+            var testMap = Managers.Resource.Instantiate(TempPrefabKeyLoader.TEST_MAP);
             testMap.name = "@TestMap";
 
             // Spawn Player
-            var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.GARY);
+            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Gary_Default);
+            var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Lionel_Ultimate);
             Camera.main.GetComponent<CameraController>().Target = player.gameObject;
 
             // Spawn Joystick
@@ -80,7 +83,7 @@ namespace STELLAREST_2D
             joystick.name = "@Joystick"; // UI_Joystick라고 하기엔 좀 애매함
 
             // Create Spawning Pool
-            // _spawningPool = gameObject.AddComponent<SpawningPool>();
+            _spawningPool = gameObject.AddComponent<SpawningPool>();
 
             // Camera Target
         }
@@ -103,7 +106,7 @@ namespace STELLAREST_2D
             yield return new WaitForSeconds(1.0f);
             Managers.Object.DespawnAllMonsters(); // 죽이자마자 전부 DespawnAllMonster해서 IsVaild() == false에 걸렸었던것
             Vector2 spawnPos = Utils.GenerateMonsterSpawnPosition(Managers.Object.Player.transform.position, 5f, 10f);
-            Managers.Object.Spawn<MonsterController>(spawnPos, (int)Define.TemplateIDs.Boss.Gnoll); // 3 is BOSS_ID
+            //Managers.Object.Spawn<MonsterController>(spawnPos, (int)Define.TemplateIDs.Boss.Gnoll); // 3 is BOSS_ID
             //Managers.Object.Spawn<BossController>(spawnPos, 3);
         }
 
