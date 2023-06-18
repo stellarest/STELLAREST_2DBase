@@ -11,12 +11,16 @@ namespace STELLAREST_2D
         public enum UIEvent { Click, Pressed, PointerDown, PointerUp, BeginDrag, Drag, EndDrag, }
         public enum Scene { Unknown, DevScene, GameScene, }
         public enum Sound { BGM, Effect, }
-        public enum ObjectType { Player, Monster, Projectile, Env, }
+        public enum ObjectType { Player, Monster, Boss, Projectile, Env, }
+
+        // Sorting Order를 여기에 적으면, 여기에 적은대로 적용되게끔. Init에서 생성할때 하면 될듯.
+        // 실시간으로 바꾸는건 모바일 게임에선 좀 별로인듯
+        public enum SortingOrder { Map = 100, Player = 200, Monster = 210, RepeatSwingEffect = 220 }
 
         public enum StageType { Normal, MiddleBoss, Boss, }
         public enum CreatureState { Idle, Moving, Skill, Dead, }
 
-        public enum MonsterState { Idle = 0, Ready = 1, Walk = 2, Run = 3, Attack = 4, Death = 5 }
+        public enum MonsterState { Idle = 0, Run = 1, Skill = 2, Attack = 3, Death = 9 }
         public enum WeaponType { None = 0, Melee1H = 1, Melee2H = 2, MeleePaired = 3, Bow = 4, Firearm1H = 5, Firearm2H = 6, }
 
         public static class LoadDatas

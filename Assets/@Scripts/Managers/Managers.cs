@@ -32,6 +32,9 @@ namespace STELLAREST_2D
         }
 
         #region Contents
+        private EffectManager _effectManager = new EffectManager();
+        public static EffectManager Effect => Instance?._effectManager;
+
         private GameManager _gameManager = new GameManager();
         public static GameManager Game => Instance?._gameManager;
 

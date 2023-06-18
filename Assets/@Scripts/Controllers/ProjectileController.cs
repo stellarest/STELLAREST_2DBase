@@ -21,11 +21,11 @@ namespace STELLAREST_2D
             this._moveDir = moveDir;
         }
 
-        public override void UpdateController()
-        {
-            base.UpdateController();
-            transform.position += _moveDir * ProjectileSpeed * Time.deltaTime;
-        }
+        // public override void UpdateController()
+        // {
+        //     base.UpdateController();
+        //     transform.position += _moveDir * ProjectileSpeed * Time.deltaTime;
+        // }
 
         private void OnTriggerEnter2D(Collider2D other)
         {

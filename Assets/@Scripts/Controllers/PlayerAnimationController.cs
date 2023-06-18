@@ -42,7 +42,7 @@ namespace STELLAREST_2D
             _animController.SetBool(READY, true);
         }
 
-        public override void Run()
+        public override void Run(float speed = 1f)
         {
             _animController.Play(RUN);
         }

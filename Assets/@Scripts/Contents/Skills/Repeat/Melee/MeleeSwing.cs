@@ -26,6 +26,8 @@ namespace STELLAREST_2D
                 string childName = SkillData.Name;
                 childName += (i + 1).ToString("D2");
                 _swingParticles[i] = Utils.FindChild(gameObject, childName).GetComponent<ParticleSystem>();
+                ParticleSystemRenderer particleRenderer = _swingParticles[i].GetComponent<ParticleSystemRenderer>();
+                particleRenderer.sortingOrder = (int)Define.SortingOrder.RepeatSwingEffect;
 
                 var meleeSwingChild = _swingParticles[i].gameObject.GetOrAddComponent<MeleeSwingChild>();
                 meleeSwingChild.Particle = _swingParticles[i];

@@ -45,7 +45,10 @@ namespace STELLAREST_2D
             //             Random.Range((int)Define.TemplateIDs.Monster.RedChicken, 
             //             (int)Define.TemplateIDs.Monster.Chicken));
 
-            MonsterController mc = Managers.Object.Spawn<MonsterController>(randPos, (int)Define.TemplateIDs.Monster.Chicken);
+            //MonsterController mc = Managers.Object.Spawn<MonsterController>(randPos, (int)Define.TemplateIDs.Monster.Chicken);
+            // 개선 요망
+            Chicken chicken = Managers.Object.Spawn<Chicken>(randPos, (int)Define.TemplateIDs.Monster.Chicken);
+
         }
     }
 }

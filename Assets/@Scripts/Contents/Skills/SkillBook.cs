@@ -47,6 +47,23 @@ namespace STELLAREST_2D
             return null;
         }
 
+        // TEMP
+        public T AddSkill<T>(CreatureController owner) where T : SkillBase
+        {
+            System.Type type = typeof(T);
+            if (type.IsSubclassOf(typeof(SequenceSkill)))
+            {
+                var skill = gameObject.GetOrAddComponent<T>();
+                skill.Owner = owner;
+                Skills.Add(skill);
+                SequenceSkills.Add(skill as SequenceSkill);
+                
+                return skill as T;
+            }
+
+            return null;
+        }
+
         public T ActivateSkill<T>(int templateID) where T : SkillBase
         {
             System.Type type = typeof(T);
@@ -74,11 +91,6 @@ namespace STELLAREST_2D
                 Debug.LogWarning("@@@ Failed to activate skill !! @@@");
         }
 
-
-        // public T AddSkill3<T>(int templateID, Vector3 position, Transform parent = null) where T : SkillBase
-        // {
-        //     return null;
-        // }
 
         // public T AddSkill2<T>(Vector3 position, Transform parent = null) where T : SkillBase
         // {

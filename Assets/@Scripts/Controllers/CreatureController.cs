@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace STELLAREST_2D
 {
@@ -6,17 +7,18 @@ namespace STELLAREST_2D
     {
         public PlayerAnimationController PAC { get; protected set; }
         public MonsterAnimationController MAC { get; protected set; }
+        public Rigidbody2D RigidBody { get; protected set; }
+        public CircleCollider2D CircleCol { get; protected set; }
 
         public Data.CreatureData CreatureData { get; protected set; }
         public Data.SkillData SkillData { get; protected set; }
         public SkillBook SkillBook { get; protected set; } // 플레이어, 몬스터도 공용
 
-        public Rigidbody2D RigidBody { get; protected set; }
         public Define.WeaponType WeaponType { get; protected set; }
         protected WeaponController WeaponController { get; set; }
 
+        public int TemplateID { get; protected set; }
         public string CreatureName { get; protected set; }
-        public int TemplateID { get; set; }
         private int _hp;
         public int Hp { get => _hp; set { _hp = value; } }
 
@@ -35,6 +37,9 @@ namespace STELLAREST_2D
         private Vector2 _moveDir;
         public Vector2 MoveDir { get => _moveDir; set { _moveDir = value.normalized; } }
 
+        protected Vector2 _initScale;
+        protected float _attackRange = 1f;
+
         public virtual void SetInfo(int templateID)
         {
             if (Managers.Data.CreatureDict.TryGetValue(templateID, out Data.CreatureData creatureData) == false)
@@ -43,15 +48,20 @@ namespace STELLAREST_2D
                 Debug.Break();
             }
 
+            _initScale = transform.localScale;
             this.CreatureData = creatureData;
             //gameObject.name = "@Player_" + creatureData.Name;
             SetInitialStat(creatureData);
 
-            RigidBody = gameObject.GetComponent<Rigidbody2D>();
-            SkillBook = gameObject.GetOrAddComponent<SkillBook>();
+            RigidBody = gameObject.GetOrAddComponent<Rigidbody2D>();
+            CircleCol = gameObject.GetOrAddComponent<CircleCollider2D>();
 
+            SkillBook = gameObject.GetOrAddComponent<SkillBook>();
+            SetSortingGroup();
             SetWeapon();
         }
+
+        protected virtual void SetSortingGroup() { }
 
         private void SetWeapon()
         {
@@ -91,7 +101,8 @@ namespace STELLAREST_2D
 
         public override bool Init()
         {
-            base.Init();
+            if (base.Init() == false)
+                return false;
 
             return true;
         }

@@ -14,7 +14,7 @@ namespace STELLAREST_2D
 
             // 무조건 일단 Skill로 시작 가능
             CreatureState = Define.CreatureState.Skill;
-            // Skills.AddSkill<Move>(transform.position);
+            // Skills.AddSkill<BossMove>(transform.position);
             // Skills.AddSkill<Dash>(transform.position);
             // // 만약에 3단 대쉬를 만든다면? 
             // // Dash 내부적으로 수정해주거나
@@ -27,35 +27,27 @@ namespace STELLAREST_2D
 
             return true;
         }
-
+        
         public override void UpdateAnimation()
         {
             // base.UpdateAnimation(); 필요없
             switch (CreatureState)
             {
                 case Define.CreatureState.Idle:
-                    {
-                        _animator.Play("Idle");
-                    }
+                    _animator.Play("Idle");
                     break;
 
                 case Define.CreatureState.Moving:
-                    {
-                        _animator.Play("Moving");
-                    }
+                    _animator.Play("Moving");
                     break;
 
                 case Define.CreatureState.Skill:
-                    {
-                        //_animator.Play("Attack"); // 일단 Attack
-                        // 어차피 Skill별로 애니메이션이 재생이 될것이므로 (탕탕이니까 가능)
-                    }
+                    //_animator.Play("Attack"); // 일단 Attack
+                    // 어차피 Skill별로 애니메이션이 재생이 될것이므로 (탕탕이니까 가능)
                     break;
 
                 case Define.CreatureState.Dead:
-                    {
-                        _animator.Play("Death");
-                    }
+                    _animator.Play("Death");
                     break;
             }
         }
@@ -76,7 +68,7 @@ namespace STELLAREST_2D
         //     {
         //         // 평타 또는 돌진 스킬 등을 랜덤으로 날림
         //         CreatureState = Define.GameData.CreatureState.Skill;
-                
+
         //         // _animator.runtimeAnimatorController.animationClips; // 이런식으로 얻어올 수 있다고 함
         //         // 아니면 상수로 때려 박던지
         //         float animLength = 0.41f;

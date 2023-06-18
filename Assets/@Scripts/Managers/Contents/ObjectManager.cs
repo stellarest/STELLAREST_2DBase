@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Rendering; // Sorting Group
+// 탕탕을 좀 해봐야될것같은데
 
 namespace STELLAREST_2D
 {
@@ -35,12 +37,15 @@ namespace STELLAREST_2D
                     return pc as T;
                 }
 
-                if (type == typeof(MonsterController))
+                // 개선 필요
+                if (type == typeof(Chicken))
                 {
                     GameObject go = Managers.Resource.Instantiate(Managers.Data.CreatureDict[templateID].PrefabLabel, pooling: true);
                     go.transform.position = position;
-                    MonsterController mc = go.GetOrAddComponent<MonsterController>();
+                    // go.transform.position = new Vector3(10f, 10f, 1f); // TEMP
+                    Chicken mc = go.GetOrAddComponent<Chicken>();
                     mc.SetInfo(templateID);
+                    mc.InitMonsterSkill();
                     Monsters.Add(mc);
 
                     return mc as T;

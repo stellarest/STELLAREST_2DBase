@@ -6,8 +6,14 @@ namespace STELLAREST_2D.Test
 {
     public class Test : MonoBehaviour
     {
+        public AnimationCurve ViewCurveShape;
+        private AnimationCurve _curve;
         private void Start()
         {
+            _curve = new AnimationCurve(new Keyframe(0, 0), new Keyframe(1, 3));
+            _curve.preWrapMode = WrapMode.PingPong;
+            _curve.postWrapMode = WrapMode.PingPong;
+
             // Managers.Resource.LoadAllAsync<Object>("PreLoad", (delegate (string key, int count, int totalCount)
             // {
             //     // 굳이 count / totalCount를 적어놓은 이유는 처음에 로딩화면, 로딩바에서 1,2,3,4,5... 이를 이용해 퍼센테이지로 표현 가능
@@ -18,13 +24,30 @@ namespace STELLAREST_2D.Test
             // }));
         }
 
-        public Transform From;
-        public Transform To;
+        float elapsedTime = 0f;
+        float desiredTime = 3f;
+
         private void Update()
         {
-            float angle = Vector2.SignedAngle(From.position, To.position);
-            Debug.Log(angle);
+            elapsedTime += Time.deltaTime;
+            float percent = elapsedTime / desiredTime;
+            // 0 ~ 3초까진 Ping으로 올라가고 (to 100%)
+            // 3 ~ 6초까진 Pong으로 내려옴. 총 6초 (to 200%)
+            if (percent < 2f)
+            {
+                Debug.Log("Time : " + elapsedTime);
+                Debug.Log("Percent : " + percent);
+                transform.position = new Vector3(transform.position.x, _curve.Evaluate(percent), transform.position.z);
+            }
         }
+
+        // public Transform From;
+        // public Transform To;
+        // private void Update()
+        // {
+        //     float angle = Vector2.SignedAngle(From.position, To.position);
+        //     Debug.Log(angle);
+        // }
 
         // public Dictionary<string, int> tDict = new Dictionary<string, int>();
 

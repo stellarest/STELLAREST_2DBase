@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Assets.HeroEditor.Common.Scripts.CharacterScripts;
+using UnityEngine.Rendering;
 
 namespace STELLAREST_2D
 {
@@ -27,13 +28,17 @@ namespace STELLAREST_2D
         public AnimationEvents AnimEvents => _animEvents;
 
         private bool _getReady = false;
-
         public override bool Init()
         {
-            base.Init();
-            Debug.Log("### PC::INIT ###");
-            Managers.Game.OnMoveDirChanged += OnMoveDirChangedHandler;
+            if (base.Init() == false)
+                return false;
 
+            ObjectType = Define.ObjectType.Player;
+
+            Debug.Log("### PC::INIT ###");
+
+            Managers.Game.OnMoveDirChanged += OnMoveDirChangedHandler;
+            
             _animChildObject = Utils.FindChild(gameObject, "Animation");
             _animEvents = _animChildObject.GetComponent<AnimationEvents>();
             PAC = gameObject.GetOrAddComponent<PlayerAnimationController>();
@@ -61,6 +66,7 @@ namespace STELLAREST_2D
                     Define.PlayerController.FIRE_SOCKET, true);
 
             _indicator.gameObject.SetActive(false);
+            //_bodyObject = Utils.FindChild(gameObject, "Body", true);
         }
 
         private void Update()
@@ -89,6 +95,11 @@ namespace STELLAREST_2D
 
             GetIndicator();
             SetInitialSkill();
+        }
+
+        protected override void SetSortingGroup()
+        {
+            GetComponent<SortingGroup>().sortingOrder = (int)Define.SortingOrder.Player;
         }
 
         public void Attack(float attackSpeed = 1f)
