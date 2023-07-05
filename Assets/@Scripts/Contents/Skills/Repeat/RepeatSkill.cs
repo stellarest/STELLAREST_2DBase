@@ -10,7 +10,9 @@ namespace STELLAREST_2D
     // Fireball, EgoSword가 동시에 발동됨
     public abstract class RepeatSkill : SkillBase
     {
+        // TEMP
         protected enum SwingType { First, Second, Third, Fourth, Fifth, Max }
+        protected enum RepeatType { Default, Epic, Ultimate, RepeatMax }
 
         //public float CoolTime { get; set; } = 1.0f; // 데이터로 빼야함. 무적권
         private Coroutine _coSkill;
@@ -26,13 +28,15 @@ namespace STELLAREST_2D
 
         protected virtual IEnumerator CoStartSkill()
         {
-            WaitForSeconds wait = new WaitForSeconds(CoolTime);
-            while (true)
-            {
-                // TODO
-                DoSkillJob();
-                yield return wait;
-            }
+            Debug.Log("PLEASE OVERRRIDE METHOD !!");
+            yield return null;
+            // WaitForSeconds wait = new WaitForSeconds(1f); // 쿨타임 넣기
+            // while (true)
+            // {
+            //     // TODO
+            //     DoSkillJob();
+            //     yield return wait;
+            // }
         }
     }
 }

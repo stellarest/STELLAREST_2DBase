@@ -113,9 +113,9 @@ namespace STELLAREST_2D
 
         #endregion
 
-        public override void OnDamaged(BaseController attacker, int damage)
+        public override void OnDamaged(BaseController attacker, SkillBase skill, int damage)
         {
-            base.OnDamaged(attacker, damage);
+            base.OnDamaged(attacker, skill, damage);
         }
 
         protected override void OnDead()

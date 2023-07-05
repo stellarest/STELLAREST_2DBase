@@ -122,6 +122,7 @@ namespace STELLAREST_2D
         public override void SetInfo(int templateID)
         {
             base.SetInfo(templateID);
+            //Managers.Effect.Initi
         }
 
         protected override void SetSortingGroup()
@@ -131,7 +132,6 @@ namespace STELLAREST_2D
 
         private void FixedUpdate()
         {
-            return;
             // 물리 기반(FixedUpdate) 이동이라 이 부분은 옮기기 싫다고 한다면 Moving 상태일때만 이 코드가 실행 되도록
             // 이런식으로 편하게 유동적으로 코드를 작성하면됨
             // if (CreatureState != Define.CreatureState.Moving)
@@ -163,41 +163,69 @@ namespace STELLAREST_2D
             transform.localScale = new Vector2(_initScale.x * flipX, _initScale.y);
         }
 
-        private void OnCollisionEnter2D(Collision2D other)
+        public override void OnDamaged(BaseController attacker, SkillBase skill, int damage)
         {
-            Debug.Log(other.gameObject.name);
-        }
+            base.OnDamaged(attacker, skill, damage);
+            //Managers.Effect.HitEffect(gameObject);
+        }       
 
-        // TEMP
+        private Coroutine _coBodyAttack;
         // private void OnCollisionEnter2D(Collision2D other)
         // {
-        //     PlayerController target = other.gameObject.GetComponent<PlayerController>();
-        //     if (target.IsValid() == false)
-        //         return;
+        // }
+
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            if (this.IsValid() == false) // 풀링은 되어 있지만 이미 꺼져있을 경우
+                return;
+
+            PlayerController target = other.gameObject.GetComponent<PlayerController>();
+            if (target.IsValid() == false)
+                return;
+
+            // if (_coBodyAttack != null)
+            //     StopCoroutine(_coBodyAttack);
+
+            //_coBodyAttack = StartCoroutine(CoBodyAttack(target));
+            target.OnDamaged(this, null, Random.Range(1, 6));
+        }
+
+        // private void OnTriggerExit2D(Collider2D other)
+        // {
         //     if (this.IsValid() == false) // 풀링은 되어 있지만 이미 꺼져있을 경우
         //         return;
 
-        //     if (_coDotDamage != null)
-        //         StopCoroutine(_coDotDamage);
+        //     PlayerController target = other.gameObject.GetComponent<PlayerController>();
+        //     if (target.IsValid() == false)
+        //         return;
 
-        //     _coDotDamage = StartCoroutine(CoStartDotDamage(target));
+        //     if (this.IsValid() == false)
+        //         return;
+
+        //     if (_coBodyAttack != null)
+        //         StopCoroutine(_coBodyAttack);
+
+        //     _coBodyAttack = null;
+        // }
+
+        // private IEnumerator CoBodyAttack(PlayerController target)
+        // {
+        //     while (true)
+        //     {
+        //         // *****
+        //         // 플레이어는 최소 0.5초에 한 번 도트 데미지를 받는다.
+        //         // (브로 포테토 같은 경우 1초정도 되는 것 같긴함)
+        //         // 그리고, 플레이어의 이펙트는 0.1초만에 재생됨
+        //         target.OnDamaged(this, null, Random.Range(1, 11));
+        //         yield return new WaitForSeconds(10f);
+        //     }
         // }
 
         // private void OnCollisionExit2D(Collision2D other)
         // {
-        //     PlayerController target = other.gameObject.GetComponent<PlayerController>();
-        //     if (target.IsValid() == false)
-        //         return;
-        //     if (this.IsValid() == false) // 풀링된(InActive) 상태에서 StartCoroutine 호출하면 안됨
-        //         return;
-
-        //     if (_coDotDamage != null)
-        //         StopCoroutine(_coDotDamage);
-        //     _coDotDamage = null;
         // }
 
         // private Coroutine _coDotDamage;
-
         // public IEnumerator CoStartDotDamage(PlayerController target)
         // {
         //     while (true)

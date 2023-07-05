@@ -6,60 +6,47 @@ namespace STELLAREST_2D
 {
     public class SkillBase : BaseController
     {
-        /*
-          "TemplateID" : "10001",
-          "Name" : "Gary_EgoSword",
-          "PrefabLabel" : "EgoSword.prefab",
-          "Damage" : "1000",
-          "ProjectileSpeed" : "0f",
-          "CoolTime" : "2f"
-        */
-
-        private Data.SkillData _skillData;
-        public Data.SkillData SkillData 
-        { 
-            get => _skillData; 
-            set
-            {
-                _skillData = value;
-                TemplateID = value.TemplateID;
-                SkillName = value.Name;
-                _damage = value.Damage;
-                _projectileSpeed = value.ProjectileSpeed;
-                _coolTime = value.CoolTime;
-            }
-        }
+        public CreatureController Owner { get; set; }
+        public Data.SkillData SkillData { get; protected set ; }
 
         public virtual void ActivateSkill() { }
-
         protected virtual void GenerateProjectile(int templateID, CreatureController owner, Vector3 startPos, Vector3 dir, Vector3 targetPos)
         {
             ProjectileController pc = Managers.Object.Spawn<ProjectileController>(startPos, templateID);
             pc.SetInfo(owner, dir);
         }
 
-        public CreatureController Owner { get; set; }
+        public bool IsLearnedSkill => SkillGrade != Define.InGameGrade.Normal;
+        public Define.InGameGrade SkillGrade { get; protected set; }
 
-        public int SkillLevel { get; set; } = 0;
-        public bool IsLearnedSkill => SkillLevel > 0;
-
-        public int TemplateID { get; protected set; }
-        public string SkillName { get; protected set; }
-        private int _damage;
-        public int Damage { get => _damage; protected set { _damage = value; } }
-
-        private float _projectileSpeed;
-        public float ProjectileSpeed { get => _projectileSpeed; protected set { _projectileSpeed = value; } }
-
-        private float _coolTime;
-        public float CoolTime { get => _coolTime; protected set { _coolTime = value; } }
-
-        public override bool Init()
+        public void UpgradeSkill()
         {
-            if (SkillData == null)
-                return false;
+            int currentID = SkillData.TemplateID;
+            if (Managers.Data.SkillDict.TryGetValue(currentID + 1, out Data.SkillData newSkillData))
+            {
+                SkillData = this.SkillGrade < newSkillData.InGameGrade ?
+                                newSkillData : this.SkillData;
 
-            return true;
+                this.SkillGrade = newSkillData.InGameGrade;
+
+                Utils.LogWhite("SkillData Upgrade !!");
+            }
+            else
+                Utils.LogWhite("Already Max Skill Grade");
+        }
+
+        public virtual void SetInitialSkillInfo(CreatureController owner, int templateID)
+        {
+            if (Managers.Data.SkillDict.TryGetValue(templateID, out Data.SkillData skillData) == false)
+            {
+                Debug.LogError("Failed to load SkillDict, template ID : " + templateID);
+                Debug.Break();
+            }
+
+            this.Owner = owner;
+            this.SkillData = skillData;
+            this.SkillGrade = skillData.InGameGrade;
+            Debug.Log("SkillGrade : " + this.SkillGrade);
         }
 
         private Coroutine _coDestroy;

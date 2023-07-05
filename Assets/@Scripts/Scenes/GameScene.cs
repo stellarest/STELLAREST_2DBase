@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Newtonsoft.Json.Linq;
+using Cinemachine;
 
 using STELLAREST_2D.UI; // 이 스크립트에서 UI 스크립트 사용중을 간편하게 확인할 수 있어서 .UI의 네임을 추가해주었다
 
@@ -21,6 +22,14 @@ namespace STELLAREST_2D
                     StartLoaded();
             }));
         }
+
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.T))
+            {
+            }
+        }
+
         private void SetPrefabLabel(string primaryKey)
         {
             Debug.Log($"<color=white>Set Primary Key : {primaryKey}</color>");
@@ -60,7 +69,8 @@ namespace STELLAREST_2D
             Screen.sleepTimeout = SleepTimeout.NeverSleep;
             
             Managers.Data.Init();
-            Managers.UI.ShowFixedSceneUI<UI_GameScene>();
+            Managers.Effect.Init();
+            //Managers.UI.ShowFixedSceneUI<UI_GameScene>();
 
             Managers.Game.OnKillCountChanged -= OnKillCountChangedHandler;
             Managers.Game.OnKillCountChanged += OnKillCountChangedHandler;
@@ -70,21 +80,24 @@ namespace STELLAREST_2D
 
             // Spawn Test Map
             //var testMap = Managers.Resource.Instantiate(Define.PrefabLabels.TEST_MAP);
-            var testMap = Managers.Resource.Instantiate(TempPrefabKeyLoader.TEST_MAP);
-            testMap.name = "@TestMap";
+            // var testMap = Managers.Resource.Instantiate(TempPrefabKeyLoader.TEST_MAP);
+            // testMap.name = "@TestMap";
 
             // Spawn Player
             // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Gary_Default);
-            var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Lionel_Ultimate);
-            Camera.main.GetComponent<CameraController>().Target = player.gameObject;
+            var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Gary_Paladin);
+            //Camera.main.GetComponent<CameraController>().Target = player.gameObject;
+            //GameObject.Find("CMcam").GetComponent<CameraController>().SetTarget(player.gameObject);
+
+            var CMcam = Camera.main.GetComponent<CinemachineBrain>().ActiveVirtualCamera.VirtualCameraGameObject;
+            CMcam.GetComponent<CameraController>().SetTarget(player.gameObject);
 
             // Spawn Joystick
             var joystick = Managers.Resource.Instantiate(Define.PrefabLabels.JOYSTICK);
             joystick.name = "@Joystick"; // UI_Joystick라고 하기엔 좀 애매함
 
             // Create Spawning Pool
-            _spawningPool = gameObject.AddComponent<SpawningPool>();
-
+            //_spawningPool = gameObject.AddComponent<SpawningPool>();
             // Camera Target
         }
 

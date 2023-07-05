@@ -13,24 +13,34 @@ namespace STELLAREST_2D.Data
     [Serializable]
     public class CreatureData
     {
-        /*
-            TemplateID
-            101000 ~ ... : Player Characters
-            201000 ~ ... : Normal Monsters
-            301000 ~ ... : Middle Boss Monsters
-            401000 ~ ... : Boss Monsters
-        */
-
         public int TemplateID;
         public string Name;
         public string PrefabLabel;
-        public Define.TemplateIDs.SkillType DefaultSkillType;
-        public int MaxHp;
-        public int Strength; // 힘
+        public int InGameGrade;
+        public float MaxHp;
+        public float MaxHpUpRate;
+        public float Power;
+        public float PowerUpRate;
+        public float Armor;
+        public float ArmorUpRate;
         public float MoveSpeed;
+        public float MoveSpeedUpRate;
+        public float Range;
+        public float RangeUpRate;
+        public float Agility;
+        public float AgilityUpRate;
+        public float Critical;
+        public float CriticaUpRate;
+        public float RepeatAttackAnimSpeed;
+        public float RepeatAttackAnimSpeedUpRate;
+        public float RepeatAttackCoolTime;
+        public float RepeatAttackCoolTimeUpRate;
         public float Luck;
+        public float LuckUpRate;
+        public float TotalExp;
         public Define.WeaponType WeaponType;
         public string IconLabel;
+        public List<int> InGameSkillList;
     }
 
     [Serializable]
@@ -54,20 +64,20 @@ namespace STELLAREST_2D.Data
         }
     }
 
-    #region TEMP SkillData
     [Serializable]
     public class SkillData
     {
-        // Skill
-        // - InGame Acquired
-        // ---> Sequence
-        // ---> Repeated
-
         public int TemplateID;
+        public int OriginTemplateID;
         public string Name;
         public string PrefabLabel;
-        public int Damage;
+        public Define.InGameGrade InGameGrade;
+        public float InitDistance;
+        public bool IsRepeat;
+        public float Damage;
+        public float DamageUpRate;
         public float ProjectileSpeed; // Projectile
+        public int ProjectileCount;
         public float CoolTime;
     }
 
@@ -92,5 +102,10 @@ namespace STELLAREST_2D.Data
             return dict;
         }
     }
-    #endregion
+
+    [System.Serializable]
+    public class WaveData
+    {
+
+    }
 }

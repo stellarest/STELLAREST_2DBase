@@ -14,6 +14,7 @@ namespace STELLAREST_2D
         }
         private GameObject _prefab;
         private IObjectPool<GameObject> _pool;
+        
         private Transform _root;
         public Transform Root
         {

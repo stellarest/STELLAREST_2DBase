@@ -25,6 +25,7 @@ namespace STELLAREST_2D
                     _instance = go.GetComponent<Managers>();
 
                     Object.Init();
+                    Stage.Init();
                 }
 
                 return _instance;
@@ -43,6 +44,9 @@ namespace STELLAREST_2D
 
         private PoolManager _poolManager = new PoolManager();
         public static PoolManager Pool => Instance?._poolManager;
+
+        private StageManager _stageManager = new StageManager();
+        public static StageManager Stage => Instance?._stageManager;
         #endregion
 
         #region Core

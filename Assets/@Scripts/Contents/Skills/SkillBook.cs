@@ -10,44 +10,96 @@ namespace STELLAREST_2D
     // 이런거 만드는건 "진짜 자유롭게" 만들라고함
     public class SkillBook : MonoBehaviour
     {
-        public List<SkillBase> Skills { get; } = new List<SkillBase>();
+        // public List<SkillBase> Skills { get; } = new List<SkillBase>();
         public List<RepeatSkill> RepeatSkills { get; } = new List<RepeatSkill>();
-        // 프리팹 만들까?
         public List<SequenceSkill> SequenceSkills { get; } = new List<SequenceSkill>();
         // 모든 스킬을 미리 불러온다.
 
-        public T AddSkill<T>(Data.SkillData skillData, Vector3 position, CreatureController owner, Transform parent = null) where T : SkillBase
+        public void AddRepeatSkill(RepeatSkill repeatSkill) => RepeatSkills.Add(repeatSkill);
+        public void AddSequenceSkill(SequenceSkill sequenceSkill) => SequenceSkills.Add(sequenceSkill);
+
+        // 무조건 최초 한번 실행밖에 없음.
+        public void ActivateRepeatSkill(int templateID)
         {
-            switch (skillData.TemplateID)
-            {
-                case (int)Define.TemplateIDs.SkillType.Gary_Default_Swing:
-                case (int)Define.TemplateIDs.SkillType.Gary_Ultimate_Swing:
-                case (int)Define.TemplateIDs.SkillType.Kenneth_Default_Swing:
-                case (int)Define.TemplateIDs.SkillType.Kenneth_Ultimate_Swing:
-                case (int)Define.TemplateIDs.SkillType.Lionel_Ultimate_Swing:
-                    {
-                        GameObject go = Managers.Resource.Instantiate(skillData.PrefabLabel, pooling: false);
-                        go.transform.position = position;
-                        go.transform.SetParent(parent);
-
-                        MeleeSwing meleeSwing = go.GetOrAddComponent<MeleeSwing>();
-                        meleeSwing.SkillData = skillData;
-                        meleeSwing.Owner = owner;
-                        meleeSwing.Init();
-
-                        Skills.Add(meleeSwing);
-                        RepeatSkills.Add(meleeSwing);
-
-                        Debug.Log("Spawn Skill");
-
-                        return meleeSwing as T;
-                    }
-            }
-
-            return null;
+            RepeatSkill skill = RepeatSkills.FirstOrDefault(s => s.SkillData.TemplateID == templateID);
+            if (skill != null)
+                skill.ActivateSkill();
+            else
+                Debug.LogError("### Failed to activate skill !! ###");
         }
 
-        // TEMP
+        public void UpgradeRepeatSkill(int templateID)
+        {
+            RepeatSkill skill = RepeatSkills.FirstOrDefault(s => s.SkillData.OriginTemplateID == templateID);
+            if (skill != null)
+                skill.UpgradeSkill();
+            else
+                Utils.LogWarning("Failed UpgradeRepeatSkill");
+        }
+
+        // SequenceSkill(하나의 스킬을 끝내야지만 다른 스킬을 사용할 수 있는 스킬) List에 등록된 녀석들을 인공지능에서 따로 판단을 하던
+        // 아니면 여기서 순차적으로 등록된 애들을 사용을 하던 여기다가 관리해주면 된다고 함
+        private int _sequenceIndex = 0;
+        public void StartNextSequenceSkill() // 지금까지 등록된 스킬들을 쭉 실행하세요
+        {
+            if (_stopped)
+                return;
+            if (SequenceSkills.Count == 0)
+                return;
+
+            SequenceSkills[_sequenceIndex].DoSkill(OnFinishedSequenceSkill);
+        }
+
+        private void OnFinishedSequenceSkill()
+        {
+            // 순차적으로 실행하기 싫다면, 랜덤하게 하건 어떻게 하건 수정하면 됨
+            _sequenceIndex = (_sequenceIndex + 1) % SequenceSkills.Count;
+            StartNextSequenceSkill();
+        }
+
+        private bool _stopped = false;
+        public void StopSkills() // 몬스터가 죽으면 중단
+        {
+            _stopped = true;
+            foreach (var skill in RepeatSkills)
+            {
+                skill.StopAllCoroutines();
+            }
+        }
+
+        // public T AddSkill<T>(Data.SkillData skillData, Vector3 position, CreatureController owner, Transform parent = null) where T : SkillBase
+        // {
+        //     // switch (skillData.TemplateID)
+        //     // {
+        //     //     case (int)Define.TemplateIDs.SkillType.Gary_Swing:
+        //     //     case (int)Define.TemplateIDs.SkillType.Kenneth_Swing:
+        //     //     case (int)Define.TemplateIDs.SkillType.Lionel_Swing:
+        //     //         {
+        //     //             GameObject go = Managers.Resource.Instantiate(skillData.PrefabLabel, pooling: false);
+        //     //             go.transform.position = position;
+        //     //             // 일단 해제.. 스킬 이펙트도 몬스터한테 가려져서...
+        //     //             // 그래도 동작 자체는 잘됨..
+        //     //             //go.transform.SetParent(parent);
+
+        //     //             PowerSwing powerSwing = go.GetOrAddComponent<PowerSwing>();
+        //     //             powerSwing.SkillData = skillData;
+        //     //             powerSwing.Owner = owner;
+        //     //             powerSwing.Init();
+
+        //     //             Skills.Add(powerSwing);
+        //     //             RepeatSkills.Add(powerSwing);
+
+        //     //             Debug.Log("<color=magenta> Spawn Skill !! </color>");
+
+        //     //             return powerSwing as T;
+        //     //         }
+        //     // }
+
+        //     // Debug.LogWarning("Failed to Add Skill");
+        //     return null;
+        // }
+
+        // TEMP TEMP TEMP
         public T AddSkill<T>(CreatureController owner) where T : SkillBase
         {
             System.Type type = typeof(T);
@@ -55,7 +107,7 @@ namespace STELLAREST_2D
             {
                 var skill = gameObject.GetOrAddComponent<T>();
                 skill.Owner = owner;
-                Skills.Add(skill);
+                // Skills.Add(skill);
                 SequenceSkills.Add(skill as SequenceSkill);
                 
                 return skill as T;
@@ -64,33 +116,23 @@ namespace STELLAREST_2D
             return null;
         }
 
-        public T ActivateSkill<T>(int templateID) where T : SkillBase
-        {
-            System.Type type = typeof(T);
-            if (typeof(T).IsSubclassOf(typeof(RepeatSkill)))
-            {
-                foreach (RepeatSkill skill in RepeatSkills)
-                {
-                    if (templateID == skill.TemplateID)
-                    {
-                        skill.ActivateSkill();
-                        return skill as T;
-                    }
-                }
-            }
+        // public T ActivateSkill<T>(int templateID) where T : SkillBase
+        // {
+        //     System.Type type = typeof(T);
+        //     if (typeof(T).IsSubclassOf(typeof(RepeatSkill)))
+        //     {
+        //         foreach (RepeatSkill skill in RepeatSkills)
+        //         {
+        //             if (templateID == skill.TemplateID)
+        //             {
+        //                 skill.ActivateSkill();
+        //                 return skill as T;
+        //             }
+        //         }
+        //     }
 
-            return null;
-        }
-
-        public void ActivateRepeatSkill(int templateID)
-        {
-            RepeatSkill skill = RepeatSkills.FirstOrDefault(s => s.SkillData.TemplateID == templateID);
-            if (skill != null)
-                skill.ActivateSkill();
-            else
-                Debug.LogWarning("@@@ Failed to activate skill !! @@@");
-        }
-
+        //     return null;
+        // }
 
         // public T AddSkill2<T>(Vector3 position, Transform parent = null) where T : SkillBase
         // {
@@ -134,35 +176,5 @@ namespace STELLAREST_2D
 
         //     return null;
         // }
-
-        // SequenceSkill(하나의 스킬을 끝내야지만 다른 스킬을 사용할 수 있는 스킬) List에 등록된 녀석들을 인공지능에서 따로 판단을 하던
-        // 아니면 여기서 순차적으로 등록된 애들을 사용을 하던 여기다가 관리해주면 된다고 함
-        private int _sequenceIndex = 0;
-        public void StartNextSequenceSkill() // 지금까지 등록된 스킬들을 쭉 실행하세요
-        {
-            if (_stopped)
-                return;
-            if (SequenceSkills.Count == 0)
-                return;
-
-            SequenceSkills[_sequenceIndex].DoSkill(OnFinishedSequenceSkill);
-        }
-
-        private void OnFinishedSequenceSkill()
-        {
-            // 순차적으로 실행하기 싫다면, 랜덤하게 하건 어떻게 하건 수정하면 됨
-            _sequenceIndex = (_sequenceIndex + 1) % SequenceSkills.Count;
-            StartNextSequenceSkill();
-        }
-
-        private bool _stopped = false;
-        public void StopSkills() // 몬스터가 죽으면 중단
-        {
-            _stopped = true;
-            foreach (var skill in RepeatSkills)
-            {
-                skill.StopAllCoroutines();
-            }
-        }
     }
 }

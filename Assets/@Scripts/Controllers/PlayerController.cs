@@ -5,6 +5,7 @@ using System.Linq;
 using UnityEngine;
 using Assets.HeroEditor.Common.Scripts.CharacterScripts;
 using UnityEngine.Rendering;
+using System.Reflection;
 
 namespace STELLAREST_2D
 {
@@ -23,7 +24,7 @@ namespace STELLAREST_2D
 
         private GameObject _animChildObject;
         public Vector3 AnimationLocalScale => _animChildObject.transform.localScale;
-        
+
         private AnimationEvents _animEvents;
         public AnimationEvents AnimEvents => _animEvents;
 
@@ -34,18 +35,22 @@ namespace STELLAREST_2D
                 return false;
 
             ObjectType = Define.ObjectType.Player;
-
-            Debug.Log("### PC::INIT ###");
+            //Debug.Log("### PC::INIT ###");
+            Utils.InitLog(this.GetType());
 
             Managers.Game.OnMoveDirChanged += OnMoveDirChangedHandler;
-            
+
+            // TODO
             _animChildObject = Utils.FindChild(gameObject, "Animation");
+            if (_animChildObject == null)
+            {
+                Debug.Log("NULL ANIM CHILD OBJECT");
+            }
+            else
+                Debug.Log("VALID ANIM CHILD OBJECT");
+
             _animEvents = _animChildObject.GetComponent<AnimationEvents>();
             PAC = gameObject.GetOrAddComponent<PlayerAnimationController>();
-
-            //Debug.Log(_animationObject.name);
-            // StartProjectile();
-            // StartEgoSword();
 
             // TODO
             // 원래는 처음에 UI에서 고르는것으로 해야되지만.. 일단 이렇게
@@ -66,35 +71,15 @@ namespace STELLAREST_2D
                     Define.PlayerController.FIRE_SOCKET, true);
 
             _indicator.gameObject.SetActive(false);
-            //_bodyObject = Utils.FindChild(gameObject, "Body", true);
-        }
-
-        private void Update()
-        {
-            MoveByJoystick();
-            CollectEnv();
-
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                // SkillBook.ActivateSkill<Melee1HSwing>((int)Define.SkillType.Melee1HSwing);
-                SkillBook.ActivateRepeatSkill((int)Define.TemplateIDs.SkillType.Lionel_Ultimate_Swing);
-            }
-
-            // if (Input.GetKeyDown(KeyCode.T))
-            // {
-            //     PAC.Stun();
-            // }
+            GetComponent<CircleCollider2D>().enabled = true;
         }
 
         public override void SetInfo(int templateID)
         {
             Debug.Log("### PC::SET INFO ###");
             base.SetInfo(templateID);
-            // PAC = gameObject.GetOrAddComponent<PlayerAnimationController>();
-            // _animEvents = _animChildObject.GetComponent<AnimationEvents>();
-
             GetIndicator();
-            SetInitialSkill();
+            //SetInitialSkill();
         }
 
         protected override void SetSortingGroup()
@@ -102,40 +87,18 @@ namespace STELLAREST_2D
             GetComponent<SortingGroup>().sortingOrder = (int)Define.SortingOrder.Player;
         }
 
-        public void Attack(float attackSpeed = 1f)
+        public void Attack()
         {
             switch (TemplateID)
             {
-                case (int)Define.TemplateIDs.Player.Lionel_Ultimate:
-                    PAC.MeleeSlash(attackSpeed);
+                case (int)Define.TemplateIDs.Player.Gary_Paladin:
+                    PAC.MeleeSlash(CreatureData.RepeatAttackAnimSpeed);
                     break;
             }
         }
 
-        private void SetInitialSkill()
-        {
-            // 개선해야함
-            if (CreatureName.Contains(Define.PlayerController.LIONEL_ULTIMATE))
-            {
-                if (Managers.Data.SkillDict.TryGetValue((int)Define.TemplateIDs.SkillType.Lionel_Ultimate_Swing,
-                                                        out Data.SkillData skillData) == false)
-                {
-                    Debug.LogAssertion("@@@ Failed to load Skill Data @@@");
-                    Debug.Break();
-                }
-
-                this.SkillData = skillData;
-                MeleeSwing meleeSwing = SkillBook.AddSkill<MeleeSwing>(skillData, _indicator.position, this, transform);
-                //meleeSwing.ActivateSkill();
-            }
-        }
-
-        private void OnDestroy()
-        {
-            if (Managers.Game != null)
-                Managers.Game.OnMoveDirChanged -= OnMoveDirChangedHandler;
-        }
-
+        public float limitX;
+        public float limitY;
         public void MoveByJoystick()
         {
             Vector3 dir = MoveDir.normalized * MoveSpeed * Time.deltaTime;
@@ -154,7 +117,8 @@ namespace STELLAREST_2D
 
                 float degree = Mathf.Atan2(-dir.x, dir.y) * Mathf.Rad2Deg;
                 _indicator.eulerAngles = new Vector3(0, 0, degree);
-                Turn(degree); // 존나 상관있네
+                Turn(degree);
+                InGameLimitPos(transform.position);
             }
 
             RigidBody.velocity = Vector3.zero;
@@ -163,12 +127,26 @@ namespace STELLAREST_2D
         private void Turn(float angle)
         {
             TurningAngle = Mathf.Sign(angle); // 각도 양수1, 음수-1
-            Vector3 turnChara = new Vector3(TurningAngle * Define.PlayerController.SCALE_X * -1f,
-                                        Define.PlayerController.SCALE_Y, Define.PlayerController.SCALE_Z);
+            Vector3 turnChara = new Vector3(TurningAngle * Define.PlayerController.CONSTANT_SCALE_X * -1f,
+                                        Define.PlayerController.CONSTANT_SCALE_Y, Define.PlayerController.CONSTANT_SCALE_Z);
             //transform.localScale = turnChara;
             _animChildObject.transform.localScale = turnChara;
-
             //WeaponController.UpdateWeapon(WeaponType, angle);
+        }
+
+        private void InGameLimitPos(Vector3 position)
+        {
+            // Min
+            if (position.x <= Managers.Stage.LeftBottom.x)
+                transform.position = new Vector2(Managers.Stage.LeftBottom.x, transform.position.y);
+            if (position.y <= Managers.Stage.LeftBottom.y)
+                transform.position = new Vector2(transform.position.x, Managers.Stage.LeftBottom.y);
+
+            // Max
+            if (position.x >= Managers.Stage.RightTop.x)
+                transform.position = new Vector2(Managers.Stage.RightTop.x, transform.position.y);
+            if (position.y >= Managers.Stage.RightTop.y)
+                transform.position = new Vector2(transform.position.x, Managers.Stage.RightTop.y);
         }
 
         private void CollectEnv()
@@ -206,7 +184,7 @@ namespace STELLAREST_2D
             {
                 PAC.Idle();
                 //_indicator.gameObject.SetActive(false);
-                _indicator.gameObject.SetActive(true); // 각도 확인용
+                _indicator.gameObject.SetActive(false); // 각도 확인용
             }
             else
             {
@@ -215,19 +193,55 @@ namespace STELLAREST_2D
             }
         }
 
-        private void OnCollisionEnter2D(Collision2D other)
-        {
-            MonsterController target = other.gameObject.GetComponent<MonsterController>();
-            if (target == null) // 이거 target이 pull에 들어간 순간 유의해야함. null이 아니기 때문
-                return;
-        }
+        // private void OnCollisionEnter2D(Collision2D other)
+        // {
+        //     // MonsterController target = other.gameObject.GetComponent<MonsterController>();
+        //     // if (target == null) // 이거 target이 pull에 들어간 순간 유의해야함. null이 아니기 때문
+        //     //     return;
+        // }
 
-        public override void OnDamaged(BaseController attacker, int damage)
+        public override void OnDamaged(BaseController attacker, SkillBase skill, int damage)
         {
-            base.OnDamaged(attacker, damage);
+            base.OnDamaged(attacker, skill, damage);
             // TEMP
             // CreatureController cc = attacker as CreatureController;
             // cc?.OnDamaged(this, 10000);
+        }
+
+        private void Update()
+        {
+            MoveByJoystick();
+            CollectEnv();
+
+            if (Input.GetKeyDown(KeyCode.Space))
+                SkillBook.ActivateRepeatSkill((int)Define.TemplateIDs.SkillType.PaladinSwing);
+
+            if (Input.GetKeyDown(KeyCode.T))
+                SkillBook.UpgradeRepeatSkill((int)Define.TemplateIDs.SkillType.PaladinSwing);
+
+            // if (Input.GetKeyDown(KeyCode.Space))
+            // {
+            //     // SkillBook.ActivateSkill<Melee1HSwing>((int)Define.SkillType.Melee1HSwing);
+            //     // SkillBook.ActivateRepeatSkill((int)Define.TemplateIDs.SkillType.InfernoSwing);
+            //     PAC.MeleeSlash(1f);
+            // }
+
+            // if (Input.GetKeyDown(KeyCode.T))
+            //     Managers.Effect.StartHitEffect(gameObject, Color.white);
+
+            // if (Input.GetKeyDown(KeyCode.R))
+            //     Managers.Effect.EndHitEffect(gameObject);
+
+            // if (Input.GetKeyDown(KeyCode.T))
+            // {
+            //     PAC.Stun(); --> Effect Manager에서 제어
+            // }
+        }
+
+        private void OnDestroy()
+        {
+            if (Managers.Game != null)
+                Managers.Game.OnMoveDirChanged -= OnMoveDirChangedHandler;
         }
 
         // private void CollectEnv2() // LEGACY

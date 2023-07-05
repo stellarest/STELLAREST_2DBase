@@ -22,7 +22,6 @@ namespace STELLAREST_2D
             }
         }
 
-        // 나중에 수정. 일단은 Fixed
         private void RotateFirearm2H(float angle)
         {
         }

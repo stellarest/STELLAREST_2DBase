@@ -1,5 +1,8 @@
+using System.Diagnostics;
 using System.Collections.Generic;
 using UnityEngine;
+
+using Debug = UnityEngine.Debug;
 
 namespace STELLAREST_2D
 {
@@ -65,6 +68,24 @@ namespace STELLAREST_2D
             
             return spawnPosition;
         }
+
+        [Conditional("UNITY_EDITOR")]
+        public static void InitLog(System.Type type)
+        {
+            Debug.Log("### " + type + "::Init ###");
+        }
+
+        [Conditional("UNITY_EDITOR")]
+        public static void LogWarning(string message)
+        {
+            Debug.LogWarning($"### Something is wrong !! : {message} ###");
+        }
+        
+        [Conditional("UNITY_EDITOR")]
+        public static void LogWhite(string message)
+        {
+            Debug.Log($"<color=white>{message}</color>");
+        }
     }
 
     public static class TempPrefabKeyLoader
@@ -76,14 +97,21 @@ namespace STELLAREST_2D
         public static readonly string EXP_GEM;
         public static readonly string BOSS;
 
+
+        public static readonly string CHICKEN_02;
+
         static TempPrefabKeyLoader()
         {
             SLIME = Managers.Data.GetPrefabKey("Slime");
             SNAKE = Managers.Data.GetPrefabKey("Snake");
             GOBLIN = Managers.Data.GetPrefabKey("Goblin");
-            TEST_MAP = Managers.Data.GetPrefabKey("TestMap");
+            //TEST_MAP = Managers.Data.GetPrefabKey("TestMap");
+            TEST_MAP = Managers.Data.GetPrefabKey("Map_Tile_01_T.prefab");
             EXP_GEM = Managers.Data.GetPrefabKey("EXPGem");
             BOSS = Managers.Data.GetPrefabKey("Boss");
+
+
+            CHICKEN_02 = Managers.Data.GetPrefabKey("Chicken_02");
         }
     }
 }

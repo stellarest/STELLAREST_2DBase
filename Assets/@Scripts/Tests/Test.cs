@@ -8,11 +8,41 @@ namespace STELLAREST_2D.Test
     {
         public AnimationCurve ViewCurveShape;
         private AnimationCurve _curve;
+
+        public enum MyEnumTest
+        {
+            HongGilDong = 10001,
+            KimDDoKkang = 10002,
+            SiRaSoNi = 10003
+        }
+
+        [ContextMenu("T_E_S_T")]
+        public void T_E_S_T()
+        {
+            List<int> lst = new List<int>();
+            lst.Add(10001);
+            lst.Add(10002);
+
+            // 헐.. 이렇게하면 int가 나오고
+            // foreach(int t in lst)
+            // {
+            //     string name = t.ToString();
+            //     Debug.Log(name);
+            // }
+
+            // 이렇게하면 Enum 이름으로 나옴
+            // foreach (MyEnumTest t in lst)
+            // {
+            //     string name = t.ToString();
+            //     Debug.Log(name);
+            // }
+        }
+
         private void Start()
         {
-            _curve = new AnimationCurve(new Keyframe(0, 0), new Keyframe(1, 3));
-            _curve.preWrapMode = WrapMode.PingPong;
-            _curve.postWrapMode = WrapMode.PingPong;
+            // _curve = new AnimationCurve(new Keyframe(0, 0), new Keyframe(1, 3));
+            // _curve.preWrapMode = WrapMode.PingPong;
+            // _curve.postWrapMode = WrapMode.PingPong;
 
             // Managers.Resource.LoadAllAsync<Object>("PreLoad", (delegate (string key, int count, int totalCount)
             // {
@@ -24,22 +54,22 @@ namespace STELLAREST_2D.Test
             // }));
         }
 
-        float elapsedTime = 0f;
-        float desiredTime = 3f;
+        // float elapsedTime = 0f;
+        // float desiredTime = 3f;
 
-        private void Update()
-        {
-            elapsedTime += Time.deltaTime;
-            float percent = elapsedTime / desiredTime;
-            // 0 ~ 3초까진 Ping으로 올라가고 (to 100%)
-            // 3 ~ 6초까진 Pong으로 내려옴. 총 6초 (to 200%)
-            if (percent < 2f)
-            {
-                Debug.Log("Time : " + elapsedTime);
-                Debug.Log("Percent : " + percent);
-                transform.position = new Vector3(transform.position.x, _curve.Evaluate(percent), transform.position.z);
-            }
-        }
+        // private void Update()
+        // {
+        //     elapsedTime += Time.deltaTime;
+        //     float percent = elapsedTime / desiredTime;
+        //     // 0 ~ 3초까진 Ping으로 올라가고 (to 100%)
+        //     // 3 ~ 6초까진 Pong으로 내려옴. 총 6초 (to 200%)
+        //     if (percent < 2f)
+        //     {
+        //         Debug.Log("Time : " + elapsedTime);
+        //         Debug.Log("Percent : " + percent);
+        //         transform.position = new Vector3(transform.position.x, _curve.Evaluate(percent), transform.position.z);
+        //     }
+        // }
 
         // public Transform From;
         // public Transform To;

@@ -37,7 +37,7 @@ namespace STELLAREST_2D
 
             // this(투사체)가 아니라 owner로. 나중에 어그로 이런거 고려하려면
             // *** SetInfo하기전에 먼저 충돌되면 문제가 발생할 수도 있다. ***
-            mc.OnDamaged(_owner, damage: Damage);
+            //mc.OnDamaged(_owner, null, damage: Damage);
             StopDestroy();
 
             Managers.Object.Despawn(this);
