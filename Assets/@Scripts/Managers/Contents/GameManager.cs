@@ -43,6 +43,5 @@ namespace STELLAREST_2D
                 OnKillCountChanged?.Invoke(KillCount);
             }
         }
-
     }
 }

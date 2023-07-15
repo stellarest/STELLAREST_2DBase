@@ -15,7 +15,7 @@ namespace STELLAREST_2D.Data
     {
         public int TemplateID;
         public string Name;
-        public string PrefabLabel;
+        public string PrimaryLabel;
         public int InGameGrade;
         public float MaxHp;
         public float MaxHpUpRate;
@@ -38,7 +38,6 @@ namespace STELLAREST_2D.Data
         public float Luck;
         public float LuckUpRate;
         public float TotalExp;
-        public Define.WeaponType WeaponType;
         public string IconLabel;
         public List<int> InGameSkillList;
     }
@@ -51,7 +50,7 @@ namespace STELLAREST_2D.Data
         {
             if (creatures.Count == 0)
             {
-                Debug.LogAssertion("!!! Failed to load CreatureData.json !!!");
+                Utils.LogError("Failed to load CreatureData.json");
                 Debug.Break();
             }
 
@@ -59,7 +58,6 @@ namespace STELLAREST_2D.Data
             foreach (var creature in creatures)
                 dict.Add(creature.TemplateID, creature);
 
-            Debug.Log("<color=cyan>### Success to load CreatureData.json</color> ###");
             return dict;
         }
     }
@@ -70,14 +68,17 @@ namespace STELLAREST_2D.Data
         public int TemplateID;
         public int OriginTemplateID;
         public string Name;
-        public string PrefabLabel;
+        public string PrimaryLabel;
         public Define.InGameGrade InGameGrade;
-        public float InitDistance;
-        public bool IsRepeat;
-        public float Damage;
-        public float DamageUpRate;
-        public float ProjectileSpeed; // Projectile
-        public int ProjectileCount;
+        public float DamageUpMultiplier;
+        public bool IsPlayerDefaultAttack;
+        public float Speed;
+        public float Duration;
+        public int ContinuousCount;
+        public float ContinuousSpacing;
+        public int BounceCount;
+        public int PenetrationCount;
+        public int HitEffectTemplateID;
         public float CoolTime;
     }
 
@@ -90,7 +91,7 @@ namespace STELLAREST_2D.Data
         {
             if (skills.Count == 0)
             {
-                Debug.LogError("!!! Failed to load SkillData.json !!!");
+                Utils.LogError("Failed to load SkillData.json");
                 Debug.Break();
             }
 
@@ -98,7 +99,6 @@ namespace STELLAREST_2D.Data
             foreach (SkillData skill in skills)
                 dict.Add(skill.TemplateID, skill);
 
-            Debug.Log("<color=cyan>### Success to load SkillData.json</color> ###");
             return dict;
         }
     }
@@ -106,6 +106,5 @@ namespace STELLAREST_2D.Data
     [System.Serializable]
     public class WaveData
     {
-
     }
 }

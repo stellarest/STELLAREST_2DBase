@@ -106,23 +106,22 @@ namespace STELLAREST_2D
                 return false;
 
             ObjectType = Define.ObjectType.Monster;
-            Debug.Log("### MC INIT ###");
 
             // _animator = GetComponent<Animator>();
             // ObjectType = Define.ObjectType.Monster;
             // CreatureState = Define.CreatureState.Moving;
-            MAC = gameObject.GetOrAddComponent<MonsterAnimationController>();
             //_monsterState = Define.MonsterState.Run;
+            MAC = gameObject.GetOrAddComponent<MonsterAnimationController>();
+            MAC.Owner = this;
+
+            Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.MonsterBody);
 
             return true;
         }
 
-        public virtual void InitMonsterSkill() { }
-
         public override void SetInfo(int templateID)
         {
             base.SetInfo(templateID);
-            //Managers.Effect.Initi
         }
 
         protected override void SetSortingGroup()
@@ -137,25 +136,23 @@ namespace STELLAREST_2D
             // if (CreatureState != Define.CreatureState.Moving)
             //     return;
 
-            // 일단 Idle 상태에서도 시선은 계속 플레이어를 향하도록..
-            // 나중에 스턴 먹으면 그때는 전환이 안되도록
+            // 일단 Idle 상태에서도 시선은 계속 플레이어를 향하도록.. 나중에 스턴 먹으면 그때는 전환이 안되도록
             PlayerController pc = Managers.Game.Player;
-            Vector3 toPlayer = pc.transform.position - transform.position;
-            FlipX(toPlayer.x > 0 ? -1 : 1);
-
-            if (MonsterState != Define.MonsterState.Run)
-                return;
-
             if (pc.IsValid() == false)
                 return;
 
-            Vector3 newPos = transform.position + (toPlayer.normalized * Time.deltaTime * MoveSpeed);
-            //transform.position = newPos;
-            RigidBody.MovePosition(newPos);
+            Vector3 toPlayer = pc.transform.position - transform.position;
+            FlipX(toPlayer.x > 0 ? -1 : 1);
+            if (MonsterState != Define.MonsterState.Run)
+                return;
 
-            float sqrDist = _attackRange * _attackRange;
-            if (toPlayer.sqrMagnitude <= sqrDist)
-                MonsterState = Define.MonsterState.Skill;
+            // Vector3 newPos = transform.position + (toPlayer.normalized * Time.deltaTime * MoveSpeed);
+            // //transform.position = newPos;
+            // RigidBody.MovePosition(newPos);
+
+            // float sqrDist = Range * Range;
+            // if (toPlayer.sqrMagnitude <= sqrDist)
+            //     MonsterState = Define.MonsterState.Skill;
         }
 
         private void FlipX(float flipX)
@@ -163,34 +160,16 @@ namespace STELLAREST_2D
             transform.localScale = new Vector2(_initScale.x * flipX, _initScale.y);
         }
 
-        public override void OnDamaged(BaseController attacker, SkillBase skill, int damage)
+        public override void OnDamaged(BaseController attacker, SkillBase skill, float damage)
         {
             base.OnDamaged(attacker, skill, damage);
-            //Managers.Effect.HitEffect(gameObject);
         }       
 
-        private Coroutine _coBodyAttack;
         // private void OnCollisionEnter2D(Collision2D other)
         // {
         // }
 
-        private void OnTriggerEnter2D(Collider2D other)
-        {
-            if (this.IsValid() == false) // 풀링은 되어 있지만 이미 꺼져있을 경우
-                return;
-
-            PlayerController target = other.gameObject.GetComponent<PlayerController>();
-            if (target.IsValid() == false)
-                return;
-
-            // if (_coBodyAttack != null)
-            //     StopCoroutine(_coBodyAttack);
-
-            //_coBodyAttack = StartCoroutine(CoBodyAttack(target));
-            target.OnDamaged(this, null, Random.Range(1, 6));
-        }
-
-        // private void OnTriggerExit2D(Collider2D other)
+        // private void OnTriggerEnter2D(Collider2D other)
         // {
         //     if (this.IsValid() == false) // 풀링은 되어 있지만 이미 꺼져있을 경우
         //         return;
@@ -198,58 +177,12 @@ namespace STELLAREST_2D
         //     PlayerController target = other.gameObject.GetComponent<PlayerController>();
         //     if (target.IsValid() == false)
         //         return;
-
-        //     if (this.IsValid() == false)
-        //         return;
-
-        //     if (_coBodyAttack != null)
-        //         StopCoroutine(_coBodyAttack);
-
-        //     _coBodyAttack = null;
-        // }
-
-        // private IEnumerator CoBodyAttack(PlayerController target)
-        // {
-        //     while (true)
+                
+        //     if (Managers.Collision.CheckCollisionTarget(Define.CollisionLayers.PlayerBody, other.gameObject.layer))
         //     {
-        //         // *****
-        //         // 플레이어는 최소 0.5초에 한 번 도트 데미지를 받는다.
-        //         // (브로 포테토 같은 경우 1초정도 되는 것 같긴함)
-        //         // 그리고, 플레이어의 이펙트는 0.1초만에 재생됨
-        //         target.OnDamaged(this, null, Random.Range(1, 11));
-        //         yield return new WaitForSeconds(10f);
+        //         // 일단 SkillData null로.. 처리할게 많네
+        //         target.OnDamaged(this, null, 3f);
         //     }
-        // }
-
-        // private void OnCollisionExit2D(Collision2D other)
-        // {
-        // }
-
-        // private Coroutine _coDotDamage;
-        // public IEnumerator CoStartDotDamage(PlayerController target)
-        // {
-        //     while (true)
-        //     {
-        //         // *** 데미지는 무조건 피해자쪽에서 처리하는것이 좋다 ***
-        //         target.OnDamaged(this, 2); // 도트 데미지 예시..
-        //         yield return new WaitForSeconds(0.1f);
-        //     }
-        // }
-
-        // protected override void OnDead()
-        // {
-        //     // 보스는 여기 안탐
-        //     base.OnDead();
-        //     Managers.Game.KillCount++;
-
-        //     if (_coDotDamage != null)
-        //         StopCoroutine(_coDotDamage);
-        //     _coDotDamage = null;
-
-        //     GemController gc = Managers.Object.Spawn<GemController>(transform.position);
-
-        //     //Managers.Object.Despawn<MonsterController>(this);
-        //     Managers.Object.Despawn(this);
         // }
     }
 }

@@ -55,6 +55,7 @@ namespace STELLAREST_2D
 
         public override void MeleeSlash(float attackSpeed = 1f)
         {
+            // attackSpeed = 2f; // 5f : SUPER MAX SLASH ANIM SPEED
             _animController.SetFloat(ATTACK_SPEED, attackSpeed);
             _animController.SetTrigger(SLASH);
         }

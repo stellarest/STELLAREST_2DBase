@@ -1,46 +1,113 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace STELLAREST_2D
 {
     public class ProjectileController : SkillBase
     {
-        private CreatureController _owner;
-        private Vector3 _moveDir; // 방향 속도 등등 나중에 데이터 시트에서 불러와야함.
-        private float _lifetime = 10.0f; // 데이터로 빼야함
+        private Rigidbody2D _rigid;
 
         public override bool Init()
         {
             base.Init();
-            StartDestroy(_lifetime);
+            _rigid = GetComponent<Rigidbody2D>();
+
             return true;
         }
 
-        public void SetInfo(CreatureController owner, Vector3 moveDir)
+        private Vector3 _shootDir;
+        private float _speed;
+        private float _initialTurningDir = 0f; // turn -> turn 하면 다시 파티클이 플레이어를 쫓아가는 것을 막아줌, 필요시 사용
+        private bool _offParticle = false;
+
+        public void SetInfo(CreatureController owner, Data.SkillData skillData, Vector3 shootDir)
         {
-            this._owner = owner;
-            this._moveDir = moveDir;
+            this.Owner = owner;
+            this.SkillData = skillData;
+            this._shootDir = shootDir;
+
+            _initialTurningDir = Managers.Game.Player.TurningAngle;
+            _offParticle = false;
+
+            StartDestroy(skillData.Duration);
+
+            switch (skillData.OriginTemplateID)
+            {
+                case (int)Define.TemplateIDs.SkillType.PaladinSwing:
+                    GetComponent<PaladinSwing>().SetSkillInfo(owner, skillData.TemplateID);
+                    StartCoroutine(CoPaladinSwing());
+                    break;
+            }
         }
 
-        // public override void UpdateController()
-        // {
-        //     base.UpdateController();
-        //     transform.position += _moveDir * ProjectileSpeed * Time.deltaTime;
-        // }
+        private IEnumerator CoPaladinSwing()
+        {
+            while (true)
+            {
+                // ControlCollisionTime(SkillData.Duration - 0.1f); // 필요할 때 사용
+
+                // Projectile Script.cs
+                // _speed : Projectile Speed
+                if (Managers.Game.Player.IsMoving && _offParticle == false) // Moving Melee Attack
+                {
+                    if (Managers.Game.Player.IsInLimitMaxPosX || Managers.Game.Player.IsInLimitMaxPosY)
+                    {
+                        float minSpeed = Managers.Game.Player.MovementPower + SkillData.Speed;
+                        float maxSpeed = Owner.CreatureData.MoveSpeed + SkillData.Speed;
+
+                        float movementPowerRatio = Managers.Game.Player.MovementPower / Owner.CreatureData.MoveSpeed;
+                        _speed = Mathf.Lerp(minSpeed, maxSpeed, movementPowerRatio);
+                    } 
+                    else
+                        _speed = Owner.CreatureData.MoveSpeed + SkillData.Speed;
+                }
+                else // Static Melee Attack
+                    _speed = SkillData.Speed;
+
+                SetOffParticle();
+                transform.position += _shootDir * _speed * Time.deltaTime;
+
+                yield return null;
+            }
+        }
+
+        private float _sensitivity = 0.6f;
+        private void SetOffParticle()
+        {
+            if (_initialTurningDir != Managers.Game.Player.TurningAngle)
+                _offParticle = true;
+            if (Managers.Game.Player.IsMoving == false)
+                _offParticle = true;
+            // if (Vector3.Distance(Managers.Game.Player.ShootDir, _shootDir) > _sensitivity)
+            //     _offParticle = true;
+            if ((Managers.Game.Player.ShootDir - _shootDir).sqrMagnitude > _sensitivity * _sensitivity)
+                _offParticle = true;
+        }
+
+        float delta = 0f;
+        private void ControlCollisionTime(float controlTime)
+        {
+            delta += Time.deltaTime;
+            if (controlTime <= delta)
+            {
+                GetComponent<Collider2D>().enabled = false;
+                delta = 0f;
+            }
+        }
 
         private void OnTriggerEnter2D(Collider2D other)
         {
-            MonsterController mc = other.gameObject.GetComponent<MonsterController>();
-            if (mc.IsValid() == false) // 몬스터가 pooling된 객체라는 것도 생각해야되서 IsValid로 체크하자
-                return; // 이미 몬스터가 죽었다는 의미
-            if (this.IsValid() == false) // 총알 자기 자신이 죽었는데 또 들어올수도 있음. 이중으로 체크
+            // SkillData.PenetrationCount // -1 : 무제한 관통
+            MonsterController mc = other.GetComponent<MonsterController>();
+            if (mc.IsValid() == false)
                 return;
 
-            // this(투사체)가 아니라 owner로. 나중에 어그로 이런거 고려하려면
-            // *** SetInfo하기전에 먼저 충돌되면 문제가 발생할 수도 있다. ***
-            //mc.OnDamaged(_owner, null, damage: Damage);
-            StopDestroy();
-
-            Managers.Object.Despawn(this);
+            if (Managers.Collision.CheckCollisionTarget(Define.CollisionLayers.MonsterBody, other.gameObject.layer))
+            {
+                Debug.Log("DMG : " + Owner.CreatureData.Power * SkillData.DamageUpMultiplier);
+                mc.OnDamaged(Owner, this, Owner.CreatureData.Power * SkillData.DamageUpMultiplier);
+            }
         }
     }
 }

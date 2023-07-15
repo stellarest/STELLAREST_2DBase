@@ -44,7 +44,10 @@ namespace STELLAREST_2D
                 return;
 
             if (Managers.Pool.Push(go))
+            {
+                Debug.Log("DES PROJ..2");
                 return;
+            }
 
             UnityEngine.Object.Destroy(go, Time.deltaTime);
         }

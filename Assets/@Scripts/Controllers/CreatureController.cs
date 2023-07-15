@@ -9,16 +9,12 @@ namespace STELLAREST_2D
         public PlayerAnimationController PAC { get; protected set; }
         public MonsterAnimationController MAC { get; protected set; }
         public Rigidbody2D RigidBody { get; protected set; }
-        public Collider2D AttackCol { get; protected set; } // Creature에서 필요한 경우 사용
-
-        // public Data.SkillData SkillData { get; protected set; } // 굳이 SkillBook이 있는데 왜??
+        public Collider2D BodyCol { get; protected set; }
         public SkillBook SkillBook { get; protected set; }
-
-        protected WeaponController WeaponController { get; set; }
         public bool IsPlayingDamageEffect { get; set; } = false;
+        public bool IsAttackStart { get; set; }
 
         public Define.InGameGrade CreatureGrade { get; set; } = Define.InGameGrade.Normal;
-
         public Data.CreatureData CreatureData { get; protected set; }
         public int TemplateID { get; protected set; }
         public string CreatureName { get; protected set; }
@@ -36,16 +32,10 @@ namespace STELLAREST_2D
         public float TotalExp { get; protected set; }
         // WeaponType, IconLabel은 일단 무시
 
-
-        private Define.WeaponType _weaponType;
-        public Define.WeaponType WeaponType { get => _weaponType; protected set { _weaponType = value; } }
-
         private Vector2 _moveDir;
         public Vector2 MoveDir { get => _moveDir; set { _moveDir = value.normalized; } }
         public bool IsMoving { get => _moveDir != Vector2.zero; }
-
         protected Vector2 _initScale;
-        protected float _attackRange = 1f;
 
         public bool IsMonster()
         {
@@ -67,16 +57,15 @@ namespace STELLAREST_2D
             }
         }
 
-        protected void SetInitAttackCollider(Collider2D collider)
-        {
-            AttackCol = collider;
-            AttackCol.enabled = false;
-        }
+        public bool IsPlayer() => this.ObjectType == Define.ObjectType.Player;
 
         public virtual void SetInfo(int templateID)
         {
             RigidBody = gameObject.GetOrAddComponent<Rigidbody2D>();
             SkillBook = gameObject.GetOrAddComponent<SkillBook>();
+            SkillBook.Owner = this;
+
+            BodyCol = gameObject.GetComponent<Collider2D>();
             _initScale = transform.localScale;
 
             if (Managers.Data.CreatureDict.TryGetValue(templateID, out Data.CreatureData creatureData) == false)
@@ -89,7 +78,6 @@ namespace STELLAREST_2D
             SetInitialSkill(creatureData);
 
             SetSortingGroup();
-            SetWeapon();
         }
 
         protected virtual void SetInitialStat(Data.CreatureData creatureData)
@@ -109,67 +97,60 @@ namespace STELLAREST_2D
             RepeatAttackCoolTime = creatureData.RepeatAttackCoolTime;
             Luck = creatureData.Luck;
             TotalExp = creatureData.TotalExp;
-            // WeaponType, IconLabel은 일단 무시
         }
 
         protected virtual void SetInitialSkill(Data.CreatureData creatureData)
         {
+            Define.InGameGrade skillGrade = Define.InGameGrade.Normal;
             foreach (Define.TemplateIDs.SkillType skill in creatureData.InGameSkillList)
             {
                 int templateID = (int)skill;
                 string className = Define.NameSpaceLabels.STELLAREST_2D + "." + skill.ToString();
+                //string primaryKey = skill.ToString() + "_" + Define.InGameGrade.Normal.ToString() + ".prefab";
 
-                if (typeof(RepeatSkill).IsAssignableFrom(System.Type.GetType(className)))
+                //200100, 200101, 200102, 200103 
+                // PaladinSwing_Normal.prefab
+                // PaladinSwing_Rare.prefab ...
+                for (int i = templateID; i <= templateID + (int)Define.InGameGrade.Epic; ++i)
                 {
-                    string primaryKey = skill.ToString() + ".prefab";
+                    string primaryKey = skill.ToString() + "_" + skillGrade.ToString() + ".prefab";
+                    skillGrade++;
                     GameObject go = Managers.Resource.Instantiate(primaryKey);
-                    RepeatSkill repeatSkill = go.GetComponent<RepeatSkill>();
-                    if (repeatSkill == null)
+                    if (go == null)
+                        continue;
+
+                    if (typeof(RepeatSkill).IsAssignableFrom(System.Type.GetType(className)))
                     {
-                        Debug.LogError("@@@ You have to add skill component in skill prefab in advance !!");
-                        Debug.Break();
+                        RepeatSkill repeatSkill = go.GetOrAddComponent<RepeatSkill>();
+                        //repeatSkill.SetSkillInfo(this, templateID); // 이걸로 해도 되긴 하지만
+                        repeatSkill.Owner = this;
+                        repeatSkill.SkillData = Managers.Data.SkillDict[templateID]; // 이게 더 직관적
+
+                        repeatSkill.OnPreSpawned();
+                        SkillBook.AddRepeatSkill(repeatSkill);
                     }
-                    repeatSkill.SetInitialSkillInfo(this, templateID);
-                    SkillBook.AddRepeatSkill(repeatSkill);
-                }
-                else if (typeof(SequenceSkill).IsAssignableFrom(System.Type.GetType(className)))
-                {
-                    Debug.Log(className + " is inheritted from SequenceSkill !!");
-                }
-                else
-                {
-                    Debug.LogError("@@@ Something is wrong !! @@@");
-                    Debug.Break();
+                    else if (typeof(SequenceSkill).IsAssignableFrom(System.Type.GetType(className)))
+                    {
+                        // SequenceSkill sequenceSkill = go.GetComponent<SequenceSkill>();
+                        // //sequenceSkill.SetSkillInfo(this, templateID);
+                        // SkillBook.AddSequenceSkill(sequenceSkill);
+                    }
+                    else
+                        Utils.LogError("Something is wrong !!");
+
+                    go.name += "_Spawned";
+                    go.transform.SetParent(Managers.Object.SpawnedSkills.transform);
+                    go.SetActive(false);
                 }
             }
+        }
+
+        public void CoFadeEffect()
+        {
+            StartCoroutine(Managers.Effect.CoFadeEffect(this));
         }
 
         protected virtual void SetSortingGroup() { }
-
-        private void SetWeapon()
-        {
-            WeaponController = gameObject.GetOrAddComponent<WeaponController>();
-            switch (WeaponType)
-            {
-                case Define.WeaponType.None:
-                    break;
-
-                case Define.WeaponType.Melee1H:
-                    {
-                    }
-                    break;
-
-                case Define.WeaponType.Firearm2H:
-                    {
-                        //Animator.SetBool("Ready", true); // 임시
-                        WeaponController.GrabPoint = Utils.FindChild<Transform>(gameObject, Define.PlayerController.RIFLE_GRAB_POINT, true);
-                        WeaponController.WeaponPoint = Utils.FindChild<Transform>(gameObject, Define.PlayerController.FIRE_TRANSFORM, true);
-                    }
-                    break;
-            }
-        }
-
-
 
         public override bool Init()
         {
@@ -179,39 +160,45 @@ namespace STELLAREST_2D
             return true;
         }
 
-        public virtual void OnDamaged(BaseController attacker, SkillBase skill, int damage)
+        public virtual void OnDamaged(BaseController attacker, SkillBase skill, float damage)
         {
-            // Hit Effect 처리
             if (gameObject.IsValid() || this.IsValid())
                 StartCoroutine(HitEffect(attacker, damage));
         }
 
-        private bool _isPlayHitEffect = false;
-        public virtual IEnumerator HitEffect(BaseController attacker, int damage)
+        private bool _isPlayingPlayerHitEffect = false;
+        public virtual IEnumerator HitEffect(BaseController attacker, float damage)
         {
-            if (_isPlayHitEffect == false)
+            if (_isPlayingPlayerHitEffect == false)
             {
                 if (this?.IsMonster() == false)
                 {
                     Debug.Log("Damage To Player !!");
-                    attacker.GetComponent<CreatureController>().AttackCol.enabled = false;
+                    //attacker.GetComponent<CreatureController>().AttackCol.enabled = false;
 
-                    _isPlayHitEffect = true;
-                    // Managers.Effect.StartHitEffect(gameObject);
-                    Managers.Effect.StartHitEffectToPlayer();
+                    _isPlayingPlayerHitEffect = true;
+                    Managers.Effect.StartHitEffect(this);
+                    Managers.Effect.ShowDamageFont(this, damage);
 
-                    Managers.Effect.ShowDamageNumber(Define.PrefabLabels.DMG_NUMBER_TO_PLAYER,
-                        transform.position + (Vector3.up * 2.5f), damage);
-
-                    yield return new WaitForSeconds(0.1f); // 데미지는 0.1초에 한 번씩..
-
-                    Managers.Effect.EndHitEffectToPlayer();
-
-                    _isPlayHitEffect = false;
+                    yield return new WaitForSeconds(0.1f);
+                    Managers.Effect.EndHitEffect(this);
+                    _isPlayingPlayerHitEffect = false;
                 }
                 else
                 {
                     Debug.Log("Damage To Monster !!");
+                    Managers.Effect.StartHitEffect(this);
+
+                    // TEMP
+                    int rand = Random.Range(0, 5);
+                    if (rand <= 3)
+                        Managers.Effect.ShowDamageFont(this, damage);
+                    else
+                        Managers.Effect.ShowDamageFont(this, damage, true);
+
+                    yield return new WaitForSeconds(0.1f);
+                    Managers.Effect.EndHitEffect(this);
+
                 }
 
                 Hp -= damage;

@@ -15,10 +15,12 @@ namespace STELLAREST_2D
         public HashSet<GemController> Gems { get; } = new HashSet<GemController>();
         // EnvCont는 나중에 추가하던지
         public GridController GridController { get; private set; }
+        public GameObject SpawnedSkills { get; private set; }
 
         public void Init()
         {
             GridController = UnityEngine.GameObject.Find("@Grid").GetComponent<GridController>();
+            SpawnedSkills = new GameObject() { name = "@SpawnedSkills "};
         }
 
         public T Spawn<T>(Vector3 position, int templateID = -1) where T : BaseController
@@ -28,26 +30,28 @@ namespace STELLAREST_2D
             {
                 if (type == typeof(PlayerController))
                 {
-                    GameObject go = Managers.Resource.Instantiate(Managers.Data.CreatureDict[templateID].PrefabLabel, pooling: false);
+                    GameObject go = Managers.Resource.Instantiate(Managers.Data.CreatureDict[templateID].PrimaryLabel, pooling: false);
                     PlayerController pc = go.transform.GetChild(0).gameObject.GetOrAddComponent<PlayerController>();
                     Player = pc;
 
                     pc.SetInfo(templateID);
-                    Managers.Effect.SetInitialPlayerMat(pc);
+                    Managers.Effect.SetInitialCreatureMaterials(pc);
 
                     return pc as T;
                 }
 
                 if (type == typeof(Chicken))
                 {
-                    GameObject go = Managers.Resource.Instantiate(Managers.Data.CreatureDict[templateID].PrefabLabel, pooling: true);
+                    GameObject go = Managers.Resource.Instantiate(Managers.Data.CreatureDict[templateID].PrimaryLabel, pooling: true);
                     go.transform.position = position;
 
-                    // go.transform.position = new Vector3(10f, 10f, 1f); // TEMP
                     Chicken mc = go.GetOrAddComponent<Chicken>();
                     mc.SetInfo(templateID);
-                    mc.InitMonsterSkill();
                     Monsters.Add(mc);
+                    
+                    //mc.InitMonsterSkill();
+                    Managers.Effect.SetInitialCreatureMaterials(mc);
+                    mc.CoFadeEffect();
 
                     return mc as T;
                 }
@@ -68,7 +72,6 @@ namespace STELLAREST_2D
                     Sprite yellowOrBlue = Managers.Resource.Load<Sprite>(spriteKey);
                     if (yellowOrBlue != null)
                         gc.GetComponent<SpriteRenderer>().sprite = yellowOrBlue;
-
                 }
                 GridController.Add(go);
                 Gems.Add(gc);
@@ -77,12 +80,13 @@ namespace STELLAREST_2D
             }
             else if (type == typeof(ProjectileController))
             {
-                // GameObject go = Managers.Resource.Instantiate(skillData.prefab, pooling: true);
-                // go.transform.position = position;
+                GameObject go = Managers.Resource.Instantiate(Managers.Data.SkillDict[templateID].PrimaryLabel, pooling: true);
+                go.transform.position = position;
+                
+                ProjectileController pc = go.GetOrAddComponent<ProjectileController>();
+                Projectiles.Add(pc);
 
-                // ProjectileController pc = go.GetOrAddComponent<ProjectileController>();
-                // Projectiles.Add(pc);
-                // return pc as T;
+                return pc as T;
             }
 
             return null;

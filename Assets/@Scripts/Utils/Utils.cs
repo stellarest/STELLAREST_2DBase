@@ -72,46 +72,26 @@ namespace STELLAREST_2D
         [Conditional("UNITY_EDITOR")]
         public static void InitLog(System.Type type)
         {
-            Debug.Log("### " + type + "::Init ###");
+            Debug.Log($"{type}::Init");
         }
 
         [Conditional("UNITY_EDITOR")]
-        public static void LogWarning(string message)
+        public static void LogError(string message)
         {
-            Debug.LogWarning($"### Something is wrong !! : {message} ###");
+            Debug.LogError($"### !!! {message} !!! ###");
+            Debug.Break();
         }
         
         [Conditional("UNITY_EDITOR")]
-        public static void LogWhite(string message)
+        public static void Log(string message)
         {
             Debug.Log($"<color=white>{message}</color>");
         }
-    }
 
-    public static class TempPrefabKeyLoader
-    {
-        public static readonly string SLIME;
-        public static readonly string SNAKE;
-        public static readonly string GOBLIN;
-        public static readonly string TEST_MAP;
-        public static readonly string EXP_GEM;
-        public static readonly string BOSS;
-
-
-        public static readonly string CHICKEN_02;
-
-        static TempPrefabKeyLoader()
+        [Conditional("UNITY_EDITOR")]
+        public static void LogStrong(string message)
         {
-            SLIME = Managers.Data.GetPrefabKey("Slime");
-            SNAKE = Managers.Data.GetPrefabKey("Snake");
-            GOBLIN = Managers.Data.GetPrefabKey("Goblin");
-            //TEST_MAP = Managers.Data.GetPrefabKey("TestMap");
-            TEST_MAP = Managers.Data.GetPrefabKey("Map_Tile_01_T.prefab");
-            EXP_GEM = Managers.Data.GetPrefabKey("EXPGem");
-            BOSS = Managers.Data.GetPrefabKey("Boss");
-
-
-            CHICKEN_02 = Managers.Data.GetPrefabKey("Chicken_02");
+            Debug.Log($"<color=magenta>{message}</color>");
         }
     }
 }

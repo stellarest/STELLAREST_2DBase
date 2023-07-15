@@ -7,35 +7,45 @@ namespace STELLAREST_2D
     public class SkillBase : BaseController
     {
         public CreatureController Owner { get; set; }
-        public Data.SkillData SkillData { get; protected set ; }
+        public Data.SkillData SkillData { get; set; }
 
-        public virtual void ActivateSkill() { }
-        protected virtual void GenerateProjectile(int templateID, CreatureController owner, Vector3 startPos, Vector3 dir, Vector3 targetPos)
-        {
-            ProjectileController pc = Managers.Object.Spawn<ProjectileController>(startPos, templateID);
-            pc.SetInfo(owner, dir);
-        }
+        public virtual void ActivateSkill() => gameObject.SetActive(true);
+        public virtual void DeactivateSkill() { }
 
-        public bool IsLearnedSkill => SkillGrade != Define.InGameGrade.Normal;
-        public Define.InGameGrade SkillGrade { get; protected set; }
+        // protected virtual void GenerateProjectile(int templateID, CreatureController owner, Vector3 startPos, Vector3 dir, Vector3 targetPos)
+        // {
+        //     ProjectileController pc = Managers.Object.Spawn<ProjectileController>(startPos, templateID);
+        //     //pc.SetInfo(owner, dir);
+        // }
+
+        // protected virtual void GenerateProjectile(Vector3 startPos, SkillBase skill)
+        // {
+        //     ProjectileController pc = Managers.Object.Spawn<ProjectileController>(startPos, skill.SkillData.TemplateID);
+        //     //pc.SetInfo(owner, dir);
+        // }
 
         public void UpgradeSkill()
         {
             int currentID = SkillData.TemplateID;
             if (Managers.Data.SkillDict.TryGetValue(currentID + 1, out Data.SkillData newSkillData))
             {
-                SkillData = this.SkillGrade < newSkillData.InGameGrade ?
-                                newSkillData : this.SkillData;
-
-                this.SkillGrade = newSkillData.InGameGrade;
-
-                Utils.LogWhite("SkillData Upgrade !!");
+                StartCoroutine(CoWaitForUpgrade(newSkillData));
             }
             else
-                Utils.LogWhite("Already Max Skill Grade");
+                Utils.LogStrong("Failed to upgrade skill !!");
         }
 
-        public virtual void SetInitialSkillInfo(CreatureController owner, int templateID)
+        private IEnumerator CoWaitForUpgrade(Data.SkillData newSkillData)
+        {
+            yield return new WaitUntil(() => Owner.IsAttackStart);
+            SkillData = newSkillData;
+            if (newSkillData.IsPlayerDefaultAttack)
+                Managers.Game.Player.AnimEvents.PlayerDefaultAttack++;
+
+            Utils.Log("Success to upgrade skill !!");
+        }
+
+        public virtual void SetSkillInfo(CreatureController owner, int templateID)
         {
             if (Managers.Data.SkillDict.TryGetValue(templateID, out Data.SkillData skillData) == false)
             {
@@ -45,8 +55,21 @@ namespace STELLAREST_2D
 
             this.Owner = owner;
             this.SkillData = skillData;
-            this.SkillGrade = skillData.InGameGrade;
-            Debug.Log("SkillGrade : " + this.SkillGrade);
+        }
+
+        public virtual void SetAngle(float angle)
+        {
+            // 일단 회전만 설정
+            Vector3 tempAngle = Managers.Game.Player.Indicator.eulerAngles;
+            tempAngle.z += angle;
+            transform.rotation = Quaternion.Euler(tempAngle);
+
+            var main = GetComponent<ParticleSystem>().main;
+            main.startRotation = Mathf.Deg2Rad * tempAngle.z * -1f;
+            main.flipRotation = Managers.Game.Player.TurningAngle;
+            transform.position = Managers.Game.Player.transform.position;
+            transform.localScale = Managers.Game.Player.AnimationLocalScale;
+            GetComponent<Collider2D>().enabled = true;
         }
 
         private Coroutine _coDestroy;
@@ -70,7 +93,7 @@ namespace STELLAREST_2D
             yield return new WaitForSeconds(delaySeconds);
             if (this.IsValid())
             {
-                Managers.Object.Despawn(this);
+                Managers.Object.Despawn(this.GetComponent<ProjectileController>());
             }
         }
     }

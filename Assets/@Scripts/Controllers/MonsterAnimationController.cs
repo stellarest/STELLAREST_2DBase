@@ -11,7 +11,7 @@ namespace STELLAREST_2D
         private readonly int ATTACK = Animator.StringToHash("Attack");
         private readonly int ACTION = Animator.StringToHash("Action");
         private readonly int STATE = Animator.StringToHash("State");
-        private readonly int MOVE_SPEED = Animator.StringToHash("MoveSpeed");
+        private readonly int BODY_SPEED = Animator.StringToHash("BodySpeed");
 
         private readonly int FACE_DEFAULT = 0;
         private readonly int FACE_ANGRY = 1;
@@ -38,7 +38,7 @@ namespace STELLAREST_2D
 
         public override void Run(float speed = 1f)
         {
-            _animController.SetFloat(MOVE_SPEED, speed);
+            _animController.SetFloat(BODY_SPEED, speed);
             _animController.SetInteger(STATE, (int)Define.MonsterState.Run);
         }
 
@@ -56,12 +56,6 @@ namespace STELLAREST_2D
         {
             MonsterBase.SetHead(FACE_DEAD);
         }
-
-        // private void Update()
-        // {
-        //     if (Input.GetKeyDown(KeyCode.W))
-        //         Attack();
-        // }
     }
 }
 

@@ -17,23 +17,9 @@ namespace STELLAREST_2D
                 // 굳이 count / totalCount를 적어놓은 이유는 처음에 로딩화면, 로딩바에서 1,2,3,4,5... 이를 이용해 퍼센테이지로 표현 가능
                 // 이런 프로세스바를 나중에 구현하기 위함
                 Debug.Log($"Key : {key}, Count : {count} / TotalCount : {totalCount}");
-                SetPrefabLabel(key);
                 if (count == totalCount)
                     StartLoaded();
             }));
-        }
-
-        private void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.T))
-            {
-            }
-        }
-
-        private void SetPrefabLabel(string primaryKey)
-        {
-            Debug.Log($"<color=white>Set Primary Key : {primaryKey}</color>");
-            Managers.Data.PrefabKeys.Add(primaryKey);
         }
 
         private SpawningPool _spawningPool;
@@ -97,7 +83,12 @@ namespace STELLAREST_2D
             joystick.name = "@Joystick"; // UI_Joystick라고 하기엔 좀 애매함
 
             // Create Spawning Pool
-            //_spawningPool = gameObject.AddComponent<SpawningPool>();
+            _spawningPool = gameObject.AddComponent<SpawningPool>();
+            
+            // Init Collision Layer
+            Managers.Collision.SetCollisionLayers(Define.CollisionLayers.PlayerAttack, Define.CollisionLayers.MonsterBody, true);
+            Managers.Collision.SetCollisionLayers(Define.CollisionLayers.PlayerBody, Define.CollisionLayers.MonsterAttack, true);
+
             // Camera Target
         }
 

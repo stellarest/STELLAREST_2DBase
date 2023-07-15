@@ -6,6 +6,7 @@ namespace STELLAREST_2D
 {
     public class AnimationController : BaseController
     {
+        public CreatureController Owner { get; set; }
         protected Animator _animController;
         public Animator AnimController => _animController;
 

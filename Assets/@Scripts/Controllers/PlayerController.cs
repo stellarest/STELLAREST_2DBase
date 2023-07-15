@@ -20,13 +20,13 @@ namespace STELLAREST_2D
 
         public Vector3 ShootDir => (_fireSocket.position - _indicator.position).normalized;
         //public PlayerAnimationController PAC { get; protected set; }
+
+        [field: SerializeField]
         public float TurningAngle { get; private set; }
 
         private GameObject _animChildObject;
         public Vector3 AnimationLocalScale => _animChildObject.transform.localScale;
-
-        private AnimationEvents _animEvents;
-        public AnimationEvents AnimEvents => _animEvents;
+        public AnimationEvents AnimEvents { get; private set; }
 
         private bool _getReady = false;
         public override bool Init()
@@ -35,29 +35,30 @@ namespace STELLAREST_2D
                 return false;
 
             ObjectType = Define.ObjectType.Player;
-            //Debug.Log("### PC::INIT ###");
             Utils.InitLog(this.GetType());
 
             Managers.Game.OnMoveDirChanged += OnMoveDirChangedHandler;
 
-            // TODO
             _animChildObject = Utils.FindChild(gameObject, "Animation");
-            if (_animChildObject == null)
-            {
-                Debug.Log("NULL ANIM CHILD OBJECT");
-            }
-            else
-                Debug.Log("VALID ANIM CHILD OBJECT");
-
-            _animEvents = _animChildObject.GetComponent<AnimationEvents>();
+            AnimEvents = _animChildObject.GetComponent<AnimationEvents>();
+            
             PAC = gameObject.GetOrAddComponent<PlayerAnimationController>();
+            PAC.Owner = this;
+
+            // TODO : 스킬은 처음에 UI에서 고르던 다른 방식으로 하던 지금처럼 하던 마음대로 채택
+            Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.PlayerBody);
+            return true;
+        }
+
+        public override void SetInfo(int templateID)
+        {
+            base.SetInfo(templateID);
+            GetIndicator();
 
             // TODO
-            // 원래는 처음에 UI에서 고르는것으로 해야되지만.. 일단 이렇게
-            // FireballSkill fs = Skills.AddSkill<FireballSkill>(transform.position);
-            // // 부모 자식으로 붙이던지 알아서..
-            // EgoSword es = Skills.AddSkill<EgoSword>(_indicator.position);
-            return true;
+            // Define.TemplateIDs.SkillType.PaladinSwing : UI에서 최초 캐릭터 셀렉트시 결정 
+            AnimEvents.PlayerDefaultAttack = Define.TemplateIDs.SkillType.PaladinSwing;
+            AnimEvents.OnRepeatAttack += SkillBook.PlayerDefaultAttack;
         }
 
         private void GetIndicator()
@@ -74,31 +75,27 @@ namespace STELLAREST_2D
             GetComponent<CircleCollider2D>().enabled = true;
         }
 
-        public override void SetInfo(int templateID)
-        {
-            Debug.Log("### PC::SET INFO ###");
-            base.SetInfo(templateID);
-            GetIndicator();
-            //SetInitialSkill();
-        }
-
         protected override void SetSortingGroup()
         {
             GetComponent<SortingGroup>().sortingOrder = (int)Define.SortingOrder.Player;
         }
 
+        public Vector3 StartAttackPos { get; private set; }
+        public Vector3 EndAttackPos { get; set; }
+        public float MovementPower => (EndAttackPos - StartAttackPos).magnitude;
         public void Attack()
         {
             switch (TemplateID)
             {
                 case (int)Define.TemplateIDs.Player.Gary_Paladin:
                     PAC.MeleeSlash(CreatureData.RepeatAttackAnimSpeed);
+                    StartAttackPos = transform.position;
+                    IsAttackStart = true;
                     break;
             }
         }
 
-        public float limitX;
-        public float limitY;
+
         public void MoveByJoystick()
         {
             Vector3 dir = MoveDir.normalized * MoveSpeed * Time.deltaTime;
@@ -121,17 +118,16 @@ namespace STELLAREST_2D
                 InGameLimitPos(transform.position);
             }
 
-            RigidBody.velocity = Vector3.zero;
+            //RigidBody.velocity = Vector3.zero;
         }
 
+        public bool IsFacingRight => (_animChildObject.transform.localScale.x != Define.PlayerController.CONSTANT_SCALE_X * -1f) ? true : false;
         private void Turn(float angle)
         {
             TurningAngle = Mathf.Sign(angle); // 각도 양수1, 음수-1
             Vector3 turnChara = new Vector3(TurningAngle * Define.PlayerController.CONSTANT_SCALE_X * -1f,
                                         Define.PlayerController.CONSTANT_SCALE_Y, Define.PlayerController.CONSTANT_SCALE_Z);
-            //transform.localScale = turnChara;
             _animChildObject.transform.localScale = turnChara;
-            //WeaponController.UpdateWeapon(WeaponType, angle);
         }
 
         private void InGameLimitPos(Vector3 position)
@@ -148,6 +144,23 @@ namespace STELLAREST_2D
             if (position.y >= Managers.Stage.RightTop.y)
                 transform.position = new Vector2(transform.position.x, Managers.Stage.RightTop.y);
         }
+
+        public bool IsInLimitPos()
+        {
+            if (Mathf.Abs(transform.position.x - Managers.Stage.LeftBottom.x) < Mathf.Epsilon ||
+                Mathf.Abs(transform.position.y - Managers.Stage.LeftBottom.y) < Mathf.Epsilon ||
+                Mathf.Abs(transform.position.x - Managers.Stage.RightTop.x) < Mathf.Epsilon ||
+                Mathf.Abs(transform.position.y - Managers.Stage.RightTop.y) < Mathf.Epsilon)
+                return true;
+            else
+                return false;
+        }
+
+        public bool IsInLimitMaxPosX => Mathf.Abs(transform.position.x - Managers.Stage.RightTop.x) < Mathf.Epsilon ||
+                                        Mathf.Abs(transform.position.x - Managers.Stage.LeftBottom.x) < Mathf.Epsilon;  
+
+        public bool IsInLimitMaxPosY => Mathf.Abs(transform.position.y - Managers.Stage.RightTop.y) < Mathf.Epsilon ||
+                                        Mathf.Abs(transform.position.y - Managers.Stage.LeftBottom.y) < Mathf.Epsilon;
 
         private void CollectEnv()
         {
@@ -193,19 +206,9 @@ namespace STELLAREST_2D
             }
         }
 
-        // private void OnCollisionEnter2D(Collision2D other)
-        // {
-        //     // MonsterController target = other.gameObject.GetComponent<MonsterController>();
-        //     // if (target == null) // 이거 target이 pull에 들어간 순간 유의해야함. null이 아니기 때문
-        //     //     return;
-        // }
-
-        public override void OnDamaged(BaseController attacker, SkillBase skill, int damage)
+        public override void OnDamaged(BaseController attacker, SkillBase skill, float damage)
         {
             base.OnDamaged(attacker, skill, damage);
-            // TEMP
-            // CreatureController cc = attacker as CreatureController;
-            // cc?.OnDamaged(this, 10000);
         }
 
         private void Update()
@@ -215,33 +218,18 @@ namespace STELLAREST_2D
 
             if (Input.GetKeyDown(KeyCode.Space))
                 SkillBook.ActivateRepeatSkill((int)Define.TemplateIDs.SkillType.PaladinSwing);
-
+                
             if (Input.GetKeyDown(KeyCode.T))
                 SkillBook.UpgradeRepeatSkill((int)Define.TemplateIDs.SkillType.PaladinSwing);
-
-            // if (Input.GetKeyDown(KeyCode.Space))
-            // {
-            //     // SkillBook.ActivateSkill<Melee1HSwing>((int)Define.SkillType.Melee1HSwing);
-            //     // SkillBook.ActivateRepeatSkill((int)Define.TemplateIDs.SkillType.InfernoSwing);
-            //     PAC.MeleeSlash(1f);
-            // }
-
-            // if (Input.GetKeyDown(KeyCode.T))
-            //     Managers.Effect.StartHitEffect(gameObject, Color.white);
-
-            // if (Input.GetKeyDown(KeyCode.R))
-            //     Managers.Effect.EndHitEffect(gameObject);
-
-            // if (Input.GetKeyDown(KeyCode.T))
-            // {
-            //     PAC.Stun(); --> Effect Manager에서 제어
-            // }
         }
 
         private void OnDestroy()
         {
             if (Managers.Game != null)
                 Managers.Game.OnMoveDirChanged -= OnMoveDirChangedHandler;
+
+            if (this.IsValid())
+                AnimEvents.OnRepeatAttack -= SkillBook.PlayerDefaultAttack;
         }
 
         // private void CollectEnv2() // LEGACY

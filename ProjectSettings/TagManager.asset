@@ -8,13 +8,13 @@ TagManager:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - Player
+  - 
   - Water
   - UI
-  - Monster
-  - Level
-  - SwingEffect
-  - 
+  - PlayerBody
+  - PlayerAttack
+  - MonsterBody
+  - MonsterAttack
   - 
   - 
   - 

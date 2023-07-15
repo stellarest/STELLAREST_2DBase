@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using STELLAREST_2D;
 
 namespace STELLAREST_2D.Test
 {
@@ -16,43 +17,61 @@ namespace STELLAREST_2D.Test
             SiRaSoNi = 10003
         }
 
-        [ContextMenu("T_E_S_T")]
-        public void T_E_S_T()
-        {
-            List<int> lst = new List<int>();
-            lst.Add(10001);
-            lst.Add(10002);
-
-            // 헐.. 이렇게하면 int가 나오고
-            // foreach(int t in lst)
-            // {
-            //     string name = t.ToString();
-            //     Debug.Log(name);
-            // }
-
-            // 이렇게하면 Enum 이름으로 나옴
-            // foreach (MyEnumTest t in lst)
-            // {
-            //     string name = t.ToString();
-            //     Debug.Log(name);
-            // }
-        }
-
+        //public float TEST_FADE = 0f;
         private void Start()
         {
-            // _curve = new AnimationCurve(new Keyframe(0, 0), new Keyframe(1, 3));
-            // _curve.preWrapMode = WrapMode.PingPong;
-            // _curve.postWrapMode = WrapMode.PingPong;
-
-            // Managers.Resource.LoadAllAsync<Object>("PreLoad", (delegate (string key, int count, int totalCount)
-            // {
-            //     // 굳이 count / totalCount를 적어놓은 이유는 처음에 로딩화면, 로딩바에서 1,2,3,4,5... 이를 이용해 퍼센테이지로 표현 가능
-            //     // 이런 프로세스바를 나중에 구현하기 위함
-            //     Debug.Log($"Key : {key}, Count : {count} / TotalCount : {totalCount}");
-            //     // if (count == totalCount)
-            //     //     StartLoaded();
-            // }));
+            gameObject.SetActive(true);
         }
+        
+        float _delta = 0f;
+        private void Update()
+        {
+            //GetComponent<SpriteRenderer>().material.SetFloat("_CustomFadeAlpha", TEST_FADE);
+            _delta += Time.deltaTime;
+            if (_delta >= 1f)
+            {
+                _delta = 0f;
+                Managers.Resource.Destroy(gameObject);
+            }
+        }
+
+        // [ContextMenu("T_E_S_T")]
+        // public void T_E_S_T()
+        // {
+        //     List<int> lst = new List<int>();
+        //     lst.Add(10001);
+        //     lst.Add(10002);
+
+        //     // 헐.. 이렇게하면 int가 나오고
+        //     // foreach(int t in lst)
+        //     // {
+        //     //     string name = t.ToString();
+        //     //     Debug.Log(name);
+        //     // }
+
+        //     // 이렇게하면 Enum 이름으로 나옴
+        //     // foreach (MyEnumTest t in lst)
+        //     // {
+        //     //     string name = t.ToString();
+        //     //     Debug.Log(name);
+        //     // }
+        }
+
+        // private void Start()
+        // {
+        //     // _curve = new AnimationCurve(new Keyframe(0, 0), new Keyframe(1, 3));
+        //     // _curve.preWrapMode = WrapMode.PingPong;
+        //     // _curve.postWrapMode = WrapMode.PingPong;
+
+        //     // Managers.Resource.LoadAllAsync<Object>("PreLoad", (delegate (string key, int count, int totalCount)
+        //     // {
+        //     //     // 굳이 count / totalCount를 적어놓은 이유는 처음에 로딩화면, 로딩바에서 1,2,3,4,5... 이를 이용해 퍼센테이지로 표현 가능
+        //     //     // 이런 프로세스바를 나중에 구현하기 위함
+        //     //     Debug.Log($"Key : {key}, Count : {count} / TotalCount : {totalCount}");
+        //     //     // if (count == totalCount)
+        //     //     //     StartLoaded();
+        //     // }));
+        // }
 
         // float elapsedTime = 0f;
         // float desiredTime = 3f;
@@ -162,7 +181,6 @@ namespace STELLAREST_2D.Test
         // }
 
         // public GameObject go;
-
         // private void Start()
         // {
         //     if (go != null)
@@ -185,7 +203,6 @@ namespace STELLAREST_2D.Test
         // }
 
         // private string myName = string.Empty;
-
         // private void Start()
         // {
         //     string monsterName = "Monster1 (Clone)";
@@ -194,4 +211,3 @@ namespace STELLAREST_2D.Test
         //     Debug.Log($"NAME : {monsterName}");
         // }
     }
-}

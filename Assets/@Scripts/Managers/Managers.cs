@@ -50,6 +50,9 @@ namespace STELLAREST_2D
         #endregion
 
         #region Core
+        private CollisionManager _collisionManager = new CollisionManager();
+        public static CollisionManager Collision => Instance?._collisionManager;
+
         private DataManager _dataManager = new DataManager();
         public static DataManager Data => Instance?._dataManager;
 
