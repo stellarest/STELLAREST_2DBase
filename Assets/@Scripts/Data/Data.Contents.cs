@@ -76,6 +76,9 @@ namespace STELLAREST_2D.Data
         public float Duration;
         public int ContinuousCount;
         public float ContinuousSpacing;
+        public float[] ContinuousSpeedRatios;
+        public float[] ContinuousAngles;
+        public float[] ContinuousFlipXs;
         public int BounceCount;
         public int PenetrationCount;
         public int HitEffectTemplateID;

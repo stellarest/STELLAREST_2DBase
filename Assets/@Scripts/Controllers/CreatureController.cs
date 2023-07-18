@@ -12,7 +12,6 @@ namespace STELLAREST_2D
         public Collider2D BodyCol { get; protected set; }
         public SkillBook SkillBook { get; protected set; }
         public bool IsPlayingDamageEffect { get; set; } = false;
-        public bool IsAttackStart { get; set; }
 
         public Define.InGameGrade CreatureGrade { get; set; } = Define.InGameGrade.Normal;
         public Data.CreatureData CreatureData { get; protected set; }
@@ -30,8 +29,8 @@ namespace STELLAREST_2D
         public float RepeatAttackCoolTime { get; protected set; }
         public float Luck { get; protected set; }
         public float TotalExp { get; protected set; }
-        // WeaponType, IconLabel은 일단 무시
 
+        // TODO : WeaponType, IconLabel은 일단 무시
         private Vector2 _moveDir;
         public Vector2 MoveDir { get => _moveDir; set { _moveDir = value.normalized; } }
         public bool IsMoving { get => _moveDir != Vector2.zero; }
@@ -102,11 +101,17 @@ namespace STELLAREST_2D
         protected virtual void SetInitialSkill(Data.CreatureData creatureData)
         {
             Define.InGameGrade skillGrade = Define.InGameGrade.Normal;
+
+            GameObject goRepeatSkills = new GameObject() { name = "@RepeatSkills" };
+            goRepeatSkills.transform.SetParent(this.transform);
+
+            GameObject goSequenceSkills = new GameObject() { name = "@SequenceSkills" };
+            goSequenceSkills.transform.SetParent(this.transform);
+
             foreach (Define.TemplateIDs.SkillType skill in creatureData.InGameSkillList)
             {
                 int templateID = (int)skill;
                 string className = Define.NameSpaceLabels.STELLAREST_2D + "." + skill.ToString();
-                //string primaryKey = skill.ToString() + "_" + Define.InGameGrade.Normal.ToString() + ".prefab";
 
                 //200100, 200101, 200102, 200103 
                 // PaladinSwing_Normal.prefab
@@ -122,24 +127,19 @@ namespace STELLAREST_2D
                     if (typeof(RepeatSkill).IsAssignableFrom(System.Type.GetType(className)))
                     {
                         RepeatSkill repeatSkill = go.GetOrAddComponent<RepeatSkill>();
-                        //repeatSkill.SetSkillInfo(this, templateID); // 이걸로 해도 되긴 하지만
                         repeatSkill.Owner = this;
-                        repeatSkill.SkillData = Managers.Data.SkillDict[templateID]; // 이게 더 직관적
+                        repeatSkill.SkillData = Managers.Data.SkillDict[i]; // 이게 더 직관적
 
                         repeatSkill.OnPreSpawned();
                         SkillBook.AddRepeatSkill(repeatSkill);
+                        go.transform.SetParent(goRepeatSkills.transform);
                     }
                     else if (typeof(SequenceSkill).IsAssignableFrom(System.Type.GetType(className)))
                     {
-                        // SequenceSkill sequenceSkill = go.GetComponent<SequenceSkill>();
-                        // //sequenceSkill.SetSkillInfo(this, templateID);
-                        // SkillBook.AddSequenceSkill(sequenceSkill);
                     }
                     else
                         Utils.LogError("Something is wrong !!");
 
-                    go.name += "_Spawned";
-                    go.transform.SetParent(Managers.Object.SpawnedSkills.transform);
                     go.SetActive(false);
                 }
             }

@@ -12,94 +12,119 @@ namespace STELLAREST_2D
         public CreatureController Owner { get; set; }
         public Define.TemplateIDs.SkillType DefaultPlayerSkill { get; set; }
 
+
         public List<RepeatSkill> RepeatSkills { get; } = new List<RepeatSkill>();
         public List<SequenceSkill> SequenceSkills { get; } = new List<SequenceSkill>();
 
+
+        public List<RepeatSkill> LearnedRepeatSkills { get; } = new List<RepeatSkill>();
+        public List<SequenceSkill> LearnedSequenceSkills { get; } = new List<SequenceSkill>();
+
+
+        // +++ 최초 한 번 실행 +++
         public void AddRepeatSkill(RepeatSkill repeatSkill) => RepeatSkills.Add(repeatSkill);
         public void AddSequenceSkill(SequenceSkill sequenceSkill) => SequenceSkills.Add(sequenceSkill);
+        // +++
 
         public void PlayerDefaultAttack(Define.TemplateIDs.SkillType skillType)
         {
             RepeatSkill skill = RepeatSkills.FirstOrDefault(s => s.SkillData.TemplateID == (int)skillType);
-            Owner.IsAttackStart = false;
             StartCoroutine(GeneratePlayerAttack(skill.SkillData));
-            // Managers.Game.Player.EndAttackPos = transform.position;
-            // ProjectileController pc = Managers.Object.Spawn<ProjectileController>(transform.position, skill.SkillData.TemplateID);
-            // pc.SetInfo(Owner, skill.SkillData, Managers.Game.Player.ShootDir);
         }
 
-        // TODO
-        // Skill Upgrade는 이전 스킬 발사가 모두 완료가 된 이후에 적용. (O)
-        // 연속 2번 이상 때리는 것은 같은 방향만 적용.
-        // 플레이어가 프로젝타일을 쏘고 나서 방향을 틀면 그 방향으로 나가는게 아니라 똑같은 방향으로
-         private IEnumerator GeneratePlayerAttack(Data.SkillData skillData)
+        private IEnumerator GeneratePlayerAttack(Data.SkillData skillData)
         {
-            // TODO
-            float angle = 0f;
+            Vector3 originShootDir = Managers.Game.Player.ShootDir;
+            float turningSide = Managers.Game.Player.TurningAngle;
+            Vector3 indicatorAngle = Managers.Game.Player.Indicator.eulerAngles;
+
+            Vector3 pos = Managers.Game.Player.transform.position;
+            // GameObject go = LearnedRepeatSkills.FirstOrDefault(s => s.SkillData.TemplateID == skillData.TemplateID).gameObject;
+            // pos += go.transform.localPosition;
+
+            Vector3 localScale = Managers.Game.Player.AnimationLocalScale;
+
+            if (skillData.ContinuousCount != skillData.ContinuousSpeedRatios.Length)
+            {
+                for (int i = 0; i < skillData.ContinuousSpeedRatios.Length; ++i)
+                    skillData.ContinuousSpeedRatios[i] = 1f;
+            }
+
+            if (skillData.ContinuousCount != skillData.ContinuousAngles.Length)
+            {
+                for (int i = 0; i < skillData.ContinuousAngles.Length; ++i)
+                    skillData.ContinuousAngles[i] = 0f;
+            }
+
+            float[] angles = new float[skillData.ContinuousAngles.Length];
+            if (Managers.Game.Player.IsFacingRight == false)
+            {
+                for (int i = 0; i < angles.Length; ++i)
+                    angles[i] = skillData.ContinuousAngles[i] * -1;
+            }
+            else
+            {
+                for (int i = 0; i < angles.Length; ++i)
+                    angles[i] = skillData.ContinuousAngles[i];
+            }
+
             for (int i = 0; i < skillData.ContinuousCount; ++i)
             {
                 Managers.Game.Player.EndAttackPos = transform.position;
                 ProjectileController pc = Managers.Object.Spawn<ProjectileController>(transform.position, skillData.TemplateID);
-                Vector3 shootDir = Quaternion.Euler(0, 0, angle) * Managers.Game.Player.ShootDir;
 
-                //pc.SetInfo(Owner, skillData, Managers.Game.Player.ShootDir);
-                pc.SetInfo(Owner, skillData, shootDir);
-                pc.SetAngle(angle);
+                Quaternion rot = Quaternion.Euler(0, 0, angles[i]);
+                Vector3 shootDir = rot * originShootDir;
 
+                pc.SetSwingInfo(Owner, skillData, shootDir, turningSide, indicatorAngle, pos, localScale,
+                                    skillData.ContinuousSpeedRatios[i], angles[i], skillData.ContinuousFlipXs[i]);
                 yield return new WaitForSeconds(skillData.ContinuousSpacing);
             }
         }
 
-        // private IEnumerator GeneratePlayerAttack_Temp(Data.SkillData skillData)
-        // {
-        //     // TODO
-        //     float angle = 0f;
-        //     for (int i = 0; i < 3; ++i)
-        //     {
-        //         Managers.Game.Player.EndAttackPos = transform.position;
-        //         ProjectileController pc = Managers.Object.Spawn<ProjectileController>(transform.position, skillData.TemplateID);
 
-        //         Vector3 shootDir = Quaternion.Euler(0, 0, angle) * Managers.Game.Player.ShootDir;
-
-        //         //pc.SetInfo(Owner, skillData, Managers.Game.Player.ShootDir);
-        //         pc.SetInfo(Owner, skillData, shootDir);
-        //         pc.SetAngle(angle);
-
-        //         if (Managers.Game.Player.IsFacingRight)
-        //         {
-        //             if (i == 0)
-        //                 angle = 45f;
-        //             else if (i == 1)
-        //                 angle = -45f;
-        //         }
-        //         else
-        //         {
-        //             if (i == 0)
-        //                 angle = -45f;
-        //             else if (i == 1)
-        //                 angle = 45f;
-        //         }
-                
-        //         yield return new WaitForSeconds(skillData.ContinuousSpacing);
-        //     }
-        // }
-
-        public void ActivateRepeatSkill(int templateID)
+        public void UpgradeRepeatSkill(int originTemplateID)
         {
-            RepeatSkill skill = RepeatSkills.FirstOrDefault(s => s.SkillData.TemplateID == templateID);
-            if (skill != null)
+            if (IsLeanredSkill(originTemplateID) == false)
+            {
+                RepeatSkill skill = RepeatSkills.FirstOrDefault(s => s.SkillData.OriginTemplateID == originTemplateID);
+                LearnedRepeatSkills.Add(skill);
+
                 skill.ActivateSkill();
+            }
             else
-                Debug.LogError("### Failed to activate skill !! ###");
+            {
+                RepeatSkill latestSkill = LearnedRepeatSkills[LearnedRepeatSkills.Count - 1];
+                if (latestSkill.SkillData.InGameGrade == Define.InGameGrade.Legendary)
+                {
+                    Utils.Log(latestSkill.gameObject.name + " is already max skill level !!");
+                    return;
+                }
+
+                RepeatSkill newSkill = RepeatSkills.FirstOrDefault(s => s.SkillData.TemplateID
+                                     == originTemplateID + (int)latestSkill.SkillData.InGameGrade);
+
+                LearnedRepeatSkills.Remove(latestSkill);
+                latestSkill.DeactivateSkill();
+
+                LearnedRepeatSkills.Add(newSkill);
+
+                if (newSkill.SkillData.IsPlayerDefaultAttack)
+                    Managers.Game.Player.AnimEvents.PlayerDefaultAttack++;
+
+                newSkill.ActivateSkill();
+            }
         }
 
-        public void UpgradeRepeatSkill(int templateID)
+        private bool IsLeanredSkill(int originTemplateID)
         {
-            RepeatSkill skill = RepeatSkills.FirstOrDefault(s => s.SkillData.OriginTemplateID == templateID);
-            if (skill != null)
-                skill.UpgradeSkill();
-            else
-                Utils.LogError("Failed UpgradeRepeatSkill");
+            if (LearnedRepeatSkills.FirstOrDefault(s => s.SkillData.OriginTemplateID == originTemplateID) != null)
+                return true;
+
+            if (LearnedSequenceSkills.FirstOrDefault(s => s.SkillData.OriginTemplateID == originTemplateID) != null)
+                return true;
+
+            return false;
         }
 
         // SequenceSkill(하나의 스킬을 끝내야지만 다른 스킬을 사용할 수 있는 스킬) List에 등록된 녀석들을 인공지능에서 따로 판단을 하던

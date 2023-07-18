@@ -23,6 +23,7 @@ namespace STELLAREST_2D // UI가 맞긴한데 조금 애매하니까 일단 .UI�
         {
             //_joystickRadius = (_background.GetComponent<RectTransform>().sizeDelta / 2).x;
             _joystickRadius = 155f;
+
             ActiveJoystick(false);
         }
 

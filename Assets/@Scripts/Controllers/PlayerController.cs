@@ -71,6 +71,7 @@ namespace STELLAREST_2D
                 _fireSocket = Utils.FindChild<Transform>(this.gameObject,
                     Define.PlayerController.FIRE_SOCKET, true);
 
+            // TODO
             _indicator.gameObject.SetActive(false);
             GetComponent<CircleCollider2D>().enabled = true;
         }
@@ -90,11 +91,9 @@ namespace STELLAREST_2D
                 case (int)Define.TemplateIDs.Player.Gary_Paladin:
                     PAC.MeleeSlash(CreatureData.RepeatAttackAnimSpeed);
                     StartAttackPos = transform.position;
-                    IsAttackStart = true;
                     break;
             }
         }
-
 
         public void MoveByJoystick()
         {
@@ -217,10 +216,12 @@ namespace STELLAREST_2D
             CollectEnv();
 
             if (Input.GetKeyDown(KeyCode.Space))
-                SkillBook.ActivateRepeatSkill((int)Define.TemplateIDs.SkillType.PaladinSwing);
-                
-            if (Input.GetKeyDown(KeyCode.T))
                 SkillBook.UpgradeRepeatSkill((int)Define.TemplateIDs.SkillType.PaladinSwing);
+
+            // if (Input.GetKeyDown(KeyCode.Space))
+            //     SkillBook.ActivateRepeatSkill((int)Define.TemplateIDs.SkillType.PaladinSwing);
+            // if (Input.GetKeyDown(KeyCode.T))
+            //     SkillBook.UpgradeRepeatSkill((int)Define.TemplateIDs.SkillType.PaladinSwing);
         }
 
         private void OnDestroy()

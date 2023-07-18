@@ -15,12 +15,10 @@ namespace STELLAREST_2D
         public HashSet<GemController> Gems { get; } = new HashSet<GemController>();
         // EnvCont는 나중에 추가하던지
         public GridController GridController { get; private set; }
-        public GameObject SpawnedSkills { get; private set; }
 
         public void Init()
         {
             GridController = UnityEngine.GameObject.Find("@Grid").GetComponent<GridController>();
-            SpawnedSkills = new GameObject() { name = "@SpawnedSkills "};
         }
 
         public T Spawn<T>(Vector3 position, int templateID = -1) where T : BaseController

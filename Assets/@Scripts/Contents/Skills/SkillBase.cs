@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace STELLAREST_2D
@@ -10,7 +11,7 @@ namespace STELLAREST_2D
         public Data.SkillData SkillData { get; set; }
 
         public virtual void ActivateSkill() => gameObject.SetActive(true);
-        public virtual void DeactivateSkill() { }
+        public virtual void DeactivateSkill() => gameObject.SetActive(false);
 
         // protected virtual void GenerateProjectile(int templateID, CreatureController owner, Vector3 startPos, Vector3 dir, Vector3 targetPos)
         // {
@@ -24,26 +25,41 @@ namespace STELLAREST_2D
         //     //pc.SetInfo(owner, dir);
         // }
 
-        public void UpgradeSkill()
-        {
-            int currentID = SkillData.TemplateID;
-            if (Managers.Data.SkillDict.TryGetValue(currentID + 1, out Data.SkillData newSkillData))
-            {
-                StartCoroutine(CoWaitForUpgrade(newSkillData));
-            }
-            else
-                Utils.LogStrong("Failed to upgrade skill !!");
-        }
+        // public void UpgradeSkill()
+        // {
+        //     int currentID = SkillData.TemplateID;
+        //     if (Managers.Data.SkillDict.TryGetValue(currentID + 1, out Data.SkillData newSkillData))
+        //     {
+        //         StartCoroutine(CoWaitForUpgrade(SkillData, newSkillData));
+        //     }
+        //     else
+        //         Utils.LogStrong("Failed to upgrade skill !!");
+        // }
 
-        private IEnumerator CoWaitForUpgrade(Data.SkillData newSkillData)
-        {
-            yield return new WaitUntil(() => Owner.IsAttackStart);
-            SkillData = newSkillData;
-            if (newSkillData.IsPlayerDefaultAttack)
-                Managers.Game.Player.AnimEvents.PlayerDefaultAttack++;
+        // public bool UpgradeSkill(SkillBase currentSKill, SkillBase nextSkill)
+        // {
+        //     DeactivateSkill(currentSKill.gameObject);
+        //     // currentSKill : 이전에 했던 스킬을 제어하려면 
+        //     if (nextSkill.SkillData.IsPlayerDefaultAttack)
+        //         Managers.Game.Player.AnimEvents.PlayerDefaultAttack++;
 
-            Utils.Log("Success to upgrade skill !!");
-        }
+        //     return currentSKill.gameObject.activeInHierarchy == false;
+        // }
+
+
+        // private IEnumerator CoWaitForUpgradeSkill(Data.SkillData currentSkillData, Data.SkillData newSkillData)
+        // {
+        //     GameObject currentSkillObj = Owner.SkillBook.SpawnedSkillList.FirstOrDefault(s => s.SkillData.TemplateID == currentSkillData.TemplateID).gameObject;
+        //     DeactivateSkill(currentSkillObj);
+        //     yield return new WaitUntil(() => Owner.IsAttackStart);
+        //     //SkillData = newSkillData;
+        //     if (newSkillData.IsPlayerDefaultAttack)
+        //         Managers.Game.Player.AnimEvents.PlayerDefaultAttack++;
+            
+        //     // new object
+
+        //     Utils.Log("Success to upgrade skill !!");
+        // }
 
         public virtual void SetSkillInfo(CreatureController owner, int templateID)
         {
@@ -57,6 +73,7 @@ namespace STELLAREST_2D
             this.SkillData = skillData;
         }
 
+        // TEMP
         public virtual void SetAngle(float angle)
         {
             // 일단 회전만 설정
