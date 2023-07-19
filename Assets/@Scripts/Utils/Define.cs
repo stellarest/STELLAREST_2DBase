@@ -57,8 +57,16 @@ namespace STELLAREST_2D
             public const string EXP_GEM_GREEN = "EXPGem_01.sprite";
             public const string EXP_GEM_YELLOW = "EXPGem_02.sprite";
             public const string EXP_GEM_BLUE = "EXPGem_03.sprite";
-            public const string BUNNY_FACE_EYES = "BunnyFace.sprite";
-            public const string MALE_DEFAULT_EYES = "Male.sprite";
+
+            // PLAYER EYES
+            public const string EYES_BUNY_FACE = "BunnyFace.sprite";
+            public const string EYES_MALE_DEFAULT = "Male.sprite";
+            public const string EYES_KITTY = "Kitty.sprite";
+            public const string EYES_WANTING = "Wanting.sprite";
+
+            // PLAYER MOUTH
+            public const string MOUTH_GREEDY = "Mouth_Greedy.sprite";
+            public const string MOUTH_BONUS_2 = "Mouth_Bonus_2.sprite";
         }
 
         public static class MaterialLabels
@@ -66,6 +74,7 @@ namespace STELLAREST_2D
             public const string MAT_HIT_WHITE = "HitWhite.mat";
             public const string MAT_HIT_RED = "HitRed.mat";
             public const string MAT_FADE = "Fade.mat";
+            public const string MAT_GLITCH = "Glitch.mat";
         }
 
         public static class NameSpaceLabels
@@ -75,14 +84,10 @@ namespace STELLAREST_2D
 
         public static class PlayerController
         {
-            public const string PLAYER_GARY = "Gary";
-            public const string PLAYER_LIONEL = "Lionel";
-
-            public const string RIFLE_GRAB_POINT = "ArmR[1]";
-            public const string FIRE_TRANSFORM = "FireTransform";
-
             public const string INDICATOR = "Indicator";
             public const string FIRE_SOCKET = "FireSocket";
+            public const string UPGRADE_PLAYER_BUFF = "UpgradeBuff";
+
             public const float CONSTANT_SCALE_X = 1.25f; // Initial ScaleX : 0.8f
             public const float CONSTANT_SCALE_Y = 1.25f; // Initial ScaleY : 0.8f
             public const float CONSTANT_SCALE_Z = 1f;

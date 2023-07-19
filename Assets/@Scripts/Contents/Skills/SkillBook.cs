@@ -110,7 +110,11 @@ namespace STELLAREST_2D
                 LearnedRepeatSkills.Add(newSkill);
 
                 if (newSkill.SkillData.IsPlayerDefaultAttack)
+                {
                     Managers.Game.Player.AnimEvents.PlayerDefaultAttack++;
+                    Managers.Sprite.UpgradePlayerSprite(newSkill.Owner.GetComponent<PlayerController>(), 
+                        newSkill.SkillData.InGameGrade);
+                }
 
                 newSkill.ActivateSkill();
             }

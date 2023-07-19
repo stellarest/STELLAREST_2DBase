@@ -45,6 +45,9 @@ namespace STELLAREST_2D
         private PoolManager _poolManager = new PoolManager();
         public static PoolManager Pool => Instance?._poolManager;
 
+        private SpriteManager _spriteManager = new SpriteManager();
+        public static SpriteManager Sprite => Instance?._spriteManager;
+
         private StageManager _stageManager = new StageManager();
         public static StageManager Stage => Instance?._stageManager;
         #endregion

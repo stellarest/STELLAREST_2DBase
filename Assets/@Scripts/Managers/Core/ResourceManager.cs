@@ -12,6 +12,15 @@ namespace STELLAREST_2D
     {
         private Dictionary<string, UnityEngine.Object> _resources = new Dictionary<string, Object>();
 
+        public void TestPrint()
+        {
+            foreach (KeyValuePair<string, UnityEngine.Object> r in _resources)
+            {
+                Debug.Log("KEY : " + r.Key);
+                Debug.Log("VALUE : " + r.Value);
+            }
+        }
+
         public T Load<T>(string key) where T : UnityEngine.Object
         {
             if (_resources.TryGetValue(key, out UnityEngine.Object resource))

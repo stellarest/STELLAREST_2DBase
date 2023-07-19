@@ -29,13 +29,14 @@ namespace STELLAREST_2D
                 if (type == typeof(PlayerController))
                 {
                     GameObject go = Managers.Resource.Instantiate(Managers.Data.CreatureDict[templateID].PrimaryLabel, pooling: false);
-                    PlayerController pc = go.transform.GetChild(0).gameObject.GetOrAddComponent<PlayerController>();
+                    PlayerController pc = go.GetOrAddComponent<PlayerController>();
                     Player = pc;
 
                     pc.SetInfo(templateID);
                     Managers.Effect.SetInitialCreatureMaterials(pc);
 
-                    return pc as T;
+                    //return pc as T;
+                    return Player as T;
                 }
 
                 if (type == typeof(Chicken))

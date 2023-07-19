@@ -212,6 +212,9 @@ namespace STELLAREST_2D
 
         private void Update()
         {
+            if (Input.GetKeyDown(KeyCode.T))
+                Managers.Resource.TestPrint();
+
             MoveByJoystick();
             CollectEnv();
 
@@ -232,6 +235,15 @@ namespace STELLAREST_2D
             if (this.IsValid())
                 AnimEvents.OnRepeatAttack -= SkillBook.PlayerDefaultAttack;
         }
+
+        // "GuardSword1_Rare.sprite"
+        // [ContextMenu("ChangeWeaponTest")]
+        // public void ChangeWeaponTest()
+        // {
+        //     GetComponent<Character>().PrimaryMeleeWeapon = Managers.Resource.Load<Sprite>("GuardSword1_Rare.sprite");
+        //     GetComponent<Character>().PrimaryMeleeWeaponRenderer.sprite = GetComponent<Character>().PrimaryMeleeWeapon;
+        // }
+
 
         // private void CollectEnv2() // LEGACY
         // {

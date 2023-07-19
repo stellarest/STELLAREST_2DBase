@@ -7,6 +7,21 @@ namespace STELLAREST_2D.Test
 {
     public class Test : MonoBehaviour
     {
+        [ContextMenu("TTTTT")]
+        public void TTTTT()
+        {
+            string key = "apple.sprite";
+            Debug.Log(key.Replace(".sprite", ""));
+
+
+            string loadKey = key;
+            loadKey = $"{key}[{key.Replace(".sprite", "")}]";
+            Debug.Log(loadKey); // apple[] 이렇게 비어있어야 하지 않나요?
+            // {key.Replace(".sprite", "")} : 이 부분을 해석하자면 .sprite -> empty가 되는것이 아닙니까?
+            // 어째서 apple.sprite[apple] 이렇게 나오는 것인지 이해가 안됩니다.           
+        }
+
+
         public AnimationCurve ViewCurveShape;
         private AnimationCurve _curve;
 

@@ -56,6 +56,7 @@ namespace STELLAREST_2D
             
             Managers.Data.Init();
             Managers.Effect.Init();
+            
             //Managers.UI.ShowFixedSceneUI<UI_GameScene>();
 
             Managers.Game.OnKillCountChanged -= OnKillCountChangedHandler;
