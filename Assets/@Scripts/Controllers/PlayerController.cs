@@ -210,10 +210,14 @@ namespace STELLAREST_2D
             base.OnDamaged(attacker, skill, damage);
         }
 
+        bool bChange = false;
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.T))
-                Managers.Resource.TestPrint();
+            {
+                bChange = !bChange;
+                //Managers.Sprite.SetPlayerEmotion(bChange ? Define.PlayerEmotion.Sick : Define.PlayerEmotion.Default);
+            }
 
             MoveByJoystick();
             CollectEnv();

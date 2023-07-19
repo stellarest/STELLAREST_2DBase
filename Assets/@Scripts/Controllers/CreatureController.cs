@@ -145,25 +145,11 @@ namespace STELLAREST_2D
             }
         }
 
-        public void CoFadeEffect()
-        {
-            StartCoroutine(Managers.Effect.CoFadeEffect(this));
-        }
+        public void CoFadeEffect(int templateID) 
+                    => StartCoroutine(Managers.Effect.CoFadeEffect(this, templateID));
 
-        public void CoFadeEffect(int templateID)
-        {
-            StartCoroutine(Managers.Effect.CoFadeEffect(this, templateID));
-        }
-
-        public void CoGlitchEffect()
-        {
-            StartCoroutine(Managers.Effect.CoGlitchEffect(this));
-        }
-
-        public void CoGlitchEffect(int templateID)
-        {
-            StartCoroutine(Managers.Effect.CoGlitchEffect(this, templateID));
-        }
+        public void CoGlitchEffect(int templateID) 
+                    => StartCoroutine(Managers.Effect.CoGlitchEffect(this, templateID));
 
         protected virtual void SetSortingGroup() { }
 

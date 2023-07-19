@@ -25,9 +25,7 @@ namespace STELLAREST_2D
         private Material _matFade;
         private Material _matGlitch;
 
-        private GameObject _upgradePlayerBuff;
-
-
+        private GameObject _upgradePlayerBuffEffect;
         private int SHADER_HIT_EFFECT = Shader.PropertyToID("_StrongTintFade");
         private int SHADER_FADE_EFFECT = Shader.PropertyToID("_CustomFadeAlpha");
         private int SHADER_GLITCH = Shader.PropertyToID("_GlitchFade");
@@ -74,8 +72,8 @@ namespace STELLAREST_2D
 
                 _creatureMats.Add(cc.TemplateID, playerMats);
 
-                if (_upgradePlayerBuff == null)
-                    _upgradePlayerBuff = Utils.FindChild(cc.gameObject, Define.PlayerController.UPGRADE_PLAYER_BUFF);
+                if (_upgradePlayerBuffEffect == null)
+                    _upgradePlayerBuffEffect = Utils.FindChild(cc.gameObject, Define.PlayerController.UPGRADE_PLAYER_BUFF);
             }
             else
             {
@@ -132,40 +130,6 @@ namespace STELLAREST_2D
         }
 
         private bool _startFade = false;
-        public IEnumerator CoFadeEffect(CreatureController cc)
-        {
-            _startFade = true;
-            CreatureMaterial[] mats = _creatureMats[cc.TemplateID];
-            for (int i = 0; i < mats.Length; ++i)
-            {
-                if (cc?.IsMonster() == false && mats[i].spriteRender.gameObject.name.Contains("Eyes"))
-                    mats[i].spriteRender.sprite = Managers.Resource.Load<Sprite>(Define.SpriteLabels.EYES_BUNY_FACE);
-
-                mats[i].spriteRender.material = _matFade;
-            }
-
-            float elapsedTime = 0f;
-            float desiredTime = 2f;
-            float percent = 0f;
-
-            while (percent < 1f)
-            {
-                _matFade.SetFloat(SHADER_FADE_EFFECT, percent);
-                elapsedTime += Time.deltaTime;
-                percent = elapsedTime / desiredTime;
-                yield return null;
-            }
-
-            for (int i = 0; i < mats.Length; ++i)
-            {
-                if (cc?.IsMonster() == false && mats[i].spriteRender.gameObject.name.Contains("Eyes"))
-                    mats[i].spriteRender.sprite = Managers.Resource.Load<Sprite>(Define.SpriteLabels.EYES_BUNY_FACE);
-
-                mats[i].spriteRender.material = mats[i].matOrigin;
-            }
-            _startFade = false;
-        }
-
         public IEnumerator CoFadeEffect(CreatureController cc, int templateID)
         {
             _startFade = true;
@@ -191,56 +155,31 @@ namespace STELLAREST_2D
             }
 
             for (int i = 0; i < mats.Length; ++i)
-            {
-                if (cc?.IsMonster() == false && mats[i].spriteRender.gameObject.name.Contains("Eyes"))
-                    mats[i].spriteRender.sprite = Managers.Resource.Load<Sprite>(Define.SpriteLabels.EYES_BUNY_FACE);
-
                 mats[i].spriteRender.material = mats[i].matOrigin;
-            }
             _startFade = false;
         }
 
         private bool _startGlitch = false;
-        public IEnumerator CoGlitchEffect(CreatureController cc)
-        {
-            _startGlitch = true;
-            CreatureMaterial[] mats = _creatureMats[cc.TemplateID];
-            for (int i = 0; i < mats.Length; ++i)
-                mats[i].spriteRender.material = _matGlitch;
-
-            float delta = 0f;
-            float desiredTime = 2f;
-            float percent = 1f;
-            while (percent > 0f)
-            {
-                _matGlitch.SetFloat(SHADER_GLITCH, percent);
-                delta += Time.deltaTime;
-                percent = 1f - (delta / desiredTime);
-                yield return null;
-            }
-
-            for (int i = 0; i < mats.Length; ++i)
-                mats[i].spriteRender.material = mats[i].matOrigin;
-            _startGlitch = false;
-        }
-
         public IEnumerator CoGlitchEffect(CreatureController cc, int templateID)
         {
             _startGlitch = true;
             CreatureMaterial[] mats = _creatureMats[templateID];
+
+            Managers.Sprite.SetPlayerEmotion(Define.PlayerEmotion.Greedy, 
+                Color.yellow, Managers.Sprite.GetDefaultMouthColor);
             for (int i = 0; i < mats.Length; ++i)
             {
-                if (cc?.IsMonster() == false && mats[i].spriteRender.gameObject.name.Contains("Eyes"))
-                {
-                    mats[i].spriteRender.sprite = Managers.Resource.Load<Sprite>(Define.SpriteLabels.EYES_WANTING);
-                    mats[i].spriteRender.color = Color.yellow;
-                    continue;
-                }
-                else if (cc?.IsMonster() == false && mats[i].spriteRender.gameObject.name.Contains("Mouth"))
-                {
-                    mats[i].spriteRender.sprite = Managers.Resource.Load<Sprite>(Define.SpriteLabels.MOUTH_GREEDY);
-                    continue;
-                }
+                // if (cc?.IsMonster() == false && mats[i].spriteRender.gameObject.name.Contains("Eyes"))
+                // {
+                //     mats[i].spriteRender.sprite = Managers.Resource.Load<Sprite>(Define.SpriteLabels.EYES_WANTING);
+                //     mats[i].spriteRender.color = Color.yellow;
+                //     continue;
+                // }
+                // else if (cc?.IsMonster() == false && mats[i].spriteRender.gameObject.name.Contains("Mouth"))
+                // {
+                //     mats[i].spriteRender.sprite = Managers.Resource.Load<Sprite>(Define.SpriteLabels.MOUTH_GREEDY);
+                //     continue;
+                // }
 
                 mats[i].spriteRender.material = _matGlitch;
             }
@@ -257,37 +196,13 @@ namespace STELLAREST_2D
             }
 
             for (int i = 0; i < mats.Length; ++i)
-            {
-                if (cc?.IsMonster() == false && mats[i].spriteRender.gameObject.name.Contains("Eyes"))
-                    mats[i].spriteRender.sprite = Managers.Resource.Load<Sprite>(Define.SpriteLabels.EYES_MALE_DEFAULT);
-
-                if (cc?.IsMonster() == false && mats[i].spriteRender.gameObject.name.Contains("Mouth"))
-                    mats[i].spriteRender.sprite = Managers.Resource.Load<Sprite>(Define.SpriteLabels.MOUTH_BONUS_2);
-
                 mats[i].spriteRender.material = mats[i].matOrigin;
-            }
             _startGlitch = false;
         }
 
         public bool IsPlayingEffect => _startFade || _startGlitch;
 
-        public void UpgradePlayerBuffEffect(Define.InGameGrade grade)
-        {
-            switch (grade)
-            {
-                case Define.InGameGrade.Rare:
-                    _upgradePlayerBuff.SetActive(true);
-                    break;
-
-                case Define.InGameGrade.Epic:
-                    _upgradePlayerBuff.SetActive(true);
-                    break;
-
-                case Define.InGameGrade.Legendary:
-                    _upgradePlayerBuff.SetActive(true);
-                    break;
-            }
-        }
+        public void UpgradePlayerBuffEffect() => _upgradePlayerBuffEffect.SetActive(true);
 
         public void StartHitEffect(CreatureController cc)
         {

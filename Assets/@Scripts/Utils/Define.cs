@@ -15,6 +15,8 @@ namespace STELLAREST_2D
         public enum InGameGrade { Normal = 1, Rare = 2, Epic = 3, Legendary = 4 }
         public enum CollisionLayers { Default = 0, PlayerBody = 6, PlayerAttack = 7, MonsterBody = 8, MonsterAttack = 9, }
 
+        public enum PlayerEmotion { Default = 0, Sick = 1, Greedy = 2 }
+
         public static class LoadJson
         {
             // 모두 플레이팹 데이터 테이블에서 불러와야한다
@@ -59,14 +61,16 @@ namespace STELLAREST_2D
             public const string EXP_GEM_BLUE = "EXPGem_03.sprite";
 
             // PLAYER EYES
-            public const string EYES_BUNY_FACE = "BunnyFace.sprite";
-            public const string EYES_MALE_DEFAULT = "Male.sprite";
-            public const string EYES_KITTY = "Kitty.sprite";
-            public const string EYES_WANTING = "Wanting.sprite";
+            public const string EYES_BUNY_FACE = "Eyes_BunnyFace.sprite";
+            public const string EYES_MALE_DEFAULT = "Eyes_Male_Default.sprite";
+            public const string EYES_KITTY = "Eyes_Kitty.sprite";
+            public const string EYES_WANTING = "Eyes_Wanting.sprite";
+            public const string EYES_SICK = "Eyes_Sick.sprite";
 
             // PLAYER MOUTH
             public const string MOUTH_GREEDY = "Mouth_Greedy.sprite";
             public const string MOUTH_BONUS_2 = "Mouth_Bonus_2.sprite";
+            public const string MOUTH_SICK = "Mouth_Sick.sprite";
         }
 
         public static class MaterialLabels
