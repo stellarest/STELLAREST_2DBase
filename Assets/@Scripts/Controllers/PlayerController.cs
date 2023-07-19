@@ -210,13 +210,18 @@ namespace STELLAREST_2D
             base.OnDamaged(attacker, skill, damage);
         }
 
-        bool bChange = false;
+        // bool bChange = false;
+        public Define.PlayerEmotion emotion = Define.PlayerEmotion.Default;
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.T))
             {
-                bChange = !bChange;
-                //Managers.Sprite.SetPlayerEmotion(bChange ? Define.PlayerEmotion.Sick : Define.PlayerEmotion.Default);
+                // CoGlitchEffect(CreatureData.TemplateID);
+                // bChange = !bChange;
+                // Managers.Sprite.SetPlayerEmotion(bChange ? Define.PlayerEmotion.Sick : Define.PlayerEmotion.Default);
+                Managers.Sprite.SetPlayerEmotion(emotion);
+                // CoFadeEffect(CreatureData.TemplateID + (int)Define.InGameGrade.Legendary);
+                // Debug.Log(SkillBook.RepeatCurrentGrade(Define.TemplateIDs.SkillType.PaladinSwing));
             }
 
             MoveByJoystick();

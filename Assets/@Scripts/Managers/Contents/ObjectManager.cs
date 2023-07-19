@@ -31,10 +31,12 @@ namespace STELLAREST_2D
                     GameObject go = Managers.Resource.Instantiate(Managers.Data.CreatureDict[templateID].PrimaryLabel, pooling: false);
                     PlayerController pc = go.GetOrAddComponent<PlayerController>();
                     Player = pc;
-                    Managers.Sprite.Init();
+                    // Managers.Sprite.Init();
+                    Managers.Effect.Init();
 
                     pc.SetInfo(templateID);
-                    Managers.Effect.SetInitialCreatureMaterials(pc);
+                    Managers.Effect.AddCreatureMaterials(pc, pc.CreatureData.TemplateID);
+                    Managers.Sprite.AddCreatureSprites(pc);
 
                     //return pc as T;
                     return Player as T;
@@ -50,7 +52,7 @@ namespace STELLAREST_2D
                     Monsters.Add(mc);
                     
                     //mc.InitMonsterSkill();
-                    Managers.Effect.SetInitialCreatureMaterials(mc);
+                    Managers.Effect.AddCreatureMaterials(mc, mc.CreatureData.TemplateID);
                     mc.CoFadeEffect(mc.CreatureData.TemplateID);
 
                     return mc as T;

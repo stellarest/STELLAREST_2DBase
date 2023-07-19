@@ -15,7 +15,7 @@ namespace STELLAREST_2D
         public enum InGameGrade { Normal = 1, Rare = 2, Epic = 3, Legendary = 4 }
         public enum CollisionLayers { Default = 0, PlayerBody = 6, PlayerAttack = 7, MonsterBody = 8, MonsterAttack = 9, }
 
-        public enum PlayerEmotion { Default = 0, Sick = 1, Greedy = 2 }
+        public enum PlayerEmotion { Default, Greedy, Sick, Bunny, Kitty }
 
         public static class LoadJson
         {
@@ -60,17 +60,26 @@ namespace STELLAREST_2D
             public const string EXP_GEM_YELLOW = "EXPGem_02.sprite";
             public const string EXP_GEM_BLUE = "EXPGem_03.sprite";
 
-            // PLAYER EYES
-            public const string EYES_BUNY_FACE = "Eyes_BunnyFace.sprite";
+            // PLAYER FACE SET
+            // DEFAULT = 0
             public const string EYES_MALE_DEFAULT = "Eyes_Male_Default.sprite";
-            public const string EYES_KITTY = "Eyes_Kitty.sprite";
-            public const string EYES_WANTING = "Eyes_Wanting.sprite";
-            public const string EYES_SICK = "Eyes_Sick.sprite";
+            public const string MOUTH_DEFAULT_2 = "Mouth_Default_2.sprite";
 
-            // PLAYER MOUTH
+            // GREEDY = 1
+            public const string EYES_GREEDY = "Eyes_Greedy.sprite";
             public const string MOUTH_GREEDY = "Mouth_Greedy.sprite";
-            public const string MOUTH_BONUS_2 = "Mouth_Bonus_2.sprite";
+
+            // SICK = 2
+            public const string EYES_SICK = "Eyes_Sick.sprite";
             public const string MOUTH_SICK = "Mouth_Sick.sprite";
+
+            // BUNNY = 3
+            public const string EYES_BUNNY = "Eyes_Bunny.sprite";
+            public const string MOUTH_BUNNY = "Mouth_Bunny.sprite";
+
+            // KITTY = 4
+            public const string EYES_KITTY = "Eyes_Kitty.sprite";
+            public const string MOUTH_KITTY = "Mouth_Kitty.sprite";
         }
 
         public static class MaterialLabels

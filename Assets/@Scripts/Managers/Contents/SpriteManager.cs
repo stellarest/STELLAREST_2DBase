@@ -31,12 +31,52 @@ namespace STELLAREST_2D
         public void Init()
         {
             SpriteRenderer eyesRenderer = null;
+            Color eyesDefaultColor = Color.white;
+
+            SpriteRenderer mouthRenderer = null;
+            Color mouthDefaultColor = Color.white;
+
+            SpriteRenderer[] sprArr = Managers.Game.Player.GetComponentsInChildren<SpriteRenderer>();
+            for (int i = 0; i < sprArr.Length; ++i)
+            {
+                if (sprArr[i].sprite == null)
+                    continue;
+
+                if (sprArr[i].gameObject.name.Contains(Define.PlayerController.FIRE_SOCKET))
+                    continue;
+
+                if (sprArr[i].gameObject.name.Contains("Eyes"))
+                {
+                    eyesRenderer = sprArr[i];
+                    eyesDefaultColor = sprArr[i].color;
+                    continue;
+                }
+
+                if (sprArr[i].gameObject.name.Contains("Mouth"))
+                {
+                    mouthRenderer = sprArr[i];
+                    mouthDefaultColor = sprArr[i].color;
+                    continue;
+                }
+            }
+
+            //_playerSprite = new CreatureSprite(eyesRenderer, eyesDefaultColor, mouthRenderer, mouthDefaultColor);
+        }
+
+        public Color PlayerDefaultEyesColor => _cureatureSprites[Managers.Game.Player.CreatureData.TemplateID]._eyesDefaultColor;
+        public Color PlayerDefaultMouthColor => _cureatureSprites[Managers.Game.Player.CreatureData.TemplateID]._mouthDefaultColor;
+        private Dictionary<int, CreatureSprite> _cureatureSprites = new Dictionary<int, CreatureSprite>();
+        // Init을 이것으로 변경
+        
+        public void AddCreatureSprites(CreatureController cc)
+        {
+            SpriteRenderer eyesRenderer = null;
             Color eyesColor = Color.white;
 
             SpriteRenderer mouthRenderer = null;
             Color mouthColor = Color.white;
 
-            SpriteRenderer[] sprArr = Managers.Game.Player.GetComponentsInChildren<SpriteRenderer>();
+            SpriteRenderer[] sprArr = cc.GetComponentsInChildren<SpriteRenderer>();
             for (int i = 0; i < sprArr.Length; ++i)
             {
                 if (sprArr[i].sprite == null)
@@ -60,40 +100,66 @@ namespace STELLAREST_2D
                 }
             }
 
-            _playerSprite = new CreatureSprite(eyesRenderer, eyesColor, mouthRenderer, mouthColor);
+            // _playerSprite = new CreatureSprite(eyesRenderer, eyesColor, mouthRenderer, mouthColor);
+            _cureatureSprites.Add(cc.TemplateID, new CreatureSprite(eyesRenderer, eyesColor, mouthRenderer, mouthColor));
+            Debug.Log("TEMPLATE ID : " + cc.TemplateID);
         }
 
-        public Color GetDefaultEyesColor => _playerSprite._eyesDefaultColor;
-        public Color GetDefaultMouthColor => _playerSprite._mouthDefaultColor;
-
-        public void SetPlayerEmotion(Define.PlayerEmotion emotion, Color eyesColor, Color mouthColor)
+        public void SetPlayerEmotion(Define.PlayerEmotion emotion)
         {
+            CreatureSprite playerSprite = _cureatureSprites[Managers.Game.Player.CreatureData.TemplateID];
             switch (emotion)
             {
                 case Define.PlayerEmotion.Default:
                     {
-                        _playerSprite._eyesRenderer.sprite = Managers.Resource.Load<Sprite>(Define.SpriteLabels.EYES_MALE_DEFAULT);
-                        _playerSprite._mouthRenderer.sprite = Managers.Resource.Load<Sprite>(Define.SpriteLabels.MOUTH_BONUS_2);
-                    }
-                    break;
+                        playerSprite._eyesRenderer.sprite = Managers.Resource.Load<Sprite>(Define.SpriteLabels.EYES_MALE_DEFAULT);
+                        playerSprite._eyesRenderer.color = PlayerDefaultEyesColor;
 
-                case Define.PlayerEmotion.Sick:
-                    {
-                        _playerSprite._eyesRenderer.sprite = Managers.Resource.Load<Sprite>(Define.SpriteLabels.EYES_SICK);
-                        _playerSprite._mouthRenderer.sprite = Managers.Resource.Load<Sprite>(Define.SpriteLabels.MOUTH_SICK);
+                        playerSprite._mouthRenderer.sprite = Managers.Resource.Load<Sprite>(Define.SpriteLabels.MOUTH_DEFAULT_2);
+                        playerSprite._mouthRenderer.color = PlayerDefaultMouthColor;
                     }
                     break;
 
                 case Define.PlayerEmotion.Greedy:
                     {
-                        _playerSprite._eyesRenderer.sprite = Managers.Resource.Load<Sprite>(Define.SpriteLabels.EYES_WANTING);
-                        _playerSprite._mouthRenderer.sprite = Managers.Resource.Load<Sprite>(Define.SpriteLabels.MOUTH_GREEDY);
+                        playerSprite._eyesRenderer.sprite = Managers.Resource.Load<Sprite>(Define.SpriteLabels.EYES_GREEDY);
+                        playerSprite._eyesRenderer.color = Color.yellow;
+
+                        playerSprite._mouthRenderer.sprite = Managers.Resource.Load<Sprite>(Define.SpriteLabels.MOUTH_GREEDY);
+                        playerSprite._mouthRenderer.color = PlayerDefaultMouthColor;
+                    }
+                    break;
+
+                case Define.PlayerEmotion.Sick:
+                    {
+                        playerSprite._eyesRenderer.sprite = Managers.Resource.Load<Sprite>(Define.SpriteLabels.EYES_SICK);
+                        playerSprite._eyesRenderer.color = PlayerDefaultEyesColor;
+
+                        playerSprite._mouthRenderer.sprite = Managers.Resource.Load<Sprite>(Define.SpriteLabels.MOUTH_SICK);
+                        playerSprite._mouthRenderer.color = PlayerDefaultMouthColor;
+                    }
+                    break;
+
+                case Define.PlayerEmotion.Bunny:
+                    {
+                        playerSprite._eyesRenderer.sprite = Managers.Resource.Load<Sprite>(Define.SpriteLabels.EYES_BUNNY);
+                        playerSprite._eyesRenderer.color = PlayerDefaultEyesColor;
+
+                        playerSprite._mouthRenderer.sprite = Managers.Resource.Load<Sprite>(Define.SpriteLabels.MOUTH_BUNNY);
+                        playerSprite._mouthRenderer.color = PlayerDefaultMouthColor;
+                    }
+                    break;
+
+                case Define.PlayerEmotion.Kitty:
+                    {
+                        playerSprite._eyesRenderer.sprite = Managers.Resource.Load<Sprite>(Define.SpriteLabels.EYES_KITTY);
+                        playerSprite._eyesRenderer.color = PlayerDefaultEyesColor;
+
+                        playerSprite._mouthRenderer.sprite = Managers.Resource.Load<Sprite>(Define.SpriteLabels.MOUTH_KITTY);
+                        playerSprite._mouthRenderer.color = PlayerDefaultMouthColor;
                     }
                     break;
             }
-
-            _playerSprite._eyesRenderer.color = eyesColor;
-            _playerSprite._mouthRenderer.color = mouthColor;
         }
 
         public void UpgradePlayerSprite(PlayerController pc, Define.InGameGrade grade)
@@ -139,7 +205,7 @@ namespace STELLAREST_2D
             if (next.Helmet != null)
             {
                 current.Helmet = next.Helmet;
-                current.HelmetRenderer.sprite  =  current.Helmet;
+                current.HelmetRenderer.sprite = current.Helmet;
             }
 
             if (next.Cape != null)
@@ -149,7 +215,6 @@ namespace STELLAREST_2D
             }
 
             Managers.Effect.AddCreatureMaterials(pc, pc.CreatureData.TemplateID + (int)grade);
-            //pc.CoFadeEffect(pc.CreatureData.TemplateID + (int)grade);
             pc.CoGlitchEffect(pc.CreatureData.TemplateID + (int)grade);
 
             // TEMP

@@ -55,7 +55,6 @@ namespace STELLAREST_2D
             Screen.sleepTimeout = SleepTimeout.NeverSleep;
             
             Managers.Data.Init();
-            Managers.Effect.Init();
             
             //Managers.UI.ShowFixedSceneUI<UI_GameScene>();
 

@@ -26,6 +26,9 @@ namespace STELLAREST_2D
         public void AddSequenceSkill(SequenceSkill sequenceSkill) => SequenceSkills.Add(sequenceSkill);
         // +++
 
+        public Define.InGameGrade RepeatCurrentGrade(Define.TemplateIDs.SkillType skillType)
+            => LearnedRepeatSkills.FirstOrDefault(s => s.SkillData.OriginTemplateID == (int)skillType).SkillData.InGameGrade;
+
         public void PlayerDefaultAttack(Define.TemplateIDs.SkillType skillType)
         {
             RepeatSkill skill = RepeatSkills.FirstOrDefault(s => s.SkillData.TemplateID == (int)skillType);
