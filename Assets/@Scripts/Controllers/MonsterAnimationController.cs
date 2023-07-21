@@ -36,9 +36,9 @@ namespace STELLAREST_2D
             _animController.SetTrigger(ATTACK);
         }
 
-        public override void Run(float speed = 1f)
+        public override void Run()
         {
-            _animController.SetFloat(BODY_SPEED, speed);
+            _animController.SetFloat(BODY_SPEED, 1f);
             _animController.SetInteger(STATE, (int)Define.MonsterState.Run);
         }
 

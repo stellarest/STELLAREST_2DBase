@@ -26,47 +26,9 @@ namespace STELLAREST_2D
 
     public class SpriteManager
     {
-        private CreatureSprite _playerSprite;
-
-        public void Init()
-        {
-            SpriteRenderer eyesRenderer = null;
-            Color eyesDefaultColor = Color.white;
-
-            SpriteRenderer mouthRenderer = null;
-            Color mouthDefaultColor = Color.white;
-
-            SpriteRenderer[] sprArr = Managers.Game.Player.GetComponentsInChildren<SpriteRenderer>();
-            for (int i = 0; i < sprArr.Length; ++i)
-            {
-                if (sprArr[i].sprite == null)
-                    continue;
-
-                if (sprArr[i].gameObject.name.Contains(Define.PlayerController.FIRE_SOCKET))
-                    continue;
-
-                if (sprArr[i].gameObject.name.Contains("Eyes"))
-                {
-                    eyesRenderer = sprArr[i];
-                    eyesDefaultColor = sprArr[i].color;
-                    continue;
-                }
-
-                if (sprArr[i].gameObject.name.Contains("Mouth"))
-                {
-                    mouthRenderer = sprArr[i];
-                    mouthDefaultColor = sprArr[i].color;
-                    continue;
-                }
-            }
-
-            //_playerSprite = new CreatureSprite(eyesRenderer, eyesDefaultColor, mouthRenderer, mouthDefaultColor);
-        }
-
-        public Color PlayerDefaultEyesColor => _cureatureSprites[Managers.Game.Player.CreatureData.TemplateID]._eyesDefaultColor;
-        public Color PlayerDefaultMouthColor => _cureatureSprites[Managers.Game.Player.CreatureData.TemplateID]._mouthDefaultColor;
+        public Color PlayerDefaultEyesColor => _cureatureSprites[Managers.Game.Player.CharaData.TemplateID]._eyesDefaultColor;
+        public Color PlayerDefaultMouthColor => _cureatureSprites[Managers.Game.Player.CharaData.TemplateID]._mouthDefaultColor;
         private Dictionary<int, CreatureSprite> _cureatureSprites = new Dictionary<int, CreatureSprite>();
-        // Init을 이것으로 변경
         
         public void AddCreatureSprites(CreatureController cc)
         {
@@ -100,14 +62,12 @@ namespace STELLAREST_2D
                 }
             }
 
-            // _playerSprite = new CreatureSprite(eyesRenderer, eyesColor, mouthRenderer, mouthColor);
-            _cureatureSprites.Add(cc.TemplateID, new CreatureSprite(eyesRenderer, eyesColor, mouthRenderer, mouthColor));
-            Debug.Log("TEMPLATE ID : " + cc.TemplateID);
+            _cureatureSprites.Add(cc.CharaData.TemplateID, new CreatureSprite(eyesRenderer, eyesColor, mouthRenderer, mouthColor));
         }
 
         public void SetPlayerEmotion(Define.PlayerEmotion emotion)
         {
-            CreatureSprite playerSprite = _cureatureSprites[Managers.Game.Player.CreatureData.TemplateID];
+            CreatureSprite playerSprite = _cureatureSprites[Managers.Game.Player.CharaData.CreatureData.TemplateID];
             switch (emotion)
             {
                 case Define.PlayerEmotion.Default:
@@ -170,7 +130,7 @@ namespace STELLAREST_2D
                 return;
             }
 
-            switch (pc.CreatureData.TemplateID)
+            switch (pc.CharaData.CreatureData.TemplateID)
             {
                 case (int)Define.TemplateIDs.Player.Gary_Paladin:
                     UpgradeGaryPaladin(pc, grade);
@@ -214,8 +174,8 @@ namespace STELLAREST_2D
                 current.CapeRenderer.sprite = current.Cape;
             }
 
-            Managers.Effect.AddCreatureMaterials(pc, pc.CreatureData.TemplateID + (int)grade);
-            pc.CoGlitchEffect(pc.CreatureData.TemplateID + (int)grade);
+            Managers.Effect.ChangeCreatureMaterials(pc);
+            pc.CoEffectGlitch();
 
             // TEMP
             if (grade == Define.InGameGrade.Legendary)

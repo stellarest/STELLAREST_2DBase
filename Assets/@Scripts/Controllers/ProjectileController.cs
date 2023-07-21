@@ -83,13 +83,13 @@ namespace STELLAREST_2D
                         // float maxSpeed = Owner.CreatureData.MoveSpeed + SkillData.Speed;
 
                         float minSpeed = Managers.Game.Player.MovementPower + projectileSpeed;
-                        float maxSpeed = Owner.CreatureData.MoveSpeed + projectileSpeed;
+                        float maxSpeed = Owner.CharaData.MoveSpeed + projectileSpeed;
 
-                        float movementPowerRatio = Managers.Game.Player.MovementPower / Owner.CreatureData.MoveSpeed;
+                        float movementPowerRatio = Managers.Game.Player.MovementPower / Owner.CharaData.MoveSpeed;
                         _speed = Mathf.Lerp(minSpeed, maxSpeed, movementPowerRatio);
                     } 
                     else
-                        _speed = Owner.CreatureData.MoveSpeed + projectileSpeed;
+                        _speed = Owner.CharaData.MoveSpeed + projectileSpeed;
                 }
                 else // Static Melee Attack
                     _speed = projectileSpeed;
@@ -134,8 +134,8 @@ namespace STELLAREST_2D
 
             if (Managers.Collision.CheckCollisionTarget(Define.CollisionLayers.MonsterBody, other.gameObject.layer))
             {
-                Debug.Log("DMG : " + Owner.CreatureData.Power * SkillData.DamageUpMultiplier);
-                mc.OnDamaged(Owner, this, Owner.CreatureData.Power * SkillData.DamageUpMultiplier);
+                // Debug.Log("DMG : " + Owner.CreatureData.Power * SkillData.DamageUpMultiplier);
+                // mc.OnDamaged(Owner, this, Owner.CreatureData.Power * SkillData.DamageUpMultiplier);
             }
         }
     }

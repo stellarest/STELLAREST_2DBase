@@ -94,8 +94,8 @@ namespace STELLAREST_2D
 
             if (Managers.Collision.CheckCollisionTarget(Define.CollisionLayers.PlayerBody, other.gameObject.layer))
             {
-                other.GetComponent<CreatureController>().OnDamaged(Owner, this, 
-                            Owner.CreatureData.Power * SkillData.DamageUpMultiplier);
+                // other.GetComponent<CreatureController>().OnDamaged(Owner, this, 
+                //             Owner.CreatureData.Power * SkillData.DamageUpMultiplier);
             }
         }
     }

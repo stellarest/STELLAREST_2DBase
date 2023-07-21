@@ -40,11 +40,16 @@ namespace STELLAREST_2D
             _matGlitch = Managers.Resource.Load<Material>(Define.MaterialLabels.MAT_GLITCH);
 
             if (_upgradePlayerBuffEffect == null)
-                _upgradePlayerBuffEffect = Utils.FindChild
-                    (Managers.Game.Player.gameObject, Define.PlayerController.UPGRADE_PLAYER_BUFF);
+                _upgradePlayerBuffEffect = Utils.FindChild(Managers.Game.Player.gameObject, Define.PlayerController.UPGRADE_PLAYER_BUFF);
         }
 
-        public void AddCreatureMaterials(CreatureController cc, int templateID)
+        public void ChangeCreatureMaterials(CreatureController cc)
+        {
+            _creatureMats.Remove(cc.CharaData.TemplateID);
+            AddCreatureMaterials(cc);
+        }
+
+        public void AddCreatureMaterials(CreatureController cc)
         {
             int length = 0;
             if (cc?.IsMonster() == false)
@@ -80,7 +85,7 @@ namespace STELLAREST_2D
                     playerMats[index++] = new CreatureMaterial(sprArr[i], sprArr[i].material, sprArr[i].color);
                 }
 
-                _creatureMats.Add(templateID, playerMats);
+                _creatureMats.Add(cc.CharaData.TemplateID, playerMats);
             }
             else
             {
@@ -89,15 +94,15 @@ namespace STELLAREST_2D
                 for (int i = 0; i < sprArr.Length; ++i)
                     creatureMats[i] = new CreatureMaterial(sprArr[i], sprArr[i].material, sprArr[i].color);
 
-                _creatureMats.Add(templateID, creatureMats);
+                _creatureMats.Add(cc.CharaData.TemplateID, creatureMats);
             }
         }
 
         private bool _startFade = false;
-        public IEnumerator CoFadeEffect(CreatureController cc, int templateID)
+        public IEnumerator CoEffectFade(CreatureController cc)
         {
             _startFade = true;
-            CreatureMaterial[] mats = _creatureMats[templateID];
+            CreatureMaterial[] mats = _creatureMats[cc.CharaData.CreatureData.TemplateID];
 
             for (int i = 0; i < mats.Length; ++i)
                 mats[i].spriteRender.material = _matFade;
@@ -130,12 +135,12 @@ namespace STELLAREST_2D
         }
 
         private bool _startGlitch = false;
-        public IEnumerator CoGlitchEffect(CreatureController cc, int templateID)
+        public IEnumerator CoEffectGlitch(CreatureController cc)
         {
-            Utils.Log("TEMPLATE ID : " + templateID.ToString());
-            
             _startGlitch = true;
-            CreatureMaterial[] mats = _creatureMats[templateID];
+            CreatureMaterial[] mats = _creatureMats[cc.CharaData.TemplateID];
+
+            float duration = _upgradePlayerBuffEffect.GetComponent<ParticleSystem>().main.duration;
 
             if (cc?.IsMonster() == false)
                 Managers.Sprite.SetPlayerEmotion(Define.PlayerEmotion.Greedy);
@@ -144,7 +149,7 @@ namespace STELLAREST_2D
                 mats[i].spriteRender.material = _matGlitch;
 
             float delta = 0f;
-            float desiredTime = 2f;
+            float desiredTime = duration;
             float percent = 1f;
             while (percent > 0f)
             {
@@ -169,13 +174,13 @@ namespace STELLAREST_2D
             _startGlitch = false;
         }
 
-        public bool IsPlayingEffect => _startFade || _startGlitch;
+        public bool IsPlayingBuffEffect => _startFade || _startGlitch;
 
         public void UpgradePlayerBuffEffect() => _upgradePlayerBuffEffect.SetActive(true);
 
         public void StartHitEffect(CreatureController cc)
         {
-            CreatureMaterial[] mats = _creatureMats[cc.TemplateID];
+            CreatureMaterial[] mats = _creatureMats[cc.CharaData.TemplateID];
             for (int i = 0; i < mats.Length; ++i)
             {
                 if (cc?.IsMonster() == false)
@@ -189,7 +194,7 @@ namespace STELLAREST_2D
 
         public void EndHitEffect(CreatureController cc)
         {
-            CreatureMaterial[] mats = _creatureMats[cc.TemplateID];
+            CreatureMaterial[] mats = _creatureMats[cc.CharaData.TemplateID];
             for (int i = 0; i < mats.Length; ++i)
                 mats[i].spriteRender.material = mats[i].matOrigin;
         }
@@ -207,7 +212,7 @@ namespace STELLAREST_2D
             }
             else
             {
-                if (cc.TemplateID == (int)Define.TemplateIDs.Monster.Chicken)
+                if (cc.CharaData.TemplateID == (int)Define.TemplateIDs.Monster.Chicken)
                     defaultSpawnPos -= Vector3.up;
 
                 if (isCritical)
@@ -234,48 +239,3 @@ namespace STELLAREST_2D
         }
     }
 }
-
-//  public void SetInitialCreatureMaterials(CreatureController cc)
-//         {
-//             int length = 0;
-//             if (cc?.IsMonster() == false)
-//             {
-//                 SpriteRenderer[] sprArr = cc.GetComponentsInChildren<SpriteRenderer>(includeInactive: true);
-//                 for (int i = 0; i < sprArr.Length; ++i)
-//                 {
-//                     if (sprArr[i].sprite == null)
-//                         continue;
-
-//                     if (sprArr[i].gameObject.name.Contains(Define.PlayerController.FIRE_SOCKET))
-//                         continue;
-
-//                     ++length;
-//                 }
-//                 CreatureMaterial[] playerMats = new CreatureMaterial[length];
-
-//                 int index = 0;
-//                 for (int i = 0; i < sprArr.Length; ++i)
-//                 {
-//                     if (sprArr[i].sprite == null)
-//                         continue;
-
-//                     if (sprArr[i].gameObject.name.Contains(Define.PlayerController.FIRE_SOCKET))
-//                         continue;
-
-//                     playerMats[index++] = new CreatureMaterial(sprArr[i], sprArr[i].material, sprArr[i].color);
-//                 }
-
-//                 _creatureMats.Add(cc.TemplateID, playerMats);
-//                 if (_upgradePlayerBuffEffect == null)
-//                     _upgradePlayerBuffEffect = Utils.FindChild(cc.gameObject, Define.PlayerController.UPGRADE_PLAYER_BUFF);
-//             }
-//             else
-//             {
-//                 SpriteRenderer[] sprArr = cc.GetComponentsInChildren<SpriteRenderer>();
-//                 CreatureMaterial[] creatureMats = new CreatureMaterial[sprArr.Length];
-//                 for (int i = 0; i < sprArr.Length; ++i)
-//                     creatureMats[i] = new CreatureMaterial(sprArr[i], sprArr[i].material, sprArr[i].color);
-
-//                 _creatureMats.Add(cc.TemplateID, creatureMats);
-//             }
-//         }

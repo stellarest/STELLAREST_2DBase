@@ -54,6 +54,7 @@ namespace STELLAREST_2D
         protected override IEnumerator CoStartSkill()
         {
             WaitForSeconds wait = new WaitForSeconds(SkillData.CoolTime);
+            Utils.Log(SkillData.CoolTime.ToString());
             while (true)
             {
                 DoSkillJob();

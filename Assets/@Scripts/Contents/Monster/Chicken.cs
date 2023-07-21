@@ -10,8 +10,6 @@ namespace STELLAREST_2D
         {
             if (base.Init() == false)
                 return false;
-
-            Utils.InitLog(this.GetType());
             MonsterState = Define.MonsterState.Idle;
 
             return true;

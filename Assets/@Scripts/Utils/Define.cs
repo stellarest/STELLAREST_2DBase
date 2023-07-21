@@ -16,6 +16,7 @@ namespace STELLAREST_2D
         public enum CollisionLayers { Default = 0, PlayerBody = 6, PlayerAttack = 7, MonsterBody = 8, MonsterAttack = 9, }
 
         public enum PlayerEmotion { Default, Greedy, Sick, Bunny, Kitty }
+        public enum InitialStatRatioGrade { None = 0, Low = 10, Average = 20, High = 30 }
 
         public static class LoadJson
         {

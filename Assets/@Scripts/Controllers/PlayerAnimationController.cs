@@ -13,22 +13,19 @@ namespace STELLAREST_2D
         protected readonly int READY = Animator.StringToHash("Ready");
         protected readonly int RUN = Animator.StringToHash("Run");
         protected readonly int STUN = Animator.StringToHash("Stun");
+
         protected readonly int SLASH = Animator.StringToHash("Slash");
         protected readonly int JAB = Animator.StringToHash("Jab");
-        protected readonly int UPPER_BODY_SPEED = Animator.StringToHash("UpperBodySpeed");
-        protected readonly int ATTACK_SPEED = Animator.StringToHash("AttackSpeed");
-
-        public readonly string EXPRESSION_DEFAULT = "Default";
-        public readonly string EXPRESSION_ANGRY = "Angry";
-        public readonly string EXPRESSION_DEAD = "Dead";
-        public readonly string EXPRESSION_STUN = "Stun";
+        
+        protected readonly int ATTACK_ANIM_SPEED = Animator.StringToHash("AttackAnimSpeed");
+        protected readonly int UPPER_BODY_ANIM_SPEED = Animator.StringToHash("UpperBodyAnimSpeed");
+        protected readonly int LOWER_BODY_ANIM_SPEED = Animator.StringToHash("LowerBodyAnimSpeed");
 
         public override bool Init()
         {
             base.Init();
-
             CharaBase = GetComponent<Character>();
-
+            
             return true;
         }
 
@@ -42,8 +39,9 @@ namespace STELLAREST_2D
             _animController.SetBool(READY, true);
         }
 
-        public override void Run(float speed = 1f)
+        public override void Run()
         {
+            _animController.SetFloat(LOWER_BODY_ANIM_SPEED, 1f);
             _animController.Play(RUN);
         }
 
@@ -53,16 +51,15 @@ namespace STELLAREST_2D
             CharaBase.SetExpression("Stun");
         }
 
-        public override void MeleeSlash(float attackSpeed = 1f)
+        public override void Slash1H()
         {
-            // attackSpeed = 2f; // 5f : SUPER MAX SLASH ANIM SPEED
-            _animController.SetFloat(ATTACK_SPEED, attackSpeed);
+            _animController.SetFloat(ATTACK_ANIM_SPEED, 1f);
             _animController.SetTrigger(SLASH);
         }
 
-        public override void MeleeJab(float attackSpeed = 1f)
+        public override void Jab1H()
         {
-            _animController.SetFloat(ATTACK_SPEED, attackSpeed);
+            _animController.SetFloat(ATTACK_ANIM_SPEED, 1f);
             _animController.SetTrigger(JAB);
         }
     }

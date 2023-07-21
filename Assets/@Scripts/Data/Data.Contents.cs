@@ -16,29 +16,29 @@ namespace STELLAREST_2D.Data
         public int TemplateID;
         public string Name;
         public string PrimaryLabel;
-        public int InGameGrade;
         public float MaxHp;
+
         public float MaxHpUpRate;
-        public float Power;
-        public float PowerUpRate;
+        public float HpRegen;
+        public float LifeSteal;
+
+        public float MinDamage;
+        public float MaxDamage;
+        public float DamageUpRate;
+        public float AtkSpeed;
+        public float AtkSpeedUpRate;
+        public float Critical;
+
         public float Armor;
         public float ArmorUpRate;
+        public float Dodge;
+        public float Resistance;
+
         public float MoveSpeed;
         public float MoveSpeedUpRate;
-        public float Range;
-        public float RangeUpRate;
-        public float Agility;
-        public float AgilityUpRate;
-        public float Critical;
-        public float CriticaUpRate;
-        public float RepeatAttackAnimSpeed;
-        public float RepeatAttackAnimSpeedUpRate;
-        public float RepeatAttackCoolTime;
-        public float RepeatAttackCoolTimeUpRate;
+
         public float Luck;
-        public float LuckUpRate;
         public float TotalExp;
-        public string IconLabel;
         public List<int> InGameSkillList;
     }
 

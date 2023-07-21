@@ -31,15 +31,13 @@ namespace STELLAREST_2D
                     GameObject go = Managers.Resource.Instantiate(Managers.Data.CreatureDict[templateID].PrimaryLabel, pooling: false);
                     PlayerController pc = go.GetOrAddComponent<PlayerController>();
                     Player = pc;
-                    // Managers.Sprite.Init();
-                    Managers.Effect.Init();
-
                     pc.SetInfo(templateID);
-                    Managers.Effect.AddCreatureMaterials(pc, pc.CreatureData.TemplateID);
+
+                    Managers.Effect.Init();
+                    Managers.Effect.AddCreatureMaterials(pc);
                     Managers.Sprite.AddCreatureSprites(pc);
 
-                    //return pc as T;
-                    return Player as T;
+                    return pc as T;
                 }
 
                 if (type == typeof(Chicken))
@@ -52,8 +50,9 @@ namespace STELLAREST_2D
                     Monsters.Add(mc);
                     
                     //mc.InitMonsterSkill();
-                    Managers.Effect.AddCreatureMaterials(mc, mc.CreatureData.TemplateID);
-                    mc.CoFadeEffect(mc.CreatureData.TemplateID);
+                    //Managers.Effect.AddCreatureMaterials(mc, mc.CreatureData.TemplateID);
+                    Managers.Effect.AddCreatureMaterials(mc);
+                    mc.CoEffectFade();
 
                     return mc as T;
                 }
@@ -93,7 +92,6 @@ namespace STELLAREST_2D
 
             return null;
         }
-
 
         public void Despawn<T>(T obj) where T : BaseController
         {

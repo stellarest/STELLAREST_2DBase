@@ -13,22 +13,24 @@ namespace STELLAREST_2D
         public SkillBook SkillBook { get; protected set; }
         public bool IsPlayingDamageEffect { get; set; } = false;
 
-        public Define.InGameGrade CreatureGrade { get; set; } = Define.InGameGrade.Normal;
-        public Data.CreatureData CreatureData { get; protected set; }
-        public int TemplateID { get; protected set; }
-        public string CreatureName { get; protected set; }
-        public float MaxHp { get; protected set; }
-        public float Hp { get; protected set; }
-        public float Power { get; protected set; }
-        public float Armor { get; protected set; }
-        public float MoveSpeed { get; protected set; }
-        public float Range { get; protected set; }
-        public float Agility { get; protected set; }
-        public float Critical { get; protected set; }
-        public float RepeatAttackAnimSpeed { get; protected set; }
-        public float RepeatAttackCoolTime { get; protected set; }
-        public float Luck { get; protected set; }
-        public float TotalExp { get; protected set; }
+        public CharacterData CharaData { get; protected set; }
+
+
+       // public Data.CreatureData CreatureData { get; protected set; }
+        //public int TemplateID { get; protected set; }
+        // public string CreatureName { get; protected set; }
+        // public float MaxHp { get; protected set; }
+        // public float Hp { get; protected set; }
+        // public float Power { get; protected set; }
+        // public float Armor { get; protected set; }
+        // public float MoveSpeed { get; protected set; }
+        // public float Range { get; protected set; }
+        // public float Agility { get; protected set; }
+        // public float Critical { get; protected set; }
+        // public float RepeatAttackAnimSpeed { get; protected set; }
+        // public float RepeatAttackCoolTime { get; protected set; }
+        // public float Luck { get; protected set; }
+        // public float TotalExp { get; protected set; }
 
         // TODO : WeaponType, IconLabel은 일단 무시
         private Vector2 _moveDir;
@@ -72,31 +74,16 @@ namespace STELLAREST_2D
                 Debug.LogAssertion("!!!!! Failed to load creature data !!!!!");
                 Debug.Break();
             }
-            this.CreatureData = creatureData;
+
+            //this.CreatureData = creatureData;
             SetInitialStat(creatureData);
             SetInitialSkill(creatureData);
 
             SetSortingGroup();
         }
 
-        protected virtual void SetInitialStat(Data.CreatureData creatureData)
-        {
-            this.CreatureData = creatureData;
-            TemplateID = creatureData.TemplateID;
-            CreatureName = creatureData.Name;
-            MaxHp = creatureData.MaxHp;
-            Hp = MaxHp;
-            Power = creatureData.Power;
-            Armor = creatureData.Armor;
-            MoveSpeed = creatureData.MoveSpeed;
-            Range = creatureData.Range;
-            Agility = creatureData.Agility;
-            Critical = creatureData.Critical;
-            RepeatAttackAnimSpeed = creatureData.RepeatAttackAnimSpeed;
-            RepeatAttackCoolTime = creatureData.RepeatAttackCoolTime;
-            Luck = creatureData.Luck;
-            TotalExp = creatureData.TotalExp;
-        }
+        protected virtual void SetInitialStat(Data.CreatureData creatureData) 
+                                    => CharaData = new CharacterData(creatureData);
 
         protected virtual void SetInitialSkill(Data.CreatureData creatureData)
         {
@@ -145,11 +132,8 @@ namespace STELLAREST_2D
             }
         }
 
-        public void CoFadeEffect(int templateID) 
-                    => StartCoroutine(Managers.Effect.CoFadeEffect(this, templateID));
-
-        public void CoGlitchEffect(int templateID) 
-                    => StartCoroutine(Managers.Effect.CoGlitchEffect(this, templateID));
+        public void CoEffectFade() => StartCoroutine(Managers.Effect.CoEffectFade(this));
+        public void CoEffectGlitch() => StartCoroutine(Managers.Effect.CoEffectGlitch(this));
 
         protected virtual void SetSortingGroup() { }
 
@@ -202,12 +186,12 @@ namespace STELLAREST_2D
 
                 }
 
-                Hp -= damage;
-                if (Hp <= 0)
-                {
-                    Hp = 0;
-                    OnDead();
-                }
+                // Hp -= damage;
+                // if (Hp <= 0)
+                // {
+                //     Hp = 0;
+                //     OnDead();
+                // }
             }
             else
                 yield break;

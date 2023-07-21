@@ -85,7 +85,6 @@ namespace STELLAREST_2D
             }
         }
 
-
         public void UpgradeRepeatSkill(int originTemplateID)
         {
             if (IsLeanredSkill(originTemplateID) == false)
@@ -104,9 +103,7 @@ namespace STELLAREST_2D
                     return;
                 }
 
-                RepeatSkill newSkill = RepeatSkills.FirstOrDefault(s => s.SkillData.TemplateID
-                                     == originTemplateID + (int)latestSkill.SkillData.InGameGrade);
-
+                RepeatSkill newSkill = RepeatSkills.FirstOrDefault(s => s.SkillData.TemplateID == originTemplateID + (int)latestSkill.SkillData.InGameGrade);
                 LearnedRepeatSkills.Remove(latestSkill);
                 latestSkill.DeactivateSkill();
 
@@ -126,9 +123,6 @@ namespace STELLAREST_2D
         private bool IsLeanredSkill(int originTemplateID)
         {
             if (LearnedRepeatSkills.FirstOrDefault(s => s.SkillData.OriginTemplateID == originTemplateID) != null)
-                return true;
-
-            if (LearnedSequenceSkills.FirstOrDefault(s => s.SkillData.OriginTemplateID == originTemplateID) != null)
                 return true;
 
             return false;

@@ -35,7 +35,6 @@ namespace STELLAREST_2D
                 return false;
 
             ObjectType = Define.ObjectType.Player;
-            Utils.InitLog(this.GetType());
 
             Managers.Game.OnMoveDirChanged += OnMoveDirChangedHandler;
 
@@ -84,12 +83,14 @@ namespace STELLAREST_2D
         public Vector3 StartAttackPos { get; private set; }
         public Vector3 EndAttackPos { get; set; }
         public float MovementPower => (EndAttackPos - StartAttackPos).magnitude;
+
+        // TODO : 개선 필요
         public void Attack()
         {
-            switch (TemplateID)
+            switch (CharaData.TemplateID)
             {
                 case (int)Define.TemplateIDs.Player.Gary_Paladin:
-                    PAC.MeleeSlash(CreatureData.RepeatAttackAnimSpeed);
+                    PAC.Slash1H();
                     StartAttackPos = transform.position;
                     break;
             }
@@ -97,12 +98,13 @@ namespace STELLAREST_2D
 
         public void MoveByJoystick()
         {
-            Vector3 dir = MoveDir.normalized * MoveSpeed * Time.deltaTime;
+            Vector3 dir = MoveDir.normalized * CharaData.MoveSpeed * Time.deltaTime;
             transform.position += dir;
 
             // Get Degrees = 180f / PI = Rad2Deg
             // if (_moveDir != Vector2.zero)
             //     _indicator.eulerAngles = new Vector3(0, 0, Mathf.Atan2(-dir.x, dir.y) * 180f / Mathf.PI);
+
             if (MoveDir != Vector2.zero)
             {
                 if (_getReady == false)
@@ -205,10 +207,8 @@ namespace STELLAREST_2D
             }
         }
 
-        public override void OnDamaged(BaseController attacker, SkillBase skill, float damage)
-        {
-            base.OnDamaged(attacker, skill, damage);
-        }
+        public override void OnDamaged(BaseController attacker, SkillBase skill, float damage) 
+                        => base.OnDamaged(attacker, skill, damage);
 
         // bool bChange = false;
         public Define.PlayerEmotion emotion = Define.PlayerEmotion.Default;
@@ -219,7 +219,7 @@ namespace STELLAREST_2D
                 // CoGlitchEffect(CreatureData.TemplateID);
                 // bChange = !bChange;
                 // Managers.Sprite.SetPlayerEmotion(bChange ? Define.PlayerEmotion.Sick : Define.PlayerEmotion.Default);
-                Managers.Sprite.SetPlayerEmotion(emotion);
+                // Managers.Sprite.SetPlayerEmotion(emotion);
                 // CoFadeEffect(CreatureData.TemplateID + (int)Define.InGameGrade.Legendary);
                 // Debug.Log(SkillBook.RepeatCurrentGrade(Define.TemplateIDs.SkillType.PaladinSwing));
             }
@@ -229,11 +229,6 @@ namespace STELLAREST_2D
 
             if (Input.GetKeyDown(KeyCode.Space))
                 SkillBook.UpgradeRepeatSkill((int)Define.TemplateIDs.SkillType.PaladinSwing);
-
-            // if (Input.GetKeyDown(KeyCode.Space))
-            //     SkillBook.ActivateRepeatSkill((int)Define.TemplateIDs.SkillType.PaladinSwing);
-            // if (Input.GetKeyDown(KeyCode.T))
-            //     SkillBook.UpgradeRepeatSkill((int)Define.TemplateIDs.SkillType.PaladinSwing);
         }
 
         private void OnDestroy()
@@ -252,7 +247,6 @@ namespace STELLAREST_2D
         //     GetComponent<Character>().PrimaryMeleeWeapon = Managers.Resource.Load<Sprite>("GuardSword1_Rare.sprite");
         //     GetComponent<Character>().PrimaryMeleeWeaponRenderer.sprite = GetComponent<Character>().PrimaryMeleeWeapon;
         // }
-
 
         // private void CollectEnv2() // LEGACY
         // {
@@ -300,20 +294,6 @@ namespace STELLAREST_2D
 
         //         yield return wait;
         //     }
-        // }
-
-        // // TEMP : EgoSword
-        // private EgoSwordController _egoSword;
-        // private void StartEgoSword()
-        // {
-        //     if (_egoSword.IsValid())
-        //         return;
-
-        //     // Debug.Log("### Spawn Ego Sword ###");
-        //     _egoSword = Managers.Object.Spawn<EgoSwordController>(_indicator.position, 
-        //                                 (int)Define.PlayerData.SkillTemplateIDs.EgoSword);
-        //     _egoSword.transform.SetParent(_indicator);
-        //     _egoSword.ActivateSkill();
         // }
     }
 }

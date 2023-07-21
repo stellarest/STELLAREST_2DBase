@@ -68,11 +68,11 @@ namespace STELLAREST_2D
             
             return spawnPosition;
         }
-
+        
         [Conditional("UNITY_EDITOR")]
-        public static void InitLog(System.Type type)
+        public static void Log(string message)
         {
-            Debug.Log($"{type}::Init");
+            Debug.Log($"<color=white>{message}</color>");
         }
 
         [Conditional("UNITY_EDITOR")]
@@ -80,12 +80,6 @@ namespace STELLAREST_2D
         {
             Debug.LogError($"### !!! {message} !!! ###");
             Debug.Break();
-        }
-        
-        [Conditional("UNITY_EDITOR")]
-        public static void Log(string message)
-        {
-            Debug.Log($"<color=white>{message}</color>");
         }
 
         [Conditional("UNITY_EDITOR")]
