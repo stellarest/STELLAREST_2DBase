@@ -10,20 +10,25 @@ namespace STELLAREST_2D
         public enum WaveType { None, Elite, MiddleBoss, Boss }
         public enum SortingOrder { Map = 100, Player = 200, Monster = 210, ParticleEffect = 230 }
         public enum StageType { Normal, MiddleBoss, Boss, }
-        public enum CreatureState { Idle, Moving, Skill, Dead, }
         public enum MonsterState { Idle = 0, Run = 1, Skill = 2, Attack = 3, Death = 9 }
+
+        public enum CreatureState { Idle = 0, Run, Skill, Attack, Death = 9 }
+
         public enum InGameGrade { Normal = 1, Rare = 2, Epic = 3, Legendary = 4 }
         public enum CollisionLayers { Default = 0, PlayerBody = 6, PlayerAttack = 7, MonsterBody = 8, MonsterAttack = 9, }
 
-        public enum PlayerEmotion { Default, Greedy, Sick, Bunny, Kitty }
+        public enum PlayerEmotion { None = 0, Default = 1, Greedy, Sick, Bunny, Kitty, Die }
         public enum InitialStatRatioGrade { None = 0, Low = 10, Average = 20, High = 30 }
+
+        public const float MAX_DODGE_CHANCE = 0.6f;
 
         public static class LoadJson
         {
             // 모두 플레이팹 데이터 테이블에서 불러와야한다
-            public const string CREATURES = "CreatureData.json";
-            public const string STAGES = "Stage.json";
-            public const string SKILLS = "SkillsData.json";
+            public const string CREATURE = "CreatureData.json";
+            public const string STAGE = "Stage.json";
+            public const string SKILL = "SkillData.json";
+            public const string PASSIVE_ITEM = "PassiveItemData.json";
         }
 
         public static class TemplateIDs
@@ -41,6 +46,8 @@ namespace STELLAREST_2D
             public enum SkillType
             {
                 PaladinSwing = 200100,
+                BodyAttack = 200200,
+
             }
         }
 
@@ -51,8 +58,10 @@ namespace STELLAREST_2D
             public const string EXP_GEM = "EXPGem.prefab";
             public const string DMG_NUMBER_TO_MONSTER = "DmgNumber_ToMonster.prefab";
             public const string DMG_NUMBER_TO_MONSTER_CRITICAL = "DmgNumber_ToMonsterCritical.prefab";
-            public const string DMG_TEXT_TO_MONSTER_CRITICAL = "DmgText_ToMonsterCritical.prefab"; // 크리티컬 text는 몬스터에게만 적용
             public const string DMG_NUMBER_TO_PLAYER = "DmgNumber_ToPlayer.prefab";
+
+            public const string DMG_TEXT_TO_MONSTER_CRITICAL = "DmgText_ToMonsterCritical.prefab"; // 크리티컬 text는 몬스터에게만 적용
+            public const string DMG_TEXT_TO_PLAYER_DODGE = "DmgText_ToPlayerDodge.prefab"; // 플레이어에게만 적용
         }
 
         public static class SpriteLabels
@@ -81,6 +90,10 @@ namespace STELLAREST_2D
             // KITTY = 4
             public const string EYES_KITTY = "Eyes_Kitty.sprite";
             public const string MOUTH_KITTY = "Mouth_Kitty.sprite";
+
+            // DIE = 5
+            public const string EYES_DIE = "Eyes_Die.sprite";
+            public const string MOUTH_DIE = "Mouth_Die.sprite";
         }
 
         public static class MaterialLabels

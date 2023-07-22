@@ -19,7 +19,6 @@ namespace STELLAREST_2D
             _coSkillActivate = StartCoroutine(CoStartSkill());
         }
 
-        public abstract void OnPreSpawned();
         protected abstract void DoSkillJob();
         protected abstract IEnumerator CoStartSkill();
     }

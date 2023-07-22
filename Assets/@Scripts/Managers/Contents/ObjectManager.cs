@@ -49,10 +49,9 @@ namespace STELLAREST_2D
                     mc.SetInfo(templateID);
                     Monsters.Add(mc);
                     
-                    //mc.InitMonsterSkill();
-                    //Managers.Effect.AddCreatureMaterials(mc, mc.CreatureData.TemplateID);
                     Managers.Effect.AddCreatureMaterials(mc);
                     mc.CoEffectFade();
+                    mc.CoStartReadyToAction();
 
                     return mc as T;
                 }

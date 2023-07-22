@@ -10,8 +10,23 @@ namespace STELLAREST_2D
         public CreatureController Owner { get; set; }
         public Data.SkillData SkillData { get; set; }
 
+        public virtual void OnPreSpawned() => gameObject.SetActive(false);
         public virtual void ActivateSkill() => gameObject.SetActive(true);
         public virtual void DeactivateSkill() => gameObject.SetActive(false);
+
+        public bool IsCritical { get; set; } = false;
+        public float GetDamage()
+        {
+            float damage = Random.Range(SkillData.MinDamage, SkillData.MaxDamage);
+            if (Random.Range(0f, 0.99f + Mathf.Epsilon) < Owner.CharaData.CriticalChance)
+            {
+                IsCritical = true;
+                float criticalRatio = Random.Range(1.5f, 2f);
+                damage = damage * criticalRatio;
+            }
+
+            return damage + (damage * Owner.CharaData.DamageUp);
+        }
 
         // protected virtual void GenerateProjectile(int templateID, CreatureController owner, Vector3 startPos, Vector3 dir, Vector3 targetPos)
         // {

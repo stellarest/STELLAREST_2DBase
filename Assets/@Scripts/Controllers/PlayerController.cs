@@ -207,8 +207,8 @@ namespace STELLAREST_2D
             }
         }
 
-        public override void OnDamaged(BaseController attacker, SkillBase skill, float damage) 
-                        => base.OnDamaged(attacker, skill, damage);
+        public override void OnDamaged(BaseController attacker, SkillBase skill) 
+                        => base.OnDamaged(attacker, skill);
 
         // bool bChange = false;
         public Define.PlayerEmotion emotion = Define.PlayerEmotion.Default;
@@ -222,6 +222,8 @@ namespace STELLAREST_2D
                 // Managers.Sprite.SetPlayerEmotion(emotion);
                 // CoFadeEffect(CreatureData.TemplateID + (int)Define.InGameGrade.Legendary);
                 // Debug.Log(SkillBook.RepeatCurrentGrade(Define.TemplateIDs.SkillType.PaladinSwing));
+                // PAC.DieFront();
+                Managers.Effect.ShowDodgeText(this);
             }
 
             MoveByJoystick();

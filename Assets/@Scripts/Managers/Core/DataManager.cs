@@ -14,23 +14,24 @@ namespace STELLAREST_2D
     {
         public Dictionary<int, Data.CreatureData> CreatureDict { get; private set; } = new Dictionary<int, Data.CreatureData>();
         public Dictionary<int, Data.SkillData> SkillDict { get; private set; } = new Dictionary<int, Data.SkillData>();
+        public Dictionary<int, Data.PassiveItemData> passiveItemDict { get; private set; } = new Dictionary<int, Data.PassiveItemData>();
 
         public void Init()
         {
             CreatureDict = LoadJson<Data.CreatureDataLoader, int, Data.CreatureData>
-                            (Define.LoadJson.CREATURES).MakeDict();
+                            (Define.LoadJson.CREATURE).MakeDict();
 
             SkillDict = LoadJson<Data.SkillDataLoader, int, Data.SkillData>
-                            (Define.LoadJson.SKILLS).MakeDict();
+                            (Define.LoadJson.SKILL).MakeDict();
+
+            passiveItemDict = LoadJson<Data.PassiveItemDataLoader, int, Data.PassiveItemData>
+                            (Define.LoadJson.PASSIVE_ITEM).MakeDict();
         }
 
         private T LoadJson<T, Key, Value>(string path) where T : ILoader<Key, Value>
         {
             TextAsset textAsset = Managers.Resource.Load<TextAsset>($"{path}");
-            
-            // SetJObjects<T>(textAsset.text); 당장 필요한건 아님
-            // FromJson<PlayerDataLoader>으로 DeSerialize되면서 객체화됨
-            // 그리고 자동으로, PlayerDataLoader.stats에 json Data가 차곡 차곡 들어감.
+
             return UnityEngine.JsonUtility.FromJson<T>(textAsset.text);
         }
     }

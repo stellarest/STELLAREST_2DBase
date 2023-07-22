@@ -7,6 +7,7 @@ namespace STELLAREST_2D
     public class ProjectileController : SkillBase
     {
         private Rigidbody2D _rigid;
+        public SkillBase CurrentSkill { get; set; }
 
         public override bool Init()
         {
@@ -19,8 +20,8 @@ namespace STELLAREST_2D
         private float _speed;
         private float _initialTurningDir = 0f; // turn -> turn 하면 다시 파티클이 플레이어를 쫓아가는 것을 막아줌, 필요시 사용
         private bool _offParticle = false;
-
         private float _continuousSpeedRatio = 1f;
+
 
         // TODO
         // 맵 next wave에 도달하고, 아이템 구매 또는 스킬을 찍을 때 맵 정리를 한번 싹 해주는게 좋음.
@@ -136,6 +137,8 @@ namespace STELLAREST_2D
             {
                 // Debug.Log("DMG : " + Owner.CreatureData.Power * SkillData.DamageUpMultiplier);
                 // mc.OnDamaged(Owner, this, Owner.CreatureData.Power * SkillData.DamageUpMultiplier);
+                GetComponent<Collider2D>().enabled = false;
+                mc.OnDamaged(Owner, CurrentSkill);
             }
         }
     }

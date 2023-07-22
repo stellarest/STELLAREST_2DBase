@@ -8,31 +8,23 @@ namespace STELLAREST_2D
     {
         public PlayerAnimationController PAC { get; protected set; }
         public MonsterAnimationController MAC { get; protected set; }
+
+        private Define.CreatureState _cretureState = Define.CreatureState.Idle;
+        public Define.CreatureState CreatureState
+        {
+            get => _cretureState;
+            set
+            {
+                _cretureState = value;
+            }
+        }
+
         public Rigidbody2D RigidBody { get; protected set; }
         public Collider2D BodyCol { get; protected set; }
         public SkillBook SkillBook { get; protected set; }
-        public bool IsPlayingDamageEffect { get; set; } = false;
-
         public CharacterData CharaData { get; protected set; }
-
-
-       // public Data.CreatureData CreatureData { get; protected set; }
-        //public int TemplateID { get; protected set; }
-        // public string CreatureName { get; protected set; }
-        // public float MaxHp { get; protected set; }
-        // public float Hp { get; protected set; }
-        // public float Power { get; protected set; }
-        // public float Armor { get; protected set; }
-        // public float MoveSpeed { get; protected set; }
-        // public float Range { get; protected set; }
-        // public float Agility { get; protected set; }
-        // public float Critical { get; protected set; }
-        // public float RepeatAttackAnimSpeed { get; protected set; }
-        // public float RepeatAttackCoolTime { get; protected set; }
-        // public float Luck { get; protected set; }
-        // public float TotalExp { get; protected set; }
-
-        // TODO : WeaponType, IconLabel은 일단 무시
+        public bool IsPlayingDamageEffect { get; set; } = false;
+        
         private Vector2 _moveDir;
         public Vector2 MoveDir { get => _moveDir; set { _moveDir = value.normalized; } }
         public bool IsMoving { get => _moveDir != Vector2.zero; }
@@ -82,7 +74,7 @@ namespace STELLAREST_2D
             SetSortingGroup();
         }
 
-        protected virtual void SetInitialStat(Data.CreatureData creatureData) 
+        protected virtual void SetInitialStat(Data.CreatureData creatureData)
                                     => CharaData = new CharacterData(creatureData);
 
         protected virtual void SetInitialSkill(Data.CreatureData creatureData)
@@ -91,9 +83,18 @@ namespace STELLAREST_2D
 
             GameObject goRepeatSkills = new GameObject() { name = "@RepeatSkills" };
             goRepeatSkills.transform.SetParent(this.transform);
+            goRepeatSkills.transform.localPosition = Vector3.zero;
 
             GameObject goSequenceSkills = new GameObject() { name = "@SequenceSkills" };
             goSequenceSkills.transform.SetParent(this.transform);
+            goSequenceSkills.transform.localPosition = Vector3.zero;
+
+            if (this?.IsMonster() == false)
+            {
+                GameObject goInventory = new GameObject() { name = "@Inventory" };
+                goInventory.transform.SetParent(this.transform);
+
+            }
 
             foreach (Define.TemplateIDs.SkillType skill in creatureData.InGameSkillList)
             {
@@ -114,20 +115,23 @@ namespace STELLAREST_2D
                     if (typeof(RepeatSkill).IsAssignableFrom(System.Type.GetType(className)))
                     {
                         RepeatSkill repeatSkill = go.GetOrAddComponent<RepeatSkill>();
-                        repeatSkill.Owner = this;
-                        repeatSkill.SkillData = Managers.Data.SkillDict[i]; // 이게 더 직관적
-
                         repeatSkill.OnPreSpawned();
+
                         SkillBook.AddRepeatSkill(repeatSkill);
                         go.transform.SetParent(goRepeatSkills.transform);
+                        repeatSkill.SetSkillInfo(this, i);
                     }
                     else if (typeof(SequenceSkill).IsAssignableFrom(System.Type.GetType(className)))
                     {
+                        SequenceSkill sequenceSkill = go.GetOrAddComponent<SequenceSkill>();
+                        sequenceSkill.OnPreSpawned();
+
+                        SkillBook.AddSequenceSkill(sequenceSkill);
+                        go.transform.SetParent(goSequenceSkills.transform);
+                        sequenceSkill.SetSkillInfo(this, i);
                     }
                     else
                         Utils.LogError("Something is wrong !!");
-
-                    go.SetActive(false);
                 }
             }
         }
@@ -145,25 +149,35 @@ namespace STELLAREST_2D
             return true;
         }
 
-        public virtual void OnDamaged(BaseController attacker, SkillBase skill, float damage)
+        public virtual void OnDamaged(BaseController attacker, SkillBase skill)
         {
             if (gameObject.IsValid() || this.IsValid())
-                StartCoroutine(HitEffect(attacker, damage));
+                StartCoroutine(HitEffect(attacker, skill));
         }
 
         private bool _isPlayingPlayerHitEffect = false;
-        public virtual IEnumerator HitEffect(BaseController attacker, float damage)
+        public virtual IEnumerator HitEffect(BaseController attacker, SkillBase skill)
         {
             if (_isPlayingPlayerHitEffect == false)
             {
+                float damage = skill.GetDamage();
+                float resultDamage = damage - (damage * CharaData.Armor);
+                bool isCritical = skill.IsCritical;
+
                 if (this?.IsMonster() == false)
                 {
+                    if (Managers.Effect.IsPlayingGlitch || Random.Range(0f, 1f) <= Mathf.Min(CharaData.DodgeChance, Define.MAX_DODGE_CHANCE))
+                    {
+                        Managers.Effect.ShowDodgeText(this);
+                        yield break;
+                    }
+
                     Debug.Log("Damage To Player !!");
                     //attacker.GetComponent<CreatureController>().AttackCol.enabled = false;
 
                     _isPlayingPlayerHitEffect = true;
                     Managers.Effect.StartHitEffect(this);
-                    Managers.Effect.ShowDamageFont(this, damage);
+                    Managers.Effect.ShowDamageFont(this, resultDamage);
 
                     yield return new WaitForSeconds(0.1f);
                     Managers.Effect.EndHitEffect(this);
@@ -173,25 +187,20 @@ namespace STELLAREST_2D
                 {
                     Debug.Log("Damage To Monster !!");
                     Managers.Effect.StartHitEffect(this);
-
-                    // TEMP
-                    int rand = Random.Range(0, 5);
-                    if (rand <= 3)
-                        Managers.Effect.ShowDamageFont(this, damage);
-                    else
-                        Managers.Effect.ShowDamageFont(this, damage, true);
+                    Managers.Effect.ShowDamageFont(this, resultDamage, isCritical);
 
                     yield return new WaitForSeconds(0.1f);
                     Managers.Effect.EndHitEffect(this);
-
                 }
 
-                // Hp -= damage;
-                // if (Hp <= 0)
-                // {
-                //     Hp = 0;
-                //     OnDead();
-                // }
+                skill.IsCritical = isCritical ? !isCritical : isCritical;
+
+                CharaData.Hp -= damage;
+                if (CharaData.Hp <= 0)
+                {
+                    CharaData.Hp = 0;
+                    OnDead();
+                }
             }
             else
                 yield break;

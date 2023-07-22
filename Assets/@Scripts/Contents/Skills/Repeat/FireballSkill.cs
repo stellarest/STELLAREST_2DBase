@@ -11,7 +11,7 @@ namespace STELLAREST_2D
             throw new System.NotImplementedException();
         }
 
-        // 피아식별을 셋팅하던지. 파이어볼이 몬스터한테도 나갈수있고 플레이어한테도 나갈 수 있고
+        // 피아식별을 셋팅하던지.  파이어볼이 몬스터한테도 나갈수있고 플레이어한테도 나갈 수 있고
         // 스킬 공용으로 만듭시다
         // static int count = 0;
         // public FireballSkill()

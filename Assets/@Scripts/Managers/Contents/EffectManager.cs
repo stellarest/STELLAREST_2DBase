@@ -98,10 +98,8 @@ namespace STELLAREST_2D
             }
         }
 
-        private bool _startFade = false;
         public IEnumerator CoEffectFade(CreatureController cc)
         {
-            _startFade = true;
             CreatureMaterial[] mats = _creatureMats[cc.CharaData.CreatureData.TemplateID];
 
             for (int i = 0; i < mats.Length; ++i)
@@ -130,14 +128,12 @@ namespace STELLAREST_2D
                 percent = elapsedTime / desiredTime;
                 yield return null;
             }
-
-            _startFade = false;
         }
 
-        private bool _startGlitch = false;
+        public bool IsPlayingGlitch { get; private set; } = false;
         public IEnumerator CoEffectGlitch(CreatureController cc)
         {
-            _startGlitch = true;
+            IsPlayingGlitch = true;
             CreatureMaterial[] mats = _creatureMats[cc.CharaData.TemplateID];
 
             float duration = _upgradePlayerBuffEffect.GetComponent<ParticleSystem>().main.duration;
@@ -171,20 +167,20 @@ namespace STELLAREST_2D
                 yield return null;
             }
 
-            _startGlitch = false;
+            IsPlayingGlitch = false;
         }
 
-        public bool IsPlayingBuffEffect => _startFade || _startGlitch;
-
         public void UpgradePlayerBuffEffect() => _upgradePlayerBuffEffect.SetActive(true);
-
         public void StartHitEffect(CreatureController cc)
         {
             CreatureMaterial[] mats = _creatureMats[cc.CharaData.TemplateID];
             for (int i = 0; i < mats.Length; ++i)
             {
                 if (cc?.IsMonster() == false)
+                {
+                    Managers.Sprite.SetPlayerEmotion(Define.PlayerEmotion.None);   
                     mats[i].spriteRender.material = _matHitRed;
+                }
                 else
                     mats[i].spriteRender.material = _matHitWhite;
 
@@ -197,6 +193,9 @@ namespace STELLAREST_2D
             CreatureMaterial[] mats = _creatureMats[cc.CharaData.TemplateID];
             for (int i = 0; i < mats.Length; ++i)
                 mats[i].spriteRender.material = mats[i].matOrigin;
+
+            if (cc?.IsMonster() == false)
+                Managers.Sprite.SetPlayerEmotion(Define.PlayerEmotion.Default);
         }
 
         public void ShowDamageFont(CreatureController cc, float damage, bool isCritical = false)
@@ -229,6 +228,17 @@ namespace STELLAREST_2D
                         (Define.PrefabLabels.DMG_NUMBER_TO_MONSTER).GetComponent<DamageNumber>().Spawn(defaultSpawnPos, damage);
                 }
             }
+        }
+
+        public void ShowDodgeText(CreatureController cc)
+        {
+            if (cc.IsValid() == false)
+                return;
+
+            Vector3 defaultSpawnPos = cc.transform.position + (Vector3.up * 3f);
+
+            Managers.Resource.Load<GameObject>
+                 (Define.PrefabLabels.DMG_TEXT_TO_PLAYER_DODGE).GetComponent<DamageNumber>().Spawn(defaultSpawnPos);
         }
 
         public void ShowEffectText(string prefabLabel, Vector3 pos, string text)

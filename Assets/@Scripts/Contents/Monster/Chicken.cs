@@ -10,9 +10,12 @@ namespace STELLAREST_2D
         {
             if (base.Init() == false)
                 return false;
-            MonsterState = Define.MonsterState.Idle;
 
             return true;
+        }
+
+        protected override void OnDead()
+        {
         }
     }
 }

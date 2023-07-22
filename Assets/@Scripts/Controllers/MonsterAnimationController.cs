@@ -42,6 +42,11 @@ namespace STELLAREST_2D
             _animController.SetInteger(STATE, (int)Define.MonsterState.Run);
         }
 
+        public void Death()
+        {
+            _animController.SetInteger(STATE, (int)Define.MonsterState.Death);
+        }
+
         public override void DefaultFace()
         {
             MonsterBase.SetHead(FACE_DEFAULT);

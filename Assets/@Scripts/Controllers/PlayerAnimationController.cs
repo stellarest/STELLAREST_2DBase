@@ -16,6 +16,9 @@ namespace STELLAREST_2D
 
         protected readonly int SLASH = Animator.StringToHash("Slash");
         protected readonly int JAB = Animator.StringToHash("Jab");
+
+        protected readonly int DEATH_BACK = Animator.StringToHash("DeathBack");
+        protected readonly int DEATH_FRONT = Animator.StringToHash("DeathFront");
         
         protected readonly int ATTACK_ANIM_SPEED = Animator.StringToHash("AttackAnimSpeed");
         protected readonly int UPPER_BODY_ANIM_SPEED = Animator.StringToHash("UpperBodyAnimSpeed");
@@ -61,6 +64,18 @@ namespace STELLAREST_2D
         {
             _animController.SetFloat(ATTACK_ANIM_SPEED, 1f);
             _animController.SetTrigger(JAB);
+        }
+
+        public void DieBack()
+        {
+            Managers.Sprite.SetPlayerEmotion(Define.PlayerEmotion.Die);
+            _animController.Play(DEATH_BACK);
+        }
+
+        public void DieFront()
+        {
+            Managers.Sprite.SetPlayerEmotion(Define.PlayerEmotion.Die);
+            _animController.Play(DEATH_FRONT);
         }
     }
 }

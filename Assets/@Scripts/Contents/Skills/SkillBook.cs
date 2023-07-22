@@ -32,11 +32,13 @@ namespace STELLAREST_2D
         public void PlayerDefaultAttack(Define.TemplateIDs.SkillType skillType)
         {
             RepeatSkill skill = RepeatSkills.FirstOrDefault(s => s.SkillData.TemplateID == (int)skillType);
-            StartCoroutine(GeneratePlayerAttack(skill.SkillData));
+            StartCoroutine(GeneratePlayerAttack(skill));
         }
 
-        private IEnumerator GeneratePlayerAttack(Data.SkillData skillData)
+        private IEnumerator GeneratePlayerAttack(SkillBase skill)
         {
+            Data.SkillData skillData = skill.SkillData;
+
             Vector3 originShootDir = Managers.Game.Player.ShootDir;
             float turningSide = Managers.Game.Player.TurningAngle;
             Vector3 indicatorAngle = Managers.Game.Player.Indicator.eulerAngles;
@@ -46,7 +48,6 @@ namespace STELLAREST_2D
             // pos += go.transform.localPosition;
 
             Vector3 localScale = Managers.Game.Player.AnimationLocalScale;
-
             if (skillData.ContinuousCount != skillData.ContinuousSpeedRatios.Length)
             {
                 for (int i = 0; i < skillData.ContinuousSpeedRatios.Length; ++i)
@@ -75,6 +76,7 @@ namespace STELLAREST_2D
             {
                 Managers.Game.Player.EndAttackPos = transform.position;
                 ProjectileController pc = Managers.Object.Spawn<ProjectileController>(transform.position, skillData.TemplateID);
+                pc.CurrentSkill = skill;
 
                 Quaternion rot = Quaternion.Euler(0, 0, angles[i]);
                 Vector3 shootDir = rot * originShootDir;
@@ -87,6 +89,9 @@ namespace STELLAREST_2D
 
         public void UpgradeRepeatSkill(int originTemplateID)
         {
+            if (Managers.Effect.IsPlayingGlitch)
+                return;
+
             if (IsLeanredSkill(originTemplateID) == false)
             {
                 RepeatSkill skill = RepeatSkills.FirstOrDefault(s => s.SkillData.OriginTemplateID == originTemplateID);

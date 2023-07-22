@@ -13,58 +13,61 @@ namespace STELLAREST_2D
 
             this.TemplateID = creatureData.TemplateID;
             this.Name = creatureData.Name;
-
+            
             this.MaxHp = creatureData.MaxHp;
-            this.MaxHpUpRate = creatureData.MaxHpUpRate;
+            this.Hp = creatureData.MaxHp;
+            this.MaxHpUp = creatureData.MaxHpUp;
             this.HpRegen = creatureData.HpRegen;
-            this.LifeSteal = creatureData.LifeSteal;
+            this.LifeStealChance = creatureData.LifeStealChance;
 
-            this.MinDamage = creatureData.MinDamage;
-            this.MaxDamage = creatureData.MaxDamage;
-            this.DamageUpRate = creatureData.DamageUpRate;
-            this.AtkSpeed = creatureData.AtkSpeed;
-            this.AtkSpeedUpRate = creatureData.AtkSpeedUpRate;
-            this.Critical = creatureData.Critical;
+            this.DamageUp = creatureData.DamageUp;
+            this.CriticalChance = creatureData.CriticalChance;
+            this.CoolTimeDown = creatureData.CoolTimeDown;
 
             this.Armor = creatureData.Armor;
-            this.ArmorUpRate = creatureData.ArmorUpRate;
-            this.Dodge = creatureData.Dodge;
+            this.ArmorUp = creatureData.ArmorUp;
+            this.DodgeChance = creatureData.DodgeChance;
             this.Resistance = creatureData.Resistance;
 
             this.MoveSpeed = creatureData.MoveSpeed;
-            this.MoveSpeedUpRate = creatureData.MoveSpeedUpRate;
+            this.MoveSpeedUp = creatureData.MoveSpeedUp;
 
             this.Luck = creatureData.Luck;
             this.TotalExp = creatureData.TotalExp;
+
+            this.MinReadyToActionTime = creatureData.MinReadyToActionTime;
+            this.MaxReadyToActionTime = creatureData.MaxReadyToActionTime;
         }
 
-        public int Level { get; set; }
+        public int Level { get; set; } = 1;
         public Data.CreatureData CreatureData;
-        public int TemplateID { get; protected set; }
-        public string Name { get; protected set; }
+        public int TemplateID { get; set; }
+        public string Name { get; set; }
 
+        public float Hp { get; set; }
+        public float MaxHp { get; set; }
+        public float MaxHpUp { get; set; }
+        public float HpRegen { get; set; }
+        public float LifeStealChance { get; set; }
 
-        public float MaxHp { get; protected set; }
-        public float MaxHpUpRate { get; protected set; }
-        public float HpRegen { get; protected set; }
-        public float LifeSteal { get; protected set; }
+        public float DamageUp { get; set; }
+        public float CriticalChance { get; set; }
+        public float CoolTimeDown { get; set; }
 
-        public float MinDamage { get; protected set; }
-        public float MaxDamage { get; protected set; }
-        public float DamageUpRate { get; protected set; }
-        public float AtkSpeed { get; protected set; }
-        public float AtkSpeedUpRate { get; protected set; }
-        public float Critical { get; protected set; }
+        public float Armor { get; set; }
+        public float ArmorUp { get; set; }
+        public float DodgeChance { get; set; }
+        public float Resistance { get; set; }
 
-        public float Armor { get; protected set; }
-        public float ArmorUpRate { get; protected set; }
-        public float Dodge { get; protected set; }
-        public float Resistance { get; protected set; }
+        public float MoveSpeed { get; set; }
+        public float MoveSpeedUp { get; set; }
 
-        public float MoveSpeed { get; protected set; }
-        public float MoveSpeedUpRate { get; protected set; }
+        public float Luck { get; set; }
+        public float TotalExp { get; set; }
 
-        public float Luck { get; protected set; }
-        public float TotalExp { get; protected set; }
+        public float MinReadyToActionTime { get; private set; }
+        public float MaxReadyToActionTime { get; private set; }
+
+        // +++++++++++++++++++++++++++++++++++++++++++++++++++
     }
 }

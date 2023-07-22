@@ -20,8 +20,6 @@ namespace STELLAREST_2D
             _attackCol = GetComponent<CircleCollider2D>();
             _attackCol.enabled = false;
 
-            transform.SetParent(owner.transform);
-
             if (Owner?.IsMonster() == true)
                 Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.MonsterAttack);
         }
@@ -48,7 +46,7 @@ namespace STELLAREST_2D
             mac.AngryFace();
             mc.MonsterState = Define.MonsterState.Attack;
             _attackCol.enabled = true;
-            Owner.BodyCol.enabled = false;
+            // Owner.BodyCol.enabled = false;
             while (percent < 1f)
             {
                 elapsedTime += Time.deltaTime;
@@ -84,7 +82,7 @@ namespace STELLAREST_2D
                 yield return null;
             }
             _returnBody = true;
-            Owner.BodyCol.enabled = true;
+            // Owner.BodyCol.enabled = true;
         }
 
         private void OnTriggerEnter2D(Collider2D other)
@@ -94,9 +92,10 @@ namespace STELLAREST_2D
 
             if (Managers.Collision.CheckCollisionTarget(Define.CollisionLayers.PlayerBody, other.gameObject.layer))
             {
-                // other.GetComponent<CreatureController>().OnDamaged(Owner, this, 
-                //             Owner.CreatureData.Power * SkillData.DamageUpMultiplier);
+                Managers.Game.Player.OnDamaged(Owner, this);
             }
         }
+
+        public override void OnPreSpawned() { }
     }
 }

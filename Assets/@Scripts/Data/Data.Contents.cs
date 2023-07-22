@@ -17,28 +17,22 @@ namespace STELLAREST_2D.Data
         public string Name;
         public string PrimaryLabel;
         public float MaxHp;
-
-        public float MaxHpUpRate;
+        public float MaxHpUp;
         public float HpRegen;
-        public float LifeSteal;
-
-        public float MinDamage;
-        public float MaxDamage;
-        public float DamageUpRate;
-        public float AtkSpeed;
-        public float AtkSpeedUpRate;
-        public float Critical;
-
+        public float LifeStealChance;
+        public float DamageUp;
+        public float CriticalChance;
+        public float CoolTimeDown;
         public float Armor;
-        public float ArmorUpRate;
-        public float Dodge;
+        public float ArmorUp;
+        public float DodgeChance;
         public float Resistance;
-
         public float MoveSpeed;
-        public float MoveSpeedUpRate;
-
+        public float MoveSpeedUp;
         public float Luck;
         public float TotalExp;
+        public float MinReadyToActionTime;
+        public float MaxReadyToActionTime;
         public List<int> InGameSkillList;
     }
 
@@ -70,7 +64,8 @@ namespace STELLAREST_2D.Data
         public string Name;
         public string PrimaryLabel;
         public Define.InGameGrade InGameGrade;
-        public float DamageUpMultiplier;
+        public float MinDamage;
+        public float MaxDamage;
         public bool IsPlayerDefaultAttack;
         public float Speed;
         public float Duration;
@@ -101,6 +96,48 @@ namespace STELLAREST_2D.Data
             Dictionary<int, SkillData> dict = new Dictionary<int, SkillData>();
             foreach (SkillData skill in skills)
                 dict.Add(skill.TemplateID, skill);
+
+            return dict;
+        }
+    }
+
+    [Serializable]
+    public class PassiveItemData
+    {
+        public int TemplateID;
+        public string Name;
+        public string Description;
+        public Define.InGameGrade InGameGrade;
+        public float MaxHpUp;
+        public float HpRegenUp;
+        public float LifeStealChanceUp;
+        public float DamageUp;
+        public float CriticalChanceUp;
+        public float CoolTimeDown;
+        public float ArmorUp;
+        public float DodgeChanceUp;
+        public float ResistanceUp;
+        public float MoveSpeedUp;
+        public float LuckUp;
+        public float ExpUp;
+    }
+
+    [Serializable]
+    public class PassiveItemDataLoader : ILoader<int, PassiveItemData>
+    {
+        public List<PassiveItemData> items = new List<PassiveItemData>();
+
+        public Dictionary<int, PassiveItemData> MakeDict()
+        {
+            if (items.Count == 0)
+            {
+                Utils.LogError("Failed to load PassiveSkillData.json");
+                Debug.Break();
+            }
+
+            Dictionary<int, PassiveItemData> dict = new Dictionary<int, PassiveItemData>();
+            foreach (PassiveItemData item in items)
+                dict.Add(item.TemplateID, item);
 
             return dict;
         }
