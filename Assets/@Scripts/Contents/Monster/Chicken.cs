@@ -17,7 +17,6 @@ namespace STELLAREST_2D
         protected override void OnDead()
         {
             //base.OnDead();
-            
         }
     }
 }

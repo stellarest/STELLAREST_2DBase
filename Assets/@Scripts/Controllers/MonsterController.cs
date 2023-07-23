@@ -29,7 +29,9 @@ namespace STELLAREST_2D
                     break;
 
                 case Define.CreatureState.Death:
+                    Managers.Sprite.SetMonsterFace(this, Define.SpriteLabels.MonsterFace.Death);
                     MAC.Death();
+                    this.CoEffectFade(true);
                     break;
             }
         }
@@ -48,7 +50,6 @@ namespace STELLAREST_2D
                 yield return null;
             }
 
-            // CreatureState = Define.CreatureState.Run;
             CreatureState = Define.CreatureState.Death;
         }
 
@@ -60,7 +61,6 @@ namespace STELLAREST_2D
             ObjectType = Define.ObjectType.Monster;
             MAC = gameObject.GetOrAddComponent<MonsterAnimationController>();
             MAC.Owner = this;
-
             Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.MonsterBody);
 
             return true;
@@ -93,7 +93,6 @@ namespace STELLAREST_2D
         private void FlipX(float flipX) 
                 => transform.localScale = new Vector2(_initScale.x * flipX, _initScale.y);
         
-
         public override void OnDamaged(BaseController attacker, SkillBase skill) 
                 => base.OnDamaged(attacker, skill);
     }

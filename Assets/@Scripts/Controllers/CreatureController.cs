@@ -136,7 +136,8 @@ namespace STELLAREST_2D
             }
         }
 
-        public void CoEffectFade() => StartCoroutine(Managers.Effect.CoEffectFade(this));
+        public void CoEffectFade(bool isFadingOut = false) 
+                => StartCoroutine(Managers.Effect.CoEffectFade(this, isFadingOut));
         public void CoEffectGlitch() => StartCoroutine(Managers.Effect.CoEffectGlitch(this));
 
         protected virtual void SetSortingGroup() { }

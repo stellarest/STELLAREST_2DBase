@@ -98,7 +98,7 @@ namespace STELLAREST_2D
             }
         }
 
-        public IEnumerator CoEffectFade(CreatureController cc)
+        public IEnumerator CoEffectFade(CreatureController cc, bool isFadingOut = false)
         {
             CreatureMaterial[] mats = _creatureMats[cc.CharaData.CreatureData.TemplateID];
 
@@ -108,26 +108,41 @@ namespace STELLAREST_2D
             float elapsedTime = 0f;
             float desiredTime = 2f;
             float percent = 0f;
-
-            while (percent < 1f)
+            if (isFadingOut == false)
             {
-                _matFade.SetFloat(SHADER_FADE_EFFECT, percent);
-                elapsedTime += Time.deltaTime;
-                percent = elapsedTime / desiredTime;
-                yield return null;
+                while (percent < 1f)
+                {
+                    _matFade.SetFloat(SHADER_FADE_EFFECT, percent);
+                    elapsedTime += Time.deltaTime;
+                    percent = elapsedTime / desiredTime;
+                    yield return null;
+                }
+            }
+            else
+            {
+                percent = 1f;
+                while (percent > 0f)
+                {
+                    _matFade.SetFloat(SHADER_FADE_EFFECT, percent);
+                    elapsedTime += Time.deltaTime;
+                    percent = 1f - (elapsedTime / desiredTime);
+                    yield return null;
+                }
+
+                yield break;
             }
 
             for (int i = 0; i < mats.Length; ++i)
                 mats[i].spriteRender.material = mats[i].matOrigin;
 
-            percent = 0f;
-            elapsedTime = 0f;
-            while (percent < 1f)
-            {
-                elapsedTime += Time.deltaTime;
-                percent = elapsedTime / desiredTime;
-                yield return null;
-            }
+            // percent = 0f;
+            // elapsedTime = 0f;
+            // while (percent < 1f)
+            // {
+            //     elapsedTime += Time.deltaTime;
+            //     percent = elapsedTime / desiredTime;
+            //     yield return null;
+            // }
         }
 
         public bool IsPlayingGlitch { get; private set; } = false;

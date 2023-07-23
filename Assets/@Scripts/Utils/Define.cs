@@ -10,7 +10,7 @@ namespace STELLAREST_2D
         public enum WaveType { None, Elite, MiddleBoss, Boss }
         public enum SortingOrder { Map = 100, Player = 200, Monster = 210, ParticleEffect = 230 }
         public enum StageType { Normal, MiddleBoss, Boss, }
-        
+
         // public enum MonsterState { Idle = 0, Run = 1, Skill = 2, Attack = 3, Death = 9 }
 
         public enum CreatureState { Idle = 0, Walk = 1, Run = 2, Attack = 3, Skill, Invincible, Death = 9 }
@@ -71,30 +71,35 @@ namespace STELLAREST_2D
             public const string EXP_GEM_YELLOW = "EXPGem_02.sprite";
             public const string EXP_GEM_BLUE = "EXPGem_03.sprite";
 
-            // PLAYER FACE SET
-            // DEFAULT = 0
-            public const string EYES_MALE_DEFAULT = "Eyes_Male_Default.sprite";
-            public const string MOUTH_DEFAULT_2 = "Mouth_Default_2.sprite";
+            public static class Player
+            {
+                // PLAYER FACE SET
+                // DEFAULT = 0
+                public const string EYES_MALE_DEFAULT = "Eyes_Male_Default.sprite";
+                public const string MOUTH_DEFAULT_2 = "Mouth_Default_2.sprite";
 
-            // GREEDY = 1
-            public const string EYES_GREEDY = "Eyes_Greedy.sprite";
-            public const string MOUTH_GREEDY = "Mouth_Greedy.sprite";
+                // GREEDY = 1
+                public const string EYES_GREEDY = "Eyes_Greedy.sprite";
+                public const string MOUTH_GREEDY = "Mouth_Greedy.sprite";
 
-            // SICK = 2
-            public const string EYES_SICK = "Eyes_Sick.sprite";
-            public const string MOUTH_SICK = "Mouth_Sick.sprite";
+                // SICK = 2
+                public const string EYES_SICK = "Eyes_Sick.sprite";
+                public const string MOUTH_SICK = "Mouth_Sick.sprite";
 
-            // BUNNY = 3
-            public const string EYES_BUNNY = "Eyes_Bunny.sprite";
-            public const string MOUTH_BUNNY = "Mouth_Bunny.sprite";
+                // BUNNY = 3
+                public const string EYES_BUNNY = "Eyes_Bunny.sprite";
+                public const string MOUTH_BUNNY = "Mouth_Bunny.sprite";
 
-            // KITTY = 4
-            public const string EYES_KITTY = "Eyes_Kitty.sprite";
-            public const string MOUTH_KITTY = "Mouth_Kitty.sprite";
+                // KITTY = 4
+                public const string EYES_KITTY = "Eyes_Kitty.sprite";
+                public const string MOUTH_KITTY = "Mouth_Kitty.sprite";
 
-            // DIE = 5
-            public const string EYES_DIE = "Eyes_Die.sprite";
-            public const string MOUTH_DIE = "Mouth_Die.sprite";
+                // DIE = 5
+                public const string EYES_DIE = "Eyes_Die.sprite";
+                public const string MOUTH_DIE = "Mouth_Die.sprite";
+            }
+
+            public enum MonsterFace { Normal = 0, Angry = 1, Death = 2 }
         }
 
         public static class MaterialLabels
