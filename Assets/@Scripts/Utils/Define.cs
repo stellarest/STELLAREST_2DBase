@@ -10,9 +10,10 @@ namespace STELLAREST_2D
         public enum WaveType { None, Elite, MiddleBoss, Boss }
         public enum SortingOrder { Map = 100, Player = 200, Monster = 210, ParticleEffect = 230 }
         public enum StageType { Normal, MiddleBoss, Boss, }
-        public enum MonsterState { Idle = 0, Run = 1, Skill = 2, Attack = 3, Death = 9 }
+        
+        // public enum MonsterState { Idle = 0, Run = 1, Skill = 2, Attack = 3, Death = 9 }
 
-        public enum CreatureState { Idle = 0, Run, Skill, Attack, Death = 9 }
+        public enum CreatureState { Idle = 0, Walk = 1, Run = 2, Attack = 3, Skill, Invincible, Death = 9 }
 
         public enum InGameGrade { Normal = 1, Rare = 2, Epic = 3, Legendary = 4 }
         public enum CollisionLayers { Default = 0, PlayerBody = 6, PlayerAttack = 7, MonsterBody = 8, MonsterAttack = 9, }

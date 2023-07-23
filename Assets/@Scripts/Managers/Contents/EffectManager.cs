@@ -174,13 +174,13 @@ namespace STELLAREST_2D
         public void StartHitEffect(CreatureController cc)
         {
             CreatureMaterial[] mats = _creatureMats[cc.CharaData.TemplateID];
+            if (cc?.IsMonster() == false)
+                Managers.Sprite.SetPlayerEmotion(Define.PlayerEmotion.None);
+
             for (int i = 0; i < mats.Length; ++i)
             {
                 if (cc?.IsMonster() == false)
-                {
-                    Managers.Sprite.SetPlayerEmotion(Define.PlayerEmotion.None);   
                     mats[i].spriteRender.material = _matHitRed;
-                }
                 else
                     mats[i].spriteRender.material = _matHitWhite;
 

@@ -45,7 +45,8 @@ namespace STELLAREST_2D
 
         protected override void DoSkillJob()
         {
-            Managers.Game.Player.Attack();
+            //Managers.Game.Player.Attack();
+            Managers.Game.Player.CreatureState = Define.CreatureState.Attack;
         }
 
         public override void OnPreSpawned()

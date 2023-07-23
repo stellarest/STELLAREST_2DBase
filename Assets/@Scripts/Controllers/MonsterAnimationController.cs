@@ -8,10 +8,15 @@ namespace STELLAREST_2D
     public class MonsterAnimationController : AnimationController
     {
         public Monster MonsterBase { get; protected set; }
+        private readonly int IDLE = Animator.StringToHash("Idle");
+        private readonly int RUN = Animator.StringToHash("Run");
         private readonly int ATTACK = Animator.StringToHash("Attack");
-        private readonly int ACTION = Animator.StringToHash("Action");
-        private readonly int STATE = Animator.StringToHash("State");
-        private readonly int BODY_SPEED = Animator.StringToHash("BodySpeed");
+        private readonly int DEATH = Animator.StringToHash("Death");
+
+        public void Idle() => AnimController.Play(IDLE);
+        public void Run() => AnimController.Play(RUN);
+        public void Attack() => AnimController.Play(ATTACK);
+        public void Death() => AnimController.Play(DEATH);
 
         private readonly int FACE_DEFAULT = 0;
         private readonly int FACE_ANGRY = 1;
@@ -20,44 +25,23 @@ namespace STELLAREST_2D
         public override bool Init()
         {
             base.Init();
-
             MonsterBase = GetComponent<Monster>();
-
             return true;
         }
 
-        public override void Idle()
-        {
-            _animController.SetInteger(STATE, (int)Define.MonsterState.Idle);
-        }
 
-        public override void Attack()
-        {
-            _animController.SetTrigger(ATTACK);
-        }
 
-        public override void Run()
-        {
-            _animController.SetFloat(BODY_SPEED, 1f);
-            _animController.SetInteger(STATE, (int)Define.MonsterState.Run);
-        }
-
-        public void Death()
-        {
-            _animController.SetInteger(STATE, (int)Define.MonsterState.Death);
-        }
-
-        public override void DefaultFace()
+        public void DefaultFace()
         {
             MonsterBase.SetHead(FACE_DEFAULT);
         }
 
-        public override void AngryFace()
+        public void AngryFace()
         {
             MonsterBase.SetHead(FACE_ANGRY);
         }
 
-        public override void DeadFace()
+        public void DeadFace()
         {
             MonsterBase.SetHead(FACE_DEAD);
         }

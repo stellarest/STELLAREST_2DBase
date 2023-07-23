@@ -12,6 +12,8 @@ namespace STELLAREST_2D
         public override bool Init()
         {
             base.Init();
+            ObjectType = Define.ObjectType.Projectile;
+            
             _rigid = GetComponent<Rigidbody2D>();
             return true;
         }

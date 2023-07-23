@@ -11,38 +11,57 @@ namespace STELLAREST_2D
 {
     public class PlayerController : CreatureController
     {
+        public PlayerAnimationController PAC { get; protected set; }
         public float EnvCollectDist { get; private set; } = 1f; // 이건 데이터 시트로 안빼도 됨
+
         private Transform _indicator;
         public Transform Indicator => _indicator;
-
         private Transform _fireSocket;
         public Vector3 FireSocket => _fireSocket.position;
-
         public Vector3 ShootDir => (_fireSocket.position - _indicator.position).normalized;
-        //public PlayerAnimationController PAC { get; protected set; }
 
         [field: SerializeField]
         public float TurningAngle { get; private set; }
-
         private GameObject _animChildObject;
         public Vector3 AnimationLocalScale => _animChildObject.transform.localScale;
         public AnimationEvents AnimEvents { get; private set; }
+        public override void UpdateAnimation()
+        {
+            switch (_cretureState)
+            {
+                case Define.CreatureState.Idle:
+                    PAC.Idle();
+                    break;
 
-        private bool _getReady = false;
+                case Define.CreatureState.Walk:
+                    PAC.Walk();
+                    break;
+
+                case Define.CreatureState.Run:
+                    PAC.Run();
+                    break;
+
+                case Define.CreatureState.Attack:
+                    PAC.Slash1H();
+                    StartAttackPos = transform.position;
+                    break;
+            }
+        }
+
         public override bool Init()
         {
             if (base.Init() == false)
                 return false;
 
             ObjectType = Define.ObjectType.Player;
-
             Managers.Game.OnMoveDirChanged += OnMoveDirChangedHandler;
 
             _animChildObject = Utils.FindChild(gameObject, "Animation");
             AnimEvents = _animChildObject.GetComponent<AnimationEvents>();
-            
             PAC = gameObject.GetOrAddComponent<PlayerAnimationController>();
             PAC.Owner = this;
+
+            CreatureState = Define.CreatureState.Idle;
 
             // TODO : 스킬은 처음에 UI에서 고르던 다른 방식으로 하던 지금처럼 하던 마음대로 채택
             Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.PlayerBody);
@@ -70,32 +89,31 @@ namespace STELLAREST_2D
                 _fireSocket = Utils.FindChild<Transform>(this.gameObject,
                     Define.PlayerController.FIRE_SOCKET, true);
 
-            // TODO
             _indicator.gameObject.SetActive(false);
             GetComponent<CircleCollider2D>().enabled = true;
         }
 
-        protected override void SetSortingGroup()
-        {
-            GetComponent<SortingGroup>().sortingOrder = (int)Define.SortingOrder.Player;
-        }
-
+        protected override void SetSortingGroup() 
+                => GetComponent<SortingGroup>().sortingOrder = (int)Define.SortingOrder.Player;
+        
         public Vector3 StartAttackPos { get; private set; }
         public Vector3 EndAttackPos { get; set; }
-        public float MovementPower => (EndAttackPos - StartAttackPos).magnitude;
+        public float MovementPower 
+                => (EndAttackPos - StartAttackPos).magnitude;
 
         // TODO : 개선 필요
-        public void Attack()
-        {
-            switch (CharaData.TemplateID)
-            {
-                case (int)Define.TemplateIDs.Player.Gary_Paladin:
-                    PAC.Slash1H();
-                    StartAttackPos = transform.position;
-                    break;
-            }
-        }
+        // public void Attack()
+        // {
+        //     switch (CharaData.TemplateID)
+        //     {
+        //         case (int)Define.TemplateIDs.Player.Gary_Paladin:
+        //             PAC.Slash1H();
+        //             StartAttackPos = transform.position;
+        //             break;
+        //     }
+        // }
 
+        private bool _getReady = false;
         public void MoveByJoystick()
         {
             Vector3 dir = MoveDir.normalized * CharaData.MoveSpeed * Time.deltaTime;
@@ -104,13 +122,12 @@ namespace STELLAREST_2D
             // Get Degrees = 180f / PI = Rad2Deg
             // if (_moveDir != Vector2.zero)
             //     _indicator.eulerAngles = new Vector3(0, 0, Mathf.Atan2(-dir.x, dir.y) * 180f / Mathf.PI);
-
             if (MoveDir != Vector2.zero)
             {
                 if (_getReady == false)
                 {
-                    PAC.Ready();
                     _getReady = true;
+                    PAC.Ready();
                 }
 
                 float degree = Mathf.Atan2(-dir.x, dir.y) * Mathf.Rad2Deg;
@@ -118,11 +135,11 @@ namespace STELLAREST_2D
                 Turn(degree);
                 InGameLimitPos(transform.position);
             }
-
             //RigidBody.velocity = Vector3.zero;
         }
 
-        public bool IsFacingRight => (_animChildObject.transform.localScale.x != Define.PlayerController.CONSTANT_SCALE_X * -1f) ? true : false;
+        public bool IsFacingRight 
+                => (_animChildObject.transform.localScale.x != Define.PlayerController.CONSTANT_SCALE_X * -1f) ? true : false;
         private void Turn(float angle)
         {
             TurningAngle = Mathf.Sign(angle); // 각도 양수1, 음수-1
@@ -158,7 +175,7 @@ namespace STELLAREST_2D
         }
 
         public bool IsInLimitMaxPosX => Mathf.Abs(transform.position.x - Managers.Stage.RightTop.x) < Mathf.Epsilon ||
-                                        Mathf.Abs(transform.position.x - Managers.Stage.LeftBottom.x) < Mathf.Epsilon;  
+                                        Mathf.Abs(transform.position.x - Managers.Stage.LeftBottom.x) < Mathf.Epsilon;
 
         public bool IsInLimitMaxPosY => Mathf.Abs(transform.position.y - Managers.Stage.RightTop.y) < Mathf.Epsilon ||
                                         Mathf.Abs(transform.position.y - Managers.Stage.LeftBottom.y) < Mathf.Epsilon;
@@ -196,22 +213,22 @@ namespace STELLAREST_2D
             this.MoveDir = moveDir;
             if (moveDir == Vector2.zero)
             {
-                PAC.Idle();
-                //_indicator.gameObject.SetActive(false);
-                _indicator.gameObject.SetActive(false); // 각도 확인용
+                CreatureState = Define.CreatureState.Idle;
+                _indicator.gameObject.SetActive(false);
             }
             else
             {
-                PAC.Run();
+                CreatureState = Define.CreatureState.Run;
                 _indicator.gameObject.SetActive(true);
             }
         }
 
-        public override void OnDamaged(BaseController attacker, SkillBase skill) 
+        public override void OnDamaged(BaseController attacker, SkillBase skill)
                         => base.OnDamaged(attacker, skill);
 
         // bool bChange = false;
         public Define.PlayerEmotion emotion = Define.PlayerEmotion.Default;
+
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.T))
@@ -223,7 +240,15 @@ namespace STELLAREST_2D
                 // CoFadeEffect(CreatureData.TemplateID + (int)Define.InGameGrade.Legendary);
                 // Debug.Log(SkillBook.RepeatCurrentGrade(Define.TemplateIDs.SkillType.PaladinSwing));
                 // PAC.DieFront();
-                Managers.Effect.ShowDodgeText(this);
+                // Managers.Effect.ShowDodgeText(this);
+                // PAC.Jab1H();
+                PAC.DeathBack();
+                // PAC.Slash1H();
+            }
+
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                PAC.DeathFront();
             }
 
             MoveByJoystick();

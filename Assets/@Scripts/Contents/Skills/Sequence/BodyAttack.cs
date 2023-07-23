@@ -44,7 +44,7 @@ namespace STELLAREST_2D
             float endWait = 1f;
 
             mac.AngryFace();
-            mc.MonsterState = Define.MonsterState.Attack;
+            mc.CreatureState = Define.CreatureState.Attack;
             _attackCol.enabled = true;
             // Owner.BodyCol.enabled = false;
             while (percent < 1f)
@@ -58,10 +58,10 @@ namespace STELLAREST_2D
                     _attackCol.enabled = false;
                     yield return CoBodyReturn(callback, _startAttackPoint, target);
                     yield return new WaitUntil(() => _returnBody);
-                    mc.MonsterState = Define.MonsterState.Idle;
+                    mc.CreatureState = Define.CreatureState.Idle;
                     yield return new WaitForSeconds(endWait);
                     mac.DefaultFace();
-                    mc.MonsterState = Define.MonsterState.Run;
+                    mc.CreatureState = Define.CreatureState.Run;
                     yield break;
                 }
 

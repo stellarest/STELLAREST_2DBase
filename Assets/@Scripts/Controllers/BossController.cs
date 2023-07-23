@@ -84,15 +84,15 @@ namespace STELLAREST_2D
         //         CreatureState = Define.GameData.CreatureState.Moving;
         // }
 
-        protected override void UpdateDead()
-        {
-            Debug.Log("##### UPDATE DEAD #####");
-            if (_coWait == null)
-            {
-                Managers.Object.Despawn(this);
-                Debug.Log("<color=red> DESPAWN BOSS </color>");
-            }
-        }
+        // protected override void UpdateDead()
+        // {
+        //     Debug.Log("##### UPDATE DEAD #####");
+        //     if (_coWait == null)
+        //     {
+        //         Managers.Object.Despawn(this);
+        //         Debug.Log("<color=red> DESPAWN BOSS </color>");
+        //     }
+        // }
 
         #region Wait Coroutine
 

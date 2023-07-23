@@ -103,7 +103,6 @@ namespace STELLAREST_2D
             System.Type type = typeof(T);
             if (type == typeof(PlayerController))
             {
-                // TODO
             }
             else if (typeof(T).IsSubclassOf(typeof(CreatureController)))
             {

@@ -6,18 +6,18 @@ namespace STELLAREST_2D
 {
     public class CreatureController : BaseController
     {
-        public PlayerAnimationController PAC { get; protected set; }
-        public MonsterAnimationController MAC { get; protected set; }
-
-        private Define.CreatureState _cretureState = Define.CreatureState.Idle;
+        protected Define.CreatureState _cretureState = Define.CreatureState.Idle;
         public Define.CreatureState CreatureState
         {
             get => _cretureState;
             set
             {
                 _cretureState = value;
+                UpdateAnimation();
             }
         }
+
+        public virtual void UpdateAnimation() { }
 
         public Rigidbody2D RigidBody { get; protected set; }
         public Collider2D BodyCol { get; protected set; }

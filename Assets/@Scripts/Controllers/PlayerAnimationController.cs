@@ -9,74 +9,59 @@ namespace STELLAREST_2D
     {
         public Character CharaBase { get; protected set; }
 
-        protected readonly int IDLE = Animator.StringToHash("Idle");
-        protected readonly int READY = Animator.StringToHash("Ready");
-        protected readonly int RUN = Animator.StringToHash("Run");
-        protected readonly int STUN = Animator.StringToHash("Stun");
+        private readonly int READY = Animator.StringToHash("Ready");
+        private readonly int IDLE = Animator.StringToHash("Stand");
+        private readonly int WALK = Animator.StringToHash("Walk");
+        private readonly int RUN = Animator.StringToHash("Run");
 
-        protected readonly int SLASH = Animator.StringToHash("Slash");
-        protected readonly int JAB = Animator.StringToHash("Jab");
+        private readonly int SLASH_1H = Animator.StringToHash("SlashMelee1H");
+        private readonly int JAB_1H = Animator.StringToHash("JabMelee1H");
 
-        protected readonly int DEATH_BACK = Animator.StringToHash("DeathBack");
-        protected readonly int DEATH_FRONT = Animator.StringToHash("DeathFront");
+        private readonly int SLASH_2H = Animator.StringToHash("SlashMelee2H");
+        private readonly int JAB_2H = Animator.StringToHash("JabMelee2H");
+
+        private readonly int SLASH_PAIRED = Animator.StringToHash("SlashMeleePaired");
+        private readonly int JAB_PAIRED = Animator.StringToHash("JabMeleePaired");
+
+        private readonly int DEATH_BACK = Animator.StringToHash("DeathBack");
+        private readonly int DEATH_FRONT = Animator.StringToHash("DeathFront");
         
-        protected readonly int ATTACK_ANIM_SPEED = Animator.StringToHash("AttackAnimSpeed");
-        protected readonly int UPPER_BODY_ANIM_SPEED = Animator.StringToHash("UpperBodyAnimSpeed");
-        protected readonly int LOWER_BODY_ANIM_SPEED = Animator.StringToHash("LowerBodyAnimSpeed");
+        private readonly int ATTACK_ANIM_SPEED = Animator.StringToHash("AttackAnimSpeed");
+        private readonly int UPPER_BODY_ANIM_SPEED = Animator.StringToHash("UpperBodyAnimSpeed");
+        private readonly int LOWER_BODY_ANIM_SPEED = Animator.StringToHash("LowerBodyAnimSpeed");
+
+        public void ResetAttackAnimSpeed() => AnimController.SetFloat(ATTACK_ANIM_SPEED, 1f);
+        public void SetAttackAnimSpeed(float speed) => AnimController.SetFloat(ATTACK_ANIM_SPEED, speed);
+
+        public void ResetUpperBodyAnimSpeed() => AnimController.SetFloat(UPPER_BODY_ANIM_SPEED, 1f);
+        public void SetUpperBodyAnimSpeed(float speed) => AnimController.SetFloat(UPPER_BODY_ANIM_SPEED, speed);
+
+        public void ResetLowerBodyAnimSpeed() => AnimController.SetFloat(LOWER_BODY_ANIM_SPEED, 1f);
+        public void SetLowerBodyAnimSpeed(float speed) => AnimController.SetFloat(LOWER_BODY_ANIM_SPEED, speed);
 
         public override bool Init()
         {
             base.Init();
             CharaBase = GetComponent<Character>();
-            
             return true;
         }
 
-        public override void Idle()
-        {
-            _animController.Play(IDLE);
-        }
+        public void Ready() => AnimController.SetBool(READY, true);
+        public void Idle() => AnimController.Play(IDLE);
+        public void Walk() => AnimController.Play(WALK);
+        public void Run() => AnimController.Play(RUN);
 
-        public override void Ready()
-        {
-            _animController.SetBool(READY, true);
-        }
+        public void Slash1H() => AnimController.Play(SLASH_1H);
+        public void Jab1H() => AnimController.Play(JAB_1H);
 
-        public override void Run()
-        {
-            _animController.SetFloat(LOWER_BODY_ANIM_SPEED, 1f);
-            _animController.Play(RUN);
-        }
+        public void Slash2H() => AnimController.Play(SLASH_2H);
+        public void Jab2H() => AnimController.Play(JAB_2H);
 
-        public override void Stun()
-        {
-            _animController.Play(STUN);
-            CharaBase.SetExpression("Stun");
-        }
-
-        public override void Slash1H()
-        {
-            _animController.SetFloat(ATTACK_ANIM_SPEED, 1f);
-            _animController.SetTrigger(SLASH);
-        }
-
-        public override void Jab1H()
-        {
-            _animController.SetFloat(ATTACK_ANIM_SPEED, 1f);
-            _animController.SetTrigger(JAB);
-        }
-
-        public void DieBack()
-        {
-            Managers.Sprite.SetPlayerEmotion(Define.PlayerEmotion.Die);
-            _animController.Play(DEATH_BACK);
-        }
-
-        public void DieFront()
-        {
-            Managers.Sprite.SetPlayerEmotion(Define.PlayerEmotion.Die);
-            _animController.Play(DEATH_FRONT);
-        }
+        public void SlashPaired() => AnimController.Play(SLASH_PAIRED);
+        public void JabPaired() => AnimController.Play(JAB_PAIRED);
+        
+        public void DeathBack() => AnimController.Play(DEATH_BACK);
+        public void DeathFront() => AnimController.Play(DEATH_FRONT);
     }
 }
 
