@@ -30,7 +30,7 @@ namespace STELLAREST_2D
         private int SHADER_FADE_EFFECT = Shader.PropertyToID("_CustomFadeAlpha");
         private int SHADER_GLITCH = Shader.PropertyToID("_GlitchFade");
 
-        private Dictionary<int, CreatureMaterial[]> _creatureMats = new Dictionary<int, CreatureMaterial[]>();
+        private Dictionary<GameObject, CreatureMaterial[]> _creatureMats = new Dictionary<GameObject, CreatureMaterial[]>();
 
         public void Init()
         {
@@ -43,10 +43,21 @@ namespace STELLAREST_2D
                 _upgradePlayerBuffEffect = Utils.FindChild(Managers.Game.Player.gameObject, Define.PlayerController.UPGRADE_PLAYER_BUFF);
         }
 
-        public void ChangeCreatureMaterials(CreatureController cc)
+        // public void ChangeCreatureMaterials(CreatureController cc)
+        // {
+        //     _creatureMats.Remove(cc.CharaData.TemplateID);
+        //     AddCreatureMaterials(cc);
+        // }
+
+        public void SetDefaultMaterials(CreatureController cc)
         {
-            _creatureMats.Remove(cc.CharaData.TemplateID);
-            AddCreatureMaterials(cc);
+            if (_creatureMats.TryGetValue(cc.gameObject, out CreatureMaterial[] mats))
+            {
+                for (int i = 0; i < mats.Length; ++i)
+                    mats[i].spriteRender.material = mats[i].matOrigin;
+            }
+            else
+                Utils.LogError("Invalid CreatureMats !!");
         }
 
         public void AddCreatureMaterials(CreatureController cc)
@@ -85,7 +96,8 @@ namespace STELLAREST_2D
                     playerMats[index++] = new CreatureMaterial(sprArr[i], sprArr[i].material, sprArr[i].color);
                 }
 
-                _creatureMats.Add(cc.CharaData.TemplateID, playerMats);
+                //_creatureMats.Add(cc.CharaData.TemplateID, playerMats);
+                _creatureMats.Add(cc.gameObject, playerMats);
             }
             else
             {
@@ -94,62 +106,74 @@ namespace STELLAREST_2D
                 for (int i = 0; i < sprArr.Length; ++i)
                     creatureMats[i] = new CreatureMaterial(sprArr[i], sprArr[i].material, sprArr[i].color);
 
-                _creatureMats.Add(cc.CharaData.TemplateID, creatureMats);
+                // if (_creatureMats.TryGetValue(cc.CharaData.TemplateID, out CreatureMaterial[] value) == false)
+                //     _creatureMats.Add(cc.CharaData.TemplateID, creatureMats);
+
+                if (_creatureMats.TryGetValue(cc.gameObject, out CreatureMaterial[] value) == false)
+                    _creatureMats.Add(cc.gameObject, creatureMats);
             }
         }
 
-        public IEnumerator CoEffectFade(CreatureController cc, bool isFadingOut = false)
+        public IEnumerator CoFadeOut(CreatureController cc, float startTime = 0f, float desiredTime = 2f, bool onDespawn = true)
         {
-            CreatureMaterial[] mats = _creatureMats[cc.CharaData.CreatureData.TemplateID];
+            float elapsedTime = 0f;
+            while (elapsedTime < startTime)
+            {
+                elapsedTime += Time.deltaTime;
+                yield return null;
+            }
 
+            //CreatureMaterial[] mats = _creatureMats[cc.CharaData.CreatureData.TemplateID];
+            CreatureMaterial[] mats = _creatureMats[cc.gameObject];
+            for (int i = 0; i < mats.Length; ++i)
+                mats[i].spriteRender.material = _matFade;
+
+            elapsedTime = 0f;
+            float percent = 1f;
+            while (percent > 0f)
+            {
+                _matFade.SetFloat(SHADER_FADE_EFFECT, percent);
+                elapsedTime += Time.deltaTime;
+                percent = 1f - (elapsedTime / desiredTime);
+                yield return null;
+            }
+
+            if (onDespawn)
+                Managers.Object.Despawn(cc as MonsterController);
+        }
+
+        public IEnumerator CoFadeIn(CreatureController cc, float desiredTime)
+        {
+            //CreatureMaterial[] mats = _creatureMats[cc.CharaData.CreatureData.TemplateID];
+            CreatureMaterial[] mats = _creatureMats[cc.gameObject];
             for (int i = 0; i < mats.Length; ++i)
                 mats[i].spriteRender.material = _matFade;
 
             float elapsedTime = 0f;
-            float desiredTime = 2f;
             float percent = 0f;
-            if (isFadingOut == false)
+            while (percent < 1f)
             {
-                while (percent < 1f)
-                {
-                    _matFade.SetFloat(SHADER_FADE_EFFECT, percent);
-                    elapsedTime += Time.deltaTime;
-                    percent = elapsedTime / desiredTime;
-                    yield return null;
-                }
-            }
-            else
-            {
-                percent = 1f;
-                while (percent > 0f)
-                {
-                    _matFade.SetFloat(SHADER_FADE_EFFECT, percent);
-                    elapsedTime += Time.deltaTime;
-                    percent = 1f - (elapsedTime / desiredTime);
-                    yield return null;
-                }
-
-                yield break;
+                _matFade.SetFloat(SHADER_FADE_EFFECT, percent);
+                elapsedTime += Time.deltaTime;
+                percent = elapsedTime / desiredTime;
+                yield return null;
             }
 
             for (int i = 0; i < mats.Length; ++i)
                 mats[i].spriteRender.material = mats[i].matOrigin;
+        }
 
-            // percent = 0f;
-            // elapsedTime = 0f;
-            // while (percent < 1f)
-            // {
-            //     elapsedTime += Time.deltaTime;
-            //     percent = elapsedTime / desiredTime;
-            //     yield return null;
-            // }
+        public IEnumerator CoFadeInAndOut(CreatureController cc, float desiredTime)
+        {
+            yield return null;
         }
 
         public bool IsPlayingGlitch { get; private set; } = false;
         public IEnumerator CoEffectGlitch(CreatureController cc)
         {
             IsPlayingGlitch = true;
-            CreatureMaterial[] mats = _creatureMats[cc.CharaData.TemplateID];
+            //CreatureMaterial[] mats = _creatureMats[cc.CharaData.TemplateID];
+            CreatureMaterial[] mats = _creatureMats[cc.gameObject];
 
             float duration = _upgradePlayerBuffEffect.GetComponent<ParticleSystem>().main.duration;
 
@@ -188,7 +212,9 @@ namespace STELLAREST_2D
         public void UpgradePlayerBuffEffect() => _upgradePlayerBuffEffect.SetActive(true);
         public void StartHitEffect(CreatureController cc)
         {
-            CreatureMaterial[] mats = _creatureMats[cc.CharaData.TemplateID];
+            //CreatureMaterial[] mats = _creatureMats[cc.CharaData.TemplateID];
+            CreatureMaterial[] mats = _creatureMats[cc.gameObject];
+
             if (cc?.IsMonster() == false)
                 Managers.Sprite.SetPlayerEmotion(Define.PlayerEmotion.None);
 
@@ -205,12 +231,20 @@ namespace STELLAREST_2D
 
         public void EndHitEffect(CreatureController cc)
         {
-            CreatureMaterial[] mats = _creatureMats[cc.CharaData.TemplateID];
+            // CreatureMaterial[] mats = _creatureMats[cc.CharaData.TemplateID];
+            CreatureMaterial[] mats = _creatureMats[cc.gameObject];
+
             for (int i = 0; i < mats.Length; ++i)
                 mats[i].spriteRender.material = mats[i].matOrigin;
 
             if (cc?.IsMonster() == false)
                 Managers.Sprite.SetPlayerEmotion(Define.PlayerEmotion.Default);
+        }
+
+        public void ShowSpawnEffect(string effectLabel, Vector3 position)
+        {
+            GameObject go = Managers.Resource.Instantiate(effectLabel, pooling: true);
+            go.transform.position = position;
         }
 
         public void ShowDamageFont(CreatureController cc, float damage, bool isCritical = false)
@@ -262,5 +296,14 @@ namespace STELLAREST_2D
             DamageNumber dmgFont = prefab.GetComponent<DamageNumber>();
             dmgFont.Spawn(pos, text);
         }
+
+        #if UNITY_EDITOR
+        public void TestMat(CreatureController cc)
+        {
+            CreatureMaterial[] mats = _creatureMats[cc.gameObject];
+            for (int i = 0; i < mats.Length; ++i)
+                mats[i].spriteRender.material = Managers.Resource.Load<Material>(Define.MaterialLabels.MAT_TEST);
+        }
+        #endif
     }
 }

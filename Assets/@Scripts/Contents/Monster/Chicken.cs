@@ -8,8 +8,14 @@ namespace STELLAREST_2D
     {
         public override bool Init()
         {
-            if (base.Init() == false)
-                return false;
+            base.Init();
+
+            CreatureState = Define.CreatureState.Idle;
+            Managers.Sprite.SetMonsterFace(this, Define.SpriteLabels.MonsterFace.Normal);
+            RigidBody.simulated = true;
+            RigidBody.velocity = Vector2.zero;
+            SkillBook.Stopped = false;
+            BodyCol.isTrigger = false;
 
             return true;
         }

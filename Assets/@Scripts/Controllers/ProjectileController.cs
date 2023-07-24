@@ -24,7 +24,6 @@ namespace STELLAREST_2D
         private bool _offParticle = false;
         private float _continuousSpeedRatio = 1f;
 
-
         // TODO
         // 맵 next wave에 도달하고, 아이템 구매 또는 스킬을 찍을 때 맵 정리를 한번 싹 해주는게 좋음.
         // 이미 오브젝트 풀로 생성되었었던 Projectile Root도 제거하는게 좋을 듯
@@ -98,8 +97,9 @@ namespace STELLAREST_2D
                     _speed = projectileSpeed;
 
                 SetOffParticle();
-
                 transform.position += _shootDir * _speed * Time.deltaTime;
+                ControlCollisionTime(SkillData.Duration);
+
                 yield return null;
             }
         }
@@ -139,7 +139,8 @@ namespace STELLAREST_2D
             {
                 // Debug.Log("DMG : " + Owner.CreatureData.Power * SkillData.DamageUpMultiplier);
                 // mc.OnDamaged(Owner, this, Owner.CreatureData.Power * SkillData.DamageUpMultiplier);
-                GetComponent<Collider2D>().enabled = false;
+                
+                // GetComponent<Collider2D>().enabled = false; // Penertration 고려
                 mc.OnDamaged(Owner, CurrentSkill);
             }
         }

@@ -30,20 +30,31 @@ namespace STELLAREST_2D
             switch (_cretureState)
             {
                 case Define.CreatureState.Idle:
-                    PAC.Idle();
+                    {
+                        PAC.Idle();
+                        
+                    }
                     break;
 
                 case Define.CreatureState.Walk:
-                    PAC.Walk();
+                    {
+                        PAC.Walk();
+                    }
                     break;
 
                 case Define.CreatureState.Run:
-                    PAC.Run();
+                    {
+                        PAC.Run();
+
+                    }
                     break;
 
                 case Define.CreatureState.Attack:
-                    PAC.Slash1H();
-                    StartAttackPos = transform.position;
+                    {
+                        PAC.Slash1H();
+                        StartAttackPos = transform.position;
+                    }
+
                     break;
             }
         }
@@ -93,12 +104,12 @@ namespace STELLAREST_2D
             GetComponent<CircleCollider2D>().enabled = true;
         }
 
-        protected override void SetSortingGroup() 
+        protected override void SetSortingGroup()
                 => GetComponent<SortingGroup>().sortingOrder = (int)Define.SortingOrder.Player;
-        
+
         public Vector3 StartAttackPos { get; private set; }
         public Vector3 EndAttackPos { get; set; }
-        public float MovementPower 
+        public float MovementPower
                 => (EndAttackPos - StartAttackPos).magnitude;
 
         // TODO : 개선 필요
@@ -133,12 +144,13 @@ namespace STELLAREST_2D
                 float degree = Mathf.Atan2(-dir.x, dir.y) * Mathf.Rad2Deg;
                 _indicator.eulerAngles = new Vector3(0, 0, degree);
                 Turn(degree);
-                InGameLimitPos(transform.position);
+                // InGameLimitPos(transform.position);
+                Managers.Stage.SetInLimitPos(this);
             }
             //RigidBody.velocity = Vector3.zero;
         }
 
-        public bool IsFacingRight 
+        public bool IsFacingRight
                 => (_animChildObject.transform.localScale.x != Define.PlayerController.CONSTANT_SCALE_X * -1f) ? true : false;
         private void Turn(float angle)
         {
@@ -231,6 +243,9 @@ namespace STELLAREST_2D
 
         private void Update()
         {
+            // Debug.Log(Mathf.Abs(transform.position.x - Managers.Stage.LeftBottom.x));
+            // Debug.Log(Managers.Stage.IsInLimitPos(this.transform));
+
             if (Input.GetKeyDown(KeyCode.T))
             {
                 // CoGlitchEffect(CreatureData.TemplateID);
@@ -242,13 +257,18 @@ namespace STELLAREST_2D
                 // PAC.DieFront();
                 // Managers.Effect.ShowDodgeText(this);
                 // PAC.Jab1H();
-                PAC.DeathBack();
+                // PAC.DeathBack();
                 // PAC.Slash1H();
+
+                Managers.Sprite.SetPlayerEmotion(Define.PlayerEmotion.Kitty);
+                // Vector3 spawnEffectPos = new Vector3(transform.position.x, transform.position.y + 3f, transform.position.z);
+                // Managers.Effect.ShowSpawnEffect(Define.PrefabLabels.SPAWN_EFFECT, spawnEffectPos);
             }
 
             if (Input.GetKeyDown(KeyCode.R))
             {
-                PAC.DeathFront();
+                // PAC.DeathFront();
+                Managers.Sprite.SetPlayerEmotion(Define.PlayerEmotion.Death);
             }
 
             MoveByJoystick();
@@ -266,6 +286,11 @@ namespace STELLAREST_2D
             if (this.IsValid())
                 AnimEvents.OnRepeatAttack -= SkillBook.PlayerDefaultAttack;
         }
+
+        #if UNITY_ENGINE
+        [ContextMenu("TestMat")]
+        private void TestMat() => Managers.Effect.TestMat(this);
+        #endif
 
         // "GuardSword1_Rare.sprite"
         // [ContextMenu("ChangeWeaponTest")]

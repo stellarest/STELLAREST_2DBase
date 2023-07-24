@@ -57,18 +57,30 @@ namespace STELLAREST_2D
 
         public static Vector2 GenerateMonsterSpawnPosition(Vector2 characterPosition, float minDistance = 10.0f, float maxDistance = 20.0f)
         {
-            float angle = Random.Range(0, 360) * Mathf.Deg2Rad;
-            float distance = Random.Range(minDistance, maxDistance);
+            int maxAttempts = 100;
+            int attempts = 0;
 
-            float xDist = Mathf.Cos(angle) * distance;
-            float yDist = Mathf.Sin(angle) * distance;
+            while (attempts < maxAttempts)
+            {
+                float angle = Random.Range(0, 360) * Mathf.Deg2Rad;
+                float distance = Random.Range(minDistance, maxDistance);
 
-            // charactet 중심으로 원형의 범위 내에서 랜덤하게 스폰
-            Vector2 spawnPosition = characterPosition + new Vector2(xDist, yDist);
-            
-            return spawnPosition;
+                float xDist = Mathf.Cos(angle) * distance;
+                float yDist = Mathf.Sin(angle) * distance;
+
+                Vector2 spawnPosition = characterPosition + new Vector2(xDist, yDist);
+                if (spawnPosition.x > Managers.Stage.MinimumPosition.x && spawnPosition.x < Managers.Stage.MaximumPosition.x)
+                {
+                    if (spawnPosition.y > Managers.Stage.MinimumPosition.y && spawnPosition.y < Managers.Stage.MaximumPosition.y)
+                        return spawnPosition;
+                }
+
+                ++attempts;
+            }
+
+            return characterPosition;
         }
-        
+
         [Conditional("UNITY_EDITOR")]
         public static void Log(string message)
         {

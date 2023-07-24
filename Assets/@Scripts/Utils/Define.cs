@@ -18,7 +18,7 @@ namespace STELLAREST_2D
         public enum InGameGrade { Normal = 1, Rare = 2, Epic = 3, Legendary = 4 }
         public enum CollisionLayers { Default = 0, PlayerBody = 6, PlayerAttack = 7, MonsterBody = 8, MonsterAttack = 9, }
 
-        public enum PlayerEmotion { None = 0, Default = 1, Greedy, Sick, Bunny, Kitty, Die }
+        public enum PlayerEmotion { None = 0, Default = 1, Greedy, Sick, Bunny, Kitty, Death }
         public enum InitialStatRatioGrade { None = 0, Low = 10, Average = 20, High = 30 }
 
         public const float MAX_DODGE_CHANCE = 0.6f;
@@ -63,6 +63,8 @@ namespace STELLAREST_2D
 
             public const string DMG_TEXT_TO_MONSTER_CRITICAL = "DmgText_ToMonsterCritical.prefab"; // 크리티컬 text는 몬스터에게만 적용
             public const string DMG_TEXT_TO_PLAYER_DODGE = "DmgText_ToPlayerDodge.prefab"; // 플레이어에게만 적용
+
+            public const string SPAWN_EFFECT = "SpawnEffect.prefab";
         }
 
         public static class SpriteLabels
@@ -108,6 +110,7 @@ namespace STELLAREST_2D
             public const string MAT_HIT_RED = "HitRed.mat";
             public const string MAT_FADE = "Fade.mat";
             public const string MAT_GLITCH = "Glitch.mat";
+            public const string MAT_TEST = "MatTest.mat";
         }
 
         public static class NameSpaceLabels

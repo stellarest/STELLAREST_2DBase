@@ -138,7 +138,7 @@ namespace STELLAREST_2D
         private int _sequenceIndex = 0;
         public void StartNextSequenceSkill() // 지금까지 등록된 스킬들을 쭉 실행하세요
         {
-            if (_stopped)
+            if (Stopped)
                 return;
             if (SequenceSkills.Count == 0)
                 return;
@@ -153,11 +153,16 @@ namespace STELLAREST_2D
             StartNextSequenceSkill();
         }
 
-        private bool _stopped = false;
+        public bool Stopped { get; set; } = false;
         public void StopSkills() // 몬스터가 죽으면 중단
         {
-            _stopped = true;
+            Stopped = true;
             foreach (var skill in RepeatSkills)
+            {
+                skill.StopAllCoroutines();
+            }
+
+            foreach (var skill in SequenceSkills)
             {
                 skill.StopAllCoroutines();
             }

@@ -35,7 +35,7 @@ namespace STELLAREST_2D
 
                     Managers.Effect.Init();
                     Managers.Effect.AddCreatureMaterials(pc);
-                    Managers.Sprite.AddCreatureSprites(pc);
+                    Managers.Sprite.InitPlayerSprite(pc);
 
                     return pc as T;
                 }
@@ -44,13 +44,19 @@ namespace STELLAREST_2D
                 {
                     GameObject go = Managers.Resource.Instantiate(Managers.Data.CreatureDict[templateID].PrimaryLabel, pooling: true);
                     go.transform.position = position;
+                    Vector3 spawnEffectPos = new Vector3(go.transform.position.x, go.transform.position.y + 3.8f, go.transform.position.z);
+                    Managers.Effect.ShowSpawnEffect(Define.PrefabLabels.SPAWN_EFFECT, spawnEffectPos);
 
                     Chicken mc = go.GetOrAddComponent<Chicken>();
                     mc.SetInfo(templateID);
+                    mc.Init();
                     Monsters.Add(mc);
                     
                     Managers.Effect.AddCreatureMaterials(mc);
-                    mc.CoEffectFade();
+                    Managers.Effect.SetDefaultMaterials(mc);
+                    
+                    // mc.CoEffectFade();
+                    // mc.CoEffectFadeIn(2f);
                     mc.CoStartReadyToAction();
 
                     return mc as T;
@@ -106,6 +112,7 @@ namespace STELLAREST_2D
             }
             else if (typeof(T).IsSubclassOf(typeof(CreatureController)))
             {
+                Utils.LogStrong("DESPAWN MONSTER...2 !!!");
                 Monsters.Remove(obj as MonsterController);
                 Managers.Resource.Destroy(obj.gameObject);
             }

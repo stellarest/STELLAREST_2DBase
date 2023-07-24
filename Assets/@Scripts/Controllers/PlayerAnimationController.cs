@@ -8,7 +8,6 @@ namespace STELLAREST_2D
     public class PlayerAnimationController : AnimationController
     {
         public Character CharaBase { get; protected set; }
-
         private readonly int READY = Animator.StringToHash("Ready");
         private readonly int IDLE = Animator.StringToHash("Stand");
         private readonly int WALK = Animator.StringToHash("Walk");

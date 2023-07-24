@@ -30,6 +30,22 @@ namespace STELLAREST_2D
         public bool IsMoving { get => _moveDir != Vector2.zero; }
         protected Vector2 _initScale;
 
+
+        public override bool Init()
+        {
+            if (base.Init() == false)
+                return false;
+
+            RigidBody = gameObject.GetOrAddComponent<Rigidbody2D>();
+            SkillBook = gameObject.GetOrAddComponent<SkillBook>();
+            SkillBook.Owner = this;
+
+            BodyCol = gameObject.GetComponent<Collider2D>();
+            _initScale = transform.localScale;
+
+            return true;
+        }
+
         public bool IsMonster()
         {
             switch (ObjectType)
@@ -54,13 +70,6 @@ namespace STELLAREST_2D
 
         public virtual void SetInfo(int templateID)
         {
-            RigidBody = gameObject.GetOrAddComponent<Rigidbody2D>();
-            SkillBook = gameObject.GetOrAddComponent<SkillBook>();
-            SkillBook.Owner = this;
-
-            BodyCol = gameObject.GetComponent<Collider2D>();
-            _initScale = transform.localScale;
-
             if (Managers.Data.CreatureDict.TryGetValue(templateID, out Data.CreatureData creatureData) == false)
             {
                 Debug.LogAssertion("!!!!! Failed to load creature data !!!!!");
@@ -136,19 +145,7 @@ namespace STELLAREST_2D
             }
         }
 
-        public void CoEffectFade(bool isFadingOut = false) 
-                => StartCoroutine(Managers.Effect.CoEffectFade(this, isFadingOut));
-        public void CoEffectGlitch() => StartCoroutine(Managers.Effect.CoEffectGlitch(this));
-
         protected virtual void SetSortingGroup() { }
-
-        public override bool Init()
-        {
-            if (base.Init() == false)
-                return false;
-
-            return true;
-        }
 
         public virtual void OnDamaged(BaseController attacker, SkillBase skill)
         {
@@ -200,7 +197,8 @@ namespace STELLAREST_2D
                 if (CharaData.Hp <= 0)
                 {
                     CharaData.Hp = 0;
-                    OnDead();
+                    CreatureState = Define.CreatureState.Death;
+                    // OnDead();
                 }
             }
             else
@@ -208,5 +206,14 @@ namespace STELLAREST_2D
         }
 
         protected virtual void OnDead() { }
+
+        // +++++ CREATURE EFFECT +++++
+        public void CoEffectFadeOut(float startTime, float desiredTime, bool onDespawn = true) 
+                => StartCoroutine(Managers.Effect.CoFadeOut(this, startTime, desiredTime, onDespawn));
+
+        public void CoEffectFadeIn(float desiredTime)
+             => StartCoroutine(Managers.Effect.CoFadeIn(this, desiredTime));
+
+        public void CoEffectGlitch() => StartCoroutine(Managers.Effect.CoEffectGlitch(this));
     }
 }
