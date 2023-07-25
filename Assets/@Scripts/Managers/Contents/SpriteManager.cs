@@ -9,14 +9,20 @@ namespace STELLAREST_2D
 {
     public class PlayerSprite
     {
-        public PlayerSprite(SpriteRenderer eyesRenderer, Color eyesColor, SpriteRenderer mouthRenderer, Color mouthColor)
+        public PlayerSprite(SpriteRenderer eyebrowsRenderer, Color eyebrowsColor, SpriteRenderer eyesRenderer, Color eyesColor, SpriteRenderer mouthRenderer, Color mouthColor)
         {
+            this._eyebrowsRenderer = eyebrowsRenderer;
+            this._eyebrowsDefaultColor = eyebrowsColor;
+
             this._eyesRenderer = eyesRenderer;
             this._eyesDefaultColor = eyesColor;
 
             this._mouthRenderer = mouthRenderer;
             this._mouthDefaultColor = mouthColor;
         }
+
+        public readonly SpriteRenderer _eyebrowsRenderer;
+        public readonly Color _eyebrowsDefaultColor;
 
         public readonly SpriteRenderer _eyesRenderer;
         public readonly Color _eyesDefaultColor;
@@ -27,12 +33,16 @@ namespace STELLAREST_2D
 
     public class SpriteManager
     {
+        public Color PlayerDefaultEyebrowsColor => _playerSprite._eyebrowsDefaultColor;
         public Color PlayerDefaultEyesColor => _playerSprite._eyesDefaultColor;
         public Color PlayerDefaultMouthColor => _playerSprite._mouthDefaultColor;
         private PlayerSprite _playerSprite = null;
         
         public void InitPlayerSprite(PlayerController pc)
         {
+            SpriteRenderer eyebrowsRenderer = null;
+            Color eyebrowsColor = Color.white;
+
             SpriteRenderer eyesRenderer = null;
             Color eyesColor = Color.white;
 
@@ -47,6 +57,12 @@ namespace STELLAREST_2D
 
                 if (sprArr[i].gameObject.name.Contains(Define.PlayerController.FIRE_SOCKET))
                     continue;
+
+                if (sprArr[i].gameObject.name.Contains("Eyebrows"))
+                {
+                    eyebrowsRenderer = sprArr[i];
+                    eyebrowsColor = sprArr[i].color;
+                }
 
                 if (sprArr[i].gameObject.name.Contains("Eyes"))
                 {
@@ -64,7 +80,7 @@ namespace STELLAREST_2D
             }
 
             //_cureatureSprites.Add(cc.CharaData.TemplateID, new CreatureSprite(eyesRenderer, eyesColor, mouthRenderer, mouthColor));
-            _playerSprite = new PlayerSprite(eyesRenderer, eyesColor, mouthRenderer, mouthColor);
+            _playerSprite = new PlayerSprite(eyebrowsRenderer, eyebrowsColor, eyesRenderer, eyesColor, mouthRenderer, mouthColor);
         }
 
         public void SetPlayerEmotion(Define.PlayerEmotion emotion)
@@ -73,12 +89,16 @@ namespace STELLAREST_2D
             switch (emotion)
             {
                 case Define.PlayerEmotion.None:
+                    _playerSprite._eyebrowsRenderer.sprite = null;
                     _playerSprite._eyesRenderer.sprite = null;
                     _playerSprite._mouthRenderer.sprite = null;
                     break;
 
                 case Define.PlayerEmotion.Default:
                     {
+                        _playerSprite._eyebrowsRenderer.sprite = Managers.Resource.Load<Sprite>(Define.SpriteLabels.Player.EYEBROWS_DEFAULT);
+                        _playerSprite._eyebrowsRenderer.color = PlayerDefaultEyebrowsColor;
+
                         _playerSprite._eyesRenderer.sprite = Managers.Resource.Load<Sprite>(Define.SpriteLabels.Player.EYES_MALE_DEFAULT);
                         _playerSprite._eyesRenderer.color = PlayerDefaultEyesColor;
 
@@ -236,7 +256,7 @@ namespace STELLAREST_2D
                 current.CapeRenderer.sprite = current.Cape;
             }
 
-            // Managers.Effect.ChangeCreatureMaterials(pc);
+            Managers.Effect.ChangeCreatureMaterials(pc);
             // pc.CoEffectGlitch();
 
             // // TEMP

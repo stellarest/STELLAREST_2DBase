@@ -77,6 +77,7 @@ namespace STELLAREST_2D
             {
                 // PLAYER FACE SET
                 // DEFAULT = 0
+                public const string EYEBROWS_DEFAULT = "Eyebrows_Default.sprite";
                 public const string EYES_MALE_DEFAULT = "Eyes_Male_Default.sprite";
                 public const string MOUTH_DEFAULT_2 = "Mouth_Default_2.sprite";
 
@@ -110,7 +111,7 @@ namespace STELLAREST_2D
             public const string MAT_HIT_RED = "HitRed.mat";
             public const string MAT_FADE = "Fade.mat";
             public const string MAT_GLITCH = "Glitch.mat";
-            public const string MAT_TEST = "MatTest.mat";
+            public const string MAT_HOLOGRAM = "Hologram.mat";
         }
 
         public static class NameSpaceLabels

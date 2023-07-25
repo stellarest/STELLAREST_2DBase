@@ -24,11 +24,13 @@ namespace STELLAREST_2D
         private Material _matHitRed;
         private Material _matFade;
         private Material _matGlitch;
+        private Material _matHologram;
 
         private GameObject _upgradePlayerBuffEffect;
         private int SHADER_HIT_EFFECT = Shader.PropertyToID("_StrongTintFade");
         private int SHADER_FADE_EFFECT = Shader.PropertyToID("_CustomFadeAlpha");
         private int SHADER_GLITCH = Shader.PropertyToID("_GlitchFade");
+        private int SHADER_HOLOGRAM = Shader.PropertyToID("_HologramFade");
 
         private Dictionary<GameObject, CreatureMaterial[]> _creatureMats = new Dictionary<GameObject, CreatureMaterial[]>();
 
@@ -38,16 +40,17 @@ namespace STELLAREST_2D
             _matHitRed = Managers.Resource.Load<Material>(Define.MaterialLabels.MAT_HIT_RED);
             _matFade = Managers.Resource.Load<Material>(Define.MaterialLabels.MAT_FADE);
             _matGlitch = Managers.Resource.Load<Material>(Define.MaterialLabels.MAT_GLITCH);
+            _matHologram = Managers.Resource.Load<Material>(Define.MaterialLabels.MAT_HOLOGRAM);
 
             if (_upgradePlayerBuffEffect == null)
                 _upgradePlayerBuffEffect = Utils.FindChild(Managers.Game.Player.gameObject, Define.PlayerController.UPGRADE_PLAYER_BUFF);
         }
 
-        // public void ChangeCreatureMaterials(CreatureController cc)
-        // {
-        //     _creatureMats.Remove(cc.CharaData.TemplateID);
-        //     AddCreatureMaterials(cc);
-        // }
+        public void ChangeCreatureMaterials(CreatureController cc)
+        {
+            _creatureMats.Remove(cc.gameObject);
+            AddCreatureMaterials(cc);
+        }
 
         public void SetDefaultMaterials(CreatureController cc)
         {
@@ -112,6 +115,42 @@ namespace STELLAREST_2D
                 if (_creatureMats.TryGetValue(cc.gameObject, out CreatureMaterial[] value) == false)
                     _creatureMats.Add(cc.gameObject, creatureMats);
             }
+        }
+
+        public IEnumerator CoHologram(CreatureController cc)
+        {
+            CreatureMaterial[] mats = _creatureMats[cc.gameObject];
+
+            if (cc?.IsMonster() == false)
+                Managers.Sprite.SetPlayerEmotion(Define.PlayerEmotion.None);
+
+            for (int i = 0; i < mats.Length; ++i)
+                mats[i].spriteRender.material = _matHologram;
+
+            float elapsedTime = 0f;
+            float percent = 0f;
+            while (percent < 1f) // 디폴트 -> 홀로그램(0 -> 1)
+            {
+                _matHologram.SetFloat(SHADER_HOLOGRAM, percent);
+                percent += Time.deltaTime * 20f;
+                yield return null;
+            }
+
+            percent = 1f;
+            elapsedTime = 0f;
+            while (percent > 0f) // 홀로그램 만빵(1f) -> 디폴트
+            {
+                _matHologram.SetFloat(SHADER_HOLOGRAM, percent);
+                elapsedTime += Time.deltaTime;
+                percent = 1f - (elapsedTime * 20f);
+                yield return null;
+            }
+
+            if (cc?.IsMonster() == false)
+                Managers.Sprite.SetPlayerEmotion(Define.PlayerEmotion.Default);
+
+            for (int i = 0; i < mats.Length; ++i)
+                mats[i].spriteRender.material = mats[i].matOrigin;
         }
 
         public IEnumerator CoFadeOut(CreatureController cc, float startTime = 0f, float desiredTime = 2f, bool onDespawn = true)
@@ -296,14 +335,5 @@ namespace STELLAREST_2D
             DamageNumber dmgFont = prefab.GetComponent<DamageNumber>();
             dmgFont.Spawn(pos, text);
         }
-
-        #if UNITY_EDITOR
-        public void TestMat(CreatureController cc)
-        {
-            CreatureMaterial[] mats = _creatureMats[cc.gameObject];
-            for (int i = 0; i < mats.Length; ++i)
-                mats[i].spriteRender.material = Managers.Resource.Load<Material>(Define.MaterialLabels.MAT_TEST);
-        }
-        #endif
     }
 }

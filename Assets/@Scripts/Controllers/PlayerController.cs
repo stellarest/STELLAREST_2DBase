@@ -260,7 +260,9 @@ namespace STELLAREST_2D
                 // PAC.DeathBack();
                 // PAC.Slash1H();
 
-                Managers.Sprite.SetPlayerEmotion(Define.PlayerEmotion.Kitty);
+                CoEffectHologram();
+
+                // Managers.Sprite.SetPlayerEmotion(Define.PlayerEmotion.Kitty);
                 // Vector3 spawnEffectPos = new Vector3(transform.position.x, transform.position.y + 3f, transform.position.z);
                 // Managers.Effect.ShowSpawnEffect(Define.PrefabLabels.SPAWN_EFFECT, spawnEffectPos);
             }
@@ -286,11 +288,6 @@ namespace STELLAREST_2D
             if (this.IsValid())
                 AnimEvents.OnRepeatAttack -= SkillBook.PlayerDefaultAttack;
         }
-
-        #if UNITY_ENGINE
-        [ContextMenu("TestMat")]
-        private void TestMat() => Managers.Effect.TestMat(this);
-        #endif
 
         // "GuardSword1_Rare.sprite"
         // [ContextMenu("ChangeWeaponTest")]

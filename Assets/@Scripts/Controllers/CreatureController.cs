@@ -167,6 +167,8 @@ namespace STELLAREST_2D
                     if (Managers.Effect.IsPlayingGlitch || Random.Range(0f, 1f) <= Mathf.Min(CharaData.DodgeChance, Define.MAX_DODGE_CHANCE))
                     {
                         Managers.Effect.ShowDodgeText(this);
+                        CoEffectHologram(); // --> 괜찮은듯. 홀로그램 발동할 때 표정 수정하고 한 번 테스트 해볼것
+                        // 그리고 공격중에는 눈이 이상하게 나오니까, 이거 예외 줄것
                         yield break;
                     }
 
@@ -208,11 +210,15 @@ namespace STELLAREST_2D
         protected virtual void OnDead() { }
 
         // +++++ CREATURE EFFECT +++++
+        // +++++ Base Controller로 옮겨야할수도 있음 +++++
         public void CoEffectFadeOut(float startTime, float desiredTime, bool onDespawn = true) 
                 => StartCoroutine(Managers.Effect.CoFadeOut(this, startTime, desiredTime, onDespawn));
 
         public void CoEffectFadeIn(float desiredTime)
              => StartCoroutine(Managers.Effect.CoFadeIn(this, desiredTime));
+
+        public void CoEffectHologram()
+            => StartCoroutine(Managers.Effect.CoHologram(this));
 
         public void CoEffectGlitch() => StartCoroutine(Managers.Effect.CoEffectGlitch(this));
     }
