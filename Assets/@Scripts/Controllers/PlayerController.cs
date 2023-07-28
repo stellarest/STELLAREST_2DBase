@@ -12,13 +12,15 @@ namespace STELLAREST_2D
     public class PlayerController : CreatureController
     {
         public PlayerAnimationController PAC { get; protected set; }
-        public float EnvCollectDist { get; private set; } = 1f; // 이건 데이터 시트로 안빼도 됨
+        public float EnvCollectDist { get; private set; } = 5f; // 이건 데이터 시트로 안빼도 됨
 
         private Transform _indicator;
         public Transform Indicator => _indicator;
         private Transform _fireSocket;
         public Vector3 FireSocket => _fireSocket.position;
         public Vector3 ShootDir => (_fireSocket.position - _indicator.position).normalized;
+
+        public Transform LegR { get; private set; }
 
         [field: SerializeField]
         public float TurningAngle { get; private set; }
@@ -32,7 +34,6 @@ namespace STELLAREST_2D
                 case Define.CreatureState.Idle:
                     {
                         PAC.Idle();
-                        
                     }
                     break;
 
@@ -71,6 +72,9 @@ namespace STELLAREST_2D
             AnimEvents = _animChildObject.GetComponent<AnimationEvents>();
             PAC = gameObject.GetOrAddComponent<PlayerAnimationController>();
             PAC.Owner = this;
+
+            GameObject LegR = Utils.FindChild(gameObject, "Leg[R]", true);
+            this.LegR = Utils.FindChild(LegR, "Shin").transform;
 
             CreatureState = Define.CreatureState.Idle;
 
@@ -111,18 +115,6 @@ namespace STELLAREST_2D
         public Vector3 EndAttackPos { get; set; }
         public float MovementPower
                 => (EndAttackPos - StartAttackPos).magnitude;
-
-        // TODO : 개선 필요
-        // public void Attack()
-        // {
-        //     switch (CharaData.TemplateID)
-        //     {
-        //         case (int)Define.TemplateIDs.Player.Gary_Paladin:
-        //             PAC.Slash1H();
-        //             StartAttackPos = transform.position;
-        //             break;
-        //     }
-        // }
 
         private bool _getReady = false;
         public void MoveByJoystick()
@@ -194,27 +186,31 @@ namespace STELLAREST_2D
 
         private void CollectEnv()
         {
-            float sqrCollectDist = EnvCollectDist * EnvCollectDist;
+            // float sqrCollectDist = EnvCollectDist * EnvCollectDist;
+            float sqrCollectDist = CharaData.CollectRange * CharaData.CollectRange;
 
-            var allSpawnedGems = Managers.Object.Gems.ToList();
+            // var allSpawnedGems = Managers.Object.Gems.ToList();
             var findGems = Managers.Object.GridController.
-                            GatherObjects(transform.position, EnvCollectDist + 0.5f).ToList();
+                            GatherObjects(transform.position, EnvCollectDist).ToList();
 
             // 맵안에 있는 잼들은 디폴트로 시간이 지나면 다 죽임.
-            foreach (GemController allSpawnedGem in allSpawnedGems)
-                allSpawnedGem.Alive = false;
+            // foreach (GemController allSpawnedGem in allSpawnedGems)
+            //     allSpawnedGem.Alive = false;
 
             // 플레이어가 이동하다가 발견된 잼은 살림
             foreach (var findGem in findGems)
             {
                 GemController gc = findGem.GetComponent<GemController>();
-                gc.Alive = true;
+                // gc.Alive = true;
 
                 Vector3 dir = findGem.transform.position - transform.position;
                 if (dir.sqrMagnitude <= sqrCollectDist)
                 {
-                    Managers.Game.Gem += 1;
-                    Managers.Object.Despawn(gc);
+                    //Managers.Game.Gem += 1;
+                    // Debug.Log("GEM SIZE : " + gc.GemSize);
+                    // Managers.Game.Gem += (int)gc.GemSize;
+                    // Managers.Game.Gem = (int)gc.GemSize;
+                    gc.GetGem();
                 }
             }
             //Debug.Log($"Find Gem : {findGems.Count} / Total Gem : {allSpawnedGems.Count}");
@@ -260,17 +256,32 @@ namespace STELLAREST_2D
                 // PAC.DeathBack();
                 // PAC.Slash1H();
 
-                CoEffectHologram();
-
+                // CoEffectHologram();
                 // Managers.Sprite.SetPlayerEmotion(Define.PlayerEmotion.Kitty);
                 // Vector3 spawnEffectPos = new Vector3(transform.position.x, transform.position.y + 3f, transform.position.z);
                 // Managers.Effect.ShowSpawnEffect(Define.PrefabLabels.SPAWN_EFFECT, spawnEffectPos);
+
+                // for (int i = 0; i < 100; ++i)
+                // {
+                //     Vector3 randPos = Utils.GenerateMonsterSpawnPosition(Managers.Game.Player.transform.position, 10f, 20f);
+                //     GemController gc = Managers.Object.Spawn<GemController>(randPos);
+                //     gc.GemSize = UnityEngine.Random.Range(0, 2) == 0 ? gc.GemSize = GemSize.Normal : gc.GemSize = GemSize.Large;
+                // }
+
+                SkillBook.UpgradeRepeatSkill((int)Define.TemplateIDs.SkillType.ThrowingStar);
             }
 
             if (Input.GetKeyDown(KeyCode.R))
             {
                 // PAC.DeathFront();
-                Managers.Sprite.SetPlayerEmotion(Define.PlayerEmotion.Death);
+                // Managers.Sprite.SetPlayerEmotion(Define.PlayerEmotion.Death);
+                var findGems = Managers.Object.GridController.
+                GatherObjects(transform.position, EnvCollectDist + 99f).ToList();
+                foreach (var gem in findGems)
+                {
+                    GemController gc = gem.GetComponent<GemController>();
+                    gc.GetGem();
+                }
             }
 
             MoveByJoystick();

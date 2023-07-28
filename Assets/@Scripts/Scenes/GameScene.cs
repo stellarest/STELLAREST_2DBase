@@ -5,6 +5,8 @@ using Newtonsoft.Json.Linq;
 using Cinemachine;
 
 using STELLAREST_2D.UI; // 이 스크립트에서 UI 스크립트 사용중을 간편하게 확인할 수 있어서 .UI의 네임을 추가해주었다
+using DG.Tweening;
+
 
 namespace STELLAREST_2D
 {
@@ -63,6 +65,7 @@ namespace STELLAREST_2D
 
             Managers.Game.OnGemCountChanged -= OnGemCountChangedHandler;
             Managers.Game.OnGemCountChanged += OnGemCountChangedHandler;
+            DOTween.SetTweensCapacity(200, 200);
 
             // Spawn Test Map
             //var testMap = Managers.Resource.Instantiate(Define.PrefabLabels.TEST_MAP);
@@ -91,6 +94,14 @@ namespace STELLAREST_2D
             Managers.Collision.SetCollisionLayers(Define.CollisionLayers.MonsterBody, Define.CollisionLayers.MonsterBody, true);
 
             // Camera Target
+
+            // Test Gem Spawn
+            // for (int i = 0; i < 30; ++i)
+            // {
+            //     Vector3 randPos = Utils.GenerateMonsterSpawnPosition(Managers.Game.Player.transform.position, 10f, 20f);
+            //     GemController gc = Managers.Object.Spawn<GemController>(randPos);
+            //     gc.GemSize = Random.Range(0, 2) == 0 ? gc.GemSize = GemSize.Normal : gc.GemSize = GemSize.Large;
+            // }
         }
 
         public void OnKillCountChangedHandler(int killCount)
@@ -116,19 +127,23 @@ namespace STELLAREST_2D
         }
 
         private int _collectedGemCount = 0;
-        private int _remainingTotalGemCount = 10;
+        // private int _remainingTotalGemCount = 10;
         public void OnGemCountChangedHandler(int gemCount)
         {
-            _collectedGemCount++;
-            if (_collectedGemCount == _remainingTotalGemCount)
-            {
-                Managers.UI.ShowPopup<UI_SkillSelectPopup>();
-                _collectedGemCount = 0;
-                _remainingTotalGemCount *= 2;
-            }
+            //_collectedGemCount++;
+            _collectedGemCount += gemCount;
+
+            // if (_collectedGemCount == _remainingTotalGemCount)
+            // {
+            //     // Managers.UI.ShowPopup<UI_SkillSelectPopup>();
+            //     _collectedGemCount = 0;
+            //     _remainingTotalGemCount *= 2;
+            // }
+
+            Utils.Log("MY GEM COUNT : " + _collectedGemCount.ToString());
 
             // *** 인자 둘 중 하나는 무조건 float
-            Managers.UI.GetFixedSceneUI<UI_GameScene>().SetGemCountRatio(_collectedGemCount / (float)_remainingTotalGemCount);
+            // Managers.UI.GetFixedSceneUI<UI_GameScene>().SetGemCountRatio(_collectedGemCount / (float)_remainingTotalGemCount);
         }
 
         private void OnDestroy()

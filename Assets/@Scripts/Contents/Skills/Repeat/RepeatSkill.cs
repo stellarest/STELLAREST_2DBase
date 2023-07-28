@@ -19,7 +19,16 @@ namespace STELLAREST_2D
             _coSkillActivate = StartCoroutine(CoStartSkill());
         }
 
+        protected virtual IEnumerator CoStartSkill()
+        {
+            WaitForSeconds wait = new WaitForSeconds(SkillData.CoolTime);
+            while (true)
+            {
+                DoSkillJob();
+                yield return wait;
+            }
+        }
+
         protected abstract void DoSkillJob();
-        protected abstract IEnumerator CoStartSkill();
     }
 }

@@ -29,6 +29,7 @@ namespace STELLAREST_2D.Data
         public float Resistance;
         public float MoveSpeed;
         public float MoveSpeedUp;
+        public float CollectRange;
         public float Luck;
         public float TotalExp;
         public float MinReadyToActionTime;
@@ -102,7 +103,7 @@ namespace STELLAREST_2D.Data
     }
 
     [Serializable]
-    public class PassiveItemData
+    public class PassiveSkillData
     {
         public int TemplateID;
         public string Name;
@@ -123,21 +124,21 @@ namespace STELLAREST_2D.Data
     }
 
     [Serializable]
-    public class PassiveItemDataLoader : ILoader<int, PassiveItemData>
+    public class PassiveSkillDataLoader : ILoader<int, PassiveSkillData>
     {
-        public List<PassiveItemData> items = new List<PassiveItemData>();
+        public List<PassiveSkillData> passiveSkills = new List<PassiveSkillData>();
 
-        public Dictionary<int, PassiveItemData> MakeDict()
+        public Dictionary<int, PassiveSkillData> MakeDict()
         {
-            if (items.Count == 0)
+            if (passiveSkills.Count == 0)
             {
                 Utils.LogError("Failed to load PassiveSkillData.json");
                 Debug.Break();
             }
 
-            Dictionary<int, PassiveItemData> dict = new Dictionary<int, PassiveItemData>();
-            foreach (PassiveItemData item in items)
-                dict.Add(item.TemplateID, item);
+            Dictionary<int, PassiveSkillData> dict = new Dictionary<int, PassiveSkillData>();
+            foreach (PassiveSkillData passiveSkill in passiveSkills)
+                dict.Add(passiveSkill.TemplateID, passiveSkill);
 
             return dict;
         }

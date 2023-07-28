@@ -286,6 +286,30 @@ namespace STELLAREST_2D
             go.transform.position = position;
         }
 
+        public void ShowPlayerDust()
+        {
+            GameObject go = Managers.Resource.Instantiate(Define.PrefabLabels.DUST, pooling: true);
+            go.transform.position = Managers.Game.Player.LegR.position + (Vector3.down * 0.35f);
+
+        }
+
+        public void ShowGemGather(GemController gc)
+        {
+            GameObject go = Managers.Resource.Instantiate(Define.PrefabLabels.GEM_GATHER, pooling: true);
+            go.transform.position = gc.transform.position;
+        }
+
+        public void ShowGemExplosion(GemController gc)
+        {
+            GameObject go = null;
+            if (gc.GemSize == GemSize.Normal)
+                go = Managers.Resource.Instantiate(Define.PrefabLabels.GEM_EXPLOSION_NORMAL, pooling: true);
+            else
+                go = Managers.Resource.Instantiate(Define.PrefabLabels.GEM_EXPLOSION_LARGE, pooling: true);
+            go.transform.position = gc.transform.position;
+            // go.transform.position = Managers.Game.Player.transform.position;
+        }
+
         public void ShowDamageFont(CreatureController cc, float damage, bool isCritical = false)
         {
             if (cc.IsValid() == false)

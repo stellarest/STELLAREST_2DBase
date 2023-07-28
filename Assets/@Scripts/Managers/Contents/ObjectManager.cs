@@ -64,21 +64,25 @@ namespace STELLAREST_2D
             }
             else if (type == typeof(GemController))
             {
-                GameObject go = Managers.Resource.Instantiate(Define.PrefabLabels.EXP_GEM, pooling: true);
+                //GameObject go = Managers.Resource.Instantiate(Define.PrefabLabels.EXP_GEM, pooling: true);
+                GameObject go = Managers.Resource.Instantiate(Define.PrefabLabels.GEM, pooling: true);
                 go.transform.position = position;
 
                 GemController gc = go.GetOrAddComponent<GemController>();
-                bool changeSprite = Random.Range(0, 2) == 0 ? true : false;
-                string spriteKey = "";
-                if (changeSprite)
-                {
-                    spriteKey = Random.Range(0, 2) == 0 ?
-                                Define.SpriteLabels.EXP_GEM_BLUE : Define.SpriteLabels.EXP_GEM_YELLOW;
+               
+                // gc.Init();
+                // bool changeSprite = Random.Range(0, 2) == 0 ? true : false;
+                // string spriteKey = "";
+                // if (changeSprite)
+                // {
+                //     spriteKey = Random.Range(0, 2) == 0 ?
+                //                 Define.SpriteLabels.EXP_GEM_BLUE : Define.SpriteLabels.EXP_GEM_YELLOW;
 
-                    Sprite yellowOrBlue = Managers.Resource.Load<Sprite>(spriteKey);
-                    if (yellowOrBlue != null)
-                        gc.GetComponent<SpriteRenderer>().sprite = yellowOrBlue;
-                }
+                //     Sprite yellowOrBlue = Managers.Resource.Load<Sprite>(spriteKey);
+                //     if (yellowOrBlue != null)
+                //         gc.GetComponent<SpriteRenderer>().sprite = yellowOrBlue;
+                // }
+                
                 GridController.Add(go);
                 Gems.Add(gc);
 

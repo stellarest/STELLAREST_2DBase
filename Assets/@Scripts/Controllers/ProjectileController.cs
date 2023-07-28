@@ -27,7 +27,7 @@ namespace STELLAREST_2D
         // TODO
         // 맵 next wave에 도달하고, 아이템 구매 또는 스킬을 찍을 때 맵 정리를 한번 싹 해주는게 좋음.
         // 이미 오브젝트 풀로 생성되었었던 Projectile Root도 제거하는게 좋을 듯
-        public void SetSwingInfo(CreatureController owner, Data.SkillData skillData, Vector3 shootDir, float turningSide, 
+        public void SetProjectileInfo(CreatureController owner, Data.SkillData skillData, Vector3 shootDir, float turningSide, 
                         Vector3 indicatorAngle, Vector3 pos, Vector3 localScale, float continuousSpeedRatio = 1f, float continuousAngle = 0f, float continuousFlipX = 0f)
         {
             this.Owner = owner;
@@ -45,26 +45,32 @@ namespace STELLAREST_2D
                     GetComponent<PaladinSwing>().SetSwingInfo(owner, skillData.TemplateID, indicatorAngle, turningSide, pos, localScale, continuousAngle, continuousFlipX);
                     StartCoroutine(CoPaladinSwing());
                     break;
+
+                case (int)Define.TemplateIDs.SkillType.ThrowingStar:
+                    if (owner?.IsPlayer() == true)
+                        Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.PlayerAttack);
+                    StartCoroutine(CoThrowingStart());
+                    break;
             }
         }
 
-        public void SetInfo(CreatureController owner, Data.SkillData skillData, Vector3 shootDir)
+        private IEnumerator CoThrowingStart()
         {
-            this.Owner = owner;
-            this.SkillData = skillData;
-            this._shootDir = shootDir;
+            float minSpeed = 1000f;
+            float maxSpeed = 2000f;
+            float selfRot = 0f;
+            while (true)
+            {
+                float t = Mathf.Clamp01(Time.deltaTime / SkillData.Duration);
+                float rotSpeed = Mathf.Lerp(minSpeed, maxSpeed, t);
+                selfRot += rotSpeed * Time.deltaTime;
 
-            _initialTurningDir = Managers.Game.Player.TurningAngle;
-            _offParticle = false;
+                transform.rotation = Quaternion.Euler(0, 0, selfRot);
 
-            StartDestroy(skillData.Duration);
-            // switch (skillData.OriginTemplateID)
-            // {
-            //     // case (int)Define.TemplateIDs.SkillType.PaladinSwing:
-            //     //     GetComponent<PaladinSwing>().SetSkillInfo(owner, skillData.TemplateID);
-            //     //     StartCoroutine(CoPaladinSwing());
-            //     //     break;
-            // }
+                float movementSpeed = Owner.CharaData.MoveSpeed + SkillData.Speed;
+                transform.position += _shootDir * movementSpeed * Time.deltaTime;
+                yield return null;
+            }
         }
 
         //float desiredCompletedTime = skillData.Duration;
@@ -139,7 +145,7 @@ namespace STELLAREST_2D
             {
                 // Debug.Log("DMG : " + Owner.CreatureData.Power * SkillData.DamageUpMultiplier);
                 // mc.OnDamaged(Owner, this, Owner.CreatureData.Power * SkillData.DamageUpMultiplier);
-                
+
                 // GetComponent<Collider2D>().enabled = false; // Penertration 고려
                 mc.OnDamaged(Owner, CurrentSkill);
             }

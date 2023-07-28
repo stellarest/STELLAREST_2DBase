@@ -33,16 +33,6 @@ namespace STELLAREST_2D
             GetComponent<Collider2D>().enabled = true;
         }
 
-        protected override IEnumerator CoStartSkill()
-        {
-            WaitForSeconds wait = new WaitForSeconds(SkillData.CoolTime);
-            while (true)
-            {
-                DoSkillJob();
-                yield return wait;
-            }
-        }
-
         protected override void DoSkillJob()
         {
             //Managers.Game.Player.Attack();

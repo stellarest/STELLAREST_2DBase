@@ -54,7 +54,7 @@ namespace STELLAREST_2D
 
             if (Managers.Pool.Push(go))
             {
-                Debug.Log("DES PROJ..2");
+                // Debug.Log("DES PROJ..2");
                 return;
             }
 

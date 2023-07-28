@@ -8,7 +8,7 @@ namespace STELLAREST_2D
         public enum Sound { BGM, Effect, }
         public enum ObjectType { Player, Monster, EliteMonster, MiddleBoss, Boss, Projectile, Env, }
         public enum WaveType { None, Elite, MiddleBoss, Boss }
-        public enum SortingOrder { Map = 100, Player = 200, Monster = 210, ParticleEffect = 230 }
+        public enum SortingOrder { Map = 100, Player = 200, Item = 209, Monster = 210, Skill = 211, ParticleEffect = 230 }
         public enum StageType { Normal, MiddleBoss, Boss, }
 
         // public enum MonsterState { Idle = 0, Run = 1, Skill = 2, Attack = 3, Death = 9 }
@@ -16,7 +16,7 @@ namespace STELLAREST_2D
         public enum CreatureState { Idle = 0, Walk = 1, Run = 2, Attack = 3, Skill, Invincible, Death = 9 }
 
         public enum InGameGrade { Normal = 1, Rare = 2, Epic = 3, Legendary = 4 }
-        public enum CollisionLayers { Default = 0, PlayerBody = 6, PlayerAttack = 7, MonsterBody = 8, MonsterAttack = 9, }
+        public enum CollisionLayers { Default = 0, PlayerBody = 6, PlayerAttack = 7, MonsterBody = 8, MonsterAttack = 9 }
 
         public enum PlayerEmotion { None = 0, Default = 1, Greedy, Sick, Bunny, Kitty, Death }
         public enum InitialStatRatioGrade { None = 0, Low = 10, Average = 20, High = 30 }
@@ -29,7 +29,7 @@ namespace STELLAREST_2D
             public const string CREATURE = "CreatureData.json";
             public const string STAGE = "Stage.json";
             public const string SKILL = "SkillData.json";
-            public const string PASSIVE_ITEM = "PassiveItemData.json";
+            public const string PASSIVE_SKILL = "PassiveSkillData.json";
         }
 
         public static class TemplateIDs
@@ -47,8 +47,8 @@ namespace STELLAREST_2D
             public enum SkillType
             {
                 PaladinSwing = 200100,
-                BodyAttack = 200200,
-
+                ThrowingStar = 200150,
+                BodyAttack = 200300,
             }
         }
 
@@ -65,6 +65,13 @@ namespace STELLAREST_2D
             public const string DMG_TEXT_TO_PLAYER_DODGE = "DmgText_ToPlayerDodge.prefab"; // 플레이어에게만 적용
 
             public const string SPAWN_EFFECT = "SpawnEffect.prefab";
+
+            public const string GEM = "Gem.prefab";
+            public const string GEM_GATHER = "GemGather.prefab";
+            public const string GEM_EXPLOSION_NORMAL = "GemExplosion_Normal.prefab";
+            public const string GEM_EXPLOSION_LARGE = "GemExplosion_Large.prefab";
+
+            public const string DUST = "Dust.prefab";
         }
 
         public static class SpriteLabels
@@ -72,6 +79,9 @@ namespace STELLAREST_2D
             public const string EXP_GEM_GREEN = "EXPGem_01.sprite";
             public const string EXP_GEM_YELLOW = "EXPGem_02.sprite";
             public const string EXP_GEM_BLUE = "EXPGem_03.sprite";
+
+            public const string GEM_NORMAL = "Gem_Normal.sprite";
+            public const string GEM_LARGE = "Gem_Large.sprite";
 
             public static class Player
             {

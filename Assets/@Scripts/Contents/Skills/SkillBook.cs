@@ -29,6 +29,7 @@ namespace STELLAREST_2D
         public Define.InGameGrade RepeatCurrentGrade(Define.TemplateIDs.SkillType skillType)
             => LearnedRepeatSkills.FirstOrDefault(s => s.SkillData.OriginTemplateID == (int)skillType).SkillData.InGameGrade;
 
+        // 원래는 이게 DoJobSkill에 있어야하는 것인데 이건 플레이어 애니메이션에 따른 공격이라 이렇게한거임
         public void PlayerDefaultAttack(Define.TemplateIDs.SkillType skillType)
         {
             RepeatSkill skill = RepeatSkills.FirstOrDefault(s => s.SkillData.TemplateID == (int)skillType);
@@ -81,7 +82,7 @@ namespace STELLAREST_2D
                 Quaternion rot = Quaternion.Euler(0, 0, angles[i]);
                 Vector3 shootDir = rot * originShootDir;
 
-                pc.SetSwingInfo(Owner, skillData, shootDir, turningSide, indicatorAngle, pos, localScale,
+                pc.SetProjectileInfo(Owner, skillData, shootDir, turningSide, indicatorAngle, pos, localScale,
                                     skillData.ContinuousSpeedRatios[i], angles[i], skillData.ContinuousFlipXs[i]);
                 yield return new WaitForSeconds(skillData.ContinuousSpacing);
             }
@@ -101,7 +102,8 @@ namespace STELLAREST_2D
             }
             else
             {
-                RepeatSkill latestSkill = LearnedRepeatSkills[LearnedRepeatSkills.Count - 1];
+                // Origin Template ID중에서 배웠던 마지막 스킬을 가져온다. 어차피 하나씩 지울거라.
+                RepeatSkill latestSkill = LearnedRepeatSkills.FirstOrDefault(s => s.SkillData.OriginTemplateID == originTemplateID);
                 if (latestSkill.SkillData.InGameGrade == Define.InGameGrade.Legendary)
                 {
                     Utils.Log(latestSkill.gameObject.name + " is already max skill level !!");
@@ -111,27 +113,49 @@ namespace STELLAREST_2D
                 RepeatSkill newSkill = RepeatSkills.FirstOrDefault(s => s.SkillData.TemplateID == originTemplateID + (int)latestSkill.SkillData.InGameGrade);
                 LearnedRepeatSkills.Remove(latestSkill);
                 latestSkill.DeactivateSkill();
-
                 LearnedRepeatSkills.Add(newSkill);
 
                 if (newSkill.SkillData.IsPlayerDefaultAttack)
                 {
                     Managers.Game.Player.AnimEvents.PlayerDefaultAttack++;
-                    Managers.Sprite.UpgradePlayerSprite(newSkill.Owner.GetComponent<PlayerController>(), 
+                    Managers.Sprite.UpgradePlayerSprite(newSkill.Owner.GetComponent<PlayerController>(),
                         newSkill.SkillData.InGameGrade);
                 }
 
                 newSkill.ActivateSkill();
+
+                // ++++++++++++++
+                // RepeatSkill latestSkill = LearnedRepeatSkills[LearnedRepeatSkills.Count - 1];
+                // if (latestSkill.SkillData.InGameGrade == Define.InGameGrade.Legendary)
+                // {
+                //     Utils.Log(latestSkill.gameObject.name + " is already max skill level !!");
+                //     return;
+                // }
+
+                // RepeatSkill newSkill = RepeatSkills.FirstOrDefault(s => s.SkillData.TemplateID == originTemplateID + (int)latestSkill.SkillData.InGameGrade);
+                // LearnedRepeatSkills.Remove(latestSkill);
+                // latestSkill.DeactivateSkill();
+                // LearnedRepeatSkills.Add(newSkill);
+
+                // if (newSkill.SkillData.IsPlayerDefaultAttack)
+                // {
+                //     Managers.Game.Player.AnimEvents.PlayerDefaultAttack++;
+                //     Managers.Sprite.UpgradePlayerSprite(newSkill.Owner.GetComponent<PlayerController>(), 
+                //         newSkill.SkillData.InGameGrade);
+                // }
+
+                // newSkill.ActivateSkill();
             }
         }
 
         private bool IsLeanredSkill(int originTemplateID)
-        {
-            if (LearnedRepeatSkills.FirstOrDefault(s => s.SkillData.OriginTemplateID == originTemplateID) != null)
-                return true;
+                => LearnedRepeatSkills.FirstOrDefault(s => s.SkillData.OriginTemplateID == originTemplateID) != null ? true : false;
+        // {
+        //     if (LearnedRepeatSkills.FirstOrDefault(s => s.SkillData.OriginTemplateID == originTemplateID) != null)
+        //         return true;
 
-            return false;
-        }
+        //     return false;
+        // }
 
         // SequenceSkill(하나의 스킬을 끝내야지만 다른 스킬을 사용할 수 있는 스킬) List에 등록된 녀석들을 인공지능에서 따로 판단을 하던
         // 아니면 여기서 순차적으로 등록된 애들을 사용을 하던 여기다가 관리해주면 된다고 함

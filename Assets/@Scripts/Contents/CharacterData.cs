@@ -8,7 +8,7 @@ namespace STELLAREST_2D
     {
         public CharacterData(Data.CreatureData creatureData)
         {
-            this.Level = 1;
+            // this.Level = 1;
             this.CreatureData = creatureData;
 
             this.TemplateID = creatureData.TemplateID;
@@ -32,6 +32,7 @@ namespace STELLAREST_2D
             this.MoveSpeed = creatureData.MoveSpeed;
             this.MoveSpeedUp = creatureData.MoveSpeedUp;
 
+            this.CollectRange = creatureData.CollectRange;
             this.Luck = creatureData.Luck;
             this.TotalExp = creatureData.TotalExp;
 
@@ -39,7 +40,7 @@ namespace STELLAREST_2D
             this.MaxReadyToActionTime = creatureData.MaxReadyToActionTime;
         }
 
-        public int Level { get; set; } = 1;
+        // public int Level { get; set; } = 1;
         public Data.CreatureData CreatureData;
         public int TemplateID { get; set; }
         public string Name { get; set; }
@@ -62,7 +63,8 @@ namespace STELLAREST_2D
         public float MoveSpeed { get; set; }
         public float MoveSpeedUp { get; set; }
 
-        public float Luck { get; set; }
+        public float CollectRange { get; set; }
+        public float Luck { get; set; } // -> Large Gem 드롭확률 증가, 희귀한 패시브 스킬(스탯) 등장 확률 증가
         public float TotalExp { get; set; }
 
         public float MinReadyToActionTime { get; private set; }
