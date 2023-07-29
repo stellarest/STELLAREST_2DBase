@@ -26,9 +26,10 @@ namespace STELLAREST_2D
             {
                 ProjectileController pc = Managers.Object.Spawn<ProjectileController>(Owner.transform.position,
                                         SkillData.TemplateID);
-                pc.CurrentSkill = this;
-                pc.SetProjectileInfo(Owner, this.SkillData, Managers.Game.Player.ShootDir, 0, Vector3.zero, transform.position,
-                            transform.localScale);
+                
+                pc.SetProjectileInfo(this.Owner, this, Managers.Game.Player.ShootDir, 
+                    Owner.transform.position, pc.transform.localScale, Vector3.zero);
+
                 yield return new WaitForSeconds(SkillData.ContinuousSpacing);
             }
         }

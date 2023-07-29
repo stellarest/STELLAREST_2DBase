@@ -26,10 +26,6 @@ namespace STELLAREST_2D
         public void AddSequenceSkill(SequenceSkill sequenceSkill) => SequenceSkills.Add(sequenceSkill);
         // +++
 
-        public Define.InGameGrade RepeatCurrentGrade(Define.TemplateIDs.SkillType skillType)
-            => LearnedRepeatSkills.FirstOrDefault(s => s.SkillData.OriginTemplateID == (int)skillType).SkillData.InGameGrade;
-
-        // 원래는 이게 DoJobSkill에 있어야하는 것인데 이건 플레이어 애니메이션에 따른 공격이라 이렇게한거임
         public void PlayerDefaultAttack(Define.TemplateIDs.SkillType skillType)
         {
             RepeatSkill skill = RepeatSkills.FirstOrDefault(s => s.SkillData.TemplateID == (int)skillType);
@@ -48,7 +44,15 @@ namespace STELLAREST_2D
             // GameObject go = LearnedRepeatSkills.FirstOrDefault(s => s.SkillData.TemplateID == skillData.TemplateID).gameObject;
             // pos += go.transform.localPosition;
 
+            // 1.25, 1.25, 1.25 -> 1, 1, 1
             Vector3 localScale = Managers.Game.Player.AnimationLocalScale;
+            // 일단 1,1,1로 만들어준다.
+            localScale *= 0.8f;
+
+            // float scaleX = localScale.x + (localScale.x * skillData.ScaleUpRatio);
+            // float scaleY = localScale.x + (localScale.x * skillData.ScaleUpRatio);
+            // localScale = new Vector3(scaleX, scaleY, 1f);
+
             if (skillData.ContinuousCount != skillData.ContinuousSpeedRatios.Length)
             {
                 for (int i = 0; i < skillData.ContinuousSpeedRatios.Length; ++i)
@@ -77,13 +81,12 @@ namespace STELLAREST_2D
             {
                 Managers.Game.Player.EndAttackPos = transform.position;
                 ProjectileController pc = Managers.Object.Spawn<ProjectileController>(transform.position, skillData.TemplateID);
-                pc.CurrentSkill = skill;
 
                 Quaternion rot = Quaternion.Euler(0, 0, angles[i]);
                 Vector3 shootDir = rot * originShootDir;
 
-                pc.SetProjectileInfo(Owner, skillData, shootDir, turningSide, indicatorAngle, pos, localScale,
-                                    skillData.ContinuousSpeedRatios[i], angles[i], skillData.ContinuousFlipXs[i]);
+                pc.SetProjectileInfo(Owner, skill, shootDir, pos, localScale, indicatorAngle, 
+                            turningSide, skillData.ContinuousSpeedRatios[i], angles[i], skillData.ContinuousFlipXs[i]);
                 yield return new WaitForSeconds(skillData.ContinuousSpacing);
             }
         }

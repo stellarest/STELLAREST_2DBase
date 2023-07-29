@@ -6,8 +6,8 @@ namespace STELLAREST_2D
 {
     public class CustomParticleStopped : MonoBehaviour
     {
-        public void OnParticleSystemStopped() => 
-                Managers.Resource.Destroy(gameObject);
+        public void OnParticleSystemStopped()
+                => Managers.Resource.Destroy(gameObject);
     }
 }
 

@@ -1,4 +1,6 @@
 
+#define USE_LINQ
+
 namespace STELLAREST_2D
 {
     public static class Define
@@ -46,8 +48,10 @@ namespace STELLAREST_2D
 
             public enum SkillType
             {
+                None = 200000,
                 PaladinSwing = 200100,
                 ThrowingStar = 200150,
+                LazerBolt = 200154,
                 BodyAttack = 200300,
             }
         }

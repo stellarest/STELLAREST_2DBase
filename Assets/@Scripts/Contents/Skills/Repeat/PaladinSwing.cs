@@ -7,17 +7,13 @@ namespace STELLAREST_2D
     public class PaladinSwing : RepeatSkill // Projectile
     {
         public void SetSwingInfo(CreatureController owner, int templateID,
-            Vector3 indicatorAngle, float turningSide, Vector3 pos, Vector3 localScale, float continuousAngle, float continuousFlipX)
+            Vector3 indicatorAngle, float turningSide, float continuousAngle, float continuousFlipX)
         {
             base.SetSkillInfo(owner, templateID);
 
             var particleRenderer = GetComponent<ParticleSystemRenderer>();
             particleRenderer.sortingOrder = (int)Define.SortingOrder.ParticleEffect;
-            //GetComponent<ParticleSystemRenderer>().sortingOrder = (int)Define.SortingOrder.ParticleEffect;
 
-            Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.PlayerAttack);
-
-            // 일단 회전만 설정
             Vector3 tempAngle = indicatorAngle;
             // transform.localEulerAngles = tempAngle;
             tempAngle.z += continuousAngle;
@@ -26,8 +22,8 @@ namespace STELLAREST_2D
             var main = GetComponent<ParticleSystem>().main;
             main.startRotation = Mathf.Deg2Rad * tempAngle.z * -1f;
             main.flipRotation = turningSide;
-            transform.position = pos;
-            transform.localScale = localScale;
+            // transform.position = pos;
+            // transform.localScale = localScale;
 
             particleRenderer.flip = new Vector3(continuousFlipX, 0, 0);
             GetComponent<Collider2D>().enabled = true;

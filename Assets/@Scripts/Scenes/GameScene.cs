@@ -88,6 +88,11 @@ namespace STELLAREST_2D
             // Create Spawning Pool
             _spawningPool = gameObject.AddComponent<SpawningPool>();
             
+            // TEST
+            // Managers.Object.Spawn<Chicken>(new Vector3(3, 3, 1), (int)Define.TemplateIDs.Monster.Chicken);
+            // Managers.Object.Spawn<Chicken>(new Vector3(8, 3, 1), (int)Define.TemplateIDs.Monster.Chicken);
+            // Managers.Object.Spawn<Chicken>(new Vector3(5, -6, 1), (int)Define.TemplateIDs.Monster.Chicken);
+            
             // Init Collision Layer
             Managers.Collision.SetCollisionLayers(Define.CollisionLayers.PlayerAttack, Define.CollisionLayers.MonsterBody, true);
             Managers.Collision.SetCollisionLayers(Define.CollisionLayers.PlayerBody, Define.CollisionLayers.MonsterAttack, true);

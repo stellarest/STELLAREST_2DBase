@@ -1,3 +1,4 @@
+
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,10 +52,10 @@ namespace STELLAREST_2D
                     mc.SetInfo(templateID);
                     mc.Init();
                     Monsters.Add(mc);
-                    
+
                     Managers.Effect.AddCreatureMaterials(mc);
                     Managers.Effect.SetDefaultMaterials(mc);
-                    
+
                     // mc.CoEffectFade();
                     // mc.CoEffectFadeIn(2f);
                     mc.CoStartReadyToAction();
@@ -69,7 +70,7 @@ namespace STELLAREST_2D
                 go.transform.position = position;
 
                 GemController gc = go.GetOrAddComponent<GemController>();
-               
+
                 // gc.Init();
                 // bool changeSprite = Random.Range(0, 2) == 0 ? true : false;
                 // string spriteKey = "";
@@ -82,7 +83,7 @@ namespace STELLAREST_2D
                 //     if (yellowOrBlue != null)
                 //         gc.GetComponent<SpriteRenderer>().sprite = yellowOrBlue;
                 // }
-                
+
                 GridController.Add(go);
                 Gems.Add(gc);
 
@@ -92,7 +93,7 @@ namespace STELLAREST_2D
             {
                 GameObject go = Managers.Resource.Instantiate(Managers.Data.SkillDict[templateID].PrimaryLabel, pooling: true);
                 go.transform.position = position;
-                
+
                 ProjectileController pc = go.GetOrAddComponent<ProjectileController>();
                 Projectiles.Add(pc);
 
@@ -145,6 +146,79 @@ namespace STELLAREST_2D
             }
         }
 
+        public MonsterController GetRandomTarget(CreatureController cc, float distanceFromPlayer = 20f)
+        {
+            MonsterController target = null;
+            List<MonsterController> toMonsters = this.Monsters.ToList();
+            if (toMonsters.Count != 0)
+            {
+                for (int i = 0; i < toMonsters.Count; ++i)
+                {
+                    if ((toMonsters[i].transform.position - cc.transform.position).sqrMagnitude < distanceFromPlayer * distanceFromPlayer)
+                        target = toMonsters[i];
+                }
+            }
+
+            return target;
+        }
+
+        // +++ 개선 필요 +++
+        public GameObject GetClosestTarget(Transform tr, Define.TemplateIDs.SkillType checkBounceHitSkillType = Define.TemplateIDs.SkillType.None)
+        {
+            // .Where(m => m.transform != tr && m.IsThrowingStarBounceHit == false)
+
+            GameObject target = null;
+#if USE_LINQ
+            List<MonsterController> toMonsters = this.Monsters.ToList();
+            target = toMonsters
+                    .Where(m => m.transform != tr && m.IsBounceHitStatus(checkBounceHitSkillType) == false)
+                    .OrderBy(m => (m.transform.position - tr.position).sqrMagnitude)
+                    .FirstOrDefault()?
+                    .gameObject;
+#else
+            float closestDist = float.MaxValue;
+            List<MonsterController> toMonsters = new List<MonsterController>();
+            foreach (var mon in this.Monsters)
+                toMonsters.Add(mon);
+
+            foreach (var mon in toMonsters)
+            {
+                if(mon.transform == tr || mon.IsBounceHitStatus(checkBounceHitSkillType) == false)
+                    continue;
+
+                float sqrMag = (mon.transform.position - tr.position).sqrMagnitude;
+                if (sqrMag < closestDist)
+                {
+                    closestDist = sqrMag;
+                    target = mon.gameObject;
+                }
+            }
+#endif
+            return target;
+        }
+
+        public void ResetBounceHits(Define.TemplateIDs.SkillType bounceHitSkillType)
+        {
+#if USE_LINQ
+            switch (bounceHitSkillType)
+            {
+                case Define.TemplateIDs.SkillType.ThrowingStar:
+                    {
+                        foreach (var monster in Monsters.ToList())
+                            monster.IsThrowingStarBounceHit = false;
+                    }
+                    break;
+
+                case Define.TemplateIDs.SkillType.LazerBolt:
+                    {
+                        foreach (var monster in Monsters.ToList())
+                            monster.IsLazerBoltContinuousHit = false;
+                    }
+                    break;
+            }
+#else
+#endif
+        }
 
         ///// LEGACY
         // public T Spawn3<T>(Vector3 position, int templateID = 0) where T : BaseController

@@ -4,10 +4,37 @@ using UnityEngine.Rendering;
 
 namespace STELLAREST_2D
 {
-    public class MonsterController : CreatureController
+    public interface IBounceHit
+    {
+        public bool IsThrowingStarBounceHit { get; set; }
+        public bool IsLazerBoltContinuousHit { get; set; }
+    }
+
+    public class MonsterController : CreatureController, IBounceHit
     {
         public bool LockFlipX { get; set; } = false;
         public MonsterAnimationController MAC { get; protected set; }
+        public bool IsThrowingStarBounceHit { get; set; } = false;
+        public bool IsLazerBoltContinuousHit { get; set; } = false;
+
+        public bool IsBounceHitStatus(Define.TemplateIDs.SkillType skillType)
+        {
+            switch (skillType)
+            {
+                case Define.TemplateIDs.SkillType.None:
+                    return true;
+
+                case Define.TemplateIDs.SkillType.ThrowingStar:
+                    return IsThrowingStarBounceHit;
+
+                case Define.TemplateIDs.SkillType.LazerBolt:
+                    return IsLazerBoltContinuousHit;
+
+                default:
+                    return false;
+            }
+        }
+
         public override void UpdateAnimation()
         {
             switch (_cretureState)

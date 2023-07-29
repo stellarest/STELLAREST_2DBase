@@ -64,10 +64,10 @@ namespace STELLAREST_2D.Data
         public int OriginTemplateID;
         public string Name;
         public string PrimaryLabel;
+        public bool IsPlayerDefaultAttack;
         public Define.InGameGrade InGameGrade;
         public float MinDamage;
         public float MaxDamage;
-        public bool IsPlayerDefaultAttack;
         public float Speed;
         public float Duration;
         public int ContinuousCount;
@@ -76,6 +76,7 @@ namespace STELLAREST_2D.Data
         public float[] ContinuousAngles;
         public float[] ContinuousFlipXs;
         public int BounceCount;
+        public float SelfRotationZSpeed;
         public int PenetrationCount;
         public int HitEffectTemplateID;
         public float CoolTime;

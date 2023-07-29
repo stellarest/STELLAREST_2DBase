@@ -95,6 +95,6 @@ namespace STELLAREST_2D
             }
         }
 
-        public override void OnPreSpawned() { }
+        public override void OnPreSpawned() => base.OnPreSpawned();
     }
 }

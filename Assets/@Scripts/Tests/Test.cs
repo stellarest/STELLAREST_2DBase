@@ -7,48 +7,57 @@ namespace STELLAREST_2D.Test
 {
     public class Test : MonoBehaviour
     {
-        [ContextMenu("TTTTT")]
-        public void TTTTT()
+        [ContextMenu("T_ParticleSorting")]
+        private void TEST_ParticleSorting()
         {
-            string key = "apple.sprite";
-            Debug.Log(key.Replace(".sprite", ""));
-
-
-            string loadKey = key;
-            loadKey = $"{key}[{key.Replace(".sprite", "")}]";
-            Debug.Log(loadKey); // apple[] 이렇게 비어있어야 하지 않나요?
-            // {key.Replace(".sprite", "")} : 이 부분을 해석하자면 .sprite -> empty가 되는것이 아닙니까?
-            // 어째서 apple.sprite[apple] 이렇게 나오는 것인지 이해가 안됩니다.           
-        }
-
-
-        public AnimationCurve ViewCurveShape;
-        private AnimationCurve _curve;
-
-        public enum MyEnumTest
-        {
-            HongGilDong = 10001,
-            KimDDoKkang = 10002,
-            SiRaSoNi = 10003
-        }
-
-        //public float TEST_FADE = 0f;
-        private void Start()
-        {
-            gameObject.SetActive(true);
-        }
-        
-        float _delta = 0f;
-        private void Update()
-        {
-            //GetComponent<SpriteRenderer>().material.SetFloat("_CustomFadeAlpha", TEST_FADE);
-            _delta += Time.deltaTime;
-            if (_delta >= 1f)
+            foreach (var pr in GetComponentsInChildren<ParticleSystemRenderer>())
             {
-                _delta = 0f;
-                Managers.Resource.Destroy(gameObject);
+                pr.sortingOrder = (int)Define.SortingOrder.ParticleEffect;
             }
         }
+
+        // [ContextMenu("TTTTT")]
+        // public void TTTTT()
+        // {
+        //     string key = "apple.sprite";
+        //     Debug.Log(key.Replace(".sprite", ""));
+
+
+        //     string loadKey = key;
+        //     loadKey = $"{key}[{key.Replace(".sprite", "")}]";
+        //     Debug.Log(loadKey); // apple[] 이렇게 비어있어야 하지 않나요?
+        //     // {key.Replace(".sprite", "")} : 이 부분을 해석하자면 .sprite -> empty가 되는것이 아닙니까?
+        //     // 어째서 apple.sprite[apple] 이렇게 나오는 것인지 이해가 안됩니다.           
+        // }
+
+
+        // public AnimationCurve ViewCurveShape;
+        // private AnimationCurve _curve;
+
+        // public enum MyEnumTest
+        // {
+        //     HongGilDong = 10001,
+        //     KimDDoKkang = 10002,
+        //     SiRaSoNi = 10003
+        // }
+
+        // //public float TEST_FADE = 0f;
+        // private void Start()
+        // {
+        //     gameObject.SetActive(true);
+        // }
+        
+        // float _delta = 0f;
+        // private void Update()
+        // {
+        //     //GetComponent<SpriteRenderer>().material.SetFloat("_CustomFadeAlpha", TEST_FADE);
+        //     _delta += Time.deltaTime;
+        //     if (_delta >= 1f)
+        //     {
+        //         _delta = 0f;
+        //         Managers.Resource.Destroy(gameObject);
+        //     }
+        // }
 
         // [ContextMenu("T_E_S_T")]
         // public void T_E_S_T()

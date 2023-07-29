@@ -129,6 +129,7 @@ namespace STELLAREST_2D
                     string primaryKey = skill.ToString() + "_" + skillGrade.ToString() + ".prefab";
                     skillGrade++;
                     // Utils.LogStrong(primaryKey);
+                    Debug.Log("KEY : " + primaryKey);
 
                     GameObject go = Managers.Resource.Instantiate(primaryKey);
                     if (go == null)

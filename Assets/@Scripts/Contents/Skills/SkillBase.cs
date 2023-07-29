@@ -104,7 +104,7 @@ namespace STELLAREST_2D
             GetComponent<Collider2D>().enabled = true;
         }
 
-        private Coroutine _coDestroy;
+        protected Coroutine _coDestroy;
         public void StartDestroy(float delaySeconds)
         {
             StopDestroy();

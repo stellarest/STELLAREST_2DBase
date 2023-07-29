@@ -290,7 +290,6 @@ namespace STELLAREST_2D
         {
             GameObject go = Managers.Resource.Instantiate(Define.PrefabLabels.DUST, pooling: true);
             go.transform.position = Managers.Game.Player.LegR.position + (Vector3.down * 0.35f);
-
         }
 
         public void ShowGemGather(GemController gc)
