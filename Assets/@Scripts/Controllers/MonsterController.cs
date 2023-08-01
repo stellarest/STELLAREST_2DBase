@@ -4,20 +4,22 @@ using UnityEngine.Rendering;
 
 namespace STELLAREST_2D
 {
-    public interface IBounceHit
+    public interface IContinuousHit
     {
-        public bool IsThrowingStarBounceHit { get; set; }
-        public bool IsLazerBoltContinuousHit { get; set; }
+        public bool IsThrowingStarHit { get; set; }
+        public bool IsLazerBoltHit { get; set; }
     }
 
-    public class MonsterController : CreatureController, IBounceHit
+    public class MonsterController : CreatureController, IContinuousHit
     {
         public bool LockFlipX { get; set; } = false;
         public MonsterAnimationController MAC { get; protected set; }
-        public bool IsThrowingStarBounceHit { get; set; } = false;
-        public bool IsLazerBoltContinuousHit { get; set; } = false;
+        public bool IsThrowingStarHit { get; set; } = false;
 
-        public bool IsBounceHitStatus(Define.TemplateIDs.SkillType skillType)
+        [field: SerializeField] // 확인해볼것. 범위로 다 두들겨 맞아서 true가 된것임.
+        public bool IsLazerBoltHit { get; set; } = false;
+
+        public bool IsContinuousHitStatus(Define.TemplateIDs.SkillType skillType)
         {
             switch (skillType)
             {
@@ -25,10 +27,10 @@ namespace STELLAREST_2D
                     return true;
 
                 case Define.TemplateIDs.SkillType.ThrowingStar:
-                    return IsThrowingStarBounceHit;
+                    return IsThrowingStarHit;
 
                 case Define.TemplateIDs.SkillType.LazerBolt:
-                    return IsLazerBoltContinuousHit;
+                    return IsLazerBoltHit;
 
                 default:
                     return false;
@@ -119,34 +121,34 @@ namespace STELLAREST_2D
             if (CreatureState == Define.CreatureState.Death)
                 return;
 
-            // if (RigidBody.velocity != Vector2.zero)
-            //     MAC.Run();
+            if (RigidBody.velocity != Vector2.zero)
+                MAC.Run();
 
-            // Vector2 predictedPos = new Vector2(transform.position.x + RigidBody.velocity.x,
-            //                                     transform.position.y + RigidBody.velocity.y);
-            // if (Managers.Stage.IsOutOfPos(predictedPos))
-            // {
-            //     BodyCol.isTrigger = true;
-            //     RigidBody.velocity = Vector2.zero;
-            //     Managers.Stage.SetInLimitPos(this);
-            // }
+            Vector2 predictedPos = new Vector2(transform.position.x + RigidBody.velocity.x,
+                                                transform.position.y + RigidBody.velocity.y);
+            if (Managers.Stage.IsOutOfPos(predictedPos))
+            {
+                BodyCol.isTrigger = true;
+                RigidBody.velocity = Vector2.zero;
+                Managers.Stage.SetInLimitPos(this);
+            }
 
-            // PlayerController pc = Managers.Game.Player;
-            // if (pc.IsValid() == false)
-            //     return;
+            PlayerController pc = Managers.Game.Player;
+            if (pc.IsValid() == false)
+                return;
 
-            // Vector3 toPlayer = pc.transform.position - transform.position;
-            // FlipX(toPlayer.x > 0 ? -1 : 1);
-            // if (CreatureState != Define.CreatureState.Run)
-            //     return;
+            Vector3 toPlayer = pc.transform.position - transform.position;
+            FlipX(toPlayer.x > 0 ? -1 : 1);
+            if (CreatureState != Define.CreatureState.Run)
+                return;
 
-            // Vector3 newPos = transform.position + (toPlayer.normalized * Time.deltaTime * CharaData.MoveSpeed);
-            // //transform.position = newPos;
-            // RigidBody.MovePosition(newPos);
+            Vector3 newPos = transform.position + (toPlayer.normalized * Time.deltaTime * CharaData.MoveSpeed);
+            //transform.position = newPos;
+            RigidBody.MovePosition(newPos);
 
-            // float sqrDist = 2f * 2f;
-            // if (toPlayer.sqrMagnitude <= sqrDist)
-            //     CreatureState = Define.CreatureState.Skill;
+            float sqrDist = 2f * 2f;
+            if (toPlayer.sqrMagnitude <= sqrDist)
+                CreatureState = Define.CreatureState.Skill;
         }
 
         private void FlipX(float flipX)

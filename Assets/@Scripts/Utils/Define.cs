@@ -50,8 +50,8 @@ namespace STELLAREST_2D
             {
                 None = 200000,
                 PaladinSwing = 200100,
-                ThrowingStar = 200150,
-                LazerBolt = 200154,
+                ThrowingStar = 200200,
+                LazerBolt = 200204,
                 BodyAttack = 200300,
             }
         }

@@ -267,8 +267,6 @@ namespace STELLAREST_2D
                 //     GemController gc = Managers.Object.Spawn<GemController>(randPos);
                 //     gc.GemSize = UnityEngine.Random.Range(0, 2) == 0 ? gc.GemSize = GemSize.Normal : gc.GemSize = GemSize.Large;
                 // }
-
-                SkillBook.UpgradeRepeatSkill((int)Define.TemplateIDs.SkillType.ThrowingStar);
             }
 
             if (Input.GetKeyDown(KeyCode.R))
@@ -288,8 +286,10 @@ namespace STELLAREST_2D
             CollectEnv();
 
             if (Input.GetKeyDown(KeyCode.Alpha1))
-                SkillBook.UpgradeRepeatSkill((int)Define.TemplateIDs.SkillType.LazerBolt);
+                SkillBook.UpgradeRepeatSkill((int)Define.TemplateIDs.SkillType.ThrowingStar);
 
+            if (Input.GetKeyDown(KeyCode.Alpha2))
+                SkillBook.UpgradeRepeatSkill((int)Define.TemplateIDs.SkillType.LazerBolt);
 
             if (Input.GetKeyDown(KeyCode.Space))
                 SkillBook.UpgradeRepeatSkill((int)Define.TemplateIDs.SkillType.PaladinSwing);

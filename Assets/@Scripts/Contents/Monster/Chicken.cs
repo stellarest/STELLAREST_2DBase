@@ -16,7 +16,8 @@ namespace STELLAREST_2D
             RigidBody.velocity = Vector2.zero;
             SkillBook.Stopped = false;
             BodyCol.isTrigger = false;
-            IsThrowingStarBounceHit = false;
+            IsThrowingStarHit = false;
+            IsLazerBoltHit = false;
 
             if (SkillBook.SequenceSkills.Count != 0)
                 SkillBook.SequenceSkills[(int)Define.InGameGrade.Normal - 1].gameObject.SetActive(true);

@@ -29,5 +29,8 @@ namespace STELLAREST_2D
         {
             return bc != null && bc.isActiveAndEnabled;
         }
+
+        public static bool IsCreatureDead(this GameObject go) 
+                => go.GetComponent<CreatureController>().CreatureState == Define.CreatureState.Death;
     }
 }

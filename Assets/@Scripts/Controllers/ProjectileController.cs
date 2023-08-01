@@ -52,7 +52,7 @@ namespace STELLAREST_2D
             {
                 case (int)Define.TemplateIDs.SkillType.PaladinSwing:
                     {
-                        GetComponent<PaladinSwing>().SetSwingInfo(owner, currentSkill.SkillData.TemplateID, indicatorAngle, 
+                        GetComponent<PaladinSwing>().SetSwingInfo(owner, currentSkill.SkillData.TemplateID, indicatorAngle,
                                     turningSide, continuousAngle, continuousFlipX);
                         StartCoroutine(CoPaladinSwing());
                     }
@@ -64,20 +64,6 @@ namespace STELLAREST_2D
                         StartCoroutine(CoThrowingStart());
                     }
                     break;
-            }
-        }
-
-        private IEnumerator CoThrowingStart()
-        {
-            float selfRot = 0f;
-            while (true)
-            {
-                selfRot += CurrentSkill.SkillData.SelfRotationZSpeed * Time.deltaTime;
-                transform.rotation = Quaternion.Euler(0, 0, selfRot);
-                float movementSpeed = Owner.CharaData.MoveSpeed + SkillData.Speed;
-
-                transform.position += _shootDir * movementSpeed * Time.deltaTime;
-                yield return null;
             }
         }
 
@@ -110,6 +96,20 @@ namespace STELLAREST_2D
                 transform.position += _shootDir * _speed * Time.deltaTime;
                 ControlCollisionTime(SkillData.Duration);
 
+                yield return null;
+            }
+        }
+
+        private IEnumerator CoThrowingStart()
+        {
+            float selfRot = 0f;
+            while (true)
+            {
+                selfRot += CurrentSkill.SkillData.SelfRotationZSpeed * Time.deltaTime;
+                transform.rotation = Quaternion.Euler(0, 0, selfRot);
+                float movementSpeed = Owner.CharaData.MoveSpeed + SkillData.Speed;
+
+                transform.position += _shootDir * movementSpeed * Time.deltaTime;
                 yield return null;
             }
         }
@@ -167,8 +167,8 @@ namespace STELLAREST_2D
                         {
                             _currentBounceCount++;
                             mc.OnDamaged(Owner, CurrentSkill);
-                            mc.IsThrowingStarBounceHit = true;
-                            _target = Managers.Object.GetClosestTarget(mc.transform, Define.TemplateIDs.SkillType.ThrowingStar);
+                            mc.IsThrowingStarHit = true;
+                            _target = Managers.Object.GetNextTarget(mc.transform, Define.TemplateIDs.SkillType.ThrowingStar);
                             if (_target != null)
                                 _shootDir = (_target.transform.position - transform.position).normalized;
                             else
