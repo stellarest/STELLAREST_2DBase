@@ -10,9 +10,6 @@ namespace STELLAREST_2D
     // Fireball, EgoSword가 동시에 발동됨
     public abstract class RepeatSkill : SkillBase
     {
-        public RepeatSkill Generator { get; protected set; } = null;
-        public bool IsLaunching { get; protected set; } = false;
-
         private Coroutine _coSkillActivate;
         public override void ActivateSkill()
         {

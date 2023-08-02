@@ -291,6 +291,9 @@ namespace STELLAREST_2D
             if (Input.GetKeyDown(KeyCode.Alpha2))
                 SkillBook.UpgradeRepeatSkill((int)Define.TemplateIDs.SkillType.LazerBolt);
 
+            if (Input.GetKeyDown(KeyCode.Alpha3))
+                SkillBook.UpgradeRepeatSkill((int)Define.TemplateIDs.SkillType.Boomerang);
+
             if (Input.GetKeyDown(KeyCode.Space))
                 SkillBook.UpgradeRepeatSkill((int)Define.TemplateIDs.SkillType.PaladinSwing);
         }

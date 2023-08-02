@@ -61,7 +61,13 @@ namespace STELLAREST_2D
                 case (int)Define.TemplateIDs.SkillType.ThrowingStar:
                     {
                         _target = null;
-                        StartCoroutine(CoThrowingStart());
+                        StartCoroutine(CoThrowingStar());
+                    }
+                    break;
+
+                case (int)Define.TemplateIDs.SkillType.Boomerang:
+                    {
+                        StartCoroutine(CoBoomerang());
                     }
                     break;
             }
@@ -100,7 +106,7 @@ namespace STELLAREST_2D
             }
         }
 
-        private IEnumerator CoThrowingStart()
+        private IEnumerator CoThrowingStar()
         {
             float selfRot = 0f;
             while (true)
@@ -110,6 +116,34 @@ namespace STELLAREST_2D
                 float movementSpeed = Owner.CharaData.MoveSpeed + SkillData.Speed;
 
                 transform.position += _shootDir * movementSpeed * Time.deltaTime;
+                yield return null;
+            }
+        }
+
+        private IEnumerator CoBoomerang()
+        {
+            float selfRot = 0f;
+            float currentSpeed = Owner.CharaData.MoveSpeed + SkillData.Speed;
+            float deceleration = 50f; // 감속 속도를 조절하려면 필요에 따라 값을 변경
+            while (true)
+            {
+                if (SkillData.InGameGrade != Define.InGameGrade.Legendary)
+                {
+                    // 부메랑 회전
+                    selfRot += CurrentSkill.SkillData.SelfRotationZSpeed * Time.deltaTime * 1.1f;
+                    transform.rotation = Quaternion.Euler(0, 0, selfRot);
+
+                    currentSpeed -= deceleration * Time.deltaTime;
+                    deceleration += 0.05f;
+                    transform.position += _shootDir * currentSpeed * Time.deltaTime;
+                }
+                else
+                {
+                    selfRot += CurrentSkill.SkillData.SelfRotationZSpeed * Time.deltaTime * 1.1f;
+                    transform.rotation = Quaternion.Euler(0, 0, selfRot);
+                    Utils.LogStrong("I'M LEGENDARY BOOMERANG !!");
+                }
+
                 yield return null;
             }
         }
@@ -177,6 +211,13 @@ namespace STELLAREST_2D
                                 Managers.Object.ResetBounceHits(Define.TemplateIDs.SkillType.ThrowingStar);
                                 Managers.Object.Despawn(this.GetComponent<ProjectileController>());
                             }
+                        }
+                        break;
+
+                    case (int)Define.TemplateIDs.SkillType.Boomerang:
+                        {
+                            Utils.LogStrong("Hitted from Boomerang !!");
+                            mc.OnDamaged(Owner, CurrentSkill);
                         }
                         break;
                 }
