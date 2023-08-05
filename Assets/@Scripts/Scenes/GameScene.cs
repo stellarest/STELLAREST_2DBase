@@ -126,7 +126,7 @@ namespace STELLAREST_2D
         {
             yield return new WaitForSeconds(1.0f);
             Managers.Object.DespawnAllMonsters(); // 죽이자마자 전부 DespawnAllMonster해서 IsVaild() == false에 걸렸었던것
-            Vector2 spawnPos = Utils.GenerateMonsterSpawnPosition(Managers.Object.Player.transform.position, 5f, 10f);
+            Vector2 spawnPos = Utils.GetRandomPosition(Managers.Object.Player.transform.position, 5f, 10f);
             //Managers.Object.Spawn<MonsterController>(spawnPos, (int)Define.TemplateIDs.Boss.Gnoll); // 3 is BOSS_ID
             //Managers.Object.Spawn<BossController>(spawnPos, 3);
         }

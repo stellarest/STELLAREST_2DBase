@@ -27,16 +27,21 @@ namespace STELLAREST_2D
         private int _currentBounceCount = 0;
         private GameObject _target = null;
 
+        public void SetSkillInfo<T>(CreatureController owner, T skill) where T : SkillBase
+                => skill.SetSkillInfo(owner, skill.SkillData.TemplateID);
+
         public void SetProjectileInfo(CreatureController owner, SkillBase currentSkill, Vector3 shootDir, Vector3 spawnPos, Vector3 localScale, Vector3 indicatorAngle,
-                    float turningSide = 0f, float continuousSpeedRatio = 1f, float continuousAngle = 0f, float continuousFlipX = 0f)
+                    float turningSide = 0f, float continuousSpeedRatio = 1f, float continuousAngle = 0f, float continuousFlipX = 0f, int i = 0)
         {
             this.Owner = owner;
-            if (owner?.IsPlayer() == true)
-                Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.PlayerAttack);
-            else
-                Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.MonsterAttack);
+
+            // if (owner?.IsPlayer() == true)
+            //     Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.PlayerAttack);
+            // else
+            //     Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.MonsterAttack);
 
             this.CurrentSkill = currentSkill;
+
             this.SkillData = currentSkill.SkillData;
             this._shootDir = shootDir;
             this._continuousSpeedRatio = continuousSpeedRatio;
@@ -67,7 +72,10 @@ namespace STELLAREST_2D
 
                 case (int)Define.TemplateIDs.SkillType.Boomerang:
                     {
-                        StartCoroutine(CoBoomerang());
+                        if (SkillData.InGameGrade != Define.InGameGrade.Legendary)
+                            StartCoroutine(CoBoomerang());
+                        else
+                            StartCoroutine(CoBoomerangLegendary());
                     }
                     break;
             }
@@ -125,30 +133,98 @@ namespace STELLAREST_2D
             float selfRot = 0f;
             float currentSpeed = Owner.CharaData.MoveSpeed + SkillData.Speed;
             float deceleration = 50f; // 감속 속도를 조절하려면 필요에 따라 값을 변경
+
             while (true)
             {
-                if (SkillData.InGameGrade != Define.InGameGrade.Legendary)
-                {
-                    // 부메랑 회전
-                    selfRot += CurrentSkill.SkillData.SelfRotationZSpeed * Time.deltaTime * 1.1f;
-                    transform.rotation = Quaternion.Euler(0, 0, selfRot);
+                // 부메랑 회전
+                selfRot += CurrentSkill.SkillData.SelfRotationZSpeed * Time.deltaTime * 1.1f;
+                transform.rotation = Quaternion.Euler(0, 0, selfRot);
 
+                currentSpeed -= deceleration * Time.deltaTime;
+                deceleration += 0.05f;
+                transform.position += _shootDir * currentSpeed * Time.deltaTime;
+
+                yield return null;
+            }
+        }
+
+        private IEnumerator CoBoomerangLegendary()
+        {
+            BoomerangChild child = transform.GetChild(0).GetComponent<BoomerangChild>();
+            if (child.Trail != null)
+                child.Trail.enabled = false;
+
+            bool canStartChildRot = false;
+            bool isToOwner = false;
+
+            float waitdelta = 0f;
+            float selfRot = 0f;
+            float currentSpeed = Owner.CharaData.MoveSpeed + SkillData.Speed;
+            float deceleration = 50f;
+
+            while (true)
+            {
+                selfRot += CurrentSkill.SkillData.SelfRotationZSpeed * Time.deltaTime * 1.5f;
+                selfRot %= 360f;
+                transform.rotation = Quaternion.Euler(0, 0, selfRot);
+
+                if (isToOwner == false)
+                {
                     currentSpeed -= deceleration * Time.deltaTime;
                     deceleration += 0.05f;
                     transform.position += _shootDir * currentSpeed * Time.deltaTime;
                 }
-                else
+                else if(isToOwner && child.IsReadyToOwner)
                 {
-                    selfRot += CurrentSkill.SkillData.SelfRotationZSpeed * Time.deltaTime * 1.1f;
-                    transform.rotation = Quaternion.Euler(0, 0, selfRot);
-                    Utils.LogStrong("I'M LEGENDARY BOOMERANG !!");
+                    child.Trail.enabled = false;
+                    Vector3 toOwnerDir = (Owner.transform.position - transform.position).normalized;
+                    transform.position += toOwnerDir * (SkillData.Speed) * Time.deltaTime;
+
+                    if ((transform.position - Owner.transform.position).sqrMagnitude < 1)
+                    {
+                        canStartChildRot = false;
+                        isToOwner = false;
+                        StopDestroy();
+                        Managers.Resource.Destroy(gameObject);
+                    }
+                }
+
+                if (canStartChildRot)
+                    child.RotateAround(isToOwner);
+
+                if (currentSpeed < 0 && canStartChildRot == false || Managers.Stage.IsOutOfPos(transform.position) && canStartChildRot == false)
+                {
+                    child.RotStartTime = Time.time;
+                    child.Trail.enabled = true;
+                    yield return new WaitUntil(() => StopAndChildRotation(child, ref selfRot, ref waitdelta, ref canStartChildRot, ref isToOwner));
                 }
 
                 yield return null;
             }
         }
 
-        private float _sensitivity = 0.6f;
+        private bool StopAndChildRotation(BoomerangChild child, ref float selfRot, ref float waitDelta, ref bool canStartChildRot, ref bool isToOwner)
+        {
+            waitDelta += Time.deltaTime;
+
+            selfRot += CurrentSkill.SkillData.SelfRotationZSpeed * Time.deltaTime * 1.5f;
+            selfRot %= 360f;
+            transform.rotation = Quaternion.Euler(0, 0, selfRot);
+
+            child.RotateAround();
+            if (waitDelta > child.DesiredSelfRotTime)
+            {
+                waitDelta = 0f;
+                isToOwner = true;
+                canStartChildRot = true;
+                child.ToOwnerStartTime = Time.time;
+                return true;
+            }
+            
+            return false;
+        }
+
+        private readonly float _sensitivity = 0.6f;
         private void SetOffParticle()
         {
             if (_initialTurningDir != Managers.Game.Player.TurningAngle)
@@ -161,14 +237,15 @@ namespace STELLAREST_2D
                 _offParticle = true;
         }
 
-        float delta = 0f;
+
+        float controllColDelta = 0f;
         private void ControlCollisionTime(float controlTime)
         {
-            delta += Time.deltaTime;
-            if (controlTime <= delta)
+            controllColDelta += Time.deltaTime;
+            if (controlTime <= controllColDelta)
             {
                 GetComponent<Collider2D>().enabled = false;
-                delta = 0f;
+                controllColDelta = 0f;
             }
         }
 
@@ -194,7 +271,7 @@ namespace STELLAREST_2D
                         {
                             _currentBounceCount = 0;
                             mc.OnDamaged(Owner, CurrentSkill);
-                            Managers.Object.ResetBounceHits(Define.TemplateIDs.SkillType.ThrowingStar);
+                            Managers.Object.ResetSkillHittedStatus(Define.TemplateIDs.SkillType.ThrowingStar);
                             Managers.Object.Despawn(this.GetComponent<ProjectileController>());
                         }
                         else
@@ -202,13 +279,13 @@ namespace STELLAREST_2D
                             _currentBounceCount++;
                             mc.OnDamaged(Owner, CurrentSkill);
                             mc.IsThrowingStarHit = true;
-                            _target = Managers.Object.GetNextTarget(mc.transform, Define.TemplateIDs.SkillType.ThrowingStar);
+                            _target = Managers.Object.GetNextTarget(mc.gameObject, Define.TemplateIDs.SkillType.ThrowingStar);
                             if (_target != null)
                                 _shootDir = (_target.transform.position - transform.position).normalized;
                             else
                             {
                                 _currentBounceCount = 0;
-                                Managers.Object.ResetBounceHits(Define.TemplateIDs.SkillType.ThrowingStar);
+                                Managers.Object.ResetSkillHittedStatus(Define.TemplateIDs.SkillType.ThrowingStar);
                                 Managers.Object.Despawn(this.GetComponent<ProjectileController>());
                             }
                         }
@@ -216,7 +293,6 @@ namespace STELLAREST_2D
 
                     case (int)Define.TemplateIDs.SkillType.Boomerang:
                         {
-                            Utils.LogStrong("Hitted from Boomerang !!");
                             mc.OnDamaged(Owner, CurrentSkill);
                         }
                         break;

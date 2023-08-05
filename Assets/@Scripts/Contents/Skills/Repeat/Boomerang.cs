@@ -9,6 +9,7 @@ namespace STELLAREST_2D
         public override void SetSkillInfo(CreatureController owner, int templateID)
         {
             base.SetSkillInfo(owner, templateID);
+            SkillType = Define.TemplateIDs.SkillType.Boomerang;
 
             if (GetComponent<SpriteRenderer>() != null)
                 GetComponent<SpriteRenderer>().sortingOrder = (int)Define.SortingOrder.Skill;
@@ -20,7 +21,10 @@ namespace STELLAREST_2D
                 if (SkillData.InGameGrade != Define.InGameGrade.Legendary)
                     Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.PlayerAttack);
                 else
-                    Managers.Collision.InitCollisionLayer(GetComponentInChildren<Collider2D>().gameObject, Define.CollisionLayers.PlayerAttack);
+                {
+                    GameObject go = GetComponentInChildren<Collider2D>().gameObject;
+                    Managers.Collision.InitCollisionLayer(go, Define.CollisionLayers.PlayerAttack);
+                }
             }
         }
 
@@ -35,9 +39,13 @@ namespace STELLAREST_2D
             {
                 ProjectileController pc = Managers.Object.Spawn<ProjectileController>(Owner.transform.position,
                         SkillData.TemplateID);
-
+                        
+                // pc.SetSkillInfo(Owner, this);
+                // TODO : 개선 필요
+                pc.GetComponent<Boomerang>().SetSkillInfo(Owner, SkillData.TemplateID);
+                
                 pc.SetProjectileInfo(this.Owner, this, Managers.Game.Player.ShootDir,
-                    Owner.transform.position, pc.transform.localScale, Vector3.zero);
+                    Owner.transform.position, pc.transform.localScale, Vector3.zero, i: i);
 
                 yield return new WaitForSeconds(SkillData.ContinuousSpacing);
             }
@@ -50,12 +58,18 @@ namespace STELLAREST_2D
             if (GetComponent<SpriteRenderer>() != null)
                 GetComponent<SpriteRenderer>().enabled = false;
             else
+            {
                 GetComponentInChildren<SpriteRenderer>().enabled = false;
+                GetComponentInChildren<SpriteTrail.SpriteTrail>().enabled = false;
+            }
 
             if (GetComponent<Collider2D>() != null)
                 GetComponent<Collider2D>().enabled = false;
             else
+            {
                 GetComponentInChildren<Collider2D>().enabled = false;
+                GetComponentInChildren<SpriteTrail.SpriteTrail>().enabled = false;
+            }
         }
     }
 }

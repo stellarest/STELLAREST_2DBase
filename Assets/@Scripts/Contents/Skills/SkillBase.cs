@@ -1,12 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace STELLAREST_2D
 {
     public class SkillBase : BaseController
     {
+        public Define.TemplateIDs.SkillType SkillType { get; protected set; } = Define.TemplateIDs.SkillType.None;
         public CreatureController Owner { get; set; }
         public Data.SkillData SkillData { get; set; }
 

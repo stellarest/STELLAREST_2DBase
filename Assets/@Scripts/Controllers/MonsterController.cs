@@ -4,22 +4,21 @@ using UnityEngine.Rendering;
 
 namespace STELLAREST_2D
 {
-    public interface IContinuousHit
+    public interface ISkillHitStatus
     {
         public bool IsThrowingStarHit { get; set; }
         public bool IsLazerBoltHit { get; set; }
     }
 
-    public class MonsterController : CreatureController, IContinuousHit
+    public class MonsterController : CreatureController, ISkillHitStatus
     {
         public bool LockFlipX { get; set; } = false;
         public MonsterAnimationController MAC { get; protected set; }
+        public GameObject Body { get; protected set; }
+
         public bool IsThrowingStarHit { get; set; } = false;
-
-        [field: SerializeField] // 확인해볼것. 범위로 다 두들겨 맞아서 true가 된것임.
         public bool IsLazerBoltHit { get; set; } = false;
-
-        public bool IsContinuousHitStatus(Define.TemplateIDs.SkillType skillType)
+        public bool IsSkillHittedStatus(Define.TemplateIDs.SkillType skillType)
         {
             switch (skillType)
             {
@@ -106,6 +105,7 @@ namespace STELLAREST_2D
             ObjectType = Define.ObjectType.Monster;
             MAC = gameObject.GetOrAddComponent<MonsterAnimationController>();
             MAC.Owner = this;
+            Body = Utils.FindChild(gameObject, "Body");
 
             Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.MonsterBody);
 

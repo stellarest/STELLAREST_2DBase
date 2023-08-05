@@ -54,6 +54,7 @@ namespace STELLAREST_2D
                 ThrowingStar = 200200,
                 LazerBolt = 200204,
                 Boomerang = 200208,
+                Spear = 200212,
 
                 BodyAttack = 200300,
             }

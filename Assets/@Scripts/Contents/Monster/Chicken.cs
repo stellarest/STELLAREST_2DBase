@@ -18,6 +18,7 @@ namespace STELLAREST_2D
             BodyCol.isTrigger = false;
             IsThrowingStarHit = false;
             IsLazerBoltHit = false;
+            Body = Utils.FindChild(gameObject, "Body");
 
             if (SkillBook.SequenceSkills.Count != 0)
                 SkillBook.SequenceSkills[(int)Define.InGameGrade.Normal - 1].gameObject.SetActive(true);

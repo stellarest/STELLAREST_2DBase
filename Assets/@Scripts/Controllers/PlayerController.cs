@@ -11,19 +11,31 @@ namespace STELLAREST_2D
 {
     public class PlayerController : CreatureController
     {
+        public enum LookAtDirection
+        {
+            Left = 1,
+            Right = -1
+        }
+
         public PlayerAnimationController PAC { get; protected set; }
         public float EnvCollectDist { get; private set; } = 5f; // 이건 데이터 시트로 안빼도 됨
 
         private Transform _indicator;
         public Transform Indicator => _indicator;
+
         private Transform _fireSocket;
         public Vector3 FireSocket => _fireSocket.position;
+        public SpriteRenderer FireSocketSpriteRenderer { get; private set; } = null;
+
         public Vector3 ShootDir => (_fireSocket.position - _indicator.position).normalized;
 
         public Transform LegR { get; private set; }
 
         [field: SerializeField]
         public float TurningAngle { get; private set; }
+        public LookAtDirection LookAtDir { get; private set; } = LookAtDirection.Right;
+
+
         private GameObject _animChildObject;
         public Vector3 AnimationLocalScale => _animChildObject.transform.localScale;
         public AnimationEvents AnimEvents { get; private set; }
@@ -46,7 +58,6 @@ namespace STELLAREST_2D
                 case Define.CreatureState.Run:
                     {
                         PAC.Run();
-
                     }
                     break;
 
@@ -101,10 +112,16 @@ namespace STELLAREST_2D
                     Define.PlayerController.INDICATOR, true);
 
             if (_fireSocket == null)
+            {
                 _fireSocket = Utils.FindChild<Transform>(this.gameObject,
                     Define.PlayerController.FIRE_SOCKET, true);
 
-            _indicator.gameObject.SetActive(false);
+                FireSocketSpriteRenderer = _fireSocket.GetComponent<SpriteRenderer>();
+            }
+
+            // _indicator.gameObject.SetActive(false);
+            _indicator.gameObject.SetActive(true);
+
             GetComponent<CircleCollider2D>().enabled = true;
         }
 
@@ -147,6 +164,11 @@ namespace STELLAREST_2D
         private void Turn(float angle)
         {
             TurningAngle = Mathf.Sign(angle); // 각도 양수1, 음수-1
+            if (TurningAngle < 0)
+                LookAtDir = LookAtDirection.Right;
+            else
+                LookAtDir = LookAtDirection.Left;
+
             Vector3 turnChara = new Vector3(TurningAngle * Define.PlayerController.CONSTANT_SCALE_X * -1f,
                                         Define.PlayerController.CONSTANT_SCALE_Y, Define.PlayerController.CONSTANT_SCALE_Z);
             _animChildObject.transform.localScale = turnChara;
@@ -222,12 +244,15 @@ namespace STELLAREST_2D
             if (moveDir == Vector2.zero)
             {
                 CreatureState = Define.CreatureState.Idle;
-                _indicator.gameObject.SetActive(false);
+                // _indicator.gameObject.SetActive(false);
+                FireSocketSpriteRenderer.enabled = false;
             }
             else
             {
                 CreatureState = Define.CreatureState.Run;
-                _indicator.gameObject.SetActive(true);
+                // _indicator.gameObject.SetActive(true);
+                // FireSocketSpriteRenderer.enabled = true;
+                FireSocketSpriteRenderer.enabled = false; // 냐중에 어떻게 해야할지 고쳐야함
             }
         }
 
@@ -293,6 +318,9 @@ namespace STELLAREST_2D
 
             if (Input.GetKeyDown(KeyCode.Alpha3))
                 SkillBook.UpgradeRepeatSkill((int)Define.TemplateIDs.SkillType.Boomerang);
+
+            if (Input.GetKeyDown(KeyCode.Alpha4))
+                SkillBook.UpgradeRepeatSkill((int)Define.TemplateIDs.SkillType.Spear);
 
             if (Input.GetKeyDown(KeyCode.Space))
                 SkillBook.UpgradeRepeatSkill((int)Define.TemplateIDs.SkillType.PaladinSwing);

@@ -146,58 +146,81 @@ namespace STELLAREST_2D
             }
         }
 
-        public MonsterController GetRandomTarget(CreatureController cc, float distanceFromPlayer = 20f)
+        // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        #if USE_LINQ
+        public GameObject GetClosestTarget<T>(GameObject from, float range) where T : BaseController
         {
-            MonsterController target = null;
-            List<MonsterController> toMonsters = this.Monsters.ToList();
-            if (toMonsters.Count != 0)
+            System.Type type = typeof(T);
+            Vector3 fromPos = from.transform.position;
+            if (type == typeof(MonsterController))
             {
-                for (int i = 0; i < toMonsters.Count; ++i)
+                List<MonsterController> toMonsters = this.Monsters.ToList();
+                GameObject target = toMonsters
+                                    .Where(m => m.IsValid() && m.IsCreatureDead() == false)
+                                    .Where(m => (m.transform.position - from.transform.position).sqrMagnitude < range * range)
+                                    .OrderBy(m => (m.transform.position - fromPos).sqrMagnitude)
+                                    .FirstOrDefault()?
+                                    .Body;
+
+                return target;
+            }
+            
+            return null;
+        }
+        #else
+        #endif
+        
+        #if USE_LINQ
+         public Vector2 GetRandomTargetingPosition<T>(GameObject from, float fromMinDistance = 1f, float fromMaxDistance = 22f,
+                            Define.TemplateIDs.SkillType skillHitStatus = Define.TemplateIDs.SkillType.None) where T : BaseController
+         {
+            System.Type type = typeof(T);
+            Vector2 fromPos = from.transform.position;
+            if (type == typeof(MonsterController))
+            {
+                List<MonsterController> toMonsters = this.Monsters.ToList();
+                if (toMonsters.Count != 0)
                 {
-                    if ((toMonsters[i].transform.position - cc.transform.position).sqrMagnitude < distanceFromPlayer * distanceFromPlayer)
-                        target = toMonsters[i];
+                    List<MonsterController> toFilteredMonsters = toMonsters
+                            .Where(m => m.IsValid() && m.IsCreatureDead() == false && m.IsSkillHittedStatus(skillHitStatus) == false)
+                            .Where(m => (m.transform.position - from.transform.position).sqrMagnitude >= fromMinDistance && (m.transform.position - from.transform.position).sqrMagnitude <= fromMaxDistance * fromMaxDistance)
+                            .ToList();
+
+                    if (toFilteredMonsters.Count > 0)
+                    {
+                        int randIdx = Random.Range(0, toFilteredMonsters.Count);
+                        return toFilteredMonsters[randIdx].transform.position;
+                    }
+                    else
+                        return Utils.GetRandomPosition(fromPos);
                 }
             }
+            return Utils.GetRandomPosition(fromPos);
+         }
+         #else
+         #endif
 
-            return target;
-        }
-
-        public GameObject GetContinuousTarget()
+        #if USE_LINQ
+        // +++ 개선 필요 +++
+        public GameObject GetNextTarget(GameObject from, Define.TemplateIDs.SkillType checkBounceHitSkillType = Define.TemplateIDs.SkillType.None)
         {
             GameObject target = null;
             List<MonsterController> toMonsters = this.Monsters.ToList();
-
-            return target;
-        }
-
-        public bool IsAllMonsterBounceHitStatus(Define.TemplateIDs.SkillType checkBounceHitSkillType)
-        {
-            List<MonsterController> toMonsters = Monsters.ToList();
-            return toMonsters.All(m => m.IsContinuousHitStatus(checkBounceHitSkillType));
-        }
-
-        // +++ 개선 필요 +++
-        public GameObject GetNextTarget(Transform from, Define.TemplateIDs.SkillType checkBounceHitSkillType = Define.TemplateIDs.SkillType.None)
-        {
-            // m => m.transform != from && 
-            // .Where(m => m.transform != tr && m.IsThrowingStarBounceHit == false)
-            GameObject target = null; 
-#if USE_LINQ
-            List<MonsterController> toMonsters = this.Monsters.ToList();
             target = toMonsters
-                    .Where(m => m.IsContinuousHitStatus(checkBounceHitSkillType) == false)
-                    .OrderBy(m => (m.transform.position - from.position).sqrMagnitude)
+                    .Where(m => m.IsSkillHittedStatus(checkBounceHitSkillType) == false)
+                    .OrderBy(m => (m.transform.position - from.transform.position).sqrMagnitude)
                     .FirstOrDefault()?
                     .gameObject;
-#else
-#endif
+
             return target;
         }
+        #else
+        #endif
 
-        public void ResetBounceHits(Define.TemplateIDs.SkillType bounceHitSkillType)
+        #if USE_LINQ
+        public void ResetSkillHittedStatus(Define.TemplateIDs.SkillType skillType)
         {
-#if USE_LINQ
-            switch (bounceHitSkillType)
+            switch (skillType)
             {
                 case Define.TemplateIDs.SkillType.ThrowingStar:
                     {
@@ -213,9 +236,9 @@ namespace STELLAREST_2D
                     }
                     break;
             }
-#else
-#endif
         }
+        #else
+        #endif
     }
 }
 

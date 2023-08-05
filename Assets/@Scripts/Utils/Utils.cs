@@ -55,7 +55,7 @@ namespace STELLAREST_2D
             return null;
         }
 
-        public static Vector2 GenerateMonsterSpawnPosition(Vector2 characterPosition, float minDistance = 10.0f, float maxDistance = 20.0f)
+        public static Vector2 GetRandomPosition(Vector2 fromPos, float fromMinDistance = 10.0f, float fromMaxDistance = 20.0f)
         {
             int maxAttempts = 100;
             int attempts = 0;
@@ -63,12 +63,12 @@ namespace STELLAREST_2D
             while (attempts < maxAttempts)
             {
                 float angle = Random.Range(0, 360) * Mathf.Deg2Rad;
-                float distance = Random.Range(minDistance, maxDistance);
+                float distance = Random.Range(fromMinDistance, fromMaxDistance);
 
                 float xDist = Mathf.Cos(angle) * distance;
                 float yDist = Mathf.Sin(angle) * distance;
 
-                Vector2 spawnPosition = characterPosition + new Vector2(xDist, yDist);
+                Vector2 spawnPosition = fromPos + new Vector2(xDist, yDist);
                 if (spawnPosition.x > Managers.Stage.MinimumPosition.x && spawnPosition.x < Managers.Stage.MaximumPosition.x)
                 {
                     if (spawnPosition.y > Managers.Stage.MinimumPosition.y && spawnPosition.y < Managers.Stage.MaximumPosition.y)
@@ -78,7 +78,7 @@ namespace STELLAREST_2D
                 ++attempts;
             }
 
-            return characterPosition;
+            return fromPos;
         }
 
         [Conditional("UNITY_EDITOR")]

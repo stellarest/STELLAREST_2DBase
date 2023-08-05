@@ -10,6 +10,7 @@ namespace STELLAREST_2D
         {
             base.SetSkillInfo(owner, templateID);
             GetComponent<SpriteRenderer>().sortingOrder = (int)Define.SortingOrder.Skill;
+            SkillType = Define.TemplateIDs.SkillType.ThrowingStar;
 
             if (owner?.IsPlayer() == true)
                 Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.PlayerAttack);
@@ -27,6 +28,8 @@ namespace STELLAREST_2D
                 ProjectileController pc = Managers.Object.Spawn<ProjectileController>(Owner.transform.position,
                                         SkillData.TemplateID);
                 
+                // TODO : 개선 필요
+                pc.GetComponent<ThrowingStar>().SetSkillInfo(Owner, SkillData.TemplateID);
                 pc.SetProjectileInfo(this.Owner, this, Managers.Game.Player.ShootDir, 
                     Owner.transform.position, pc.transform.localScale, Vector3.zero);
 

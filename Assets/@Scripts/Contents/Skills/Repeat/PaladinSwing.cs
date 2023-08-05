@@ -10,6 +10,8 @@ namespace STELLAREST_2D
             Vector3 indicatorAngle, float turningSide, float continuousAngle, float continuousFlipX)
         {
             base.SetSkillInfo(owner, templateID);
+            SkillType = Define.TemplateIDs.SkillType.PaladinSwing;
+            Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.PlayerAttack);
 
             var particleRenderer = GetComponent<ParticleSystemRenderer>();
             particleRenderer.sortingOrder = (int)Define.SortingOrder.ParticleEffect;

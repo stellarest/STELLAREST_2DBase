@@ -13,7 +13,6 @@ namespace STELLAREST_2D
         private void Awake()
         {
             _spriteRenderer = GetComponent<SpriteRenderer>();
-
             // UI마다 현재 설정되어있는 알파값이 다르기 때문에 FadeIn이 종료되는 알파값을 따로 설정
             endAlpha = _spriteRenderer.color.a;
         }
