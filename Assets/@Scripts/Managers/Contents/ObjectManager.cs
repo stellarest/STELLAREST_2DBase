@@ -147,7 +147,48 @@ namespace STELLAREST_2D
         }
 
         // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-        #if USE_LINQ
+#if USE_LINQ
+
+        // 해당 dist 안에 가장 몬스터가 밀집되어 있는 곳을 골라서 리턴해준다.
+        public GameObject GetClosestTarget<T>(GameObject from, float fromRange, GameObject priority, float priorityRange) where T : BaseController
+        {
+            System.Type type = typeof(T);
+            Vector3 fromPos = from.transform.position;
+
+            GameObject priorityTarget = null;
+            Vector3 priorityPos = Vector3.zero;
+
+            if (type == typeof(MonsterController))
+            {
+                List<MonsterController> toMonsters = this.Monsters.ToList();
+                GameObject fromTarget = toMonsters
+                                    .Where(m => m.IsValid() && m.IsCreatureDead() == false)
+                                    .Where(m => (m.transform.position - fromPos).sqrMagnitude < fromRange * fromRange)
+                                    .OrderBy(m => (m.transform.position - fromPos).sqrMagnitude)
+                                    .FirstOrDefault()?
+                                    .Body;
+
+
+                if (priority != null)
+                {
+                    priorityPos = priority.transform.position;
+                    priorityTarget = toMonsters
+                                .Where(m => m.IsValid() && m.IsCreatureDead() == false)
+                                .Where(m => (m.transform.position - priorityPos).sqrMagnitude < priorityRange * priorityRange)
+                                .OrderBy(m => (m.transform.position - priorityPos).sqrMagnitude)
+                                .FirstOrDefault()?
+                                .Body;
+                }
+
+                return priorityTarget != null ? priorityTarget : fromTarget;
+            }
+
+            return null;
+        }
+#else
+#endif
+
+#if USE_LINQ
         public GameObject GetClosestTarget<T>(GameObject from, float range) where T : BaseController
         {
             System.Type type = typeof(T);
@@ -164,16 +205,16 @@ namespace STELLAREST_2D
 
                 return target;
             }
-            
+
             return null;
         }
-        #else
-        #endif
-        
-        #if USE_LINQ
-         public Vector2 GetRandomTargetingPosition<T>(GameObject from, float fromMinDistance = 1f, float fromMaxDistance = 22f,
-                            Define.TemplateIDs.SkillType skillHitStatus = Define.TemplateIDs.SkillType.None) where T : BaseController
-         {
+#else
+#endif
+
+#if USE_LINQ
+        public Vector2 GetRandomTargetingPosition<T>(GameObject from, float fromMinDistance = 1f, float fromMaxDistance = 22f,
+                           Define.TemplateIDs.SkillType skillHitStatus = Define.TemplateIDs.SkillType.None) where T : BaseController
+        {
             System.Type type = typeof(T);
             Vector2 fromPos = from.transform.position;
             if (type == typeof(MonsterController))
@@ -196,11 +237,11 @@ namespace STELLAREST_2D
                 }
             }
             return Utils.GetRandomPosition(fromPos);
-         }
-         #else
-         #endif
+        }
+#else
+#endif
 
-        #if USE_LINQ
+#if USE_LINQ
         // +++ 개선 필요 +++
         public GameObject GetNextTarget(GameObject from, Define.TemplateIDs.SkillType checkBounceHitSkillType = Define.TemplateIDs.SkillType.None)
         {
@@ -214,10 +255,10 @@ namespace STELLAREST_2D
 
             return target;
         }
-        #else
-        #endif
+#else
+#endif
 
-        #if USE_LINQ
+#if USE_LINQ
         public void ResetSkillHittedStatus(Define.TemplateIDs.SkillType skillType)
         {
             switch (skillType)
@@ -237,25 +278,25 @@ namespace STELLAREST_2D
                     break;
             }
         }
-        #else
-        #endif
+#else
+#endif
     }
 }
 
-     // float closestDist = float.MaxValue;
-            // List<MonsterController> toMonsters = new List<MonsterController>();
-            // foreach (var mon in this.Monsters)
-            //     toMonsters.Add(mon);
+// float closestDist = float.MaxValue;
+// List<MonsterController> toMonsters = new List<MonsterController>();
+// foreach (var mon in this.Monsters)
+//     toMonsters.Add(mon);
 
-            // foreach (var mon in toMonsters)
-            // {
-            //     if(mon.transform == from || mon.IsBounceHitStatus(checkBounceHitSkillType) == false)
-            //         continue;
+// foreach (var mon in toMonsters)
+// {
+//     if(mon.transform == from || mon.IsBounceHitStatus(checkBounceHitSkillType) == false)
+//         continue;
 
-            //     float sqrMag = (mon.transform.position - tr.position).sqrMagnitude;
-            //     if (sqrMag < closestDist)
-            //     {
-            //         closestDist = sqrMag;
-            //         target = mon.gameObject;
-            //     }
-            // }
+//     float sqrMag = (mon.transform.position - tr.position).sqrMagnitude;
+//     if (sqrMag < closestDist)
+//     {
+//         closestDist = sqrMag;
+//         target = mon.gameObject;
+//     }
+// }

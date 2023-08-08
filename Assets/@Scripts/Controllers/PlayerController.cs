@@ -6,6 +6,7 @@ using UnityEngine;
 using Assets.HeroEditor.Common.Scripts.CharacterScripts;
 using UnityEngine.Rendering;
 using System.Reflection;
+using Unity.VisualScripting;
 
 namespace STELLAREST_2D
 {
@@ -325,6 +326,17 @@ namespace STELLAREST_2D
             if (Input.GetKeyDown(KeyCode.Space))
                 SkillBook.UpgradeRepeatSkill((int)Define.TemplateIDs.SkillType.PaladinSwing);
         }
+
+        // private void TestVec()
+        // {
+        //     Vector2 myPos = transform.position;
+        //     Vector2 upDir = Quaternion.Euler(0, 0, 45f * 0.5f) * ShootDir;
+        //     Vector2 downDir = Quaternion.Euler(0, 0, -45f * 0.5f) * ShootDir;
+        //     Debug.Log("UP SCALE : " + upDir.magnitude); // 1f
+        //     Debug.Log("DOWN SCALE : " + downDir.magnitude); // 1f
+        //     Debug.DrawRay(myPos, upDir * 10, Color.red, -1f);
+        //     Debug.DrawRay(myPos, downDir * 10, Color.red, -1f);
+        // }
 
         private void OnDestroy()
         {
