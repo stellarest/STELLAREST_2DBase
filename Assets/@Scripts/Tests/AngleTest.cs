@@ -32,7 +32,6 @@ namespace STELLAREST_2D
 
             // Vector2 testVec2 = Quaternion.Euler(0, 0, AngleTwo) * dir;
             // Target2.transform.position = testVec2 * 5f;
-
             Debug.DrawRay(transform.position, transform.up * 5f, Color.red, -1f);
             Debug.Log("LOCAL : " + transform.up);
 

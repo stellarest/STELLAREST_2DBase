@@ -1,12 +1,8 @@
 using System.Collections;
-using System.Collections.Generic;
-using System.Net;
-using System.Runtime.CompilerServices;
+using AssetKits.ParticleImage;
+using TMPro;
 using Unity.VisualScripting;
-using UnityEditor.UIElements;
 using UnityEngine;
-using UnityEngine.Analytics;
-using UnityEngine.UIElements;
 
 namespace STELLAREST_2D
 {
@@ -120,9 +116,10 @@ namespace STELLAREST_2D
             // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
             StartCoroutine(DoStab(_spears[RIGHT]));
-            StartCoroutine(DoStab(_spears[LEFT]));
+            //StartCoroutine(DoStab(_spears[LEFT]));
         }
 
+        private float _totalDist = 0f;
         private IEnumerator DoStab(Spear spear)
         {
             // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -140,6 +137,11 @@ namespace STELLAREST_2D
 
                         Vector2 toTargetDir = (_targetsLastPos[RIGHT] - _spearStartStabPos[RIGHT]).normalized;
                         _targetExtendedLastPos[RIGHT] = _targetsLastPos[RIGHT] + (toTargetDir * SkillData.Duration);
+
+                        // 이게 이동거리임
+                        Debug.Log("DIST 1 : " + (_spearStartStabPos[RIGHT] - _targetExtendedLastPos[RIGHT]).magnitude);
+                        _totalDist = (_targetExtendedLastPos[RIGHT] - _spearStartStabPos[RIGHT]).magnitude;
+
                         spear._collider.enabled = true;
 
                         if (_spears[RIGHT]._spriteTrail != null)
@@ -183,15 +185,29 @@ namespace STELLAREST_2D
 
                     // Vector2 downTargetPos = Quaternion.Euler(0, 0, -30f) * spear.transform.up;
                     // Vector2 downTargetDir = RightSpearPos + downTargetPos.normalized * _targetExtendedLastPos[RIGHT].magnitude;
-                    //Debug.DrawLine(spear.transform.position, downTargetDir, Color.blue, -1f);
-                    //Debug.Break();
+                    // Debug.DrawLine(spear.transform.position, downTargetDir, Color.blue, -1f);
+                    // Debug.Break();
+
                     if (IsRightSpear(spear))
                     {
                         Vector2 upTargetPos = Quaternion.Euler(0, 0, 30f) * spear.transform.up;
-                        Vector2 upTargetDir = RightSpearPos + upTargetPos.normalized * _targetExtendedLastPos[RIGHT].magnitude; // 어차피 갱신됨
+                        //Vector2 upTargetDir = RightSpearPos + (upTargetPos * _targetExtendedLastPos[RIGHT].magnitude); // 어차피 갱신됨
+                        Vector2 upTargetDir = RightSpearPos + upTargetPos.normalized * _totalDist; // 어차피 갱신됨
+                        Debug.Log("<color=white> DIST 2 : " + (upTargetDir - RightSpearPos).magnitude + "</color>");
+
+                        // Vector2 upTargetDir = RightSpearPos * upTargetPos.normalized;
+                        // upTargetDir *= _targetExtendedLastPos[RIGHT].magnitude;
+                        // Debug.Log("MAG2 : " + upTargetDir.magnitude);
 
                         Vector2 downTargetPos = Quaternion.Euler(0, 0, -30f) * spear.transform.up;
-                        Vector2 downTargetDir = RightSpearPos + downTargetPos.normalized * _targetExtendedLastPos[RIGHT].magnitude;
+                        //Vector2 downTargetDir = RightSpearPos + (downTargetPos * _targetExtendedLastPos[RIGHT].magnitude);
+                        Vector2 downTargetDir = RightSpearPos + downTargetPos.normalized * _totalDist;
+                        Debug.Log("<color=yellow> DIST 3 : " + (downTargetDir - RightSpearPos).magnitude + "</color>");
+
+                        // Vector2 downTargetDir = RightSpearPos * downTargetPos.normalized;
+                        // upTargetDir *= _targetExtendedLastPos[RIGHT].magnitude;
+                        // Debug.Log("MAG3 : " + downTargetDir.magnitude);
+
                         //Debug.DrawLine(spear.transform.position, downTargetDir, Color.blue, -1f);
                         //Debug.Break();
 
@@ -209,12 +225,15 @@ namespace STELLAREST_2D
                         // First : Go to target
                         _spearStartStabPos[RIGHT] = RightSpearPos; // 이건 100% 맞음
                         _targetExtendedLastPos[RIGHT] = upTargetDir;
+
                         spear._collider.enabled = true;
                         yield return new WaitUntil(() => StartStab(spear));
 
                         // First : Return to pos
-                        _spearEndStabPos[RIGHT] = RightSpearPos;
-                        yield return new WaitUntil(() => EndStab(spear));
+                        // _spearEndStabPos[RIGHT] = RightSpearPos;
+                        Vector2 startPos = RightSpearPos;
+                        Vector2 endPos = _spearStartStabPos[RIGHT];
+                        yield return new WaitUntil(() => EndStab(spear, startPos, endPos));
 
                         // Second : Rot to downTarget
                         angle = Mathf.Atan2(downTargetPos.y, downTargetPos.x) * Mathf.Rad2Deg;
@@ -224,21 +243,30 @@ namespace STELLAREST_2D
                         // Second : Go to target
                         _spearStartStabPos[RIGHT] = RightSpearPos; // 이건 100% 맞음
                         _targetExtendedLastPos[RIGHT] = downTargetDir;
+
                         spear._collider.enabled = true;
                         yield return new WaitUntil(() => StartStab(spear));
 
                         // Second : Return to pos
-                        _spearEndStabPos[RIGHT] = RightSpearPos;
-                        yield return new WaitUntil(() => EndStab(spear));
+                        // _spearEndStabPos[RIGHT] = RightSpearPos;
+                        startPos = RightSpearPos;
+                        endPos = _spearStartStabPos[RIGHT];
+                        yield return new WaitUntil(() => EndStab(spear, startPos, endPos));
                         _spears[RIGHT]._spriteTrail.enabled = false;
+
+                        //yield return new WaitForSeconds(5f);
                     }
                     else
                     {
                         Vector2 upTargetPos = Quaternion.Euler(0, 0, 30f) * spear.transform.up;
-                        Vector2 upTargetDir = LeftSpearPos + upTargetPos.normalized * _targetExtendedLastPos[LEFT].magnitude; // 어차피 갱신됨
+                        //Vector2 upTargetDir = LeftSpearPos + upTargetPos.normalized * _targetExtendedLastPos[LEFT].magnitude; // 어차피 갱신됨
+                        Vector2 upTargetDir = LeftSpearPos + upTargetPos.normalized * _totalDist; // 어차피 갱신됨
+                        Debug.Log("<color=white> DIST 2 : " + upTargetDir.magnitude + "</color>");
 
                         Vector2 downTargetPos = Quaternion.Euler(0, 0, -30f) * spear.transform.up;
-                        Vector2 downTargetDir = LeftSpearPos + downTargetPos.normalized * _targetExtendedLastPos[LEFT].magnitude;
+                        //Vector2 downTargetDir = LeftSpearPos + downTargetPos.normalized * _targetExtendedLastPos[LEFT].magnitude;
+                        Vector2 downTargetDir = LeftSpearPos + downTargetPos.normalized * _totalDist;
+                        Debug.Log("<color=yellow> DIST 2 : " + downTargetDir.magnitude + "</color>");
 
                         // First : Rot to upTarget
                         Quaternion startRot = spear.transform.rotation;
@@ -253,9 +281,11 @@ namespace STELLAREST_2D
                         yield return new WaitUntil(() => StartStab(spear));
 
                         // First : Return to pos
-                        _spearEndStabPos[LEFT] = LeftSpearPos;
-                        yield return new WaitUntil(() => EndStab(spear));
+                        // _spearEndStabPos[LEFT] = LeftSpearPos;
 
+                        Vector2 startPos = LeftSpearPos;
+                        Vector2 endPos = _spearStartStabPos[LEFT];
+                        yield return new WaitUntil(() => EndStab(spear, startPos, endPos));
 
                         // Second : Rot to downTarget
                         angle = Mathf.Atan2(upTargetPos.y, upTargetPos.x) * Mathf.Rad2Deg;
@@ -269,8 +299,10 @@ namespace STELLAREST_2D
                         yield return new WaitUntil(() => StartStab(spear));
 
                         // Second : Return to pos
-                        _spearEndStabPos[LEFT] = LeftSpearPos;
-                        yield return new WaitUntil(() => EndStab(spear));
+                        // _spearEndStabPos[LEFT] = LeftSpearPos;
+                        startPos = LeftSpearPos;
+                        endPos = _spearStartStabPos[LEFT];
+                        yield return new WaitUntil(() => EndStab(spear, startPos, endPos));
                         _spears[LEFT]._spriteTrail.enabled = false;
                     }
                 }
@@ -413,6 +445,46 @@ namespace STELLAREST_2D
             return false;
         }
 
+        private bool EndStab(Spear spear, Vector2 startPos, Vector2 endPos)
+        {
+            if (IsRightSpear(spear))
+            {
+                _deltas[RIGHT] += Time.deltaTime;
+                float percent = _deltas[RIGHT] / 0.25f;
+                spear.transform.position = Vector2.Lerp(startPos, endPos, Curve.Evaluate(percent));
+
+                Vector2 toTargetDir = (startPos - endPos).normalized;
+                float angle = Mathf.Atan2(toTargetDir.y, toTargetDir.x) * Mathf.Rad2Deg;
+                _targetsRot[RIGHT] = Quaternion.Euler(0, 0, angle - 90f);
+                spear.transform.rotation = Quaternion.Slerp(spear.transform.rotation, _targetsRot[RIGHT], Time.deltaTime * RotSpeed);
+
+                if (percent >= 1f - Mathf.Epsilon)
+                {
+                    _deltas[RIGHT] = 0f;
+                    return true;
+                }
+            }
+            else
+            {
+                _deltas[LEFT] += Time.deltaTime;
+                float percent = _deltas[LEFT] / 0.25f;
+                spear.transform.position = Vector2.Lerp(startPos, endPos, Curve.Evaluate(percent));
+
+                Vector2 toTargetDir = (startPos - endPos).normalized;
+                float angle = Mathf.Atan2(toTargetDir.y, toTargetDir.x) * Mathf.Rad2Deg;
+                _targetsRot[LEFT] = Quaternion.Euler(0, 0, angle - 90f);
+                spear.transform.rotation = Quaternion.Slerp(spear.transform.rotation, _targetsRot[LEFT], Time.deltaTime * RotSpeed);
+
+                if (percent >= 1f - Mathf.Epsilon)
+                {
+                    _deltas[RIGHT] = 0f;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         private bool SimpleRotToTarget(Spear spear, Quaternion startRot, Quaternion targetRot)
         {
             if (IsRightSpear(spear))
@@ -440,7 +512,6 @@ namespace STELLAREST_2D
 
             return false;
         }
-
 
         private void OnTriggerEnter2D(Collider2D other)
         {
