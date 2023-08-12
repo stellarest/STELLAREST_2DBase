@@ -78,6 +78,8 @@ namespace STELLAREST_2D
                 return false;
 
             ObjectType = Define.ObjectType.Player;
+            CreatureType = Define.CreatureType.Gary; // 조정 필요
+
             Managers.Game.OnMoveDirChanged += OnMoveDirChangedHandler;
 
             _animChildObject = Utils.FindChild(gameObject, "Animation");
@@ -322,6 +324,9 @@ namespace STELLAREST_2D
 
             if (Input.GetKeyDown(KeyCode.Alpha4))
                 SkillBook.UpgradeRepeatSkill((int)Define.TemplateIDs.SkillType.Spear);
+
+            if (Input.GetKeyDown(KeyCode.Alpha5))
+                SkillBook.UpgradeRepeatSkill((int)Define.TemplateIDs.SkillType.BombTrap);
 
             if (Input.GetKeyDown(KeyCode.Space))
                 SkillBook.UpgradeRepeatSkill((int)Define.TemplateIDs.SkillType.PaladinSwing);

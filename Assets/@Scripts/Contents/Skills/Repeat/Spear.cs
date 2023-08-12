@@ -116,7 +116,7 @@ namespace STELLAREST_2D
             // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
             StartCoroutine(DoStab(_spears[RIGHT]));
-            //StartCoroutine(DoStab(_spears[LEFT]));
+            StartCoroutine(DoStab(_spears[LEFT]));
         }
 
         private float _totalDist = 0f;
@@ -139,7 +139,7 @@ namespace STELLAREST_2D
                         _targetExtendedLastPos[RIGHT] = _targetsLastPos[RIGHT] + (toTargetDir * SkillData.Duration);
 
                         // 이게 이동거리임
-                        Debug.Log("DIST 1 : " + (_spearStartStabPos[RIGHT] - _targetExtendedLastPos[RIGHT]).magnitude);
+                        // Debug.Log("DIST 1 : " + (_spearStartStabPos[RIGHT] - _targetExtendedLastPos[RIGHT]).magnitude);
                         _totalDist = (_targetExtendedLastPos[RIGHT] - _spearStartStabPos[RIGHT]).magnitude;
 
                         spear._collider.enabled = true;
@@ -193,7 +193,7 @@ namespace STELLAREST_2D
                         Vector2 upTargetPos = Quaternion.Euler(0, 0, 30f) * spear.transform.up;
                         //Vector2 upTargetDir = RightSpearPos + (upTargetPos * _targetExtendedLastPos[RIGHT].magnitude); // 어차피 갱신됨
                         Vector2 upTargetDir = RightSpearPos + upTargetPos.normalized * _totalDist; // 어차피 갱신됨
-                        Debug.Log("<color=white> DIST 2 : " + (upTargetDir - RightSpearPos).magnitude + "</color>");
+                        // Debug.Log("<color=white> DIST 2 : " + (upTargetDir - RightSpearPos).magnitude + "</color>");
 
                         // Vector2 upTargetDir = RightSpearPos * upTargetPos.normalized;
                         // upTargetDir *= _targetExtendedLastPos[RIGHT].magnitude;
@@ -202,7 +202,7 @@ namespace STELLAREST_2D
                         Vector2 downTargetPos = Quaternion.Euler(0, 0, -30f) * spear.transform.up;
                         //Vector2 downTargetDir = RightSpearPos + (downTargetPos * _targetExtendedLastPos[RIGHT].magnitude);
                         Vector2 downTargetDir = RightSpearPos + downTargetPos.normalized * _totalDist;
-                        Debug.Log("<color=yellow> DIST 3 : " + (downTargetDir - RightSpearPos).magnitude + "</color>");
+                        // Debug.Log("<color=yellow> DIST 3 : " + (downTargetDir - RightSpearPos).magnitude + "</color>");
 
                         // Vector2 downTargetDir = RightSpearPos * downTargetPos.normalized;
                         // upTargetDir *= _targetExtendedLastPos[RIGHT].magnitude;
@@ -261,12 +261,10 @@ namespace STELLAREST_2D
                         Vector2 upTargetPos = Quaternion.Euler(0, 0, 30f) * spear.transform.up;
                         //Vector2 upTargetDir = LeftSpearPos + upTargetPos.normalized * _targetExtendedLastPos[LEFT].magnitude; // 어차피 갱신됨
                         Vector2 upTargetDir = LeftSpearPos + upTargetPos.normalized * _totalDist; // 어차피 갱신됨
-                        Debug.Log("<color=white> DIST 2 : " + upTargetDir.magnitude + "</color>");
 
                         Vector2 downTargetPos = Quaternion.Euler(0, 0, -30f) * spear.transform.up;
                         //Vector2 downTargetDir = LeftSpearPos + downTargetPos.normalized * _targetExtendedLastPos[LEFT].magnitude;
                         Vector2 downTargetDir = LeftSpearPos + downTargetPos.normalized * _totalDist;
-                        Debug.Log("<color=yellow> DIST 2 : " + downTargetDir.magnitude + "</color>");
 
                         // First : Rot to upTarget
                         Quaternion startRot = spear.transform.rotation;
@@ -282,7 +280,6 @@ namespace STELLAREST_2D
 
                         // First : Return to pos
                         // _spearEndStabPos[LEFT] = LeftSpearPos;
-
                         Vector2 startPos = LeftSpearPos;
                         Vector2 endPos = _spearStartStabPos[LEFT];
                         yield return new WaitUntil(() => EndStab(spear, startPos, endPos));

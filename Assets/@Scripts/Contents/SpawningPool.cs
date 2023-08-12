@@ -6,8 +6,8 @@ namespace STELLAREST_2D
 {
     public class SpawningPool : MonoBehaviour
     {
-        private float _spawnInterval = 0.1f; // 이것도 나중에 데이터 시트로 뺴야함
-        private const int MaxMonsterCount = 1; // 나중에 데이터 시트로 빼야함
+        private float _spawnInterval = 0.5f; // 이것도 나중에 데이터 시트로 뺴야함
+        private const int MaxMonsterCount = 50; // 나중에 데이터 시트로 빼야함
 
         private Coroutine _coUpdateSpawningPool;
         public bool Stopped { get; set; } = false;

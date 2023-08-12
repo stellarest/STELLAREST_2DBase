@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace STELLAREST_2D
@@ -11,6 +12,8 @@ namespace STELLAREST_2D
             base.Init();
 
             CreatureState = Define.CreatureState.Idle;
+            CCStatus = Define.CCStatus.None;
+
             Managers.Sprite.SetMonsterFace(this, Define.SpriteLabels.MonsterFace.Normal);
             RigidBody.simulated = true;
             RigidBody.velocity = Vector2.zero;
@@ -18,12 +21,19 @@ namespace STELLAREST_2D
             BodyCol.isTrigger = false;
             IsThrowingStarHit = false;
             IsLazerBoltHit = false;
-            Body = Utils.FindChild(gameObject, "Body");
+
+            CreatureType = Define.CreatureType.Chicken;
 
             if (SkillBook.SequenceSkills.Count != 0)
                 SkillBook.SequenceSkills[(int)Define.InGameGrade.Normal - 1].gameObject.SetActive(true);
 
             return true;
+        }
+
+        [ContextMenu("TEST_CC")]
+        private void TEST_CC()
+        {
+            Managers.CC.ApplyCC(this, Define.CCStatus.Stun, 5f);
         }
 
         protected override void OnDead()

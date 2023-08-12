@@ -100,7 +100,6 @@ namespace STELLAREST_2D
             {
                 RepeatSkill skill = RepeatSkills.FirstOrDefault(s => s.SkillData.OriginTemplateID == originTemplateID);
                 LearnedRepeatSkills.Add(skill);
-
                 skill.ActivateSkill();
             }
             else

@@ -45,7 +45,7 @@ namespace STELLAREST_2D.Data
         {
             if (creatures.Count == 0)
             {
-                Utils.LogError("Failed to load CreatureData.json");
+                Debug.LogError("Failed to load CreatureData.json");
                 Debug.Break();
             }
 
@@ -91,7 +91,7 @@ namespace STELLAREST_2D.Data
         {
             if (skills.Count == 0)
             {
-                Utils.LogError("Failed to load SkillData.json");
+                Debug.LogError("Failed to load SkillData.json");
                 Debug.Break();
             }
 
@@ -133,7 +133,7 @@ namespace STELLAREST_2D.Data
         {
             if (passiveSkills.Count == 0)
             {
-                Utils.LogError("Failed to load PassiveSkillData.json");
+                Debug.LogError("Failed to load PassiveSkillData.json");
                 Debug.Break();
             }
 

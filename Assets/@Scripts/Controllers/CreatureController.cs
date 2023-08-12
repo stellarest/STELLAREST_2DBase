@@ -6,6 +6,37 @@ namespace STELLAREST_2D
 {
     public class CreatureController : BaseController
     {
+        public Define.CreatureType CreatureType { get; protected set; } = Define.CreatureType.Creture;
+        
+        public GameObject GoCCEffect { get; set; } = null;
+        protected Define.CCStatus _ccStatus = Define.CCStatus.None;
+        public Define.CCStatus CCStatus
+        {
+            get => _ccStatus;
+            set
+            {
+                _ccStatus = value;
+                switch (_ccStatus)
+                {
+                    case Define.CCStatus.None:
+                        {
+                            BodyCol.isTrigger = false;
+                            SkillBook.Stopped = false;
+                        }
+                        break;
+
+                    case Define.CCStatus.Stun:
+                        {
+                            CreatureState = Define.CreatureState.Idle;
+                            RigidBody.velocity = Vector2.zero;
+                            BodyCol.isTrigger = true;
+                            SkillBook.StopSkills();
+                        }
+                        break;
+                }
+            }
+        }
+
         protected Define.CreatureState _cretureState = Define.CreatureState.Idle;
         public Define.CreatureState CreatureState
         {
@@ -57,7 +88,6 @@ namespace STELLAREST_2D
 
                 case Define.ObjectType.Monster:
                 case Define.ObjectType.EliteMonster:
-                case Define.ObjectType.MiddleBoss:
                 case Define.ObjectType.Boss:
                     return true;
 
@@ -122,6 +152,7 @@ namespace STELLAREST_2D
             {
                 int templateID = (int)skill;
                 string className = Define.NameSpaceLabels.STELLAREST_2D + "." + skill.ToString();
+                Utils.Log("CLASS NAME : " + className);
 
                 Define.InGameGrade skillGrade = Define.InGameGrade.Normal;
                 for (int i = templateID; i <= templateID + (int)Define.InGameGrade.Epic; ++i)
@@ -154,7 +185,7 @@ namespace STELLAREST_2D
                         sequenceSkill.SetSkillInfo(this, i);
                     }
                     else
-                        Utils.LogError("Something is wrong !!");
+                        Debug.LogError("Something is wrong !!");
                 }
             }
         }
@@ -254,5 +285,8 @@ namespace STELLAREST_2D
             => StartCoroutine(Managers.Effect.CoHologram(this));
 
         public void CoEffectGlitch() => StartCoroutine(Managers.Effect.CoEffectGlitch(this));
+
+        public void CoStartStun(CreatureController cc, GameObject goCCEffect, float duration) 
+                => StartCoroutine(Managers.CC.CoStartStun(cc, goCCEffect, duration));
     }
 }

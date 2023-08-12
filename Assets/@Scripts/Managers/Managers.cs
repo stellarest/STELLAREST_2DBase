@@ -33,6 +33,9 @@ namespace STELLAREST_2D
         }
 
         #region Contents
+        private CCManager _ccManager = new CCManager();
+        public static CCManager CC => Instance?._ccManager;
+
         private EffectManager _effectManager = new EffectManager();
         public static EffectManager Effect => Instance?._effectManager;
 

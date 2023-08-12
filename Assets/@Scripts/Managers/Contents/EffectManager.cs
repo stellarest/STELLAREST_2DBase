@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DamageNumbersPro;
+using UnityEngine.Rendering;
+using UnityEngine.iOS;
 
 namespace STELLAREST_2D
 {
@@ -18,21 +20,49 @@ namespace STELLAREST_2D
         public Color colorOrigin; // color 수정이 필요할 경우
     }
 
+    public struct EnvMaterial
+    {
+        public EnvMaterial(SpriteRenderer spriteRenderer, Material matOrigin)
+        {
+            this.spriteRenderer = spriteRenderer;
+            this.matOrigin = matOrigin;
+        }
+
+        public SpriteRenderer spriteRenderer;
+        public Material matOrigin;
+    }
+
     public class EffectManager
     {
         private Material _matHitWhite;
+        public Material MatHitWhite => _matHitWhite;
+
         private Material _matHitRed;
+        public Material MatHitRed => _matHitRed;
+
         private Material _matFade;
+        public Material MatFade => _matFade;
+
         private Material _matGlitch;
+        public Material MatGlitch => _matGlitch;
+
         private Material _matHologram;
+        public Material MatHologram => _matHologram;
+
+        private Material _matStrongTintWhite;
+        public Material MatStrongTintWhite => _matStrongTintWhite;
+        public void SetStrongTintWhite(float value)
+                => _matStrongTintWhite.SetFloat(SHADER_STRONG_TINT_WHITE, value);
 
         private GameObject _upgradePlayerBuffEffect;
         private int SHADER_HIT_EFFECT = Shader.PropertyToID("_StrongTintFade");
         private int SHADER_FADE_EFFECT = Shader.PropertyToID("_CustomFadeAlpha");
         private int SHADER_GLITCH = Shader.PropertyToID("_GlitchFade");
         private int SHADER_HOLOGRAM = Shader.PropertyToID("_HologramFade");
+        private int SHADER_STRONG_TINT_WHITE = Shader.PropertyToID("_StrongTintFade");
 
         private Dictionary<GameObject, CreatureMaterial[]> _creatureMats = new Dictionary<GameObject, CreatureMaterial[]>();
+        private Dictionary<GameObject, EnvMaterial> _envSimpleMats = new Dictionary<GameObject ,EnvMaterial>();
 
         public void Init()
         {
@@ -41,6 +71,7 @@ namespace STELLAREST_2D
             _matFade = Managers.Resource.Load<Material>(Define.MaterialLabels.MAT_FADE);
             _matGlitch = Managers.Resource.Load<Material>(Define.MaterialLabels.MAT_GLITCH);
             _matHologram = Managers.Resource.Load<Material>(Define.MaterialLabels.MAT_HOLOGRAM);
+            _matStrongTintWhite = Managers.Resource.Load<Material>(Define.MaterialLabels.MAT_STRONG_TINT_WHITE);
 
             if (_upgradePlayerBuffEffect == null)
                 _upgradePlayerBuffEffect = Utils.FindChild(Managers.Game.Player.gameObject, Define.PlayerController.UPGRADE_PLAYER_BUFF);
@@ -60,7 +91,7 @@ namespace STELLAREST_2D
                     mats[i].spriteRender.material = mats[i].matOrigin;
             }
             else
-                Utils.LogError("Invalid CreatureMats !!");
+                Debug.LogError("Invalid CreatureMats !!");
         }
 
         public void AddCreatureMaterials(CreatureController cc)
@@ -115,6 +146,47 @@ namespace STELLAREST_2D
                 if (_creatureMats.TryGetValue(cc.gameObject, out CreatureMaterial[] value) == false)
                     _creatureMats.Add(cc.gameObject, creatureMats);
             }
+        }
+
+        public void AddEnvSimpleMaterial(GameObject go)
+        {
+            if (_envSimpleMats.TryGetValue(go, out EnvMaterial envMat))
+                return;
+
+            SpriteRenderer sr = go.GetComponent<SpriteRenderer>();
+            Material matOrigin = sr.material;
+            EnvMaterial mat = new EnvMaterial(sr, matOrigin);
+            _envSimpleMats.Add(go, mat);
+        }
+
+        // ++++++++++
+        // SHADER_STRONG_TINT_WHITE 이런 SetShader까지 리셋을 할 필요가 없는것임
+        // 코루틴에서 메터리얼 value를 바꾸는 것은 무조건 0 ~ 1이 지나면 끝나는 것이고
+        // 메터리얼을 기존 오리진 메터리얼로 바꿔주면 끝나는 것임.
+        public IEnumerator EnvSimpleMaterial_StrongTintWhite(GameObject go, float desiredTime = 1f, System.Action callback = null)
+        {
+            if (_envSimpleMats.TryGetValue(go, out EnvMaterial envMat) == false)
+                yield break;
+
+            envMat.spriteRenderer.material = MatStrongTintWhite;
+
+            float percent = 0f;
+            while (percent < 1f)
+            {
+                percent += Time.deltaTime / desiredTime;
+                envMat.spriteRenderer.material.SetFloat(SHADER_STRONG_TINT_WHITE, percent);
+                yield return null;
+            }
+
+            callback?.Invoke();
+        }
+
+        public void ResetEnvSimpleMaterial(GameObject go)
+        {
+            if (_envSimpleMats.TryGetValue(go, out EnvMaterial envMat) == false)
+                return;
+
+            envMat.spriteRenderer.material = envMat.matOrigin;
         }
 
         public IEnumerator CoHologram(CreatureController cc)
@@ -308,6 +380,9 @@ namespace STELLAREST_2D
             go.transform.position = gc.transform.position;
             // go.transform.position = Managers.Game.Player.transform.position;
         }
+
+        public GameObject ShowStunEffect()
+                => Managers.Resource.Instantiate(Define.PrefabLabels.STUN_EFFECT, pooling: true);
 
         public void ShowDamageFont(CreatureController cc, float damage, bool isCritical = false)
         {

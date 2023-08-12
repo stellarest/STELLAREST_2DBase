@@ -67,26 +67,38 @@ namespace STELLAREST_2D
                 case Define.CreatureState.Death:
                     {
                         BodyCol.isTrigger = true;
-                        StopCoroutine(_coReadyToAction);
+                        //StopCoroutine(_coReadyToAction);
                         SkillBook.StopSkills();
                         RigidBody.simulated = false;
                         Managers.Sprite.SetMonsterFace(this, Define.SpriteLabels.MonsterFace.Death);
                         MAC.Death();
+                        if (this.GoCCEffect != null)
+                        {
+                            Managers.Resource.Destroy(this.GoCCEffect);
+                            GoCCEffect = null;
+                        }
                         this.CoEffectFadeOut(0f, 1f, true);
                     }
                     break;
             }
         }
 
-        private Coroutine _coReadyToAction;
-        public void CoStartReadyToAction() 
-                => _coReadyToAction = StartCoroutine(CoReadyToAction());
+        //private Coroutine _coReadyToAction;
+        public void CoStartReadyToAction(bool isSpawned = true) 
+                => StartCoroutine(CoReadyToAction(isSpawned));
 
-        private IEnumerator CoReadyToAction()
+        private IEnumerator CoReadyToAction(bool isSpawned = true)
         {
+            if (CreatureState != Define.CreatureState.Idle)
+                CreatureState = Define.CreatureState.Idle;
+
             float delta = 0f;
             float percent = 0f;
             float desiredTime = Random.Range(CharaData.MinReadyToActionTime, CharaData.MaxReadyToActionTime);
+            
+            if (isSpawned == false)
+                desiredTime = 0.25f;
+
             while (percent < 1f)
             {
                 delta += Time.deltaTime;
@@ -94,7 +106,8 @@ namespace STELLAREST_2D
                 yield return null;
             }
 
-            CreatureState = Define.CreatureState.Run;
+            if (CCStatus != Define.CCStatus.Stun)
+                CreatureState = Define.CreatureState.Run;
         }
 
         public override bool Init()
@@ -116,39 +129,40 @@ namespace STELLAREST_2D
         protected override void SetSortingGroup()
                 => GetComponent<SortingGroup>().sortingOrder = (int)Define.SortingOrder.Monster;
 
+        // Run State
         private void FixedUpdate()
         {
-            if (CreatureState == Define.CreatureState.Death)
+            if (CreatureState == Define.CreatureState.Death || CCStatus == Define.CCStatus.Stun)
                 return;
 
-            // if (RigidBody.velocity != Vector2.zero)
-            //     MAC.Run();
+            if (RigidBody.velocity != Vector2.zero)
+                MAC.Run();
 
-            // Vector2 predictedPos = new Vector2(transform.position.x + RigidBody.velocity.x,
-            //                                     transform.position.y + RigidBody.velocity.y);
-            // if (Managers.Stage.IsOutOfPos(predictedPos))
-            // {
-            //     BodyCol.isTrigger = true;
-            //     RigidBody.velocity = Vector2.zero;
-            //     Managers.Stage.SetInLimitPos(this);
-            // }
+            Vector2 predictedPos = new Vector2(transform.position.x + RigidBody.velocity.x,
+                                                transform.position.y + RigidBody.velocity.y);
+            if (Managers.Stage.IsOutOfPos(predictedPos))
+            {
+                BodyCol.isTrigger = true;
+                RigidBody.velocity = Vector2.zero;
+                Managers.Stage.SetInLimitPos(this);
+            }
 
-            // PlayerController pc = Managers.Game.Player;
-            // if (pc.IsValid() == false)
-            //     return;
+            PlayerController pc = Managers.Game.Player;
+            if (pc.IsValid() == false)
+                return;
 
-            // Vector3 toPlayer = pc.transform.position - transform.position;
-            // FlipX(toPlayer.x > 0 ? -1 : 1);
-            // if (CreatureState != Define.CreatureState.Run)
-            //     return;
+            Vector3 toPlayer = pc.transform.position - transform.position;
+            FlipX(toPlayer.x > 0 ? -1 : 1);
+            if (CreatureState != Define.CreatureState.Run)
+                return;
 
-            // Vector3 newPos = transform.position + (toPlayer.normalized * Time.deltaTime * CharaData.MoveSpeed);
-            // //transform.position = newPos;
-            // RigidBody.MovePosition(newPos);
+            Vector3 newPos = transform.position + (toPlayer.normalized * Time.deltaTime * CharaData.MoveSpeed);
+            //transform.position = newPos;
+            RigidBody.MovePosition(newPos);
 
-            // float sqrDist = 2f * 2f;
-            // if (toPlayer.sqrMagnitude <= sqrDist)
-            //     CreatureState = Define.CreatureState.Skill;
+            float sqrDist = 2f * 2f;
+            if (toPlayer.sqrMagnitude <= sqrDist)
+                CreatureState = Define.CreatureState.Skill;
         }
 
         private void FlipX(float flipX)

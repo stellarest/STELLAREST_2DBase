@@ -8,14 +8,18 @@ namespace STELLAREST_2D
         public enum UIEvent { Click, Pressed, PointerDown, PointerUp, BeginDrag, Drag, EndDrag, }
         public enum Scene { Unknown, DevScene, GameScene, }
         public enum Sound { BGM, Effect, }
-        public enum ObjectType { Player, Monster, EliteMonster, MiddleBoss, Boss, Projectile, Env, }
+        public enum ObjectType { Player, Monster, EliteMonster, Boss, Projectile, Env, }
+
+        public enum CreatureType { Creture, Gary, Chicken, }
+        
         public enum WaveType { None, Elite, MiddleBoss, Boss }
-        public enum SortingOrder { Map = 100, Player = 200, Item = 209, Monster = 210, Skill = 211, ParticleEffect = 230 }
+        public enum SortingOrder { Map = 100, Player = 200, Item = 209, Monster = 210, Skill = 211, ParticleEffect = 230, CCStatus = 260 }
         public enum StageType { Normal, MiddleBoss, Boss, }
+        public enum CCStatus { None, Stun, Poisoned, Frozen, Cursed, Confused, Silent }
 
         // public enum MonsterState { Idle = 0, Run = 1, Skill = 2, Attack = 3, Death = 9 }
 
-        public enum CreatureState { Idle = 0, Walk = 1, Run = 2, Attack = 3, Skill, Invincible, Death = 9 }
+        public enum CreatureState { Idle = 0, Walk = 1, Run = 2, Attack = 3, Skill = 4, Invincible, Death = 9 }
 
         public enum InGameGrade { Normal = 1, Rare = 2, Epic = 3, Legendary = 4 }
         public enum CollisionLayers { Default = 0, PlayerBody = 6, PlayerAttack = 7, MonsterBody = 8, MonsterAttack = 9 }
@@ -55,6 +59,7 @@ namespace STELLAREST_2D
                 LazerBolt = 200204,
                 Boomerang = 200208,
                 Spear = 200212,
+                BombTrap = 200216,
 
                 BodyAttack = 200300,
             }
@@ -65,14 +70,15 @@ namespace STELLAREST_2D
         {
             public const string JOYSTICK = "UI_Joystick.prefab";
             public const string EXP_GEM = "EXPGem.prefab";
+
             public const string DMG_NUMBER_TO_MONSTER = "DmgNumber_ToMonster.prefab";
             public const string DMG_NUMBER_TO_MONSTER_CRITICAL = "DmgNumber_ToMonsterCritical.prefab";
             public const string DMG_NUMBER_TO_PLAYER = "DmgNumber_ToPlayer.prefab";
 
             public const string DMG_TEXT_TO_MONSTER_CRITICAL = "DmgText_ToMonsterCritical.prefab"; // 크리티컬 text는 몬스터에게만 적용
             public const string DMG_TEXT_TO_PLAYER_DODGE = "DmgText_ToPlayerDodge.prefab"; // 플레이어에게만 적용
-
             public const string SPAWN_EFFECT = "SpawnEffect.prefab";
+            public const string STUN_EFFECT = "StunEffect.prefab";
 
             public const string GEM = "Gem.prefab";
             public const string GEM_GATHER = "GemGather.prefab";
@@ -130,6 +136,7 @@ namespace STELLAREST_2D
             public const string MAT_FADE = "Fade.mat";
             public const string MAT_GLITCH = "Glitch.mat";
             public const string MAT_HOLOGRAM = "Hologram.mat";
+            public const string MAT_STRONG_TINT_WHITE = "StrongTintWhite.mat";
         }
 
         public static class NameSpaceLabels

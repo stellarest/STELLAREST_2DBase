@@ -12,7 +12,7 @@ namespace STELLAREST_2D
                 go.layer = (int)layer;
             else
             {
-                Utils.LogError("Failed Init Collision Layer !!");
+                Debug.LogError("Failed Init Collision Layer !!");
                 Debug.Break();
             }
         }

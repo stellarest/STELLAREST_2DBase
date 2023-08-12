@@ -88,13 +88,6 @@ namespace STELLAREST_2D
         }
 
         [Conditional("UNITY_EDITOR")]
-        public static void LogError(string message)
-        {
-            Debug.LogError($"### !!! {message} !!! ###");
-            Debug.Break();
-        }
-
-        [Conditional("UNITY_EDITOR")]
         public static void LogStrong(string message)
         {
             Debug.Log($"<color=magenta>{message}</color>");
