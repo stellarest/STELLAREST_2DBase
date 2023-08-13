@@ -15,6 +15,7 @@ namespace STELLAREST_2D
 
         private readonly int SLASH_1H = Animator.StringToHash("SlashMelee1H");
         private readonly int JAB_1H = Animator.StringToHash("JabMelee1H");
+        private readonly int CAST_1H = Animator.StringToHash("Cast1H");
 
         private readonly int SLASH_2H = Animator.StringToHash("SlashMelee2H");
         private readonly int JAB_2H = Animator.StringToHash("JabMelee2H");
@@ -52,6 +53,7 @@ namespace STELLAREST_2D
 
         public void Slash1H() => AnimController.Play(SLASH_1H);
         public void Jab1H() => AnimController.Play(JAB_1H);
+        public void Cast1H() => AnimController.Play(CAST_1H);
 
         public void Slash2H() => AnimController.Play(SLASH_2H);
         public void Jab2H() => AnimController.Play(JAB_2H);

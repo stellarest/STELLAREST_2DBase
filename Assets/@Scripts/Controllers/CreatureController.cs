@@ -20,8 +20,10 @@ namespace STELLAREST_2D
                 {
                     case Define.CCStatus.None:
                         {
-                            BodyCol.isTrigger = false;
+                            // 한 번 트리거가 켜졌으면 계속 유지해서 다른 몹이랑 겹쳐짐
+                            //BodyCol.isTrigger = false;
                             SkillBook.Stopped = false;
+                            
                         }
                         break;
 

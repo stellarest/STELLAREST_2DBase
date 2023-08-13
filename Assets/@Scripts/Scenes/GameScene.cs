@@ -74,7 +74,8 @@ namespace STELLAREST_2D
 
             // Spawn Player
             // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Gary_Default);
-            var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Gary_Paladin);
+            //var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Gary_Paladin);
+            var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Chloe_Archmage);
             //Camera.main.GetComponent<CameraController>().Target = player.gameObject;
             //GameObject.Find("CMcam").GetComponent<CameraController>().SetTarget(player.gameObject);
 

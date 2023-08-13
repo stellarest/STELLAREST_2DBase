@@ -53,6 +53,9 @@ namespace STELLAREST_2D
                     bombTrap._childs[i].SetActive(true);
             }
 
+            if (SkillData.InGameGrade == Define.InGameGrade.Legendary)
+                bombTrap.transform.GetChild((int)Child.Explosion + 1).gameObject.SetActive(false);
+
             bombTrap._bodyCol = bombTrap.GetComponent<Collider2D>();
             bombTrap._bodyCol.enabled = false;
             bombTrap.Generator = this;

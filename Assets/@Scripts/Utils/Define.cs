@@ -40,9 +40,12 @@ namespace STELLAREST_2D
 
         public static class TemplateIDs
         {
+            // 플레이 스타일 바꿔야할듯,,,
+            // 하나의 게리 프리팹 안에 나이트, 팬텀나이트 모두 배치
             public enum Player
             {
                 Gary_Paladin = 100100,
+                Chloe_Archmage = 100115,
             }
 
             public enum Monster

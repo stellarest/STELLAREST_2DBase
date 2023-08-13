@@ -64,7 +64,9 @@ namespace STELLAREST_2D
 
                 case Define.CreatureState.Attack:
                     {
-                        PAC.Slash1H();
+                        // 개선 필요
+                        //PAC.Slash1H();
+                        PAC.Cast1H();
                         StartAttackPos = transform.position;
                     }
 

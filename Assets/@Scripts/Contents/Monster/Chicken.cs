@@ -13,6 +13,11 @@ namespace STELLAREST_2D
 
             CreatureState = Define.CreatureState.Idle;
             CCStatus = Define.CCStatus.None;
+            if (GoCCEffect != null)
+            {
+                Managers.Resource.Destroy(GoCCEffect);
+                GoCCEffect = null;
+            }
 
             Managers.Sprite.SetMonsterFace(this, Define.SpriteLabels.MonsterFace.Normal);
             RigidBody.simulated = true;
