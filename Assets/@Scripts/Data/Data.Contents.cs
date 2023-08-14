@@ -64,6 +64,7 @@ namespace STELLAREST_2D.Data
         public int OriginTemplateID;
         public string Name;
         public string PrimaryLabel;
+        public string ModelingLabel;
         public bool IsPlayerDefaultAttack;
         public Define.InGameGrade InGameGrade;
         public float MinDamage;

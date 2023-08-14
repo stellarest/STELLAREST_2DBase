@@ -27,15 +27,14 @@ namespace STELLAREST_2D
         private Transform _fireSocket;
         public Vector3 FireSocket => _fireSocket.position;
         public SpriteRenderer FireSocketSpriteRenderer { get; private set; } = null;
-
         public Vector3 ShootDir => (_fireSocket.position - _indicator.position).normalized;
 
-        public Transform LegR { get; private set; }
+        public Transform LegR { get; private set; } = null;
+    
 
         [field: SerializeField]
         public float TurningAngle { get; private set; }
         public LookAtDirection LookAtDir { get; private set; } = LookAtDirection.Right;
-
 
         private GameObject _animChildObject;
         public Vector3 AnimationLocalScale => _animChildObject.transform.localScale;
@@ -65,8 +64,8 @@ namespace STELLAREST_2D
                 case Define.CreatureState.Attack:
                     {
                         // 개선 필요
-                        //PAC.Slash1H();
-                        PAC.Cast1H();
+                        PAC.Slash1H();
+                        // PAC.Cast1H();
                         StartAttackPos = transform.position;
                     }
 
@@ -274,6 +273,11 @@ namespace STELLAREST_2D
 
             if (Input.GetKeyDown(KeyCode.T))
             {
+                Debug.Log(SkillBook.GetCharacterSkill(Define.InGameGrade.Normal).SkillData.ModelingLabel);
+                Debug.Log(SkillBook.GetCharacterSkill(Define.InGameGrade.Rare).SkillData.ModelingLabel);
+                Debug.Log(SkillBook.GetCharacterSkill(Define.InGameGrade.Epic).SkillData.ModelingLabel);
+                Debug.Log(SkillBook.GetCharacterSkill(Define.InGameGrade.Legendary).SkillData.ModelingLabel);
+
                 // CoGlitchEffect(CreatureData.TemplateID);
                 // bChange = !bChange;
                 // Managers.Sprite.SetPlayerEmotion(bChange ? Define.PlayerEmotion.Sick : Define.PlayerEmotion.Default);

@@ -4,6 +4,8 @@ using UnityEngine;
 using Assets.HeroEditor.Common.Scripts.CharacterScripts;
 using Assets.FantasyMonsters.Scripts;
 using System.Linq;
+using Unity.VisualScripting;
+using STELLAREST_2D.Data;
 
 namespace STELLAREST_2D
 {
@@ -37,6 +39,8 @@ namespace STELLAREST_2D
         public Color PlayerDefaultEyesColor => _playerSprite._eyesDefaultColor;
         public Color PlayerDefaultMouthColor => _playerSprite._mouthDefaultColor;
         private PlayerSprite _playerSprite = null;
+
+        private Dictionary<int, Character[]> _playerAppearances = new Dictionary<int, Character[]>();
         
         public void InitPlayerSprite(PlayerController pc)
         {
@@ -81,6 +85,22 @@ namespace STELLAREST_2D
 
             //_cureatureSprites.Add(cc.CharaData.TemplateID, new CreatureSprite(eyesRenderer, eyesColor, mouthRenderer, mouthColor));
             _playerSprite = new PlayerSprite(eyebrowsRenderer, eyebrowsColor, eyesRenderer, eyesColor, mouthRenderer, mouthColor);
+
+            InitPlayerAppearances(pc);
+        }
+
+        // +++++ 주의 사항 : 캐릭터 기본 스킬은 캐릭터 데이트 시트에서 무조건 맨 앞에 배치해야함 +++++
+        private void InitPlayerAppearances(PlayerController pc)
+        {
+            //private Dictionary<int, Character[]> _playerAppearances = new Dictionary<int, Character[]>();
+            Character[] charas = new Character[(int)Define.InGameGrade.Legendary];
+            for (Define.InGameGrade grade = Define.InGameGrade.Normal; grade <= Define.InGameGrade.Legendary; ++grade)
+            {
+                GameObject go = Managers.Resource.Load<GameObject>(pc.SkillBook.GetCharacterSkill(grade).SkillData.ModelingLabel);
+                charas[(int)grade - 1] = go.GetComponent<Character>();
+            }
+
+            _playerAppearances.Add(pc.CharaData.TemplateID, charas);
         }
 
         public void SetPlayerEmotion(Define.PlayerEmotion emotion)
@@ -212,6 +232,7 @@ namespace STELLAREST_2D
                 return;
             }
 
+            
             switch (pc.CharaData.CreatureData.TemplateID)
             {
                 case (int)Define.TemplateIDs.Player.Gary_Paladin:
@@ -220,10 +241,74 @@ namespace STELLAREST_2D
             }
         }
 
-        private void UpgradeGaryPaladin(PlayerController pc, Define.InGameGrade grade)
+        public void UpgradePlayerAppearance(PlayerController pc, Define.InGameGrade grade)
+        {
+            pc.SkillBook.StopSkills();
+            
+            SpriteRenderer[] currentSPRs = pc.GetComponentsInChildren<SpriteRenderer>();
+            for (int i = 0; i < currentSPRs.Length; ++i)
+                currentSPRs[i].sprite = null;
+
+            Character next = _playerAppearances[pc.CharaData.TemplateID][(int)grade - 1];
+            SpriteRenderer[] nextSPRs = next.GetComponentsInChildren<SpriteRenderer>();
+            
+            int length = Mathf.Max(currentSPRs.Length, nextSPRs.Length);
+            for (int i = 0; i < length; ++i)
+            {
+                // Prevent out of idx
+                if (i < currentSPRs.Length && i < nextSPRs.Length)
+                {
+                    SpriteRenderer currentSPR = currentSPRs[i];
+                    SpriteRenderer nextSPR = nextSPRs[i];
+
+                    currentSPR.sprite = nextSPR.sprite;
+                    currentSPR.color = nextSPR.color;
+                }
+            }
+
+            Managers.Effect.ChangeCreatureMaterials(pc);
+        }
+
+        private void UpgradePlayerAppearance_TEMP(PlayerController pc, Define.InGameGrade grade)
+        {
+            // 일단 진행중인 스킬을 멈춘다
+            pc.SkillBook.StopSkills(); 
+
+            // 싹 벗김
+            foreach (var spr in pc.GetComponentsInChildren<SpriteRenderer>())
+                spr.sprite = null;
+
+            // TEMP
+            // Managers.Effect.UpgradePlayerBuffEffect();
+
+            Character current = pc.GetComponent<Character>();
+            GameObject nextGo = Managers.Resource.Load<GameObject>(Define.PrefabLabels.GARY_UPGRADE_SPRITE_TEMP);
+            Character next = nextGo.GetComponent<Character>();
+
+            SpriteRenderer[] currentSPR = current.GetComponentsInChildren<SpriteRenderer>();
+            SpriteRenderer[] nextSPR = next.GetComponentsInChildren<SpriteRenderer>();
+            int length = Mathf.Max(currentSPR.Length, nextSPR.Length);
+
+            for (int i = 0; i < length; ++i)
+            {
+                if (i < currentSPR.Length && i < nextSPR.Length)
+                {
+                    SpriteRenderer currentIs = currentSPR[i];
+                    SpriteRenderer nextIs = nextSPR[i];
+
+                    currentIs.sprite = nextIs.sprite;
+                    currentIs.color = nextIs.color;
+                }
+            }
+
+            Managers.Effect.ChangeCreatureMaterials(pc);
+        }
+
+        private void UpgradeGaryPaladin(PlayerController pc, Define.InGameGrade grade) // TEMP
         {
             Character current = pc.GetComponent<Character>();
             Character next = pc.transform.GetChild((int)grade).GetComponent<Character>();
+
             Managers.Effect.UpgradePlayerBuffEffect();
 
             for (int i = 0; i < current.Armor.Count; ++i)
@@ -257,8 +342,8 @@ namespace STELLAREST_2D
             }
 
             Managers.Effect.ChangeCreatureMaterials(pc);
+            // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
             // pc.CoEffectGlitch();
-
             // // TEMP
             // if (grade == Define.InGameGrade.Legendary)
             // {

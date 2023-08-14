@@ -45,7 +45,34 @@ namespace STELLAREST_2D
             public enum Player
             {
                 Gary_Paladin = 100100,
-                Chloe_Archmage = 100115,
+                Gary_Knight = 100101,
+                Gary_PhantomKnight = 100102,
+
+                Reina_BowMaster = 100103,
+                Reina_ElementalArcher = 100104,
+                Reina_Hunter = 100105,
+
+                Kenneth_Gambler = 100106,
+                Kenneth_Assassin = 100107,
+                Kenneth_Ninja = 100108,
+
+                Lionel_Barbarian = 100109,
+                Lionel_Warrior = 100110,
+                Lionel_Berserker = 100111,
+
+                Fernando_Commander = 100112,
+                Fernando_Desperado = 100113,
+                Fernando_HeavyShooter = 100113,
+
+                Chloe_Archmage = 100114,
+                Chloe_Trickster = 100115,
+                Chloe_Summoner = 100116,
+
+                Stigma_UndeadKing = 100117,
+                Stigma_Pirate = 100118,
+                Stigma_Mutant = 100119,
+
+                Eleanor_Queen = 100120 // Legendary Hidden Character from the start
             }
 
             public enum Monster
@@ -56,7 +83,10 @@ namespace STELLAREST_2D
             public enum SkillType
             {
                 None = 200000,
+                
                 PaladinSwing = 200100,
+                KnightSwing,
+                PhantomKnightSwing,
 
                 ThrowingStar = 200200,
                 LazerBolt = 200204,
@@ -71,6 +101,8 @@ namespace STELLAREST_2D
         // 나중에 데이터 시트로 빼서 어드레서블에서 세팅하고 불러와서 사용해도 됨(사실 이 부분이 없어야함)
         public static class PrefabLabels
         {
+            public const string GARY_UPGRADE_SPRITE_TEMP = "04_PhantomKnight_Legendary_Temp.prefab";
+
             public const string JOYSTICK = "UI_Joystick.prefab";
             public const string EXP_GEM = "EXPGem.prefab";
 

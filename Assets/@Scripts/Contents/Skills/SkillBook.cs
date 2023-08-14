@@ -24,8 +24,11 @@ namespace STELLAREST_2D
         // +++ 최초 한 번 실행 +++
         public void AddRepeatSkill(RepeatSkill repeatSkill) => RepeatSkills.Add(repeatSkill);
         public void AddSequenceSkill(SequenceSkill sequenceSkill) => SequenceSkills.Add(sequenceSkill);
-        // +++
 
+        public SkillBase GetCharacterSkill(Define.InGameGrade grade)
+                => (RepeatSkills[(int)grade - 1].SkillData.IsPlayerDefaultAttack == false) ? null : RepeatSkills[(int)grade - 1];
+
+        // +++++ OnRepeatAttackHandler에서 호출하게 됨 +++++
         public void PlayerDefaultAttack(Define.TemplateIDs.SkillType skillType)
         {
             RepeatSkill skill = RepeatSkills.FirstOrDefault(s => s.SkillData.TemplateID == (int)skillType);
@@ -39,10 +42,8 @@ namespace STELLAREST_2D
             Vector3 originShootDir = Managers.Game.Player.ShootDir;
             float turningSide = Managers.Game.Player.TurningAngle;
             Vector3 indicatorAngle = Managers.Game.Player.Indicator.eulerAngles;
-
             Vector3 pos = Managers.Game.Player.transform.position;
-            // GameObject go = LearnedRepeatSkills.FirstOrDefault(s => s.SkillData.TemplateID == skillData.TemplateID).gameObject;
-            // pos += go.transform.localPosition;
+
 
             // 1.25, 1.25, 1.25 -> 1, 1, 1
             Vector3 localScale = Managers.Game.Player.AnimationLocalScale;
@@ -120,44 +121,18 @@ namespace STELLAREST_2D
                 if (newSkill.SkillData.IsPlayerDefaultAttack)
                 {
                     Managers.Game.Player.AnimEvents.PlayerDefaultAttack++;
-                    Managers.Sprite.UpgradePlayerSprite(newSkill.Owner.GetComponent<PlayerController>(),
-                        newSkill.SkillData.InGameGrade);
+                    // Managers.Sprite.UpgradePlayerSprite(newSkill.Owner.GetComponent<PlayerController>(),
+                    //     newSkill.SkillData.InGameGrade);
+
+                    Managers.Sprite.UpgradePlayerAppearance(newSkill.Owner.GetComponent<PlayerController>(), newSkill.SkillData.InGameGrade);
                 }
 
                 newSkill.ActivateSkill();
-
-                // ++++++++++++++
-                // RepeatSkill latestSkill = LearnedRepeatSkills[LearnedRepeatSkills.Count - 1];
-                // if (latestSkill.SkillData.InGameGrade == Define.InGameGrade.Legendary)
-                // {
-                //     Utils.Log(latestSkill.gameObject.name + " is already max skill level !!");
-                //     return;
-                // }
-
-                // RepeatSkill newSkill = RepeatSkills.FirstOrDefault(s => s.SkillData.TemplateID == originTemplateID + (int)latestSkill.SkillData.InGameGrade);
-                // LearnedRepeatSkills.Remove(latestSkill);
-                // latestSkill.DeactivateSkill();
-                // LearnedRepeatSkills.Add(newSkill);
-
-                // if (newSkill.SkillData.IsPlayerDefaultAttack)
-                // {
-                //     Managers.Game.Player.AnimEvents.PlayerDefaultAttack++;
-                //     Managers.Sprite.UpgradePlayerSprite(newSkill.Owner.GetComponent<PlayerController>(), 
-                //         newSkill.SkillData.InGameGrade);
-                // }
-
-                // newSkill.ActivateSkill();
             }
         }
 
         private bool IsLeanredSkill(int originTemplateID)
                 => LearnedRepeatSkills.FirstOrDefault(s => s.SkillData.OriginTemplateID == originTemplateID) != null ? true : false;
-        // {
-        //     if (LearnedRepeatSkills.FirstOrDefault(s => s.SkillData.OriginTemplateID == originTemplateID) != null)
-        //         return true;
-
-        //     return false;
-        // }
 
         // SequenceSkill(하나의 스킬을 끝내야지만 다른 스킬을 사용할 수 있는 스킬) List에 등록된 녀석들을 인공지능에서 따로 판단을 하던
         // 아니면 여기서 순차적으로 등록된 애들을 사용을 하던 여기다가 관리해주면 된다고 함
