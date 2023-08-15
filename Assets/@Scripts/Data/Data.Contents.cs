@@ -76,6 +76,8 @@ namespace STELLAREST_2D.Data
         public float[] ContinuousSpeedRatios;
         public float[] ContinuousAngles;
         public float[] ContinuousFlipXs;
+        public Vector2[] InterpolateTargetScales;
+        public float CollisionKeepingRatio;
         public int BounceCount;
         public float SelfRotationZSpeed;
         public int PenetrationCount;

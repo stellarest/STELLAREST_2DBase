@@ -82,15 +82,22 @@ namespace STELLAREST_2D
         }
 
         [Conditional("UNITY_EDITOR")]
-        public static void Log(string message)
+        public static void Log(object message)
         {
-            Debug.Log($"<color=white>{message}</color>");
+            Debug.Log($"<color=white>{message.ToString()}</color>");
         }
 
         [Conditional("UNITY_EDITOR")]
-        public static void LogStrong(string message)
+        public static void LogStrong(object message)
         {
-            Debug.Log($"<color=magenta>{message}</color>");
+            Debug.Log($"<color=magenta>{message.ToString()}</color>");
+        }
+
+        [Conditional("UNITY_EDITOR")]
+        public static void LogError(object message)
+        {
+            Debug.LogError(message.ToString());
+            Debug.Break();
         }
     }
 }

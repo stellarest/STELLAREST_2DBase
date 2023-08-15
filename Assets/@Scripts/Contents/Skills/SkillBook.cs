@@ -10,7 +10,7 @@ namespace STELLAREST_2D
     public class SkillBook : MonoBehaviour
     {
         public CreatureController Owner { get; set; }
-        public Define.TemplateIDs.SkillType DefaultPlayerSkill { get; set; }
+        public Define.TemplateIDs.SkillType PlayerDefaultSkill { get; set; }
 
 
         public List<RepeatSkill> RepeatSkills { get; } = new List<RepeatSkill>();
@@ -25,11 +25,13 @@ namespace STELLAREST_2D
         public void AddRepeatSkill(RepeatSkill repeatSkill) => RepeatSkills.Add(repeatSkill);
         public void AddSequenceSkill(SequenceSkill sequenceSkill) => SequenceSkills.Add(sequenceSkill);
 
-        public SkillBase GetCharacterSkill(Define.InGameGrade grade)
+        public SkillBase GetPlayerDefaultSkill(Define.InGameGrade grade)
                 => (RepeatSkills[(int)grade - 1].SkillData.IsPlayerDefaultAttack == false) ? null : RepeatSkills[(int)grade - 1];
 
+        
+
         // +++++ OnRepeatAttackHandler에서 호출하게 됨 +++++
-        public void PlayerDefaultAttack(Define.TemplateIDs.SkillType skillType)
+        public void GeneratePlayerAttack(Define.TemplateIDs.SkillType skillType)
         {
             RepeatSkill skill = RepeatSkills.FirstOrDefault(s => s.SkillData.TemplateID == (int)skillType);
             StartCoroutine(GeneratePlayerAttack(skill));
@@ -44,38 +46,70 @@ namespace STELLAREST_2D
             Vector3 indicatorAngle = Managers.Game.Player.Indicator.eulerAngles;
             Vector3 pos = Managers.Game.Player.transform.position;
 
-
-            // 1.25, 1.25, 1.25 -> 1, 1, 1
+            // 1.25, 1.25, 1.25 to 1, 1, 1
             Vector3 localScale = Managers.Game.Player.AnimationLocalScale;
-            // 일단 1,1,1로 만들어준다.
             localScale *= 0.8f;
 
             // float scaleX = localScale.x + (localScale.x * skillData.ScaleUpRatio);
             // float scaleY = localScale.x + (localScale.x * skillData.ScaleUpRatio);
             // localScale = new Vector3(scaleX, scaleY, 1f);
+            // if (skillData.ContinuousCount != skillData.ContinuousSpeedRatios.Length)
+            // {
+            //     for (int i = 0; i < skillData.ContinuousSpeedRatios.Length; ++i)
+            //         skillData.ContinuousSpeedRatios[i] = 1f;
+            // }
+            // if (skillData.ContinuousCount != skillData.ContinuousAngles.Length)
+            // {
+            //     for (int i = 0; i < skillData.ContinuousAngles.Length; ++i)
+            //         skillData.ContinuousAngles[i] = 0f;
+            // }
 
-            if (skillData.ContinuousCount != skillData.ContinuousSpeedRatios.Length)
-            {
-                for (int i = 0; i < skillData.ContinuousSpeedRatios.Length; ++i)
-                    skillData.ContinuousSpeedRatios[i] = 1f;
-            }
-
-            if (skillData.ContinuousCount != skillData.ContinuousAngles.Length)
-            {
-                for (int i = 0; i < skillData.ContinuousAngles.Length; ++i)
-                    skillData.ContinuousAngles[i] = 0f;
-            }
-
+            // +++++ 이건 FacingRight떄문에 이대로 해야할것임 +++++
             float[] angles = new float[skillData.ContinuousAngles.Length];
-            if (Managers.Game.Player.IsFacingRight == false)
+            if (skillData.ContinuousAngles.Length > 0)
             {
-                for (int i = 0; i < angles.Length; ++i)
-                    angles[i] = skillData.ContinuousAngles[i] * -1;
+                angles = new float[skillData.ContinuousAngles.Length];
+                if (Managers.Game.Player.IsFacingRight == false)
+                {
+                    for (int i = 0; i < angles.Length; ++i)
+                        angles[i] = skillData.ContinuousAngles[i] * -1;
+                }
+                else
+                {
+                    for (int i = 0; i < angles.Length; ++i)
+                        angles[i] = skillData.ContinuousAngles[i];
+                }
+            }
+
+            float?[] interPolTargetXs = null;
+            float?[] interPolTargetYs = null;
+            if (skillData.InterpolateTargetScales.Length > 0)
+            {
+                interPolTargetXs = new float?[skillData.InterpolateTargetScales.Length];
+                interPolTargetYs = new float?[skillData.InterpolateTargetScales.Length];
+                for (int i = 0; i < skillData.InterpolateTargetScales.Length; ++i)
+                {
+                    if (Managers.Game.Player.IsFacingRight == false)
+                    {
+                        interPolTargetXs[i] = skillData.InterpolateTargetScales[i].x * -1;
+                        interPolTargetYs[i] = skillData.InterpolateTargetScales[i].y;
+                    }
+                    else
+                    {
+                        interPolTargetXs[i] = skillData.InterpolateTargetScales[i].x;
+                        interPolTargetYs[i] = skillData.InterpolateTargetScales[i].y;
+                    }
+                }
             }
             else
             {
-                for (int i = 0; i < angles.Length; ++i)
-                    angles[i] = skillData.ContinuousAngles[i];
+                interPolTargetXs = new float?[skillData.ContinuousCount];
+                interPolTargetYs = new float?[skillData.ContinuousCount];
+                for (int i = 0; i < skillData.ContinuousCount; ++i)
+                {
+                    interPolTargetXs[i] = null;
+                    interPolTargetYs[i] = null;
+                }
             }
 
             for (int i = 0; i < skillData.ContinuousCount; ++i)
@@ -87,7 +121,9 @@ namespace STELLAREST_2D
                 Vector3 shootDir = rot * originShootDir;
 
                 pc.SetProjectileInfo(Owner, skill, shootDir, pos, localScale, indicatorAngle, 
-                            turningSide, skillData.ContinuousSpeedRatios[i], angles[i], skillData.ContinuousFlipXs[i]);
+                            turningSide, skillData.ContinuousSpeedRatios[i], angles[i], skillData.ContinuousFlipXs[i],
+                            interPolTargetXs[i], interPolTargetYs[i]);
+
                 yield return new WaitForSeconds(skillData.ContinuousSpacing);
             }
         }
@@ -120,11 +156,16 @@ namespace STELLAREST_2D
 
                 if (newSkill.SkillData.IsPlayerDefaultAttack)
                 {
-                    Managers.Game.Player.AnimEvents.PlayerDefaultAttack++;
+                    Managers.Game.Player.AnimEvents.PlayerDefaultSkill++;
                     // Managers.Sprite.UpgradePlayerSprite(newSkill.Owner.GetComponent<PlayerController>(),
                     //     newSkill.SkillData.InGameGrade);
 
-                    Managers.Sprite.UpgradePlayerAppearance(newSkill.Owner.GetComponent<PlayerController>(), newSkill.SkillData.InGameGrade);
+
+                    // 여기서 실행을 하니까,,,
+                    // Managers.Sprite.UpgradePlayerAppearance(newSkill.Owner.GetComponent<PlayerController>(), newSkill.SkillData.InGameGrade);
+
+                    Owner.GetComponent<PlayerController>().UpgradePlayerAppearance(newSkill);
+                    return;
                 }
 
                 newSkill.ActivateSkill();

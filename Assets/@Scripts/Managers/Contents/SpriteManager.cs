@@ -96,7 +96,7 @@ namespace STELLAREST_2D
             Character[] charas = new Character[(int)Define.InGameGrade.Legendary];
             for (Define.InGameGrade grade = Define.InGameGrade.Normal; grade <= Define.InGameGrade.Legendary; ++grade)
             {
-                GameObject go = Managers.Resource.Load<GameObject>(pc.SkillBook.GetCharacterSkill(grade).SkillData.ModelingLabel);
+                GameObject go = Managers.Resource.Load<GameObject>(pc.SkillBook.GetPlayerDefaultSkill(grade).SkillData.ModelingLabel);
                 charas[(int)grade - 1] = go.GetComponent<Character>();
             }
 
@@ -243,13 +243,14 @@ namespace STELLAREST_2D
 
         public void UpgradePlayerAppearance(PlayerController pc, Define.InGameGrade grade)
         {
-            pc.SkillBook.StopSkills();
+            //pc.SkillBook.StopSkills();
             
             SpriteRenderer[] currentSPRs = pc.GetComponentsInChildren<SpriteRenderer>();
             for (int i = 0; i < currentSPRs.Length; ++i)
                 currentSPRs[i].sprite = null;
 
             Character next = _playerAppearances[pc.CharaData.TemplateID][(int)grade - 1];
+            //Debug.Log("NEXT : " + next.gameObject.name);
             SpriteRenderer[] nextSPRs = next.GetComponentsInChildren<SpriteRenderer>();
             
             int length = Mathf.Max(currentSPRs.Length, nextSPRs.Length);
@@ -265,6 +266,8 @@ namespace STELLAREST_2D
                     currentSPR.color = nextSPR.color;
                 }
             }
+
+            // Managers.Effect.UpgradePlayerBuffEffect(); 이것도 사실 Legendary에서만 약간 간지나게 적용하면 될 것 같음
 
             Managers.Effect.ChangeCreatureMaterials(pc);
         }

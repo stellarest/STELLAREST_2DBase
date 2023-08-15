@@ -16,6 +16,14 @@ namespace STELLAREST_2D.Test
             }
         }
 
+        [ContextMenu("ReplaceTest")]
+        private void ReplaceTest()
+        {
+            string str = "Hello World";
+            string result = str.Replace("Hello", "Goodbye");
+            Debug.Log("RESULT : " + result);
+        }
+
         // [ContextMenu("TTTTT")]
         // public void TTTTT()
         // {

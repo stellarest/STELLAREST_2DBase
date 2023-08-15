@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Text;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -150,29 +151,32 @@ namespace STELLAREST_2D
                 (아이템은 형체가 없음. 또한, 각 독립적인 등급을 가지고 있음)
             */
 
+            // StringBuilder stringBuilder = new StringBuilder();
+
             foreach (Define.TemplateIDs.SkillType skill in creatureData.InGameSkillList)
             {
                 int templateID = (int)skill;
                 string className = Define.NameSpaceLabels.STELLAREST_2D + "." + skill.ToString();
-                Utils.Log("CLASS NAME : " + className);
+                Utils.LogStrong("CLASS NAME : " + className); // STELLAREST_2D.PaladinMeleeSwing
 
                 Define.InGameGrade skillGrade = Define.InGameGrade.Normal;
                 for (int i = templateID; i <= templateID + (int)Define.InGameGrade.Epic; ++i)
                 {
                     string primaryKey = skill.ToString() + "_" + skillGrade.ToString() + ".prefab";
                     skillGrade++;
-                    // Utils.LogStrong(primaryKey);
-                    Debug.Log("KEY : " + primaryKey);
 
                     GameObject go = Managers.Resource.Instantiate(primaryKey);
                     if (go == null)
                         continue;
 
+                    if (primaryKey.Contains("MeleeSwing"))
+                        className = Define.NameSpaceLabels.STELLAREST_2D + "." + "MeleeSwing";
+
                     if (typeof(RepeatSkill).IsAssignableFrom(System.Type.GetType(className)))
                     {
                         RepeatSkill repeatSkill = go.GetOrAddComponent<RepeatSkill>();
                         repeatSkill.OnPreSpawned();
-
+                        
                         SkillBook.AddRepeatSkill(repeatSkill);
                         go.transform.SetParent(goRepeatSkills.transform);
                         repeatSkill.SetSkillInfo(this, i);
@@ -187,7 +191,7 @@ namespace STELLAREST_2D
                         sequenceSkill.SetSkillInfo(this, i);
                     }
                     else
-                        Debug.LogError("Something is wrong !!");
+                        Utils.LogError("Something is wrong !!");
                 }
             }
         }

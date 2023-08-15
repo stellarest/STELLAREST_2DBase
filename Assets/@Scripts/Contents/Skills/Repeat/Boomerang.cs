@@ -45,7 +45,7 @@ namespace STELLAREST_2D
                 pc.GetComponent<Boomerang>().SetSkillInfo(Owner, SkillData.TemplateID);
                 
                 pc.SetProjectileInfo(this.Owner, this, Managers.Game.Player.ShootDir,
-                    Owner.transform.position, pc.transform.localScale, Vector3.zero, i: i);
+                    Owner.transform.position, pc.transform.localScale, Vector3.zero);
 
                 yield return new WaitForSeconds(SkillData.ContinuousSpacing);
             }

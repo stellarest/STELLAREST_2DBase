@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace STELLAREST_2D
@@ -27,19 +28,20 @@ namespace STELLAREST_2D
         private int _currentBounceCount = 0;
         private GameObject _target = null;
 
+        private bool _isOnInterpolateScale = false;
+        private Vector2 _interpolateStartScale = Vector2.zero;
+        private Vector2 _interpolateTargetScale = Vector2.zero;
+
+        public float TestCollisionKeepingRatio = 1f; // +++ TEMP +++
+
         public void SetSkillInfo<T>(CreatureController owner, T skill) where T : SkillBase
                 => skill.SetSkillInfo(owner, skill.SkillData.TemplateID);
 
         public void SetProjectileInfo(CreatureController owner, SkillBase currentSkill, Vector3 shootDir, Vector3 spawnPos, Vector3 localScale, Vector3 indicatorAngle,
-                    float turningSide = 0f, float continuousSpeedRatio = 1f, float continuousAngle = 0f, float continuousFlipX = 0f, int i = 0)
+                    float turningSide = 0f, float continuousSpeedRatio = 1f, float continuousAngle = 0f, float continuousFlipX = 0f, 
+                    float? interPolTargetX = null, float? interPolTargetY = null)
         {
             this.Owner = owner;
-
-            // if (owner?.IsPlayer() == true)
-            //     Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.PlayerAttack);
-            // else
-            //     Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.MonsterAttack);
-
             this.CurrentSkill = currentSkill;
 
             this.SkillData = currentSkill.SkillData;
@@ -52,14 +54,24 @@ namespace STELLAREST_2D
             transform.position = spawnPos;
             transform.localScale = localScale;
 
+            if (interPolTargetX.HasValue && interPolTargetY.HasValue)
+            {
+                _isOnInterpolateScale = true;
+                _interpolateStartScale = localScale;
+                _interpolateTargetScale = new Vector2(interPolTargetX.Value, interPolTargetY.Value);
+            }
+            else
+                _isOnInterpolateScale = false;
+
             StartDestroy(currentSkill.SkillData.Duration);
             switch (currentSkill.SkillData.OriginTemplateID)
             {
-                case (int)Define.TemplateIDs.SkillType.PaladinSwing:
+                case (int)Define.TemplateIDs.SkillType.PaladinMeleeSwing:
+                case (int)Define.TemplateIDs.SkillType.KnightMeleeSwing:
                     {
-                        GetComponent<PaladinSwing>().SetSwingInfo(owner, currentSkill.SkillData.TemplateID, indicatorAngle,
+                        GetComponent<MeleeSwing>().SetSwingInfo(owner, currentSkill.SkillData.TemplateID, indicatorAngle,
                                     turningSide, continuousAngle, continuousFlipX);
-                        StartCoroutine(CoPaladinSwing());
+                        StartCoroutine(CoMeleeSwing());
                     }
                     break;
 
@@ -82,9 +94,11 @@ namespace STELLAREST_2D
         }
 
         //float desiredCompletedTime = skillData.Duration;
-        private IEnumerator CoPaladinSwing()
+        private IEnumerator CoMeleeSwing()
         {
             float projectileSpeed = SkillData.Speed * _continuousSpeedRatio;
+            controllColDelta = 0f;
+            float t = 0f;
             while (true)
             {
                 // ControlCollisionTime(SkillData.Duration - 0.1f); // 필요할 때 사용
@@ -108,7 +122,16 @@ namespace STELLAREST_2D
 
                 SetOffParticle();
                 transform.position += _shootDir * _speed * Time.deltaTime;
-                ControlCollisionTime(SkillData.Duration);
+
+                if (_isOnInterpolateScale)
+                {
+                    t += Time.deltaTime;
+                    float percent = t / SkillData.Duration;
+                    transform.localScale = Vector2.Lerp(_interpolateStartScale, _interpolateTargetScale, percent);
+                }
+
+                // 이것도 데이터 시트로 뺴야할듯,,,
+                ControlCollisionTime(SkillData.Duration * SkillData.CollisionKeepingRatio);
 
                 yield return null;
             }
@@ -260,7 +283,8 @@ namespace STELLAREST_2D
             {
                 switch (CurrentSkill.SkillData.OriginTemplateID)
                 {
-                    case (int)Define.TemplateIDs.SkillType.PaladinSwing:
+                    case (int)Define.TemplateIDs.SkillType.PaladinMeleeSwing:
+                    case (int)Define.TemplateIDs.SkillType.KnightMeleeSwing:
                         {
                             mc.OnDamaged(Owner, CurrentSkill);
                         }

@@ -84,9 +84,9 @@ namespace STELLAREST_2D
             {
                 None = 200000,
                 
-                PaladinSwing = 200100,
-                KnightSwing,
-                PhantomKnightSwing,
+                PaladinMeleeSwing = 200100,
+                KnightMeleeSwing = 200104,
+                PhantomKnightMeleeSwing,
 
                 ThrowingStar = 200200,
                 LazerBolt = 200204,

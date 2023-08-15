@@ -46,7 +46,10 @@ namespace STELLAREST_2D
             return true;
         }
 
-        public void Ready() => AnimController.SetBool(READY, true);
+        public void OnReady() => AnimController.SetBool(READY, true);
+        public void OffReady() => AnimController.SetBool(READY, false);
+
+
         public void Idle() => AnimController.Play(IDLE);
         public void Walk() => AnimController.Play(WALK);
         public void Run() => AnimController.Play(RUN);

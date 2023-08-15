@@ -4,13 +4,15 @@ using UnityEngine;
 
 namespace STELLAREST_2D
 {
-    public class PaladinSwing : RepeatSkill // Projectile
+    public class MeleeSwing : RepeatSkill // Projectile
     {
         public void SetSwingInfo(CreatureController owner, int templateID,
             Vector3 indicatorAngle, float turningSide, float continuousAngle, float continuousFlipX)
         {
             base.SetSkillInfo(owner, templateID);
-            SkillType = Define.TemplateIDs.SkillType.PaladinSwing;
+
+            //SkillType = Define.TemplateIDs.SkillType.PaladinMeleeSwing;
+            SkillType = owner.SkillBook.PlayerDefaultSkill;
             Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.PlayerAttack);
 
             var particleRenderer = GetComponent<ParticleSystemRenderer>();
@@ -23,6 +25,7 @@ namespace STELLAREST_2D
 
             var main = GetComponent<ParticleSystem>().main;
             main.startRotation = Mathf.Deg2Rad * tempAngle.z * -1f;
+
             main.flipRotation = turningSide;
             // transform.position = pos;
             // transform.localScale = localScale;
@@ -40,9 +43,26 @@ namespace STELLAREST_2D
         public override void OnPreSpawned()
         {
             base.OnPreSpawned();
-            var emission = GetComponent<ParticleSystem>().emission;
-            emission.enabled = false;
-            GetComponent<BoxCollider2D>().enabled = false;
+
+            if (GetComponent<ParticleSystem>() != null)
+            {
+                var emission = GetComponent<ParticleSystem>().emission;
+                emission.enabled = false;
+            }
+            else
+            {
+                foreach(var particle in GetComponentsInChildren<ParticleSystem>())
+                {
+                    var emission = particle.emission;
+                    emission.enabled = false;
+                }
+            }
+
+            if (GetComponent<BoxCollider2D>() != null)
+                GetComponent<BoxCollider2D>().enabled = false;
+
+            // var emission = GetComponent<ParticleSystem>().emission;
+            // emission.enabled = false;
         }
     }
 }

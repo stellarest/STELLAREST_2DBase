@@ -63,9 +63,17 @@ namespace STELLAREST_2D
 
                 case Define.CreatureState.Attack:
                     {
-                        // 개선 필요
-                        PAC.Slash1H();
+                        // Weapon Type에 따ㄴ 개선 필요
+                        // TEMP
+                        if (CharaData.TemplateID == (int)Define.TemplateIDs.Player.Gary_Paladin)
+                            PAC.Slash1H();
+                        else
+                            PAC.Slash2H();
+
+                        // PAC.Slash1H();
+                        // PAC.Slash2H();
                         // PAC.Cast1H();
+
                         StartAttackPos = transform.position;
                     }
 
@@ -103,10 +111,14 @@ namespace STELLAREST_2D
             base.SetInfo(templateID);
             GetIndicator();
 
+            // Set Player Default Skill Automatically
+            this.SkillBook.PlayerDefaultSkill = (Define.TemplateIDs.SkillType)SkillBook.GetPlayerDefaultSkill(Define.InGameGrade.Normal).SkillData.TemplateID;
+
             // TODO
             // Define.TemplateIDs.SkillType.PaladinSwing : UI에서 최초 캐릭터 셀렉트시 결정 
-            AnimEvents.PlayerDefaultAttack = Define.TemplateIDs.SkillType.PaladinSwing;
-            AnimEvents.OnRepeatAttack += SkillBook.PlayerDefaultAttack;
+            //AnimEvents.PlayerDefaultAttack = Define.TemplateIDs.SkillType.PaladinMeleeSwing;
+            AnimEvents.PlayerDefaultSkill = this.SkillBook.PlayerDefaultSkill;
+            AnimEvents.OnRepeatAttack += SkillBook.GeneratePlayerAttack;
         }
 
         private void GetIndicator()
@@ -151,7 +163,7 @@ namespace STELLAREST_2D
                 if (_getReady == false)
                 {
                     _getReady = true;
-                    PAC.Ready();
+                    PAC.OnReady();
                 }
 
                 float degree = Mathf.Atan2(-dir.x, dir.y) * Mathf.Rad2Deg;
@@ -260,6 +272,25 @@ namespace STELLAREST_2D
             }
         }
 
+        public void UpgradePlayerAppearance(SkillBase newSkill)
+        {
+            StartCoroutine(CoUpgradePlayerAppearance(newSkill));
+        }
+
+        private IEnumerator CoUpgradePlayerAppearance(SkillBase newSkill)
+        {
+            SkillBook.StopSkills(); // 이걸로하면 나중에 Sequence Skill이 Active가 안될텐뎅
+            // StopPlayerDefaultSkill로 바꿔야함.
+
+            PAC.OffReady();
+            while (PAC.AnimController.GetCurrentAnimatorStateInfo(0).IsName("IdleMelee") == false)
+                yield return null;
+
+            Managers.Sprite.UpgradePlayerAppearance(this, newSkill.SkillData.InGameGrade);
+            PAC.OnReady();
+            newSkill.ActivateSkill();
+        }
+
         public override void OnDamaged(BaseController attacker, SkillBase skill)
                         => base.OnDamaged(attacker, skill);
 
@@ -273,10 +304,11 @@ namespace STELLAREST_2D
 
             if (Input.GetKeyDown(KeyCode.T))
             {
-                Debug.Log(SkillBook.GetCharacterSkill(Define.InGameGrade.Normal).SkillData.ModelingLabel);
-                Debug.Log(SkillBook.GetCharacterSkill(Define.InGameGrade.Rare).SkillData.ModelingLabel);
-                Debug.Log(SkillBook.GetCharacterSkill(Define.InGameGrade.Epic).SkillData.ModelingLabel);
-                Debug.Log(SkillBook.GetCharacterSkill(Define.InGameGrade.Legendary).SkillData.ModelingLabel);
+                
+                // Debug.Log(SkillBook.GetPlayerDefaultSkill(Define.InGameGrade.Normal).SkillData.ModelingLabel);
+                // Debug.Log(SkillBook.GetPlayerDefaultSkill(Define.InGameGrade.Rare).SkillData.ModelingLabel);
+                // Debug.Log(SkillBook.GetPlayerDefaultSkill(Define.InGameGrade.Epic).SkillData.ModelingLabel);
+                // Debug.Log(SkillBook.GetPlayerDefaultSkill(Define.InGameGrade.Legendary).SkillData.ModelingLabel);
 
                 // CoGlitchEffect(CreatureData.TemplateID);
                 // bChange = !bChange;
@@ -335,7 +367,11 @@ namespace STELLAREST_2D
                 SkillBook.UpgradeRepeatSkill((int)Define.TemplateIDs.SkillType.BombTrap);
 
             if (Input.GetKeyDown(KeyCode.Space))
-                SkillBook.UpgradeRepeatSkill((int)Define.TemplateIDs.SkillType.PaladinSwing);
+            {
+                //SkillBook.UpgradeRepeatSkill((int)Define.TemplateIDs.SkillType.PaladinMeleeSwing);
+                //SkillBook.UpgradeRepeatSkill((int)Define.TemplateIDs.SkillType.KnightMeleeSwing);
+                SkillBook.UpgradeRepeatSkill((int)SkillBook.PlayerDefaultSkill);
+            }
         }
 
         // private void TestVec()
@@ -355,7 +391,7 @@ namespace STELLAREST_2D
                 Managers.Game.OnMoveDirChanged -= OnMoveDirChangedHandler;
 
             if (this.IsValid())
-                AnimEvents.OnRepeatAttack -= SkillBook.PlayerDefaultAttack;
+                AnimEvents.OnRepeatAttack -= SkillBook.GeneratePlayerAttack;
         }
 
         // "GuardSword1_Rare.sprite"
