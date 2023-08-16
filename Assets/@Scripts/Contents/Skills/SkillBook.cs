@@ -28,7 +28,8 @@ namespace STELLAREST_2D
         public SkillBase GetPlayerDefaultSkill(Define.InGameGrade grade)
                 => (RepeatSkills[(int)grade - 1].SkillData.IsPlayerDefaultAttack == false) ? null : RepeatSkills[(int)grade - 1];
 
-        
+        public SkillBase GetCurrentPlayerDefaultSkill
+                => LearnedRepeatSkills.FirstOrDefault(s => s.SkillData.IsPlayerDefaultAttack == true);
 
         // +++++ OnRepeatAttackHandler에서 호출하게 됨 +++++
         public void GeneratePlayerAttack(Define.TemplateIDs.SkillType skillType)
@@ -121,7 +122,7 @@ namespace STELLAREST_2D
                 Vector3 shootDir = rot * originShootDir;
 
                 pc.SetProjectileInfo(Owner, skill, shootDir, pos, localScale, indicatorAngle, 
-                            turningSide, skillData.ContinuousSpeedRatios[i], angles[i], skillData.ContinuousFlipXs[i],
+                            turningSide, skillData.ContinuousSpeedRatios[i], angles[i], skillData.ContinuousFlipXs[i], skillData.ContinuousFlipYs[i],
                             interPolTargetXs[i], interPolTargetYs[i]);
 
                 yield return new WaitForSeconds(skillData.ContinuousSpacing);

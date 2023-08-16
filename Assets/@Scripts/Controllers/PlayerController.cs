@@ -63,12 +63,24 @@ namespace STELLAREST_2D
 
                 case Define.CreatureState.Attack:
                     {
-                        // Weapon Type에 따ㄴ 개선 필요
-                        // TEMP
-                        if (CharaData.TemplateID == (int)Define.TemplateIDs.Player.Gary_Paladin)
-                            PAC.Slash1H();
-                        else
-                            PAC.Slash2H();
+                        // 애초에 Weapon Type을 받아와서 재생하는게 더 깔끔할수도 있음.
+                        // 근데 이것도 ㄱㅊ
+                        switch (CharaData.TemplateID)
+                        {
+                            case (int)Define.TemplateIDs.Player.Gary_PhantomKnight:
+                            case (int)Define.TemplateIDs.Player.Gary_Paladin:
+                                {
+                                    PAC.Slash1H();
+                                }
+                                break;
+
+                            case (int)Define.TemplateIDs.Player.Gary_Knight:
+                            case (int)Define.TemplateIDs.Player.Lionel_Warrior:
+                                {
+                                    PAC.Slash2H();
+                                }
+                                break;
+                        }
 
                         // PAC.Slash1H();
                         // PAC.Slash2H();
@@ -111,7 +123,7 @@ namespace STELLAREST_2D
             base.SetInfo(templateID);
             GetIndicator();
 
-            // Set Player Default Skill Automatically
+            // +++++ Set Player Default Skill Automatically +++++
             this.SkillBook.PlayerDefaultSkill = (Define.TemplateIDs.SkillType)SkillBook.GetPlayerDefaultSkill(Define.InGameGrade.Normal).SkillData.TemplateID;
 
             // TODO

@@ -6,8 +6,8 @@ namespace STELLAREST_2D
 {
     public class MeleeSwing : RepeatSkill // Projectile
     {
-        public void SetSwingInfo(CreatureController owner, int templateID,
-            Vector3 indicatorAngle, float turningSide, float continuousAngle, float continuousFlipX)
+        public void SetSwingInfo(CreatureController owner, int templateID, Vector3 indicatorAngle, 
+        float turningSide, float continuousAngle, float continuousFlipX, float continuousFlipY)
         {
             base.SetSkillInfo(owner, templateID);
 
@@ -25,12 +25,11 @@ namespace STELLAREST_2D
 
             var main = GetComponent<ParticleSystem>().main;
             main.startRotation = Mathf.Deg2Rad * tempAngle.z * -1f;
-
             main.flipRotation = turningSide;
             // transform.position = pos;
             // transform.localScale = localScale;
-
-            particleRenderer.flip = new Vector3(continuousFlipX, 0, 0);
+         
+            particleRenderer.flip = new Vector3(continuousFlipX, continuousFlipY, 0);
             GetComponent<Collider2D>().enabled = true;
         }
 

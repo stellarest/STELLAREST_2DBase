@@ -48,31 +48,31 @@ namespace STELLAREST_2D
                 Gary_Knight = 100101,
                 Gary_PhantomKnight = 100102,
 
-                Reina_BowMaster = 100103,
+                Reina_ArrowMaster = 100103,
                 Reina_ElementalArcher = 100104,
-                Reina_Hunter = 100105,
+                Reina_ForestWarden = 100105,
 
                 Kenneth_Gambler = 100106,
                 Kenneth_Assassin = 100107,
                 Kenneth_Ninja = 100108,
 
-                Lionel_Barbarian = 100109,
-                Lionel_Warrior = 100110,
+                Lionel_Warrior = 100109,
+                Lionel_Barbarian = 100110,
                 Lionel_Berserker = 100111,
 
-                Fernando_Commander = 100112,
+                Fernando_Hunter = 100112,
                 Fernando_Desperado = 100113,
-                Fernando_HeavyShooter = 100113,
+                Fernando_Destroyer = 100114,
 
-                Chloe_Archmage = 100114,
-                Chloe_Trickster = 100115,
-                Chloe_Summoner = 100116,
+                Chloe_Archmage = 100115,
+                Chloe_Trickster = 100116,
+                Chloe_Summoner = 100117,
 
-                Stigma_UndeadKing = 100117,
-                Stigma_Pirate = 100118,
-                Stigma_Mutant = 100119,
+                Stigma_UndeadKing = 100118,
+                Stigma_Pirate = 100119,
+                Stigma_Mutant = 100120,
 
-                Eleanor_Queen = 100120 // Legendary Hidden Character from the start
+                Eleanor_Queen = 100121 // Legendary Hidden Character from the start
             }
 
             public enum Monster
@@ -86,8 +86,13 @@ namespace STELLAREST_2D
                 
                 PaladinMeleeSwing = 200100,
                 KnightMeleeSwing = 200104,
-                PhantomKnightMeleeSwing,
+                PhantomKnightMeleeSwing = 200108,
 
+                WarriorMeleeSwing = 200136,
+                BerserkerMeleeSwing = 200144,
+
+
+                // +++ Public Repeat Skills +++
                 ThrowingStar = 200200,
                 LazerBolt = 200204,
                 Boomerang = 200208,

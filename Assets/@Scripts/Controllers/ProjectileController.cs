@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening.Plugins.Options;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -38,7 +39,7 @@ namespace STELLAREST_2D
                 => skill.SetSkillInfo(owner, skill.SkillData.TemplateID);
 
         public void SetProjectileInfo(CreatureController owner, SkillBase currentSkill, Vector3 shootDir, Vector3 spawnPos, Vector3 localScale, Vector3 indicatorAngle,
-                    float turningSide = 0f, float continuousSpeedRatio = 1f, float continuousAngle = 0f, float continuousFlipX = 0f, 
+                    float turningSide = 0f, float continuousSpeedRatio = 1f, float continuousAngle = 0f, float continuousFlipX = 0f, float continuousFlipY = 0f, 
                     float? interPolTargetX = null, float? interPolTargetY = null)
         {
             this.Owner = owner;
@@ -68,9 +69,14 @@ namespace STELLAREST_2D
             {
                 case (int)Define.TemplateIDs.SkillType.PaladinMeleeSwing:
                 case (int)Define.TemplateIDs.SkillType.KnightMeleeSwing:
+                case (int)Define.TemplateIDs.SkillType.PhantomKnightMeleeSwing:
                     {
                         GetComponent<MeleeSwing>().SetSwingInfo(owner, currentSkill.SkillData.TemplateID, indicatorAngle,
-                                    turningSide, continuousAngle, continuousFlipX);
+                                    turningSide, continuousAngle, continuousFlipX, continuousFlipY);
+
+                        if (currentSkill.SkillData.OriginTemplateID == (int)Define.TemplateIDs.SkillType.PhantomKnightMeleeSwing)
+                            _shootDir = Quaternion.Euler(0, 0, continuousAngle * -1) * shootDir;
+
                         StartCoroutine(CoMeleeSwing());
                     }
                     break;
@@ -99,15 +105,13 @@ namespace STELLAREST_2D
             float projectileSpeed = SkillData.Speed * _continuousSpeedRatio;
             controllColDelta = 0f;
             float t = 0f;
+
             while (true)
             {
-                // ControlCollisionTime(SkillData.Duration - 0.1f); // 필요할 때 사용
-                if (Managers.Game.Player.IsMoving && _offParticle == false) // Moving Melee Attack
+                if (Managers.Game.Player.IsMoving && _offParticle == false && CurrentSkill.SkillData.Speed != 0f) // Moving Melee Attack
                 {
                     if (Managers.Game.Player.IsInLimitMaxPosX || Managers.Game.Player.IsInLimitMaxPosY)
                     {
-                        // float minSpeed = Managers.Game.Player.MovementPower + SkillData.Speed;
-                        // float maxSpeed = Owner.CreatureData.MoveSpeed + SkillData.Speed;
                         float minSpeed = Managers.Game.Player.MovementPower + projectileSpeed;
                         float maxSpeed = Owner.CharaData.MoveSpeed + projectileSpeed;
 
@@ -260,7 +264,6 @@ namespace STELLAREST_2D
                 _offParticle = true;
         }
 
-
         float controllColDelta = 0f;
         private void ControlCollisionTime(float controlTime)
         {
@@ -270,6 +273,17 @@ namespace STELLAREST_2D
                 GetComponent<Collider2D>().enabled = false;
                 controllColDelta = 0f;
             }
+        }
+
+        private IEnumerator CoDotDamage<T>(T cc, float delay = 0.15f) where T : CreatureController
+        {
+            float t = 0f;
+            while (t < delay)
+            {
+                t += Time.deltaTime;
+                yield return null;
+            }
+            cc.OnDamaged(Owner, CurrentSkill);
         }
 
         private void OnTriggerEnter2D(Collider2D other)
@@ -285,6 +299,7 @@ namespace STELLAREST_2D
                 {
                     case (int)Define.TemplateIDs.SkillType.PaladinMeleeSwing:
                     case (int)Define.TemplateIDs.SkillType.KnightMeleeSwing:
+                    case (int)Define.TemplateIDs.SkillType.PhantomKnightMeleeSwing:
                         {
                             mc.OnDamaged(Owner, CurrentSkill);
                         }
