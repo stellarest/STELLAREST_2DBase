@@ -38,23 +38,24 @@ namespace STELLAREST_2D
         public void SetSkillInfo<T>(CreatureController owner, T skill) where T : SkillBase
                 => skill.SetSkillInfo(owner, skill.SkillData.TemplateID);
 
-        public void SetProjectileInfo(CreatureController owner, SkillBase currentSkill, Vector3 shootDir, Vector3 spawnPos, Vector3 localScale, Vector3 indicatorAngle,
-                    float turningSide = 0f, float continuousSpeedRatio = 1f, float continuousAngle = 0f, float continuousFlipX = 0f, float continuousFlipY = 0f, 
-                    float? interPolTargetX = null, float? interPolTargetY = null)
+        public void SetProjectileInfo(CreatureController owner, SkillBase currentSkill, Vector3 shootDir, Vector3 spawnPos, Vector3 localScale, Vector3 indicatorAngle, float turningSide = 0f, 
+                    float continuousSpeedRatio = 1f, float continuousAngle = 0f, float continuousFlipX = 0f, float continuousFlipY = 0f, 
+                    float shootDirectionIntensity = 1f, float? interPolTargetX = null, float? interPolTargetY = null)
         {
             this.Owner = owner;
             this.CurrentSkill = currentSkill;
 
             this.SkillData = currentSkill.SkillData;
-            this._shootDir = shootDir;
+            this._shootDir = shootDir * shootDirectionIntensity;
             this._continuousSpeedRatio = continuousSpeedRatio;
 
             _initialTurningDir = turningSide;
             _offParticle = false;
 
             transform.position = spawnPos;
-            transform.localScale = localScale;
 
+            // +++++ Interpolate Scales +++++
+            transform.localScale = localScale;
             if (interPolTargetX.HasValue && interPolTargetY.HasValue)
             {
                 _isOnInterpolateScale = true;
@@ -70,12 +71,14 @@ namespace STELLAREST_2D
                 case (int)Define.TemplateIDs.SkillType.PaladinMeleeSwing:
                 case (int)Define.TemplateIDs.SkillType.KnightMeleeSwing:
                 case (int)Define.TemplateIDs.SkillType.PhantomKnightMeleeSwing:
+                case (int)Define.TemplateIDs.SkillType.WarriorMeleeSwing:
                     {
                         GetComponent<MeleeSwing>().SetSwingInfo(owner, currentSkill.SkillData.TemplateID, indicatorAngle,
                                     turningSide, continuousAngle, continuousFlipX, continuousFlipY);
 
-                        if (currentSkill.SkillData.OriginTemplateID == (int)Define.TemplateIDs.SkillType.PhantomKnightMeleeSwing)
-                            _shootDir = Quaternion.Euler(0, 0, continuousAngle * -1) * shootDir;
+                        if (currentSkill.SkillData.OriginTemplateID == (int)Define.TemplateIDs.SkillType.PhantomKnightMeleeSwing || 
+                            currentSkill.SkillData.OriginTemplateID == (int)Define.TemplateIDs.SkillType.WarriorMeleeSwing)
+                            _shootDir = Quaternion.Euler(0, 0, continuousAngle * -1) * _shootDir;
 
                         StartCoroutine(CoMeleeSwing());
                     }
@@ -300,6 +303,12 @@ namespace STELLAREST_2D
                     case (int)Define.TemplateIDs.SkillType.PaladinMeleeSwing:
                     case (int)Define.TemplateIDs.SkillType.KnightMeleeSwing:
                     case (int)Define.TemplateIDs.SkillType.PhantomKnightMeleeSwing:
+                        {
+                            mc.OnDamaged(Owner, CurrentSkill);
+                        }
+                        break;
+
+                    case (int)Define.TemplateIDs.SkillType.WarriorMeleeSwing:
                         {
                             mc.OnDamaged(Owner, CurrentSkill);
                         }

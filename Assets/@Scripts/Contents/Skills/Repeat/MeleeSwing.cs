@@ -6,6 +6,8 @@ namespace STELLAREST_2D
 {
     public class MeleeSwing : RepeatSkill // Projectile
     {
+        public float TestAngle = 0f;
+
         public void SetSwingInfo(CreatureController owner, int templateID, Vector3 indicatorAngle, 
         float turningSide, float continuousAngle, float continuousFlipX, float continuousFlipY)
         {
@@ -21,6 +23,8 @@ namespace STELLAREST_2D
             Vector3 tempAngle = indicatorAngle;
             // transform.localEulerAngles = tempAngle;
             tempAngle.z += continuousAngle;
+            // tempAngle.z += TestAngle;
+
             transform.rotation = Quaternion.Euler(tempAngle);
 
             var main = GetComponent<ParticleSystem>().main;

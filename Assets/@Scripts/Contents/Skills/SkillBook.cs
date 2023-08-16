@@ -35,10 +35,10 @@ namespace STELLAREST_2D
         public void GeneratePlayerAttack(Define.TemplateIDs.SkillType skillType)
         {
             RepeatSkill skill = RepeatSkills.FirstOrDefault(s => s.SkillData.TemplateID == (int)skillType);
-            StartCoroutine(GeneratePlayerAttack(skill));
+            StartCoroutine(CoGeneratePlayerAttack(skill));
         }
 
-        private IEnumerator GeneratePlayerAttack(SkillBase skill)
+        private IEnumerator CoGeneratePlayerAttack(SkillBase skill)
         {
             Data.SkillData skillData = skill.SkillData;
 
@@ -51,37 +51,27 @@ namespace STELLAREST_2D
             Vector3 localScale = Managers.Game.Player.AnimationLocalScale;
             localScale *= 0.8f;
 
-            // float scaleX = localScale.x + (localScale.x * skillData.ScaleUpRatio);
-            // float scaleY = localScale.x + (localScale.x * skillData.ScaleUpRatio);
-            // localScale = new Vector3(scaleX, scaleY, 1f);
-            // if (skillData.ContinuousCount != skillData.ContinuousSpeedRatios.Length)
-            // {
-            //     for (int i = 0; i < skillData.ContinuousSpeedRatios.Length; ++i)
-            //         skillData.ContinuousSpeedRatios[i] = 1f;
-            // }
-            // if (skillData.ContinuousCount != skillData.ContinuousAngles.Length)
-            // {
-            //     for (int i = 0; i < skillData.ContinuousAngles.Length; ++i)
-            //         skillData.ContinuousAngles[i] = 0f;
-            // }
+            // IsFacingRight로 판단해서 음수 곱해야함.
+            // Vector3 localScale = skill.transform.localScale;
 
             // +++++ 이건 FacingRight떄문에 이대로 해야할것임 +++++
-            float[] angles = new float[skillData.ContinuousAngles.Length];
+            float[] continuousAngles = new float[skillData.ContinuousAngles.Length];
             if (skillData.ContinuousAngles.Length > 0)
             {
-                angles = new float[skillData.ContinuousAngles.Length];
+                continuousAngles = new float[skillData.ContinuousAngles.Length];
                 if (Managers.Game.Player.IsFacingRight == false)
                 {
-                    for (int i = 0; i < angles.Length; ++i)
-                        angles[i] = skillData.ContinuousAngles[i] * -1;
+                    for (int i = 0; i < continuousAngles.Length; ++i)
+                        continuousAngles[i] = skillData.ContinuousAngles[i] * -1;
                 }
                 else
                 {
-                    for (int i = 0; i < angles.Length; ++i)
-                        angles[i] = skillData.ContinuousAngles[i];
+                    for (int i = 0; i < continuousAngles.Length; ++i)
+                        continuousAngles[i] = skillData.ContinuousAngles[i];
                 }
             }
 
+            // +++++ Interpolate Scales +++++
             float?[] interPolTargetXs = null;
             float?[] interPolTargetYs = null;
             if (skillData.InterpolateTargetScales.Length > 0)
@@ -118,12 +108,12 @@ namespace STELLAREST_2D
                 Managers.Game.Player.EndAttackPos = transform.position;
                 ProjectileController pc = Managers.Object.Spawn<ProjectileController>(transform.position, skillData.TemplateID);
 
-                Quaternion rot = Quaternion.Euler(0, 0, angles[i]);
+                Quaternion rot = Quaternion.Euler(0, 0, continuousAngles[i]);
                 Vector3 shootDir = rot * originShootDir;
 
-                pc.SetProjectileInfo(Owner, skill, shootDir, pos, localScale, indicatorAngle, 
-                            turningSide, skillData.ContinuousSpeedRatios[i], angles[i], skillData.ContinuousFlipXs[i], skillData.ContinuousFlipYs[i],
-                            interPolTargetXs[i], interPolTargetYs[i]);
+                pc.SetProjectileInfo(Owner, skill, shootDir, pos, localScale, indicatorAngle, turningSide, 
+                    skillData.ContinuousSpeedRatios[i], continuousAngles[i], skillData.ContinuousFlipXs[i], skillData.ContinuousFlipYs[i],
+                    skillData.ShootDirectionIntensities[i], interPolTargetXs[i], interPolTargetYs[i]);
 
                 yield return new WaitForSeconds(skillData.ContinuousSpacing);
             }

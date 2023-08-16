@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Linq.Expressions;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -10,6 +11,38 @@ namespace STELLAREST_2D
         public Define.CreatureType CreatureType { get; protected set; } = Define.CreatureType.Creture;
         
         public GameObject GoCCEffect { get; set; } = null;
+
+        private bool[] _ccStates = null;
+        public bool this[Define.CCState ccState]
+        {
+            get => _ccStates[(int)ccState];
+            set
+            {
+                _ccStates[(int)ccState] = value;
+                if (_ccStates[(int)Define.CCState.Stun])
+                {
+                    CreatureState = Define.CreatureState.Idle;
+
+                    // 넉백 상태인 경우에는 그대로 뒤로 쭈욱 밀려나간다
+                    if (_ccStates[(int)Define.CCState.KnockBack] == false)
+                        RigidBody.velocity = Vector2.zero;
+
+                    BodyCol.isTrigger = true;
+                    SkillBook.StopSkills();
+                }
+                else if (_ccStates[(int)Define.CCState.Stun] == false)
+                    SkillBook.Stopped = false;
+
+
+                if (_ccStates[(int)Define.CCState.KnockBack])
+                {
+
+                }
+
+                // 이후, 그밖에 ccState가 중복되었을 때 처리...
+            }
+        }
+
         protected Define.CCStatus _ccStatus = Define.CCStatus.None;
         public Define.CCStatus CCStatus
         {
@@ -107,6 +140,13 @@ namespace STELLAREST_2D
             {
                 Debug.LogAssertion("!!!!! Failed to load creature data !!!!!");
                 Debug.Break();
+            }
+
+            if (_ccStates == null)
+            {
+                _ccStates = new bool[(int)Define.CCStatus.Max];
+                for (int i = 0; i < (int)Define.CCStatus.Max; ++i)
+                    _ccStates[i] = false;
             }
 
             SetInitialStat(creatureData);
@@ -294,5 +334,8 @@ namespace STELLAREST_2D
 
         public void CoStartStun(CreatureController cc, GameObject goCCEffect, float duration) 
                 => StartCoroutine(Managers.CC.CoStartStun(cc, goCCEffect, duration));
+
+        public void CoStartKnockBack(CreatureController cc, float duration, float intensity)
+                => StartCoroutine(Managers.CC.CoStartKnockBack(cc, duration, intensity));
     }
 }

@@ -56,7 +56,7 @@ namespace STELLAREST_2D
                 return;
 
             if (mc.CharaData.Hp > 0)
-                Managers.CC.ApplyCC(mc, Define.CCStatus.Stun, 3f);
+                Managers.CC.ApplyCC<MonsterController>(mc, Define.CCStatus.Stun, 3f);
         }
     }
 }

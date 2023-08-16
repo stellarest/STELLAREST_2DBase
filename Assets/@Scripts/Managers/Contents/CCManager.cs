@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.Design.Serialization;
 using UnityEngine;
 
 namespace STELLAREST_2D
@@ -12,7 +13,7 @@ namespace STELLAREST_2D
         // Chicen : y - 7.83, scale : 2, 2
         // +++ 주의 사항 : CC만 담당한다 +++
         // 크리쳐의 HP가 몇 이상일때 적용하거나 안하는건 데미지를 전달하는 Trigger쪽에서 결정할일이다.
-        public void ApplyCC(CreatureController cc, Define.CCStatus ccStatus, float duration)
+        public void ApplyCC<T>(T cc, Define.CCStatus ccStatus, float duration, float knockBackIntensity = 1f) where T : CreatureController
         {
             if (cc?.IsValid() == false)
                 return;
@@ -20,17 +21,29 @@ namespace STELLAREST_2D
             switch (ccStatus)
             {
                 case Define.CCStatus.Stun:
-                {
-                    GameObject stunEffect = Managers.Effect.ShowStunEffect();
-                    //stunEffect.transform.position = ApplyPosition(cc);
-                    stunEffect.transform.localScale = ApplyScale(cc);
-                    cc.CoStartStun(cc, stunEffect, duration); // StartCoroutine만 cc에서 해주는것이다
-                }
-                break;
+                    {
+                        GameObject stunEffect = Managers.Effect.ShowStunEffect();
+                        //stunEffect.transform.position = ApplyPosition(cc);
+                        stunEffect.transform.localScale = ApplyCCEffectScale(cc);
+                        cc.CoStartStun(cc, stunEffect, duration); // StartCoroutine만 cc에서 해주는것이다
+                    }
+                    break;
+
+                case Define.CCStatus.KnockBack:
+                    cc.CoStartKnockBack(cc, duration, knockBackIntensity);
+                    break;
             }
         }
 
+        public IEnumerator CoStartKnockBack(CreatureController cc, float duration, float intensity)
+        {
+            cc.CCStatus = Define.CCStatus.KnockBack;
+
+            yield return null;
+        }
+
         // CC를 동시에 중복 적용 시켜야는데,,,
+        // CCStatus를 Creature마다 List같은걸로 관리하는게 좋을듯
         public IEnumerator CoStartStun(CreatureController cc, GameObject goCCEffect, float duration)
         {
             cc.GoCCEffect = goCCEffect;
@@ -42,10 +55,10 @@ namespace STELLAREST_2D
                 mc = cc.GetComponent<MonsterController>();
                 Managers.Sprite.SetMonsterFace(mc, Define.SpriteLabels.MonsterFace.Death);
             }
-            
+
             float t = 0f;
             float percent = 0f;
-            
+
             while (percent < 1f)
             {
                 goCCEffect.transform.position = ApplyPosition(cc);
@@ -53,7 +66,7 @@ namespace STELLAREST_2D
                 percent = t / duration;
                 yield return null;
             }
-            
+
             cc.GoCCEffect = null;
             Managers.Resource.Destroy(goCCEffect);
             cc.CCStatus = Define.CCStatus.None;
@@ -65,7 +78,7 @@ namespace STELLAREST_2D
             }
         }
 
-        private Vector3 ApplyScale(CreatureController cc)
+        private Vector3 ApplyCCEffectScale(CreatureController cc)
         {
             Define.CreatureType type = cc.CreatureType;
             switch (type)

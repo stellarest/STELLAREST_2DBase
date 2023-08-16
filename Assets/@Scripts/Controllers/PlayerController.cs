@@ -75,9 +75,14 @@ namespace STELLAREST_2D
                                 break;
 
                             case (int)Define.TemplateIDs.Player.Gary_Knight:
-                            case (int)Define.TemplateIDs.Player.Lionel_Warrior:
                                 {
                                     PAC.Slash2H();
+                                }
+                                break;
+
+                            case (int)Define.TemplateIDs.Player.Lionel_Warrior:
+                                {
+                                    PAC.Jab2H();
                                 }
                                 break;
                         }
