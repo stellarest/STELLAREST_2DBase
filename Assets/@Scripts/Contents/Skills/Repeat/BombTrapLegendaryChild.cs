@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Net.NetworkInformation;
 using UnityEngine;
 
 namespace STELLAREST_2D
@@ -52,11 +53,14 @@ namespace STELLAREST_2D
             if (mc.IsValid() == false)
                 return;
 
-            if (mc.CCStatus == Define.CCStatus.Stun && mc.GoCCEffect != null)
+            if (mc[Define.CCState.Stun] && mc.GoCCEffect != null)
                 return;
 
             if (mc.CharaData.Hp > 0)
-                Managers.CC.ApplyCC<MonsterController>(mc, Define.CCStatus.Stun, 3f);
+            {
+                // Managers.CC.ApplyCC<MonsterController>(mc, Define.CCState.Stun, 3f);
+                Managers.CC.ApplyStun<MonsterController>(mc, 3f);
+            }
         }
     }
 }

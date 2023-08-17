@@ -15,7 +15,8 @@ namespace STELLAREST_2D
         public enum WaveType { None, Elite, MiddleBoss, Boss }
         public enum SortingOrder { Map = 100, Player = 200, Item = 209, Monster = 210, Skill = 211, ParticleEffect = 230, CCStatus = 260 }
         public enum StageType { Normal, MiddleBoss, Boss, }
-        public enum CCStatus { None, Stun, KnockBack, Poisoned, Frozen, Cursed, Confused, Silent, Max }
+        // public enum CCStatus { None, Stun, KnockBack, Poisoned, Frozen, Cursed, Confused, Silent, Max }
+        public enum CCState { None, Stun, KnockBack, Poisoned, Bloody, Frozen, Cursed, Confused, Silent, Max }
 
         // public enum MonsterState { Idle = 0, Run = 1, Skill = 2, Attack = 3, Death = 9 }
 

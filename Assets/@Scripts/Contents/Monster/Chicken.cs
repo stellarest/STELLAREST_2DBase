@@ -12,7 +12,10 @@ namespace STELLAREST_2D
             base.Init();
 
             CreatureState = Define.CreatureState.Idle;
-            CCStatus = Define.CCStatus.None;
+            //CCStatus = Define.CCStatus.None;
+            ResetCCStates();
+            
+
             if (GoCCEffect != null)
             {
                 Managers.Resource.Destroy(GoCCEffect);
@@ -38,7 +41,7 @@ namespace STELLAREST_2D
         [ContextMenu("TEST_CC")]
         private void TEST_CC()
         {
-            Managers.CC.ApplyCC(this, Define.CCStatus.Stun, 5f);
+            //Managers.CC.ApplyCC(this, Define.CCStatus.Stun, 5f);
         }
 
         protected override void OnDead()

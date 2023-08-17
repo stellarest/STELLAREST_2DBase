@@ -106,8 +106,12 @@ namespace STELLAREST_2D
                 yield return null;
             }
 
-            if (CCStatus != Define.CCStatus.Stun)
+            if (_ccStates[(int)Define.CCState.Stun] == false && _ccStates[(int)Define.CCState.KnockBack])
                 CreatureState = Define.CreatureState.Run;
+
+            // LEGACY
+            // if (CCStatus != Define.CCStatus.Stun)
+            //     CreatureState = Define.CreatureState.Run;
         }
 
         public override bool Init()
@@ -132,8 +136,21 @@ namespace STELLAREST_2D
         // Run State
         private void FixedUpdate()
         {
-            if (CreatureState == Define.CreatureState.Death || CCStatus == Define.CCStatus.Stun)
+            if (CreatureState == Define.CreatureState.Death)
                 return;
+
+            if (_ccStates[(int)Define.CCState.Stun])
+                return;
+
+            if (_ccStates[(int)Define.CCState.KnockBack])
+                return;
+
+            // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+            // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+            // if (CreatureState == Define.CreatureState.Death || CCStatus == Define.CCStatus.Stun)
+            //     return;
+            // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+            // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
             // if (RigidBody.velocity != Vector2.zero)
             //     MAC.Run();

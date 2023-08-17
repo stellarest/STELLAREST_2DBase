@@ -23,8 +23,7 @@ namespace STELLAREST_2D
             Vector3 tempAngle = indicatorAngle;
             // transform.localEulerAngles = tempAngle;
             tempAngle.z += continuousAngle;
-            // tempAngle.z += TestAngle;
-
+            tempAngle.z += TestAngle;
             transform.rotation = Quaternion.Euler(tempAngle);
 
             var main = GetComponent<ParticleSystem>().main;
@@ -52,13 +51,11 @@ namespace STELLAREST_2D
                 var emission = GetComponent<ParticleSystem>().emission;
                 emission.enabled = false;
             }
-            else
+
+            foreach (var particle in GetComponentsInChildren<ParticleSystem>())
             {
-                foreach(var particle in GetComponentsInChildren<ParticleSystem>())
-                {
-                    var emission = particle.emission;
-                    emission.enabled = false;
-                }
+                var emission = particle.emission;
+                emission.enabled = false;
             }
 
             if (GetComponent<BoxCollider2D>() != null)

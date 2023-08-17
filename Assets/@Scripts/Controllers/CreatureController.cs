@@ -12,7 +12,7 @@ namespace STELLAREST_2D
         
         public GameObject GoCCEffect { get; set; } = null;
 
-        private bool[] _ccStates = null;
+        protected bool[] _ccStates = null;
         public bool this[Define.CCState ccState]
         {
             get => _ccStates[(int)ccState];
@@ -36,42 +36,58 @@ namespace STELLAREST_2D
 
                 if (_ccStates[(int)Define.CCState.KnockBack])
                 {
-
+                    // 점프모션이나 뒤로 걷는 모션도 있겠지만 일단 Idle
+                    CreatureState = Define.CreatureState.Idle;
+                    SkillBook.Stopped = false;
+                }
+                else
+                {
+                    SkillBook.Stopped = true;
                 }
 
                 // 이후, 그밖에 ccState가 중복되었을 때 처리...
             }
         }
 
-        protected Define.CCStatus _ccStatus = Define.CCStatus.None;
-        public Define.CCStatus CCStatus
+        public void ResetCCStates()
         {
-            get => _ccStatus;
-            set
+            if (_ccStates != null)
             {
-                _ccStatus = value;
-                switch (_ccStatus)
-                {
-                    case Define.CCStatus.None:
-                        {
-                            // 한 번 트리거가 켜졌으면 계속 유지해서 다른 몹이랑 겹쳐짐
-                            //BodyCol.isTrigger = false;
-                            SkillBook.Stopped = false;
-                            
-                        }
-                        break;
-
-                    case Define.CCStatus.Stun:
-                        {
-                            CreatureState = Define.CreatureState.Idle;
-                            RigidBody.velocity = Vector2.zero;
-                            BodyCol.isTrigger = true;
-                            SkillBook.StopSkills();
-                        }
-                        break;
-                }
+                for (int i = 0; i < _ccStates.Length; ++i)
+                    _ccStates[i] = false;
             }
         }
+
+        // LEGACY
+        // protected Define.CCStatus _ccStatus = Define.CCStatus.None;
+        // public Define.CCStatus CCStatus
+        // {
+        //     get => _ccStatus;
+        //     set
+        //     {
+        //         _ccStatus = value;
+        //         switch (_ccStatus)
+        //         {
+        //             case Define.CCStatus.None:
+        //                 {
+        //                     // 한 번 트리거가 켜졌으면 계속 유지해서 다른 몹이랑 겹쳐짐
+        //                     //BodyCol.isTrigger = false;
+        //                     SkillBook.Stopped = false;
+
+        //                 }
+        //                 break;
+
+        //             case Define.CCStatus.Stun:
+        //                 {
+        //                     CreatureState = Define.CreatureState.Idle;
+        //                     RigidBody.velocity = Vector2.zero;
+        //                     BodyCol.isTrigger = true;
+        //                     SkillBook.StopSkills();
+        //                 }
+        //                 break;
+        //         }
+        //     }
+        // }
 
         protected Define.CreatureState _cretureState = Define.CreatureState.Idle;
         public Define.CreatureState CreatureState
@@ -144,8 +160,8 @@ namespace STELLAREST_2D
 
             if (_ccStates == null)
             {
-                _ccStates = new bool[(int)Define.CCStatus.Max];
-                for (int i = 0; i < (int)Define.CCStatus.Max; ++i)
+                _ccStates = new bool[(int)Define.CCState.Max];
+                for (int i = 0; i < (int)Define.CCState.Max; ++i)
                     _ccStates[i] = false;
             }
 
@@ -335,7 +351,7 @@ namespace STELLAREST_2D
         public void CoStartStun(CreatureController cc, GameObject goCCEffect, float duration) 
                 => StartCoroutine(Managers.CC.CoStartStun(cc, goCCEffect, duration));
 
-        public void CoStartKnockBack(CreatureController cc, float duration, float intensity)
-                => StartCoroutine(Managers.CC.CoStartKnockBack(cc, duration, intensity));
+        public void CoStartKnockBack(CreatureController cc, Vector2 hitPoint, Vector2 knockBackDir, float duration, float intensity)
+                => StartCoroutine(Managers.CC.CoStartKnockBack(cc, hitPoint, knockBackDir, duration, intensity));
     }
 }

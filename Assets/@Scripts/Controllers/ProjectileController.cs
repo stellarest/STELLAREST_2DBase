@@ -1,7 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
-using DG.Tweening.Plugins.Options;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace STELLAREST_2D
@@ -311,6 +308,12 @@ namespace STELLAREST_2D
                     case (int)Define.TemplateIDs.SkillType.WarriorMeleeSwing:
                         {
                             mc.OnDamaged(Owner, CurrentSkill);
+                            // 맞는듯
+                            Vector3 hitPoint = other.ClosestPoint(new Vector2(transform.position.x, transform.position.y));
+                            // GameObject go = new GameObject() { name = "AA" };
+                            // go.transform.position = hitPoint;
+                            // Debug.Log("CHECK HIT POINT");
+                            // Debug.Break();
                         }
                         break;
 

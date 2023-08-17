@@ -45,7 +45,14 @@ namespace STELLAREST_2D
             Vector3 originShootDir = Managers.Game.Player.ShootDir;
             float turningSide = Managers.Game.Player.TurningAngle;
             Vector3 indicatorAngle = Managers.Game.Player.Indicator.eulerAngles;
-            Vector3 pos = Managers.Game.Player.transform.position;
+
+            Vector3 spawnPos = Vector3.zero;
+            if (skillData.IsOnFireSocket)
+                spawnPos = Managers.Game.Player.FireSocket;
+            else
+                spawnPos = Managers.Game.Player.transform.position;
+
+            //Vector3 pos = Managers.Game.Player.transform.position;
 
             // 1.25, 1.25, 1.25 to 1, 1, 1
             Vector3 localScale = Managers.Game.Player.AnimationLocalScale;
@@ -111,7 +118,7 @@ namespace STELLAREST_2D
                 Quaternion rot = Quaternion.Euler(0, 0, continuousAngles[i]);
                 Vector3 shootDir = rot * originShootDir;
 
-                pc.SetProjectileInfo(Owner, skill, shootDir, pos, localScale, indicatorAngle, turningSide, 
+                pc.SetProjectileInfo(Owner, skill, shootDir, spawnPos, localScale, indicatorAngle, turningSide, 
                     skillData.ContinuousSpeedRatios[i], continuousAngles[i], skillData.ContinuousFlipXs[i], skillData.ContinuousFlipYs[i],
                     skillData.ShootDirectionIntensities[i], interPolTargetXs[i], interPolTargetYs[i]);
 

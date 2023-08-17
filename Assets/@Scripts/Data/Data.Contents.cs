@@ -66,6 +66,7 @@ namespace STELLAREST_2D.Data
         public string PrimaryLabel;
         public string ModelingLabel;
         public bool IsPlayerDefaultAttack;
+        public bool IsOnFireSocket;
         public Define.InGameGrade InGameGrade;
         public float MinDamage;
         public float MaxDamage;
