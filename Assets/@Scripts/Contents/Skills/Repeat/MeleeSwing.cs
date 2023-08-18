@@ -16,23 +16,43 @@ namespace STELLAREST_2D
             //SkillType = Define.TemplateIDs.SkillType.PaladinMeleeSwing;
             SkillType = owner.SkillBook.PlayerDefaultSkill;
             Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.PlayerAttack);
+            
+            foreach (var particleRenderer in GetComponentsInChildren<ParticleSystemRenderer>())
+            {
+                particleRenderer.sortingOrder = (int)Define.SortingOrder.ParticleEffect;
 
-            var particleRenderer = GetComponent<ParticleSystemRenderer>();
-            particleRenderer.sortingOrder = (int)Define.SortingOrder.ParticleEffect;
+                Vector3 tempAngle = indicatorAngle;
+                // transform.localEulerAngles = tempAngle;
+                tempAngle.z += continuousAngle;
+                tempAngle.z += TestAngle;
+                transform.rotation = Quaternion.Euler(tempAngle);
 
-            Vector3 tempAngle = indicatorAngle;
-            // transform.localEulerAngles = tempAngle;
-            tempAngle.z += continuousAngle;
-            tempAngle.z += TestAngle;
-            transform.rotation = Quaternion.Euler(tempAngle);
+                var main = GetComponent<ParticleSystem>().main;
+                main.startRotation = Mathf.Deg2Rad * tempAngle.z * -1f;
+                main.flipRotation = turningSide;
+                // transform.position = pos;
+                // transform.localScale = localScale;
+                particleRenderer.flip = new Vector3(continuousFlipX, continuousFlipY, 0);
+            }
 
-            var main = GetComponent<ParticleSystem>().main;
-            main.startRotation = Mathf.Deg2Rad * tempAngle.z * -1f;
-            main.flipRotation = turningSide;
-            // transform.position = pos;
-            // transform.localScale = localScale;
-         
-            particleRenderer.flip = new Vector3(continuousFlipX, continuousFlipY, 0);
+            // +++ PARTICLE RENDERER TEMP +++
+            // var particleRenderer = GetComponent<ParticleSystemRenderer>();
+            // particleRenderer.sortingOrder = (int)Define.SortingOrder.ParticleEffect;
+
+            // Vector3 tempAngle = indicatorAngle;
+            // // transform.localEulerAngles = tempAngle;
+            // tempAngle.z += continuousAngle;
+            // tempAngle.z += TestAngle;
+            // transform.rotation = Quaternion.Euler(tempAngle);
+
+            // var main = GetComponent<ParticleSystem>().main;
+            // main.startRotation = Mathf.Deg2Rad * tempAngle.z * -1f;
+            // main.flipRotation = turningSide;
+            // // transform.position = pos;
+            // // transform.localScale = localScale;
+            // particleRenderer.flip = new Vector3(continuousFlipX, continuousFlipY, 0);
+            // +++ PARTICLE RENDERER TEMP END +++
+
             GetComponent<Collider2D>().enabled = true;
         }
 
@@ -46,11 +66,19 @@ namespace STELLAREST_2D
         {
             base.OnPreSpawned();
 
-            if (GetComponent<ParticleSystem>() != null)
-            {
-                var emission = GetComponent<ParticleSystem>().emission;
-                emission.enabled = false;
-            }
+            // if (GetComponent<ParticleSystem>() != null)
+            // {
+            //     var emission = GetComponent<ParticleSystem>().emission;
+            //     emission.enabled = false;
+            // }
+            // else
+            // {
+            //     foreach (var particle in GetComponentsInChildren<ParticleSystem>())
+            //     {
+            //         var emission = particle.emission;
+            //         emission.enabled = false;
+            //     }
+            // }
 
             foreach (var particle in GetComponentsInChildren<ParticleSystem>())
             {
@@ -58,11 +86,8 @@ namespace STELLAREST_2D
                 emission.enabled = false;
             }
 
-            if (GetComponent<BoxCollider2D>() != null)
-                GetComponent<BoxCollider2D>().enabled = false;
-
-            // var emission = GetComponent<ParticleSystem>().emission;
-            // emission.enabled = false;
+            foreach (var col in GetComponents<Collider2D>())
+                col.enabled = false;
         }
     }
 }

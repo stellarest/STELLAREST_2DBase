@@ -48,6 +48,7 @@ namespace STELLAREST_2D
             // 개선 요망
             // randPos = new Vector3(15, 2, 0);
             // randPos = new Vector3(4.5f, 5f, 0);
+            randPos = new Vector3(6, 0, 0);
             Chicken chicken = Managers.Object.Spawn<Chicken>(randPos, (int)Define.TemplateIDs.Monster.Chicken);
         }
     }

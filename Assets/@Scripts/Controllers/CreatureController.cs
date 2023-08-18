@@ -19,6 +19,7 @@ namespace STELLAREST_2D
             set
             {
                 _ccStates[(int)ccState] = value;
+
                 if (_ccStates[(int)Define.CCState.Stun])
                 {
                     CreatureState = Define.CreatureState.Idle;
@@ -40,10 +41,6 @@ namespace STELLAREST_2D
                     CreatureState = Define.CreatureState.Idle;
                     SkillBook.Stopped = false;
                 }
-                else
-                {
-                    SkillBook.Stopped = true;
-                }
 
                 // 이후, 그밖에 ccState가 중복되었을 때 처리...
             }
@@ -54,7 +51,12 @@ namespace STELLAREST_2D
             if (_ccStates != null)
             {
                 for (int i = 0; i < _ccStates.Length; ++i)
-                    _ccStates[i] = false;
+                {
+                    if (i == (int)Define.CCState.None)
+                        this[Define.CCState.None + i] = true;
+                    else
+                        this[Define.CCState.None + i] = false;
+                }
             }
         }
 
@@ -89,7 +91,7 @@ namespace STELLAREST_2D
         //     }
         // }
 
-        protected Define.CreatureState _cretureState = Define.CreatureState.Idle;
+        public Define.CreatureState _cretureState = Define.CreatureState.Idle;
         public Define.CreatureState CreatureState
         {
             get => _cretureState;
@@ -162,7 +164,20 @@ namespace STELLAREST_2D
             {
                 _ccStates = new bool[(int)Define.CCState.Max];
                 for (int i = 0; i < (int)Define.CCState.Max; ++i)
-                    _ccStates[i] = false;
+                {
+                    if (i == (int)Define.CCState.None)
+                    {
+                        // 이렇게 사용하면 인덱서 프로퍼티에 적용이 안됨
+                        //_ccStates[i] = true;
+                        Debug.Log(gameObject.name + "@@@");
+                        this[Define.CCState.None + i] = true;
+                    }
+                    else
+                    {
+                        //_ccStates[i] = false;
+                        this[Define.CCState.None + i] = false;
+                    }
+                }
             }
 
             SetInitialStat(creatureData);

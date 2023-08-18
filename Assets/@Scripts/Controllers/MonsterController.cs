@@ -106,7 +106,7 @@ namespace STELLAREST_2D
                 yield return null;
             }
 
-            if (_ccStates[(int)Define.CCState.Stun] == false && _ccStates[(int)Define.CCState.KnockBack])
+            if (_ccStates[(int)Define.CCState.Stun] == false && _ccStates[(int)Define.CCState.None])
                 CreatureState = Define.CreatureState.Run;
 
             // LEGACY
@@ -137,13 +137,19 @@ namespace STELLAREST_2D
         private void FixedUpdate()
         {
             if (CreatureState == Define.CreatureState.Death)
+            {
                 return;
+            }
 
             if (_ccStates[(int)Define.CCState.Stun])
+            {
                 return;
+            }
 
             if (_ccStates[(int)Define.CCState.KnockBack])
+            {
                 return;
+            }
 
             // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
             // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

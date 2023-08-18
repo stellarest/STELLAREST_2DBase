@@ -85,6 +85,12 @@ namespace STELLAREST_2D
                                     PAC.Jab2H();
                                 }
                                 break;
+
+                            case (int)Define.TemplateIDs.Player.Lionel_Berserker:
+                                {
+                                    PAC.SlashPaired();
+                                }
+                                break;
                         }
 
                         // PAC.Slash1H();

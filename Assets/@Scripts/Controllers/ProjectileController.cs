@@ -30,11 +30,6 @@ namespace STELLAREST_2D
         private Vector2 _interpolateStartScale = Vector2.zero;
         private Vector2 _interpolateTargetScale = Vector2.zero;
 
-        public float TestCollisionKeepingRatio = 1f; // +++ TEMP +++
-
-        public void SetSkillInfo<T>(CreatureController owner, T skill) where T : SkillBase
-                => skill.SetSkillInfo(owner, skill.SkillData.TemplateID);
-
         public void SetProjectileInfo(CreatureController owner, SkillBase currentSkill, Vector3 shootDir, Vector3 spawnPos, Vector3 localScale, Vector3 indicatorAngle, float turningSide = 0f, 
                     float continuousSpeedRatio = 1f, float continuousAngle = 0f, float continuousFlipX = 0f, float continuousFlipY = 0f, 
                     float shootDirectionIntensity = 1f, float? interPolTargetX = null, float? interPolTargetY = null)
@@ -69,12 +64,14 @@ namespace STELLAREST_2D
                 case (int)Define.TemplateIDs.SkillType.KnightMeleeSwing:
                 case (int)Define.TemplateIDs.SkillType.PhantomKnightMeleeSwing:
                 case (int)Define.TemplateIDs.SkillType.WarriorMeleeSwing:
+                case (int)Define.TemplateIDs.SkillType.BerserkerMeleeSwing:
                     {
                         GetComponent<MeleeSwing>().SetSwingInfo(owner, currentSkill.SkillData.TemplateID, indicatorAngle,
                                     turningSide, continuousAngle, continuousFlipX, continuousFlipY);
 
                         if (currentSkill.SkillData.OriginTemplateID == (int)Define.TemplateIDs.SkillType.PhantomKnightMeleeSwing || 
-                            currentSkill.SkillData.OriginTemplateID == (int)Define.TemplateIDs.SkillType.WarriorMeleeSwing)
+                            currentSkill.SkillData.OriginTemplateID == (int)Define.TemplateIDs.SkillType.WarriorMeleeSwing || 
+                            currentSkill.SkillData.OriginTemplateID == (int)Define.TemplateIDs.SkillType.BerserkerMeleeSwing)
                             _shootDir = Quaternion.Euler(0, 0, continuousAngle * -1) * _shootDir;
 
                         StartCoroutine(CoMeleeSwing());
@@ -134,7 +131,6 @@ namespace STELLAREST_2D
                     transform.localScale = Vector2.Lerp(_interpolateStartScale, _interpolateTargetScale, percent);
                 }
 
-                // 이것도 데이터 시트로 뺴야할듯,,,
                 ControlCollisionTime(SkillData.Duration * SkillData.CollisionKeepingRatio);
 
                 yield return null;
@@ -306,10 +302,11 @@ namespace STELLAREST_2D
                         break;
 
                     case (int)Define.TemplateIDs.SkillType.WarriorMeleeSwing:
+                    case (int)Define.TemplateIDs.SkillType.BerserkerMeleeSwing:
                         {
                             mc.OnDamaged(Owner, CurrentSkill);
                             // 맞는듯
-                            Vector3 hitPoint = other.ClosestPoint(new Vector2(transform.position.x, transform.position.y));
+                            // Vector3 hitPoint = other.ClosestPoint(new Vector2(transform.position.x, transform.position.y));
                             // GameObject go = new GameObject() { name = "AA" };
                             // go.transform.position = hitPoint;
                             // Debug.Log("CHECK HIT POINT");
