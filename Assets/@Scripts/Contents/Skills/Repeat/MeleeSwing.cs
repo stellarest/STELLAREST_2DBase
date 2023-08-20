@@ -25,7 +25,9 @@ namespace STELLAREST_2D
                 // transform.localEulerAngles = tempAngle;
                 tempAngle.z += continuousAngle;
                 tempAngle.z += TestAngle;
+
                 transform.rotation = Quaternion.Euler(tempAngle);
+                
 
                 var main = GetComponent<ParticleSystem>().main;
                 main.startRotation = Mathf.Deg2Rad * tempAngle.z * -1f;
@@ -53,7 +55,7 @@ namespace STELLAREST_2D
             // particleRenderer.flip = new Vector3(continuousFlipX, continuousFlipY, 0);
             // +++ PARTICLE RENDERER TEMP END +++
 
-            GetComponent<Collider2D>().enabled = true;
+            // GetComponent<Collider2D>().enabled = true;
         }
 
         protected override void DoSkillJob()

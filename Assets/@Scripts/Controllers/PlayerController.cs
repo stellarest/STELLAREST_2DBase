@@ -7,6 +7,8 @@ using Assets.HeroEditor.Common.Scripts.CharacterScripts;
 using UnityEngine.Rendering;
 using System.Reflection;
 using Unity.VisualScripting;
+using STELLAREST_2D.Data;
+using System.Runtime.CompilerServices;
 
 namespace STELLAREST_2D
 {
@@ -30,6 +32,8 @@ namespace STELLAREST_2D
         public Vector3 ShootDir => (_fireSocket.position - _indicator.position).normalized;
 
         public Transform LegR { get; private set; } = null;
+        public GameObject LeftHandMeleeWeapon { get; private set; } = null;
+        public GameObject Hair { get; private set; } = null;
     
 
         [field: SerializeField]
@@ -67,7 +71,6 @@ namespace STELLAREST_2D
                         // 근데 이것도 ㄱㅊ
                         switch (CharaData.TemplateID)
                         {
-                            case (int)Define.TemplateIDs.Player.Gary_PhantomKnight:
                             case (int)Define.TemplateIDs.Player.Gary_Paladin:
                                 {
                                     PAC.Slash1H();
@@ -80,13 +83,54 @@ namespace STELLAREST_2D
                                 }
                                 break;
 
-                            case (int)Define.TemplateIDs.Player.Lionel_Warrior:
+                            case (int)Define.TemplateIDs.Player.Gary_PhantomKnight:
+                                {
+                                    PAC.Slash1H();
+                                }
+                                break;
+
+                            case (int)Define.TemplateIDs.Player.Kenneth_Assassin:
+                                {
+                                    SkillData skillData = SkillBook.GetCurrentPlayerDefaultSkill.SkillData;
+                                    float animSpeed = skillData.AnimationSpeed;
+                                    PAC.AttackAnimSpeed(animSpeed);
+                                    if (skillData.InGameGrade < Define.InGameGrade.Legendary)
+                                        PAC.Jab1H();
+                                    else
+                                        PAC.JabPaired();
+                                }
+                                break;
+
+                            case (int)Define.TemplateIDs.Player.Kenneth_Thief:
+                                {
+                                    SkillData skillData = SkillBook.GetCurrentPlayerDefaultSkill.SkillData;
+                                    if (skillData.InGameGrade > Define.InGameGrade.Epic)
+                                        PAC.SlashDouble();
+                                    else
+                                        PAC.SlashPaired();
+                                }
+                                break;
+
+                           case (int)Define.TemplateIDs.Player.Lionel_Warrior:
                                 {
                                     PAC.Jab2H();
                                 }
                                 break;
 
+
                             case (int)Define.TemplateIDs.Player.Lionel_Berserker:
+                                {
+                                    PAC.SlashPaired();
+                                }
+                                break;
+
+                            case (int)Define.TemplateIDs.Player.Stigma_SkeletonKing:
+                                {
+                                    PAC.Slash2H();
+                                }
+                                break;
+
+                            case (int)Define.TemplateIDs.Player.Stigma_Pirate:
                                 {
                                     PAC.SlashPaired();
                                 }
@@ -121,6 +165,10 @@ namespace STELLAREST_2D
 
             GameObject LegR = Utils.FindChild(gameObject, "Leg[R]", true);
             this.LegR = Utils.FindChild(LegR, "Shin").transform;
+
+            GameObject ArmL = Utils.FindChild(gameObject, "ArmL", true);
+            LeftHandMeleeWeapon = Utils.FindChild(ArmL, "MeleeWeapon", true);
+            Hair = Utils.FindChild(gameObject, "Hair", true);
 
             CreatureState = Define.CreatureState.Idle;
 
@@ -309,7 +357,16 @@ namespace STELLAREST_2D
             while (PAC.AnimController.GetCurrentAnimatorStateInfo(0).IsName("IdleMelee") == false)
                 yield return null;
 
+            if (newSkill.SkillData.OriginTemplateID == (int)Define.TemplateIDs.SkillType.AssassinMeleeSwing &&
+                newSkill.SkillData.InGameGrade == Define.InGameGrade.Legendary)
+                LeftHandMeleeWeapon.GetComponent<SpriteRenderer>().enabled = true;
+
             Managers.Sprite.UpgradePlayerAppearance(this, newSkill.SkillData.InGameGrade);
+
+            if (newSkill.SkillData.OriginTemplateID == (int)Define.TemplateIDs.SkillType.ThiefMeleeSwing &&
+                newSkill.SkillData.InGameGrade > Define.InGameGrade.Rare)
+                Hair.GetComponent<SpriteMask>().isCustomRangeActive = false;
+
             PAC.OnReady();
             newSkill.ActivateSkill();
         }
@@ -396,6 +453,39 @@ namespace STELLAREST_2D
                 SkillBook.UpgradeRepeatSkill((int)SkillBook.PlayerDefaultSkill);
             }
         }
+
+        // private Coroutine _coPlayAnims = null;
+        // private IEnumerator CoPlayAnims(System.Action play1, System.Action play2)
+        // {
+        //     play1.Invoke();
+        //     yield return new WaitUntil(() => PAC.AnimController.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1f);
+        //     play2.Invoke();
+        //     yield return new WaitUntil(() => PAC.AnimController.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1f);
+        //     _coPlayAnims = null;
+        // }
+
+        // private IEnumerator WaitEndStateAndPlayAnim()
+        // {
+        //     PAC.Jab1H(); // Play Attack Anim1
+        //     while (true)
+        //     {
+        //         AnimatorStateInfo currentAnimInfo = PAC.AnimController.GetCurrentAnimatorStateInfo(0);
+        //         if (currentAnimInfo.normalizedTime >= 1f)
+        //         {
+        //             break;
+        //         }
+
+        //         Debug.Log("Waiting for animation to finish...");
+        //         yield return null;
+        //     }
+
+        //     Debug.Log("START !!!");
+        //     PAC.Jab2H(); // Play Attack Anim2
+        // }
+
+        //AnimatorStateInfo currentAnimationInfo = PAC.AnimController.GetCurrentAnimatorStateInfo(0);
+        // Debug.Log(PAC.AnimController.GetCurrentAnimatorClipInfo(0)[0].clip.name);
+        // Debug.Log(PAC.AnimController.GetCurrentAnimatorStateInfo(0).shortNameHash);
 
         // private void TestVec()
         // {

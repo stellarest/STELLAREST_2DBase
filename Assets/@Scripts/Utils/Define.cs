@@ -53,23 +53,23 @@ namespace STELLAREST_2D
                 Reina_ElementalArcher = 100104,
                 Reina_ForestWarden = 100105,
 
-                Kenneth_Gambler = 100106,
-                Kenneth_Assassin = 100107,
+                Kenneth_Assassin = 100106,
+                Kenneth_Thief = 100107,
                 Kenneth_Ninja = 100108,
 
                 Lionel_Warrior = 100109,
                 Lionel_Barbarian = 100110,
                 Lionel_Berserker = 100111,
 
-                Fernando_Hunter = 100112,
-                Fernando_Desperado = 100113,
-                Fernando_Destroyer = 100114,
+                Christian_Hunter = 100112,
+                Christian_Desperado = 100113,
+                Christian_Destroyer = 100114,
 
                 Chloe_Archmage = 100115,
                 Chloe_Trickster = 100116,
-                Chloe_Summoner = 100117,
+                Chloe_Frostweaver = 100117,
 
-                Stigma_UndeadKing = 100118,
+                Stigma_SkeletonKing = 100118,
                 Stigma_Pirate = 100119,
                 Stigma_Mutant = 100120,
 
@@ -89,8 +89,17 @@ namespace STELLAREST_2D
                 KnightMeleeSwing = 200104,
                 PhantomKnightMeleeSwing = 200108,
 
+
+                AssassinMeleeSwing = 200124,
+                ThiefMeleeSwing = 200128,
+
+
                 WarriorMeleeSwing = 200136,
                 BerserkerMeleeSwing = 200144,
+
+
+                SkeletonKingMeleeSwing = 200172,
+                PirateMeleeSwing = 200176,
 
 
                 // +++ Public Repeat Skills +++

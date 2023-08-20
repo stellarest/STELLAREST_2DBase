@@ -95,6 +95,7 @@ namespace STELLAREST_2D
                 go.transform.position = position;
 
                 ProjectileController pc = go.GetOrAddComponent<ProjectileController>();
+                pc.Init();
                 Projectiles.Add(pc);
 
                 return pc as T;

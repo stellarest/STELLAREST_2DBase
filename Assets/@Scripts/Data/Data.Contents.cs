@@ -71,6 +71,7 @@ namespace STELLAREST_2D.Data
         public float MinDamage;
         public float MaxDamage;
         public float Speed;
+        public float AnimationSpeed;
         public float Duration;
         public int ContinuousCount;
         public float ContinuousSpacing;

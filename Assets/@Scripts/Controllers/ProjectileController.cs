@@ -7,13 +7,19 @@ namespace STELLAREST_2D
     {
         private Rigidbody2D _rigid;
         public SkillBase CurrentSkill { get; private set; }
+        private Collider2D[] _colliders = null;
 
         public override bool Init()
         {
             base.Init();
             ObjectType = Define.ObjectType.Projectile;
 
-            _rigid = GetComponent<Rigidbody2D>();
+            if (_rigid == null)
+                _rigid = GetComponent<Rigidbody2D>();
+
+            if (_colliders == null)
+                _colliders = GetComponents<Collider2D>();
+
             return true;
         }
 
@@ -30,14 +36,20 @@ namespace STELLAREST_2D
         private Vector2 _interpolateStartScale = Vector2.zero;
         private Vector2 _interpolateTargetScale = Vector2.zero;
 
+        private void EnableColliders(bool enable)
+        {
+            for (int i = 0; i < _colliders.Length; ++i)
+                _colliders[i].enabled = enable;
+        }
+
         public void SetProjectileInfo(CreatureController owner, SkillBase currentSkill, Vector3 shootDir, Vector3 spawnPos, Vector3 localScale, Vector3 indicatorAngle, float turningSide = 0f, 
                     float continuousSpeedRatio = 1f, float continuousAngle = 0f, float continuousFlipX = 0f, float continuousFlipY = 0f, 
                     float shootDirectionIntensity = 1f, float? interPolTargetX = null, float? interPolTargetY = null)
         {
             this.Owner = owner;
             this.CurrentSkill = currentSkill;
+            this.SkillData = currentSkill.SkillData; // +++ ONLY SET IN THIS +++
 
-            this.SkillData = currentSkill.SkillData;
             this._shootDir = shootDir * shootDirectionIntensity;
             this._continuousSpeedRatio = continuousSpeedRatio;
 
@@ -63,16 +75,27 @@ namespace STELLAREST_2D
                 case (int)Define.TemplateIDs.SkillType.PaladinMeleeSwing:
                 case (int)Define.TemplateIDs.SkillType.KnightMeleeSwing:
                 case (int)Define.TemplateIDs.SkillType.PhantomKnightMeleeSwing:
+                case (int)Define.TemplateIDs.SkillType.AssassinMeleeSwing:
+                case (int)Define.TemplateIDs.SkillType.ThiefMeleeSwing:
                 case (int)Define.TemplateIDs.SkillType.WarriorMeleeSwing:
                 case (int)Define.TemplateIDs.SkillType.BerserkerMeleeSwing:
+                case (int)Define.TemplateIDs.SkillType.SkeletonKingMeleeSwing:
+                case (int)Define.TemplateIDs.SkillType.PirateMeleeSwing:
                     {
                         GetComponent<MeleeSwing>().SetSwingInfo(owner, currentSkill.SkillData.TemplateID, indicatorAngle,
                                     turningSide, continuousAngle, continuousFlipX, continuousFlipY);
 
-                        if (currentSkill.SkillData.OriginTemplateID == (int)Define.TemplateIDs.SkillType.PhantomKnightMeleeSwing || 
-                            currentSkill.SkillData.OriginTemplateID == (int)Define.TemplateIDs.SkillType.WarriorMeleeSwing || 
-                            currentSkill.SkillData.OriginTemplateID == (int)Define.TemplateIDs.SkillType.BerserkerMeleeSwing)
+                        EnableColliders(true);
+
+                        if (currentSkill.SkillData.OriginTemplateID == (int)Define.TemplateIDs.SkillType.PhantomKnightMeleeSwing ||
+                            currentSkill.SkillData.OriginTemplateID == (int)Define.TemplateIDs.SkillType.AssassinMeleeSwing ||
+                            currentSkill.SkillData.OriginTemplateID == (int)Define.TemplateIDs.SkillType.ThiefMeleeSwing ||
+                            currentSkill.SkillData.OriginTemplateID == (int)Define.TemplateIDs.SkillType.WarriorMeleeSwing ||
+                            currentSkill.SkillData.OriginTemplateID == (int)Define.TemplateIDs.SkillType.BerserkerMeleeSwing ||
+                            currentSkill.SkillData.OriginTemplateID == (int)Define.TemplateIDs.SkillType.PirateMeleeSwing)
+                        {
                             _shootDir = Quaternion.Euler(0, 0, continuousAngle * -1) * _shootDir;
+                        }
 
                         StartCoroutine(CoMeleeSwing());
                     }
@@ -87,7 +110,7 @@ namespace STELLAREST_2D
 
                 case (int)Define.TemplateIDs.SkillType.Boomerang:
                     {
-                        if (SkillData.InGameGrade != Define.InGameGrade.Legendary)
+                        if (currentSkill.SkillData.InGameGrade != Define.InGameGrade.Legendary)
                             StartCoroutine(CoBoomerang());
                         else
                             StartCoroutine(CoBoomerangLegendary());
@@ -99,7 +122,7 @@ namespace STELLAREST_2D
         //float desiredCompletedTime = skillData.Duration;
         private IEnumerator CoMeleeSwing()
         {
-            float projectileSpeed = SkillData.Speed * _continuousSpeedRatio;
+            float projectileSpeed = CurrentSkill.SkillData.Speed * _continuousSpeedRatio;
             controllColDelta = 0f;
             float t = 0f;
 
@@ -127,11 +150,11 @@ namespace STELLAREST_2D
                 if (_isOnInterpolateScale)
                 {
                     t += Time.deltaTime;
-                    float percent = t / SkillData.Duration;
+                    float percent = t / CurrentSkill.SkillData.Duration;
                     transform.localScale = Vector2.Lerp(_interpolateStartScale, _interpolateTargetScale, percent);
                 }
 
-                ControlCollisionTime(SkillData.Duration * SkillData.CollisionKeepingRatio);
+                ControlCollisionTime(CurrentSkill.SkillData.Duration * CurrentSkill.SkillData.CollisionKeepingRatio);
 
                 yield return null;
             }
@@ -144,7 +167,7 @@ namespace STELLAREST_2D
             {
                 selfRot += CurrentSkill.SkillData.SelfRotationZSpeed * Time.deltaTime;
                 transform.rotation = Quaternion.Euler(0, 0, selfRot);
-                float movementSpeed = Owner.CharaData.MoveSpeed + SkillData.Speed;
+                float movementSpeed = Owner.CharaData.MoveSpeed + CurrentSkill.SkillData.Speed;
 
                 transform.position += _shootDir * movementSpeed * Time.deltaTime;
                 yield return null;
@@ -154,7 +177,7 @@ namespace STELLAREST_2D
         private IEnumerator CoBoomerang()
         {
             float selfRot = 0f;
-            float currentSpeed = Owner.CharaData.MoveSpeed + SkillData.Speed;
+            float currentSpeed = Owner.CharaData.MoveSpeed + CurrentSkill.SkillData.Speed;
             float deceleration = 50f; // 감속 속도를 조절하려면 필요에 따라 값을 변경
 
             while (true)
@@ -182,7 +205,7 @@ namespace STELLAREST_2D
 
             float waitdelta = 0f;
             float selfRot = 0f;
-            float currentSpeed = Owner.CharaData.MoveSpeed + SkillData.Speed;
+            float currentSpeed = Owner.CharaData.MoveSpeed + CurrentSkill.SkillData.Speed;
             float deceleration = 50f;
 
             while (true)
@@ -201,7 +224,7 @@ namespace STELLAREST_2D
                 {
                     child.Trail.enabled = false;
                     Vector3 toOwnerDir = (Owner.transform.position - transform.position).normalized;
-                    transform.position += toOwnerDir * (SkillData.Speed) * Time.deltaTime;
+                    transform.position += toOwnerDir * (CurrentSkill.SkillData.Speed) * Time.deltaTime;
 
                     if ((transform.position - Owner.transform.position).sqrMagnitude < 1)
                     {
@@ -266,20 +289,27 @@ namespace STELLAREST_2D
             controllColDelta += Time.deltaTime;
             if (controlTime <= controllColDelta)
             {
-                GetComponent<Collider2D>().enabled = false;
+                EnableColliders(false);
                 controllColDelta = 0f;
             }
         }
 
-        private IEnumerator CoDotDamage<T>(T cc, float delay = 0.15f) where T : CreatureController
+        private IEnumerator CoDotDamage<T>(T cc, int dotCount, float delay = 0.1f) where T : CreatureController
         {
+            int currentCount = 0;
             float t = 0f;
-            while (t < delay)
+            while (currentCount < dotCount)
             {
                 t += Time.deltaTime;
+                if (t > delay)
+                {
+                    cc.OnDamaged(Owner, CurrentSkill);
+                    t = 0f;
+                    ++currentCount;
+                }
+
                 yield return null;
             }
-            cc.OnDamaged(Owner, CurrentSkill);
         }
 
         private void OnTriggerEnter2D(Collider2D other)
@@ -296,6 +326,8 @@ namespace STELLAREST_2D
                     case (int)Define.TemplateIDs.SkillType.PaladinMeleeSwing:
                     case (int)Define.TemplateIDs.SkillType.KnightMeleeSwing:
                     case (int)Define.TemplateIDs.SkillType.PhantomKnightMeleeSwing:
+                    case (int)Define.TemplateIDs.SkillType.AssassinMeleeSwing:
+                    case (int)Define.TemplateIDs.SkillType.ThiefMeleeSwing:
                         {
                             mc.OnDamaged(Owner, CurrentSkill);
                         }
@@ -313,6 +345,15 @@ namespace STELLAREST_2D
                             // Debug.Break();
                         }
                         break;
+
+                    case (int)Define.TemplateIDs.SkillType.SkeletonKingMeleeSwing:
+                        {
+                            if (CurrentSkill.SkillData.InGameGrade == Define.InGameGrade.Epic)
+                                StartCoroutine(CoDotDamage<MonsterController>(mc, 2, 0.05f));
+                            else
+                                mc.OnDamaged(Owner, CurrentSkill);
+                        }
+                        break;;
 
                     case (int)Define.TemplateIDs.SkillType.ThrowingStar:
                         if (_currentBounceCount == CurrentSkill.SkillData.BounceCount)

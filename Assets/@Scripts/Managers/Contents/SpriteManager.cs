@@ -268,7 +268,6 @@ namespace STELLAREST_2D
             }
 
             // Managers.Effect.UpgradePlayerBuffEffect(); 이것도 사실 Legendary에서만 약간 간지나게 적용하면 될 것 같음
-
             Managers.Effect.ChangeCreatureMaterials(pc);
         }
 
