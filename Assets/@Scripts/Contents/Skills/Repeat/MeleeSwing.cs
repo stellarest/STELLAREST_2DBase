@@ -13,7 +13,6 @@ namespace STELLAREST_2D
         {
             base.SetSkillInfo(owner, templateID);
 
-            //SkillType = Define.TemplateIDs.SkillType.PaladinMeleeSwing;
             SkillType = owner.SkillBook.PlayerDefaultSkill;
             Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.PlayerAttack);
             
@@ -36,26 +35,6 @@ namespace STELLAREST_2D
                 // transform.localScale = localScale;
                 particleRenderer.flip = new Vector3(continuousFlipX, continuousFlipY, 0);
             }
-
-            // +++ PARTICLE RENDERER TEMP +++
-            // var particleRenderer = GetComponent<ParticleSystemRenderer>();
-            // particleRenderer.sortingOrder = (int)Define.SortingOrder.ParticleEffect;
-
-            // Vector3 tempAngle = indicatorAngle;
-            // // transform.localEulerAngles = tempAngle;
-            // tempAngle.z += continuousAngle;
-            // tempAngle.z += TestAngle;
-            // transform.rotation = Quaternion.Euler(tempAngle);
-
-            // var main = GetComponent<ParticleSystem>().main;
-            // main.startRotation = Mathf.Deg2Rad * tempAngle.z * -1f;
-            // main.flipRotation = turningSide;
-            // // transform.position = pos;
-            // // transform.localScale = localScale;
-            // particleRenderer.flip = new Vector3(continuousFlipX, continuousFlipY, 0);
-            // +++ PARTICLE RENDERER TEMP END +++
-
-            // GetComponent<Collider2D>().enabled = true;
         }
 
         protected override void DoSkillJob()
@@ -67,21 +46,7 @@ namespace STELLAREST_2D
         public override void OnPreSpawned()
         {
             base.OnPreSpawned();
-
-            // if (GetComponent<ParticleSystem>() != null)
-            // {
-            //     var emission = GetComponent<ParticleSystem>().emission;
-            //     emission.enabled = false;
-            // }
-            // else
-            // {
-            //     foreach (var particle in GetComponentsInChildren<ParticleSystem>())
-            //     {
-            //         var emission = particle.emission;
-            //         emission.enabled = false;
-            //     }
-            // }
-
+            
             foreach (var particle in GetComponentsInChildren<ParticleSystem>())
             {
                 var emission = particle.emission;

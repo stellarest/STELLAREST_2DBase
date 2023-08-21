@@ -132,7 +132,11 @@ namespace STELLAREST_2D
 
                             case (int)Define.TemplateIDs.Player.Stigma_Pirate:
                                 {
-                                    PAC.SlashPaired();
+                                    SkillData skillData = SkillBook.GetCurrentPlayerDefaultSkill.SkillData;
+                                    if (skillData.InGameGrade < Define.InGameGrade.Legendary)
+                                        PAC.Jab1HLeft();
+                                    else
+                                        PAC.SlashPaired();
                                 }
                                 break;
                         }

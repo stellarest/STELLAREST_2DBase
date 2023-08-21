@@ -129,6 +129,7 @@ namespace STELLAREST_2D
             public const string DMG_TEXT_TO_PLAYER_DODGE = "DmgText_ToPlayerDodge.prefab"; // 플레이어에게만 적용
             public const string SPAWN_EFFECT = "SpawnEffect.prefab";
             public const string STUN_EFFECT = "StunEffect.prefab";
+            public const string CURSED_TEXT_EFFECT = "CursedTextEffect.prefab";
 
             public const string GEM = "Gem.prefab";
             public const string GEM_GATHER = "GemGather.prefab";

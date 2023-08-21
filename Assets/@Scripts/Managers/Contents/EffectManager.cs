@@ -427,6 +427,21 @@ namespace STELLAREST_2D
                  (Define.PrefabLabels.DMG_TEXT_TO_PLAYER_DODGE).GetComponent<DamageNumber>().Spawn(defaultSpawnPos);
         }
 
+        public void ShowCursedText(CreatureController cc)
+        {
+            if (cc.IsValid() == false)
+                return;
+
+            // +++ cc가 Cursed State가 아닐경우 Cursed +++
+            // +++ 이미 Cursed State라면 리턴 +++
+            // +++ 이부분은 CCState 만들때 작업해야함 +++
+
+            Vector3 defaultSpawnPos = cc.transform.position + (Vector3.up * 3f);
+            GameObject go = Managers.Resource.Instantiate(Define.PrefabLabels.CURSED_TEXT_EFFECT, pooling: true);
+            go.transform.position = defaultSpawnPos;
+            go.GetComponent<CustomAutoDestroy>().StartDestroy(1.5f);
+        }
+
         public void ShowEffectText(string prefabLabel, Vector3 pos, string text)
         {
             GameObject prefab = Managers.Resource.Load<GameObject>(prefabLabel);

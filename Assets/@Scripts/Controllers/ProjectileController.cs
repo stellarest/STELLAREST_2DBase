@@ -42,9 +42,9 @@ namespace STELLAREST_2D
                 _colliders[i].enabled = enable;
         }
 
-        public void SetProjectileInfo(CreatureController owner, SkillBase currentSkill, Vector3 shootDir, Vector3 spawnPos, Vector3 localScale, Vector3 indicatorAngle, float turningSide = 0f, 
-                    float continuousSpeedRatio = 1f, float continuousAngle = 0f, float continuousFlipX = 0f, float continuousFlipY = 0f, 
-                    float shootDirectionIntensity = 1f, float? interPolTargetX = null, float? interPolTargetY = null)
+        public void SetProjectileInfo(CreatureController owner, SkillBase currentSkill, Vector3 shootDir, Vector3 spawnPos, Vector3 localScale, Vector3 indicatorAngle, 
+                    float turningSide = 0f, float continuousSpeedRatio = 1f, float continuousAngle = 0f, float continuousFlipX = 0f, float continuousFlipY = 0f, 
+                    float shootDirectionIntensity = 1f, bool? isOnHit = false, float? interPolTargetX = null, float? interPolTargetY = null)
         {
             this.Owner = owner;
             this.CurrentSkill = currentSkill;
@@ -55,7 +55,6 @@ namespace STELLAREST_2D
 
             _initialTurningDir = turningSide;
             _offParticle = false;
-
             transform.position = spawnPos;
 
             // +++++ Interpolate Scales +++++
@@ -85,7 +84,10 @@ namespace STELLAREST_2D
                         GetComponent<MeleeSwing>().SetSwingInfo(owner, currentSkill.SkillData.TemplateID, indicatorAngle,
                                     turningSide, continuousAngle, continuousFlipX, continuousFlipY);
 
-                        EnableColliders(true);
+                        if (isOnHit == true || isOnHit == null)
+                            EnableColliders(true);
+                        else if (isOnHit == false)
+                            EnableColliders(false);
 
                         if (currentSkill.SkillData.OriginTemplateID == (int)Define.TemplateIDs.SkillType.PhantomKnightMeleeSwing ||
                             currentSkill.SkillData.OriginTemplateID == (int)Define.TemplateIDs.SkillType.AssassinMeleeSwing ||
@@ -348,12 +350,18 @@ namespace STELLAREST_2D
 
                     case (int)Define.TemplateIDs.SkillType.SkeletonKingMeleeSwing:
                         {
-                            if (CurrentSkill.SkillData.InGameGrade == Define.InGameGrade.Epic)
-                                StartCoroutine(CoDotDamage<MonsterController>(mc, 2, 0.05f));
-                            else
-                                mc.OnDamaged(Owner, CurrentSkill);
+                            mc.OnDamaged(Owner, CurrentSkill);
                         }
                         break;;
+
+                    case (int)Define.TemplateIDs.SkillType.PirateMeleeSwing:
+                        {
+                            mc.OnDamaged(Owner, CurrentSkill);
+                            // +++ CC State 만들때 작업하기 +++
+                            // if (CurrentSkill.SkillData.InGameGrade == Define.InGameGrade.Legendary)
+                            //     Managers.Effect.ShowCursedText(mc);
+                        }
+                        break;
 
                     case (int)Define.TemplateIDs.SkillType.ThrowingStar:
                         if (_currentBounceCount == CurrentSkill.SkillData.BounceCount)

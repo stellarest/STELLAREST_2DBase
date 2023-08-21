@@ -110,6 +110,21 @@ namespace STELLAREST_2D
                 }
             }
 
+            bool?[] isOnHits = null;
+            if (skillData.IsOnHits.Length > 0)
+            {
+                isOnHits = new bool?[skillData.IsOnHits.Length];
+                for (int i = 0; i < skillData.IsOnHits.Length; ++i)
+                    isOnHits[i] = skillData.IsOnHits[i];
+            }
+            else
+            {
+                isOnHits = new bool?[skillData.ContinuousCount];
+                for (int i = 0; i < skillData.ContinuousCount; ++i)
+                    isOnHits[i] = null;
+            }
+
+
             for (int i = 0; i < skillData.ContinuousCount; ++i)
             {
                 Managers.Game.Player.EndAttackPos = transform.position;
@@ -120,7 +135,7 @@ namespace STELLAREST_2D
 
                 pc.SetProjectileInfo(Owner, skill, shootDir, spawnPos, localScale, indicatorAngle, turningSide, 
                     skillData.ContinuousSpeedRatios[i], continuousAngles[i], skillData.ContinuousFlipXs[i], skillData.ContinuousFlipYs[i],
-                    skillData.ShootDirectionIntensities[i], interPolTargetXs[i], interPolTargetYs[i]);
+                    skillData.ShootDirectionIntensities[i], isOnHits[i], interPolTargetXs[i], interPolTargetYs[i]);
 
                 yield return new WaitForSeconds(skillData.ContinuousSpacing);
             }
