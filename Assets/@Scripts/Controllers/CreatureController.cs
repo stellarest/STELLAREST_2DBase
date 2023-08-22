@@ -244,6 +244,7 @@ namespace STELLAREST_2D
                     if (primaryKey.Contains("MeleeSwing"))
                         className = Define.NameSpaceLabels.STELLAREST_2D + "." + "MeleeSwing";
 
+
                     if (typeof(RepeatSkill).IsAssignableFrom(System.Type.GetType(className)))
                     {
                         RepeatSkill repeatSkill = go.GetOrAddComponent<RepeatSkill>();

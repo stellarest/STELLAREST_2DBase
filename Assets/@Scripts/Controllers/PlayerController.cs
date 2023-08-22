@@ -454,7 +454,11 @@ namespace STELLAREST_2D
             {
                 //SkillBook.UpgradeRepeatSkill((int)Define.TemplateIDs.SkillType.PaladinMeleeSwing);
                 //SkillBook.UpgradeRepeatSkill((int)Define.TemplateIDs.SkillType.KnightMeleeSwing);
-                SkillBook.UpgradeRepeatSkill((int)SkillBook.PlayerDefaultSkill);
+
+                if (CharaData.TemplateID != (int)Define.TemplateIDs.Player.Stigma_Mutant)
+                    SkillBook.UpgradeRepeatSkill((int)SkillBook.PlayerDefaultSkill);
+                else
+                    SkillBook.UpgradeRepeatSkill((int)Define.TemplateIDs.SkillType.DeathClaw);
             }
         }
 

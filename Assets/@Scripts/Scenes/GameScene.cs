@@ -88,7 +88,8 @@ namespace STELLAREST_2D
 
             // +++ STIGMA +++
             // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Stigma_SkeletonKing);
-            var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Stigma_Pirate);
+            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Stigma_Pirate);
+            var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Stigma_Mutant);
 
             // Camera.main.GetComponent<CameraController>().Target = player.gameObject;
             // GameObject.Find("CMcam").GetComponent<CameraController>().SetTarget(player.gameObject);

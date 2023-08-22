@@ -100,6 +100,7 @@ namespace STELLAREST_2D
 
                 SkeletonKingMeleeSwing = 200172,
                 PirateMeleeSwing = 200176,
+                DeathClaw = 200180,
 
 
                 // +++ Public Repeat Skills +++
@@ -137,6 +138,7 @@ namespace STELLAREST_2D
             public const string GEM_EXPLOSION_LARGE = "GemExplosion_Large.prefab";
 
             public const string DUST = "Dust.prefab";
+            public const string DEATH_CLAW_SLASH = "DeathClawSlash.prefab";
         }
 
         public static class SpriteLabels
