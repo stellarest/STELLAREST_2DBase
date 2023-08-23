@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Rendering;
 using UnityEngine;
 
 namespace STELLAREST_2D
@@ -7,6 +8,9 @@ namespace STELLAREST_2D
     public class DeathClaw : RepeatSkill
     {
         private Collider2D _col;
+        private DeathClaw _current;
+        private Vector3 _startSize;
+        private Vector3 _endSize;
 
         public override void SetSkillInfo(CreatureController owner, int templateID)
         {
@@ -28,8 +32,16 @@ namespace STELLAREST_2D
         protected override void DoSkillJob()
         {
             DeathClaw deathClaw = Managers.Resource.Instantiate(SkillData.PrimaryLabel, pooling: false).GetComponent<DeathClaw>();
+            _current = deathClaw;
+
+            _startSize = _current.transform.localScale;
+            _endSize = _startSize + (_startSize * 0.5f);
+
             deathClaw.SetSkillInfo(this.Owner, SkillData.TemplateID);
             StartCoroutine(CoDeathClaw(deathClaw));
+
+            if (SkillData.InGameGrade == Define.InGameGrade.Legendary)
+                StartCoroutine(CoPingPongScale(deathClaw));
         }
 
         private IEnumerator CoDeathClaw(DeathClaw deathClaw)
@@ -38,16 +50,42 @@ namespace STELLAREST_2D
             while (true)
             {
                 deathClaw.transform.position = Owner.transform.position;
-
                 t += Time.deltaTime;
-                if (t > 0.1f)
+                if (t > SkillData.CoolTime)
                 {
+                    Debug.Log(SkillData.CoolTime);
                     deathClaw._col.enabled = !(deathClaw._col.enabled);
                     t = 0f;
                 }
 
                 yield return null;
             }
+        }
+
+        private IEnumerator CoPingPongScale(DeathClaw deathClaw)
+        {
+            while (true)
+            {
+                yield return new WaitForSeconds(3f);
+                yield return new WaitUntil(() => ToScale(deathClaw, _startSize, _endSize));
+                yield return new WaitForSeconds(3f);
+                yield return new WaitUntil(() => ToScale(deathClaw, _endSize, _startSize));
+            }
+        }
+
+        private float _scaleDelta = 0f;
+        private bool ToScale(DeathClaw deathClaw, Vector3 startScale, Vector3 endScale)
+        {
+            _scaleDelta += Time.deltaTime;
+            float percent = _scaleDelta / 3;
+            deathClaw.transform.localScale = Vector3.Lerp(startScale, endScale, percent);
+            if (percent >= 1f)
+            {
+                _scaleDelta = 0f;
+                return true;
+            }
+
+            return false;
         }
 
         public override void OnPreSpawned()
@@ -71,12 +109,29 @@ namespace STELLAREST_2D
 
             if (Managers.Collision.CheckCollisionTarget(Define.CollisionLayers.MonsterBody, other.gameObject.layer))
             {
+                GameObject go = null;
                 // 생성만
-                GameObject go = Managers.Resource.Instantiate(Define.PrefabLabels.DEATH_CLAW_SLASH, pooling: true);
+                if (SkillData.InGameGrade < Define.InGameGrade.Legendary)
+                    go = Managers.Resource.Instantiate(Define.PrefabLabels.DEATH_CLAW_SLASH, pooling: true);
+                else
+                    go = Managers.Resource.Instantiate(Define.PrefabLabels.DEATH_CLAW_SLASH_LEGENDARY, pooling: true);
+
                 go.GetComponent<DeathClawSlash>().Parent = this;
                 go.transform.position = mc.Body.transform.position;
                 go.transform.rotation = Quaternion.Euler(0, 0, Random.Range(0, 360f));
+
+                if (SkillData.InGameGrade == Define.InGameGrade.Legendary)
+                {
+                    go = Managers.Resource.Instantiate(Define.PrefabLabels.IMPACT_BLOODY_EFFECT, pooling: true);
+                    go.transform.position = mc.Body.transform.position;
+                }
             }
+        }
+
+        private void OnDisable()
+        {
+            if (_current != null)
+                Managers.Resource.Destroy(_current.gameObject);
         }
     }
 }

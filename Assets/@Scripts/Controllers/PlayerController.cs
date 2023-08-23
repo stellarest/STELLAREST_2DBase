@@ -358,6 +358,7 @@ namespace STELLAREST_2D
             // StopPlayerDefaultSkill로 바꿔야함.
 
             PAC.OffReady();
+
             while (PAC.AnimController.GetCurrentAnimatorStateInfo(0).IsName("IdleMelee") == false)
                 yield return null;
 

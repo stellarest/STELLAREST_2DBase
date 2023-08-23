@@ -163,6 +163,8 @@ namespace STELLAREST_2D
                 }
 
                 RepeatSkill newSkill = RepeatSkills.FirstOrDefault(s => s.SkillData.TemplateID == originTemplateID + (int)latestSkill.SkillData.InGameGrade);
+                
+                Debug.Log(latestSkill.SkillData.Name + " Deactivate !!");
                 LearnedRepeatSkills.Remove(latestSkill);
                 latestSkill.DeactivateSkill();
                 LearnedRepeatSkills.Add(newSkill);

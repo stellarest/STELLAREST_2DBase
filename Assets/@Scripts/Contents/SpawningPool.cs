@@ -7,7 +7,7 @@ namespace STELLAREST_2D
     public class SpawningPool : MonoBehaviour
     {
         private float _spawnInterval = 0.5f; // 이것도 나중에 데이터 시트로 뺴야함
-        private const int MaxMonsterCount = 1; // 나중에 데이터 시트로 빼야함
+        private const int MaxMonsterCount = 2; // 나중에 데이터 시트로 빼야함
 
         private Coroutine _coUpdateSpawningPool;
         public bool Stopped { get; set; } = false;
@@ -26,6 +26,7 @@ namespace STELLAREST_2D
             }
         }
 
+int i = 0;
         private void TrySpawn()
         {
             if (Stopped)
@@ -48,7 +49,8 @@ namespace STELLAREST_2D
             // 개선 요망
             // randPos = new Vector3(15, 2, 0);
             // randPos = new Vector3(4.5f, 5f, 0);
-            randPos = new Vector3(6, 0, 0);
+            randPos = new Vector3(6 + i, 0, 0);
+            i += 6;
             Chicken chicken = Managers.Object.Spawn<Chicken>(randPos, (int)Define.TemplateIDs.Monster.Chicken);
         }
     }

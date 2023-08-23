@@ -139,6 +139,8 @@ namespace STELLAREST_2D
 
             public const string DUST = "Dust.prefab";
             public const string DEATH_CLAW_SLASH = "DeathClawSlash.prefab";
+            public const string DEATH_CLAW_SLASH_LEGENDARY = "DeathClawSlash_Legendary.prefab";
+            public const string IMPACT_BLOODY_EFFECT = "ImpactBloodyEffect.prefab";
         }
 
         public static class SpriteLabels
