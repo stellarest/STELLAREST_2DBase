@@ -9,6 +9,11 @@ using System.Reflection;
 using Unity.VisualScripting;
 using STELLAREST_2D.Data;
 using System.Runtime.CompilerServices;
+using HeroEditor.Common;
+using System.Transactions;
+using Cinemachine.Utility;
+using System.Security.Cryptography;
+using JetBrains.Annotations;
 
 namespace STELLAREST_2D
 {
@@ -32,9 +37,10 @@ namespace STELLAREST_2D
         public Vector3 ShootDir => (_fireSocket.position - _indicator.position).normalized;
 
         public Transform LegR { get; private set; } = null;
+        public Transform ArmL { get; private set; } = null;
         public GameObject LeftHandMeleeWeapon { get; private set; } = null;
         public GameObject Hair { get; private set; } = null;
-    
+
 
         [field: SerializeField]
         public float TurningAngle { get; private set; }
@@ -76,18 +82,26 @@ namespace STELLAREST_2D
                                     PAC.Slash1H();
                                 }
                                 break;
-
                             case (int)Define.TemplateIDs.Player.Gary_Knight:
                                 {
                                     PAC.Slash2H();
                                 }
                                 break;
-
                             case (int)Define.TemplateIDs.Player.Gary_PhantomKnight:
                                 {
                                     PAC.Slash1H();
                                 }
                                 break;
+
+
+
+                            case (int)Define.TemplateIDs.Player.Reina_ArrowMaster:
+                                {
+                                    PAC.SimpleBowShot();
+                                }
+                                break;
+
+
 
                             case (int)Define.TemplateIDs.Player.Kenneth_Assassin:
                                 {
@@ -100,7 +114,6 @@ namespace STELLAREST_2D
                                         PAC.JabPaired();
                                 }
                                 break;
-
                             case (int)Define.TemplateIDs.Player.Kenneth_Thief:
                                 {
                                     SkillData skillData = SkillBook.GetCurrentPlayerDefaultSkill.SkillData;
@@ -111,25 +124,26 @@ namespace STELLAREST_2D
                                 }
                                 break;
 
-                           case (int)Define.TemplateIDs.Player.Lionel_Warrior:
+
+
+                            case (int)Define.TemplateIDs.Player.Lionel_Warrior:
                                 {
                                     PAC.Jab2H();
                                 }
                                 break;
-
-
                             case (int)Define.TemplateIDs.Player.Lionel_Berserker:
                                 {
                                     PAC.SlashPaired();
                                 }
                                 break;
 
+
+
                             case (int)Define.TemplateIDs.Player.Stigma_SkeletonKing:
                                 {
                                     PAC.Slash2H();
                                 }
                                 break;
-
                             case (int)Define.TemplateIDs.Player.Stigma_Pirate:
                                 {
                                     SkillData skillData = SkillBook.GetCurrentPlayerDefaultSkill.SkillData;
@@ -144,7 +158,6 @@ namespace STELLAREST_2D
                         // PAC.Slash1H();
                         // PAC.Slash2H();
                         // PAC.Cast1H();
-
                         StartAttackPos = transform.position;
                     }
 
@@ -170,8 +183,8 @@ namespace STELLAREST_2D
             GameObject LegR = Utils.FindChild(gameObject, "Leg[R]", true);
             this.LegR = Utils.FindChild(LegR, "Shin").transform;
 
-            GameObject ArmL = Utils.FindChild(gameObject, "ArmL", true);
-            LeftHandMeleeWeapon = Utils.FindChild(ArmL, "MeleeWeapon", true);
+            ArmL = Utils.FindChild(gameObject, "ArmL", true).transform;
+            LeftHandMeleeWeapon = Utils.FindChild(ArmL.gameObject, "MeleeWeapon", true);
             Hair = Utils.FindChild(gameObject, "Hair", true);
 
             CreatureState = Define.CreatureState.Idle;
@@ -225,6 +238,7 @@ namespace STELLAREST_2D
                 => (EndAttackPos - StartAttackPos).magnitude;
 
         private bool _getReady = false;
+
         public void MoveByJoystick()
         {
             Vector3 dir = MoveDir.normalized * CharaData.MoveSpeed * Time.deltaTime;
@@ -238,11 +252,20 @@ namespace STELLAREST_2D
                 if (_getReady == false)
                 {
                     _getReady = true;
+
+                    if (CharaData.TemplateID != (int)Define.TemplateIDs.Player.Stigma_Mutant)
+                        SkillBook.UpgradeRepeatSkill((int)SkillBook.PlayerDefaultSkill);
+                    else
+                        SkillBook.UpgradeRepeatSkill((int)Define.TemplateIDs.SkillType.DeathClaw);
+
                     PAC.OnReady();
                 }
 
                 float degree = Mathf.Atan2(-dir.x, dir.y) * Mathf.Rad2Deg;
-                _indicator.eulerAngles = new Vector3(0, 0, degree);
+                //_indicator.eulerAngles = new Vector3(0, 0, degree);
+                //_indicator.rotation = Quaternion.Euler(0, 0, degree);
+                _indicator.localRotation = Quaternion.Euler(0, 0, degree);                
+
                 Turn(degree);
                 // InGameLimitPos(transform.position);
                 Managers.Stage.SetInLimitPos(this);
@@ -256,9 +279,15 @@ namespace STELLAREST_2D
         {
             TurningAngle = Mathf.Sign(angle); // 각도 양수1, 음수-1
             if (TurningAngle < 0)
+            {
                 LookAtDir = LookAtDirection.Right;
+                ARM_BOW_FIXED_ANGLE = 110f;
+            }
             else
+            {
                 LookAtDir = LookAtDirection.Left;
+                ARM_BOW_FIXED_ANGLE = -110f;
+            }
 
             Vector3 turnChara = new Vector3(TurningAngle * Define.PlayerController.CONSTANT_SCALE_X * -1f,
                                         Define.PlayerController.CONSTANT_SCALE_Y, Define.PlayerController.CONSTANT_SCALE_Z);
@@ -337,6 +366,8 @@ namespace STELLAREST_2D
                 CreatureState = Define.CreatureState.Idle;
                 // _indicator.gameObject.SetActive(false);
                 FireSocketSpriteRenderer.enabled = false;
+                FireSocketSpriteRenderer.enabled = true;
+
             }
             else
             {
@@ -344,6 +375,7 @@ namespace STELLAREST_2D
                 // _indicator.gameObject.SetActive(true);
                 // FireSocketSpriteRenderer.enabled = true;
                 FireSocketSpriteRenderer.enabled = false; // 냐중에 어떻게 해야할지 고쳐야함
+                FireSocketSpriteRenderer.enabled = true;
             }
         }
 
@@ -389,7 +421,7 @@ namespace STELLAREST_2D
 
             if (Input.GetKeyDown(KeyCode.T))
             {
-                
+
                 // Debug.Log(SkillBook.GetPlayerDefaultSkill(Define.InGameGrade.Normal).SkillData.ModelingLabel);
                 // Debug.Log(SkillBook.GetPlayerDefaultSkill(Define.InGameGrade.Rare).SkillData.ModelingLabel);
                 // Debug.Log(SkillBook.GetPlayerDefaultSkill(Define.InGameGrade.Epic).SkillData.ModelingLabel);
@@ -463,49 +495,65 @@ namespace STELLAREST_2D
             }
         }
 
-        // private Coroutine _coPlayAnims = null;
-        // private IEnumerator CoPlayAnims(System.Action play1, System.Action play2)
-        // {
-        //     play1.Invoke();
-        //     yield return new WaitUntil(() => PAC.AnimController.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1f);
-        //     play2.Invoke();
-        //     yield return new WaitUntil(() => PAC.AnimController.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1f);
-        //     _coPlayAnims = null;
-        // }
+        public float ARM_BOW_FIXED_ANGLE = 110f;
+        private void LateUpdate()
+        {
+            //Debug.Log("Angle : " + Vector2.Angle(ArmL.transform.localPosition, Indicator.localPosition));
+            if (_getReady && CharaData.TemplateID == (int)Define.TemplateIDs.Player.Reina_ArrowMaster)
+            {
+                float modifiedAngle = (Indicator.eulerAngles.z + ARM_BOW_FIXED_ANGLE);
+                if (AnimationLocalScale.x < 0)
+                {
+                    modifiedAngle = 360f - modifiedAngle;
+                }
 
-        // private IEnumerator WaitEndStateAndPlayAnim()
-        // {
-        //     PAC.Jab1H(); // Play Attack Anim1
-        //     while (true)
-        //     {
-        //         AnimatorStateInfo currentAnimInfo = PAC.AnimController.GetCurrentAnimatorStateInfo(0);
-        //         if (currentAnimInfo.normalizedTime >= 1f)
-        //         {
-        //             break;
-        //         }
+                ArmL.transform.localRotation = Quaternion.Euler(0, 0, modifiedAngle);
+            }
 
-        //         Debug.Log("Waiting for animation to finish...");
-        //         yield return null;
-        //     }
+            // private Coroutine _coPlayAnims = null;
+            // private IEnumerator CoPlayAnims(System.Action play1, System.Action play2)
+            // {
+            //     play1.Invoke();
+            //     yield return new WaitUntil(() => PAC.AnimController.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1f);
+            //     play2.Invoke();
+            //     yield return new WaitUntil(() => PAC.AnimController.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1f);
+            //     _coPlayAnims = null;
+            // }
 
-        //     Debug.Log("START !!!");
-        //     PAC.Jab2H(); // Play Attack Anim2
-        // }
+            // private IEnumerator WaitEndStateAndPlayAnim()
+            // {
+            //     PAC.Jab1H(); // Play Attack Anim1
+            //     while (true)
+            //     {
+            //         AnimatorStateInfo currentAnimInfo = PAC.AnimController.GetCurrentAnimatorStateInfo(0);
+            //         if (currentAnimInfo.normalizedTime >= 1f)
+            //         {
+            //             break;
+            //         }
 
-        //AnimatorStateInfo currentAnimationInfo = PAC.AnimController.GetCurrentAnimatorStateInfo(0);
-        // Debug.Log(PAC.AnimController.GetCurrentAnimatorClipInfo(0)[0].clip.name);
-        // Debug.Log(PAC.AnimController.GetCurrentAnimatorStateInfo(0).shortNameHash);
+            //         Debug.Log("Waiting for animation to finish...");
+            //         yield return null;
+            //     }
 
-        // private void TestVec()
-        // {
-        //     Vector2 myPos = transform.position;
-        //     Vector2 upDir = Quaternion.Euler(0, 0, 45f * 0.5f) * ShootDir;
-        //     Vector2 downDir = Quaternion.Euler(0, 0, -45f * 0.5f) * ShootDir;
-        //     Debug.Log("UP SCALE : " + upDir.magnitude); // 1f
-        //     Debug.Log("DOWN SCALE : " + downDir.magnitude); // 1f
-        //     Debug.DrawRay(myPos, upDir * 10, Color.red, -1f);
-        //     Debug.DrawRay(myPos, downDir * 10, Color.red, -1f);
-        // }
+            //     Debug.Log("START !!!");
+            //     PAC.Jab2H(); // Play Attack Anim2
+            // }
+
+            //AnimatorStateInfo currentAnimationInfo = PAC.AnimController.GetCurrentAnimatorStateInfo(0);
+            // Debug.Log(PAC.AnimController.GetCurrentAnimatorClipInfo(0)[0].clip.name);
+            // Debug.Log(PAC.AnimController.GetCurrentAnimatorStateInfo(0).shortNameHash);
+
+            // private void TestVec()
+            // {
+            //     Vector2 myPos = transform.position;
+            //     Vector2 upDir = Quaternion.Euler(0, 0, 45f * 0.5f) * ShootDir;
+            //     Vector2 downDir = Quaternion.Euler(0, 0, -45f * 0.5f) * ShootDir;
+            //     Debug.Log("UP SCALE : " + upDir.magnitude); // 1f
+            //     Debug.Log("DOWN SCALE : " + downDir.magnitude); // 1f
+            //     Debug.DrawRay(myPos, upDir * 10, Color.red, -1f);
+            //     Debug.DrawRay(myPos, downDir * 10, Color.red, -1f);
+            // }
+        }
 
         private void OnDestroy()
         {

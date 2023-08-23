@@ -90,6 +90,11 @@ namespace STELLAREST_2D
                 PhantomKnightMeleeSwing = 200108,
 
 
+                ArrowMasterArrowShot = 200112,
+                ElementalArcherArrowShot = 200116,
+                ForestWardenArrowShot = 200120,
+
+
                 AssassinMeleeSwing = 200124,
                 ThiefMeleeSwing = 200128,
 
@@ -109,6 +114,7 @@ namespace STELLAREST_2D
                 Boomerang = 200208,
                 Spear = 200212,
                 BombTrap = 200216,
+
 
                 BodyAttack = 200300,
             }

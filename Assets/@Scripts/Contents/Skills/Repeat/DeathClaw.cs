@@ -53,7 +53,6 @@ namespace STELLAREST_2D
                 t += Time.deltaTime;
                 if (t > SkillData.CoolTime)
                 {
-                    Debug.Log(SkillData.CoolTime);
                     deathClaw._col.enabled = !(deathClaw._col.enabled);
                     t = 0f;
                 }
@@ -120,11 +119,12 @@ namespace STELLAREST_2D
                 go.transform.position = mc.Body.transform.position;
                 go.transform.rotation = Quaternion.Euler(0, 0, Random.Range(0, 360f));
 
-                if (SkillData.InGameGrade == Define.InGameGrade.Legendary)
-                {
-                    go = Managers.Resource.Instantiate(Define.PrefabLabels.IMPACT_BLOODY_EFFECT, pooling: true);
-                    go.transform.position = mc.Body.transform.position;
-                }
+                // +++ Ultimate Sequence Skill에서 흡혈 오라가 발동되었을 때만 사용 +++
+                // if (SkillData.InGameGrade == Define.InGameGrade.Legendary)
+                // {
+                //     go = Managers.Resource.Instantiate(Define.PrefabLabels.IMPACT_BLOODY_EFFECT, pooling: true);
+                //     go.transform.position = mc.Body.transform.position;
+                // }
             }
         }
 

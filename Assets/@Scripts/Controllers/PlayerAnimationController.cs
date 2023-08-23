@@ -9,6 +9,8 @@ namespace STELLAREST_2D
     {
         public Character CharaBase { get; protected set; }
         public readonly int READY = Animator.StringToHash("Ready");
+        public readonly int READY_BOW = Animator.StringToHash("ReadyBow");
+
         public readonly int IDLE = Animator.StringToHash("Stand");
         public readonly int WALK = Animator.StringToHash("Walk");
         public readonly int RUN = Animator.StringToHash("Run");
@@ -22,6 +24,8 @@ namespace STELLAREST_2D
         public readonly int JAB_1H_LEFT = Animator.StringToHash("JabMelee1HLeft");
         public readonly int JAB_2H = Animator.StringToHash("JabMelee2H");
         public readonly int JAB_PAIRED = Animator.StringToHash("JabMeleePaired");
+
+        public readonly int SIMPLE_BOW_SHOT = Animator.StringToHash("SimpleBowShot");
 
 
         public readonly int CAST_1H = Animator.StringToHash("Cast1H");
@@ -54,6 +58,8 @@ namespace STELLAREST_2D
 
 
         public void Idle() => AnimController.Play(IDLE);
+        public void ReadyBow() => AnimController.Play(READY_BOW);
+
         public void Walk() => AnimController.Play(WALK);
         public void Run() => AnimController.Play(RUN);
 
@@ -68,6 +74,9 @@ namespace STELLAREST_2D
         public void Jab1HLeft() => AnimController.Play(JAB_1H_LEFT);
         public void Jab2H() => AnimController.Play(JAB_2H);
         public void JabPaired() => AnimController.Play(JAB_PAIRED);
+
+        // +++ BOW SHOT +++
+        public void SimpleBowShot() => AnimController.Play(SIMPLE_BOW_SHOT);
 
         public void Cast1H() => AnimController.Play(CAST_1H);
         
