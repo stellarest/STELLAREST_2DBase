@@ -6,11 +6,18 @@ namespace STELLAREST_2D
 {
     public class ArrowShot : RepeatSkill
     {
+        public override void SetSkillInfo(CreatureController owner, int templateID)
+        {
+            base.SetSkillInfo(owner, templateID);
+            if (owner?.IsPlayer() == true)
+                Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.PlayerAttack);
+        }
+
         protected override void DoSkillJob()
         {
             Managers.Game.Player.CreatureState = Define.CreatureState.Attack;
         }
-
+  
         public override void OnPreSpawned()
         {
             base.OnPreSpawned();

@@ -224,36 +224,17 @@ namespace STELLAREST_2D
         public void SetMonsterFace(MonsterController mc, Define.SpriteLabels.MonsterFace monsterFace) 
                 => mc?.GetComponent<Monster>().SetHead((int)monsterFace);
 
-        public void UpgradePlayerSprite(PlayerController pc, Define.InGameGrade grade)
+        public void UpgradePlayerAppearance(PlayerController pc, Define.InGameGrade grade, bool includeInactive = false)
         {
-            if (grade > Define.InGameGrade.Legendary)
-            {
-                Utils.Log("Player Grade is maxium !!");
-                return;
-            }
-
-            
-            switch (pc.CharaData.CreatureData.TemplateID)
-            {
-                case (int)Define.TemplateIDs.Player.Gary_Paladin:
-                    UpgradeGaryPaladin(pc, grade);
-                    break;
-            }
-        }
-
-        public void UpgradePlayerAppearance(PlayerController pc, Define.InGameGrade grade)
-        {
-            //pc.SkillBook.StopSkills();
-            
-            SpriteRenderer[] currentSPRs = pc.GetComponentsInChildren<SpriteRenderer>();
+            SpriteRenderer[] currentSPRs = pc.GetComponentsInChildren<SpriteRenderer>(includeInactive);
             for (int i = 0; i < currentSPRs.Length; ++i)
                 currentSPRs[i].sprite = null;
 
             Character next = _playerAppearances[pc.CharaData.TemplateID][(int)grade - 1];
-            //Debug.Log("NEXT : " + next.gameObject.name);
-            SpriteRenderer[] nextSPRs = next.GetComponentsInChildren<SpriteRenderer>();
+            SpriteRenderer[] nextSPRs = next.GetComponentsInChildren<SpriteRenderer>(includeInactive);
             
             int length = Mathf.Max(currentSPRs.Length, nextSPRs.Length);
+
             for (int i = 0; i < length; ++i)
             {
                 // Prevent out of idx

@@ -105,7 +105,7 @@ namespace STELLAREST_2D
             joystick.name = "@Joystick"; // UI_Joystick라고 하기엔 좀 애매함
 
             // Create Spawning Pool
-            _spawningPool = gameObject.AddComponent<SpawningPool>();
+            // _spawningPool = gameObject.AddComponent<SpawningPool>();
             
             // TEST
             // Managers.Object.Spawn<Chicken>(new Vector3(3, 3, 1), (int)Define.TemplateIDs.Monster.Chicken);

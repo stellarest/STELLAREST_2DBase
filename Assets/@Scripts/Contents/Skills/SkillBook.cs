@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DG.Tweening.Plugins.Options;
 using UnityEngine;
 
 namespace STELLAREST_2D
@@ -52,14 +53,9 @@ namespace STELLAREST_2D
             else
                 spawnPos = Managers.Game.Player.transform.position;
 
-            //Vector3 pos = Managers.Game.Player.transform.position;
-
             // 1.25, 1.25, 1.25 to 1, 1, 1
             Vector3 localScale = Managers.Game.Player.AnimationLocalScale;
             localScale *= 0.8f;
-
-            // IsFacingRight로 판단해서 음수 곱해야함.
-            // Vector3 localScale = skill.transform.localScale;
 
             // +++++ 이건 FacingRight떄문에 이대로 해야할것임 +++++
             float[] continuousAngles = new float[skillData.ContinuousAngles.Length];
@@ -69,12 +65,16 @@ namespace STELLAREST_2D
                 if (Managers.Game.Player.IsFacingRight == false)
                 {
                     for (int i = 0; i < continuousAngles.Length; ++i)
+                    {
                         continuousAngles[i] = skillData.ContinuousAngles[i] * -1;
+                    }
                 }
                 else
                 {
                     for (int i = 0; i < continuousAngles.Length; ++i)
+                    {
                         continuousAngles[i] = skillData.ContinuousAngles[i];
+                    }
                 }
             }
 
@@ -124,15 +124,29 @@ namespace STELLAREST_2D
                     isOnHits[i] = null;
             }
 
-
             for (int i = 0; i < skillData.ContinuousCount; ++i)
             {
                 Managers.Game.Player.EndAttackPos = transform.position;
                 ProjectileController pc = Managers.Object.Spawn<ProjectileController>(transform.position, skillData.TemplateID);
 
-                Quaternion rot = Quaternion.Euler(0, 0, continuousAngles[i]);
-                Vector3 shootDir = rot * originShootDir;
+                Quaternion rot = Quaternion.identity;
+                Vector3 shootDir = Vector3.zero;
+                if (skillData.IsOnlyFixedRotation == false)
+                {
+                    rot = Quaternion.Euler(0, 0, continuousAngles[i]);
+                    shootDir = rot * originShootDir;
+                }
+                else
+                {
+                    // +++++ TEMP +++++
+                    //shootDir = Quaternion.Euler(0, 0, 20) * originShootDir;
+                    shootDir = originShootDir;
+                    float fixAngle = Managers.Game.Player.Indicator.rotation.eulerAngles.z;
+                    //pc.transform.rotation = Quaternion.Euler(0, 0, fixAngle + (continuousAngles[i] + 20));
+                    pc.transform.rotation = Quaternion.Euler(0, 0, fixAngle + continuousAngles[i]);
+                }
 
+                // +++++ TEMP +++++
                 pc.SetProjectileInfo(Owner, skill, shootDir, spawnPos, localScale, indicatorAngle, turningSide, 
                     skillData.ContinuousSpeedRatios[i], continuousAngles[i], skillData.ContinuousFlipXs[i], skillData.ContinuousFlipYs[i],
                     skillData.ShootDirectionIntensities[i], isOnHits[i], interPolTargetXs[i], interPolTargetYs[i]);
@@ -163,8 +177,6 @@ namespace STELLAREST_2D
                 }
 
                 RepeatSkill newSkill = RepeatSkills.FirstOrDefault(s => s.SkillData.TemplateID == originTemplateID + (int)latestSkill.SkillData.InGameGrade);
-                
-                Debug.Log(latestSkill.SkillData.Name + " Deactivate !!");
                 LearnedRepeatSkills.Remove(latestSkill);
                 latestSkill.DeactivateSkill();
                 LearnedRepeatSkills.Add(newSkill);

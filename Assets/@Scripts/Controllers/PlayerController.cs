@@ -199,7 +199,9 @@ namespace STELLAREST_2D
             base.SetInfo(templateID);
             GetIndicator();
 
+            // ++++++++++++++++++++++++++++++++++++++++++++++++++
             // +++++ Set Player Default Skill Automatically +++++
+            // ++++++++++++++++++++++++++++++++++++++++++++++++++
             this.SkillBook.PlayerDefaultSkill = (Define.TemplateIDs.SkillType)SkillBook.GetPlayerDefaultSkill(Define.InGameGrade.Normal).SkillData.TemplateID;
 
             // TODO
@@ -388,18 +390,23 @@ namespace STELLAREST_2D
         {
             SkillBook.StopSkills(); // 이걸로하면 나중에 Sequence Skill이 Active가 안될텐뎅
             // StopPlayerDefaultSkill로 바꿔야함.
-
             PAC.OffReady();
 
             while (PAC.AnimController.GetCurrentAnimatorStateInfo(0).IsName("IdleMelee") == false)
                 yield return null;
 
+            // +++ ENABLE ASSASSIN DOUBLE WEAPON +++
             if (newSkill.SkillData.OriginTemplateID == (int)Define.TemplateIDs.SkillType.AssassinMeleeSwing &&
                 newSkill.SkillData.InGameGrade == Define.InGameGrade.Legendary)
                 LeftHandMeleeWeapon.GetComponent<SpriteRenderer>().enabled = true;
 
-            Managers.Sprite.UpgradePlayerAppearance(this, newSkill.SkillData.InGameGrade);
+            // +++ FIND OTHER HAND REINA BOW +++
+            if (this.CharaData.TemplateID == (int)Define.TemplateIDs.Player.Reina_ArrowMaster)
+                Managers.Sprite.UpgradePlayerAppearance(this, newSkill.SkillData.InGameGrade, true);
+            else
+                Managers.Sprite.UpgradePlayerAppearance(this, newSkill.SkillData.InGameGrade, false);
 
+            // +++ ADJUST THIEF HAIR MASK +++
             if (newSkill.SkillData.OriginTemplateID == (int)Define.TemplateIDs.SkillType.ThiefMeleeSwing &&
                 newSkill.SkillData.InGameGrade > Define.InGameGrade.Rare)
                 Hair.GetComponent<SpriteMask>().isCustomRangeActive = false;

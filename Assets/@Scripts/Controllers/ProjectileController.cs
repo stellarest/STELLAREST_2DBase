@@ -31,6 +31,7 @@ namespace STELLAREST_2D
 
         private int _currentBounceCount = 0;
         private GameObject _target = null;
+        private int _currentPenetrationCount = 0;
 
         private bool _isOnInterpolateScale = false;
         private Vector2 _interpolateStartScale = Vector2.zero;
@@ -103,6 +104,13 @@ namespace STELLAREST_2D
                     }
                     break;
 
+                case (int)Define.TemplateIDs.SkillType.ArrowMasterArrowShot:
+                {
+                    GetComponent<ArrowShot>().SetSkillInfo(Owner, currentSkill.SkillData.TemplateID);
+                    StartCoroutine(CoArrowShot());
+                }
+                break;
+
                 case (int)Define.TemplateIDs.SkillType.ThrowingStar:
                     {
                         _target = null;
@@ -171,6 +179,17 @@ namespace STELLAREST_2D
                 transform.rotation = Quaternion.Euler(0, 0, selfRot);
                 float movementSpeed = Owner.CharaData.MoveSpeed + CurrentSkill.SkillData.Speed;
 
+                transform.position += _shootDir * movementSpeed * Time.deltaTime;
+                yield return null;
+            }
+        }
+
+        private IEnumerator CoArrowShot()
+        {
+            float projectileSpeed = CurrentSkill.SkillData.Speed * _continuousSpeedRatio;
+            while (true)
+            {
+                float movementSpeed = Owner.CharaData.MoveSpeed + projectileSpeed;
                 transform.position += _shootDir * movementSpeed * Time.deltaTime;
                 yield return null;
             }
@@ -345,6 +364,20 @@ namespace STELLAREST_2D
                             // go.transform.position = hitPoint;
                             // Debug.Log("CHECK HIT POINT");
                             // Debug.Break();
+                        }
+                        break;
+
+                    case (int)Define.TemplateIDs.SkillType.ArrowMasterArrowShot:
+                        {
+                            mc.OnDamaged(Owner, CurrentSkill);
+
+                            if (_currentPenetrationCount == CurrentSkill.SkillData.PenetrationCount)
+                            {
+                                _currentPenetrationCount = 0;
+                                Managers.Object.Despawn(this.GetComponent<ProjectileController>());
+                            }
+                            else
+                                _currentPenetrationCount++;
                         }
                         break;
 
