@@ -442,6 +442,12 @@ namespace STELLAREST_2D
             go.GetComponent<CustomAutoDestroy>().StartDestroy(1.5f);
         }
 
+        public void ShowArrowShotMuzzleEffect(Vector3 position)
+        {
+            GameObject go = Managers.Resource.Instantiate(Define.PrefabLabels.ARROW_SHOT_MUZZLE_EFFECT, pooling: true);
+            go.transform.position = position;
+        }
+
         public void ShowEffectText(string prefabLabel, Vector3 pos, string text)
         {
             GameObject prefab = Managers.Resource.Load<GameObject>(prefabLabel);

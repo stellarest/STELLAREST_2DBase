@@ -28,7 +28,6 @@ namespace STELLAREST_2D
                 ProjectileController pc = Managers.Object.Spawn<ProjectileController>(Owner.transform.position,
                                         SkillData.TemplateID);
                 
-                // TODO : 개선 필요
                 pc.GetComponent<ThrowingStar>().SetSkillInfo(Owner, SkillData.TemplateID);
                 pc.SetProjectileInfo(this.Owner, this, Managers.Game.Player.ShootDir, 
                     Owner.transform.position, pc.transform.localScale, Vector3.zero);

@@ -60,37 +60,6 @@ namespace STELLAREST_2D
             }
         }
 
-        // LEGACY
-        // protected Define.CCStatus _ccStatus = Define.CCStatus.None;
-        // public Define.CCStatus CCStatus
-        // {
-        //     get => _ccStatus;
-        //     set
-        //     {
-        //         _ccStatus = value;
-        //         switch (_ccStatus)
-        //         {
-        //             case Define.CCStatus.None:
-        //                 {
-        //                     // 한 번 트리거가 켜졌으면 계속 유지해서 다른 몹이랑 겹쳐짐
-        //                     //BodyCol.isTrigger = false;
-        //                     SkillBook.Stopped = false;
-
-        //                 }
-        //                 break;
-
-        //             case Define.CCStatus.Stun:
-        //                 {
-        //                     CreatureState = Define.CreatureState.Idle;
-        //                     RigidBody.velocity = Vector2.zero;
-        //                     BodyCol.isTrigger = true;
-        //                     SkillBook.StopSkills();
-        //                 }
-        //                 break;
-        //         }
-        //     }
-        // }
-
         public Define.CreatureState _cretureState = Define.CreatureState.Idle;
         public Define.CreatureState CreatureState
         {
@@ -200,30 +169,7 @@ namespace STELLAREST_2D
             goSequenceSkills.transform.SetParent(this.transform);
             goSequenceSkills.transform.localPosition = Vector3.zero;
 
-            /*
-                200100, 200101, 200102, 200103
-                아이템의 정의를 잘 내려야할듯.
-                레벨의 개념이 없음. 패시브 스킬도 돈주고 찍게 한다.
-                
-                *** 모든 스킬은 강제로 업그레이드를 만든다. (Normal -> Rare -> Epic -> Legendary) ***
-                레벨업 할때마다 업그레이드할 스킬을 구매하거나, 새로운 스킬을 구매하는 것.
-                그래서 바디어택(시퀀스)도 결국에는 에픽까지 있어야함. 강제되어야함 이것들은.
-
-                아이템은 아이콘만 있고 형체가 없다.
-                아이템은 말그대로 예를 들어,
-                신발(레어) -> 이동속도 10% 증가
-                가시 방패(에픽) -> 피해량의 절반을 그대로 반사한다.
-                이런것들...
-
-                스킬은 조합이아니라 업그레이드로 찍는 방식..
-
-                +++ 1. 웨이브 종료 후, 스탯(패시브 스킬)을 구매 +++
-                +++ 2. 스킬 업그레이드(또는 구매) + 아이템 동시에 등장 +++
-                (아이템은 형체가 없음. 또한, 각 독립적인 등급을 가지고 있음)
-            */
-
             // StringBuilder stringBuilder = new StringBuilder();
-
             foreach (Define.TemplateIDs.SkillType skill in creatureData.InGameSkillList)
             {
                 int templateID = (int)skill;

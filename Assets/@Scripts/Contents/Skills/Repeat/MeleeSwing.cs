@@ -9,7 +9,7 @@ namespace STELLAREST_2D
         public float TestAngle = 0f;
 
         public void SetSwingInfo(CreatureController owner, int templateID, Vector3 indicatorAngle, 
-        float turningSide, float continuousAngle, float continuousFlipX, float continuousFlipY)
+        Define.LookAtDirection lookAtDir, float continuousAngle, float continuousFlipX, float continuousFlipY)
         {
             base.SetSkillInfo(owner, templateID);
 
@@ -24,15 +24,11 @@ namespace STELLAREST_2D
                 // transform.localEulerAngles = tempAngle;
                 tempAngle.z += continuousAngle;
                 tempAngle.z += TestAngle;
-
                 transform.rotation = Quaternion.Euler(tempAngle);
-                
 
                 var main = GetComponent<ParticleSystem>().main;
                 main.startRotation = Mathf.Deg2Rad * tempAngle.z * -1f;
-                main.flipRotation = turningSide;
-                // transform.position = pos;
-                // transform.localScale = localScale;
+                main.flipRotation = (int)lookAtDir;
                 particleRenderer.flip = new Vector3(continuousFlipX, continuousFlipY, 0);
             }
         }

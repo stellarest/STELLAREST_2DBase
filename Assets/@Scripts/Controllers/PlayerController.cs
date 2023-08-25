@@ -19,12 +19,6 @@ namespace STELLAREST_2D
 {
     public class PlayerController : CreatureController
     {
-        public enum LookAtDirection
-        {
-            Left = 1,
-            Right = -1
-        }
-
         public PlayerAnimationController PAC { get; protected set; }
         public float EnvCollectDist { get; private set; } = 5f; // 이건 데이터 시트로 안빼도 됨
 
@@ -44,7 +38,7 @@ namespace STELLAREST_2D
 
         [field: SerializeField]
         public float TurningAngle { get; private set; }
-        public LookAtDirection LookAtDir { get; private set; } = LookAtDirection.Right;
+        public Define.LookAtDirection LookAtDir { get; private set; } = Define.LookAtDirection.Right;
 
         private GameObject _animChildObject;
         public Vector3 AnimationLocalScale => _animChildObject.transform.localScale;
@@ -279,19 +273,18 @@ namespace STELLAREST_2D
                 => (_animChildObject.transform.localScale.x != Define.PlayerController.CONSTANT_SCALE_X * -1f) ? true : false;
         private void Turn(float angle)
         {
-            TurningAngle = Mathf.Sign(angle); // 각도 양수1, 음수-1
-            if (TurningAngle < 0)
+            if (Mathf.Sign(angle) < 0)
             {
-                LookAtDir = LookAtDirection.Right;
-                ARM_BOW_FIXED_ANGLE = 110f;
+                LookAtDir = Define.LookAtDirection.Right;
+                _armBowFixedAngle = 110f;
             }
             else
             {
-                LookAtDir = LookAtDirection.Left;
-                ARM_BOW_FIXED_ANGLE = -110f;
+                LookAtDir = Define.LookAtDirection.Left;
+                _armBowFixedAngle = -110f;
             }
 
-            Vector3 turnChara = new Vector3(TurningAngle * Define.PlayerController.CONSTANT_SCALE_X * -1f,
+            Vector3 turnChara = new Vector3((int)LookAtDir * Define.PlayerController.CONSTANT_SCALE_X * -1f,
                                         Define.PlayerController.CONSTANT_SCALE_Y, Define.PlayerController.CONSTANT_SCALE_Z);
             _animChildObject.transform.localScale = turnChara;
         }
@@ -368,7 +361,7 @@ namespace STELLAREST_2D
                 CreatureState = Define.CreatureState.Idle;
                 // _indicator.gameObject.SetActive(false);
                 FireSocketSpriteRenderer.enabled = false;
-                FireSocketSpriteRenderer.enabled = true;
+                //FireSocketSpriteRenderer.enabled = true;
 
             }
             else
@@ -377,7 +370,7 @@ namespace STELLAREST_2D
                 // _indicator.gameObject.SetActive(true);
                 // FireSocketSpriteRenderer.enabled = true;
                 FireSocketSpriteRenderer.enabled = false; // 냐중에 어떻게 해야할지 고쳐야함
-                FireSocketSpriteRenderer.enabled = true;
+                //FireSocketSpriteRenderer.enabled = true;
             }
         }
 
@@ -502,13 +495,14 @@ namespace STELLAREST_2D
             }
         }
 
-        public float ARM_BOW_FIXED_ANGLE = 110f;
+        private float _armBowFixedAngle = 110f;
+
         private void LateUpdate()
         {
             //Debug.Log("Angle : " + Vector2.Angle(ArmL.transform.localPosition, Indicator.localPosition));
             if (_getReady && CharaData.TemplateID == (int)Define.TemplateIDs.Player.Reina_ArrowMaster)
             {
-                float modifiedAngle = (Indicator.eulerAngles.z + ARM_BOW_FIXED_ANGLE);
+                float modifiedAngle = (Indicator.eulerAngles.z + _armBowFixedAngle);
                 if (AnimationLocalScale.x < 0)
                 {
                     modifiedAngle = 360f - modifiedAngle;

@@ -27,9 +27,10 @@ namespace STELLAREST_2D
 
         public enum PlayerEmotion { None = 0, Default = 1, Greedy, Sick, Bunny, Kitty, Death }
         public enum InitialStatRatioGrade { None = 0, Low = 10, Average = 20, High = 30 }
+        public enum LookAtDirection { Left = 1, Right = -1 }
 
         public const float MAX_DODGE_CHANCE = 0.6f;
-
+        
         public static class LoadJson
         {
             // 모두 플레이팹 데이터 테이블에서 불러와야한다
@@ -137,6 +138,7 @@ namespace STELLAREST_2D
             public const string SPAWN_EFFECT = "SpawnEffect.prefab";
             public const string STUN_EFFECT = "StunEffect.prefab";
             public const string CURSED_TEXT_EFFECT = "CursedTextEffect.prefab";
+            public const string ARROW_SHOT_MUZZLE_EFFECT = "ArrowShotMuzzleEffect.prefab";
 
             public const string GEM = "Gem.prefab";
             public const string GEM_GATHER = "GemGather.prefab";

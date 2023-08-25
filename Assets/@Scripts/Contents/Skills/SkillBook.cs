@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening.Plugins.Options;
+using STELLAREST_2D.Data;
 using UnityEngine;
 
 namespace STELLAREST_2D
@@ -32,7 +33,9 @@ namespace STELLAREST_2D
         public SkillBase GetCurrentPlayerDefaultSkill
                 => LearnedRepeatSkills.FirstOrDefault(s => s.SkillData.IsPlayerDefaultAttack == true);
 
-        // +++++ OnRepeatAttackHandler에서 호출하게 됨 +++++
+        // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        // +++++ Called From Animation Events : OnRepeatAttackHandler +++++
+        // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         public void GeneratePlayerAttack(Define.TemplateIDs.SkillType skillType)
         {
             RepeatSkill skill = RepeatSkills.FirstOrDefault(s => s.SkillData.TemplateID == (int)skillType);
@@ -42,9 +45,8 @@ namespace STELLAREST_2D
         private IEnumerator CoGeneratePlayerAttack(SkillBase skill)
         {
             Data.SkillData skillData = skill.SkillData;
-
             Vector3 originShootDir = Managers.Game.Player.ShootDir;
-            float turningSide = Managers.Game.Player.TurningAngle;
+            Define.LookAtDirection lootAtDir = Managers.Game.Player.LookAtDir;
             Vector3 indicatorAngle = Managers.Game.Player.Indicator.eulerAngles;
 
             Vector3 spawnPos = Vector3.zero;
@@ -67,6 +69,7 @@ namespace STELLAREST_2D
                     for (int i = 0; i < continuousAngles.Length; ++i)
                     {
                         continuousAngles[i] = skillData.ContinuousAngles[i] * -1;
+                        skillData.ContinuousFixRotations[i] = skillData.ContinuousFixRotations[i] * -1;
                     }
                 }
                 else
@@ -74,6 +77,7 @@ namespace STELLAREST_2D
                     for (int i = 0; i < continuousAngles.Length; ++i)
                     {
                         continuousAngles[i] = skillData.ContinuousAngles[i];
+                        skillData.ContinuousFixRotations[i] = skillData.ContinuousFixRotations[i];
                     }
                 }
             }
@@ -110,6 +114,7 @@ namespace STELLAREST_2D
                 }
             }
 
+            // +++++ IsOnHits +++++
             bool?[] isOnHits = null;
             if (skillData.IsOnHits.Length > 0)
             {
@@ -131,25 +136,18 @@ namespace STELLAREST_2D
 
                 Quaternion rot = Quaternion.identity;
                 Vector3 shootDir = Vector3.zero;
-                if (skillData.IsOnlyFixedRotation == false)
-                {
-                    rot = Quaternion.Euler(0, 0, continuousAngles[i]);
-                    shootDir = rot * originShootDir;
-                }
-                else
-                {
-                    // +++++ TEMP +++++
-                    //shootDir = Quaternion.Euler(0, 0, 20) * originShootDir;
-                    shootDir = originShootDir;
-                    float fixAngle = Managers.Game.Player.Indicator.rotation.eulerAngles.z;
-                    //pc.transform.rotation = Quaternion.Euler(0, 0, fixAngle + (continuousAngles[i] + 20));
-                    pc.transform.rotation = Quaternion.Euler(0, 0, fixAngle + continuousAngles[i]);
-                }
+
+                rot = Quaternion.Euler(0, 0, continuousAngles[i]);
+                shootDir = rot * originShootDir;
+                pc.transform.rotation = Quaternion.Euler(0, 0, skillData.ContinuousFixRotations[i]
+                                                + indicatorAngle.z + continuousAngles[i]);
+
+                Managers.Effect.ShowArrowShotMuzzleEffect(Managers.Game.Player.FireSocket);
 
                 // +++++ TEMP +++++
-                pc.SetProjectileInfo(Owner, skill, shootDir, spawnPos, localScale, indicatorAngle, turningSide, 
+                pc.SetProjectileInfo(Owner, skill, shootDir, spawnPos, localScale, indicatorAngle, lootAtDir, 
                     skillData.ContinuousSpeedRatios[i], continuousAngles[i], skillData.ContinuousFlipXs[i], skillData.ContinuousFlipYs[i],
-                    skillData.ShootDirectionIntensities[i], isOnHits[i], interPolTargetXs[i], interPolTargetYs[i]);
+                    skillData.ContinuousPowers[i], isOnHits[i], interPolTargetXs[i], interPolTargetYs[i]);
 
                 yield return new WaitForSeconds(skillData.ContinuousSpacing);
             }
@@ -184,13 +182,6 @@ namespace STELLAREST_2D
                 if (newSkill.SkillData.IsPlayerDefaultAttack)
                 {
                     Managers.Game.Player.AnimEvents.PlayerDefaultSkill++;
-                    // Managers.Sprite.UpgradePlayerSprite(newSkill.Owner.GetComponent<PlayerController>(),
-                    //     newSkill.SkillData.InGameGrade);
-
-
-                    // 여기서 실행을 하니까,,,
-                    // Managers.Sprite.UpgradePlayerAppearance(newSkill.Owner.GetComponent<PlayerController>(), newSkill.SkillData.InGameGrade);
-
                     Owner.GetComponent<PlayerController>().UpgradePlayerAppearance(newSkill);
                     return;
                 }

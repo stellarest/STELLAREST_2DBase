@@ -25,7 +25,8 @@ namespace STELLAREST_2D
 
         private Vector3 _shootDir;
         private float _speed;
-        private float _initialTurningDir = 0f; // turn -> turn 하면 다시 파티클이 플레이어를 쫓아가는 것을 막아줌, 필요시 사용
+        private Define.LookAtDirection _initOwnerLootAtDir = Define.LookAtDirection.Right;
+
         private bool _offParticle = false;
         private float _continuousSpeedRatio = 1f;
 
@@ -44,21 +45,20 @@ namespace STELLAREST_2D
         }
 
         public void SetProjectileInfo(CreatureController owner, SkillBase currentSkill, Vector3 shootDir, Vector3 spawnPos, Vector3 localScale, Vector3 indicatorAngle, 
-                    float turningSide = 0f, float continuousSpeedRatio = 1f, float continuousAngle = 0f, float continuousFlipX = 0f, float continuousFlipY = 0f, 
-                    float shootDirectionIntensity = 1f, bool? isOnHit = false, float? interPolTargetX = null, float? interPolTargetY = null)
+                    Define.LookAtDirection lootAtDir = Define.LookAtDirection.Right, float continuousSpeedRatio = 1f, float continuousAngle = 0f, float continuousFlipX = 0f, float continuousFlipY = 0f, 
+                    float continuousPowers = 1, bool? isOnHit = null, float? interPolTargetX = null, float? interPolTargetY = null)
         {
             this.Owner = owner;
             this.CurrentSkill = currentSkill;
-            this.SkillData = currentSkill.SkillData; // +++ ONLY SET IN THIS +++
-
-            this._shootDir = shootDir * shootDirectionIntensity;
+            // this.SkillData = currentSkill.SkillData;
+            this._shootDir = shootDir * continuousPowers;
             this._continuousSpeedRatio = continuousSpeedRatio;
 
-            _initialTurningDir = turningSide;
+            _initOwnerLootAtDir = lootAtDir;
             _offParticle = false;
             transform.position = spawnPos;
 
-            // +++++ Interpolate Scales +++++
+            // +++++ Interpolate Local Scales +++++
             transform.localScale = localScale;
             if (interPolTargetX.HasValue && interPolTargetY.HasValue)
             {
@@ -83,7 +83,7 @@ namespace STELLAREST_2D
                 case (int)Define.TemplateIDs.SkillType.PirateMeleeSwing:
                     {
                         GetComponent<MeleeSwing>().SetSwingInfo(owner, currentSkill.SkillData.TemplateID, indicatorAngle,
-                                    turningSide, continuousAngle, continuousFlipX, continuousFlipY);
+                                    lootAtDir, continuousAngle, continuousFlipX, continuousFlipY);
 
                         if (isOnHit == true || isOnHit == null)
                             EnableColliders(true);
@@ -129,7 +129,6 @@ namespace STELLAREST_2D
             }
         }
 
-        //float desiredCompletedTime = skillData.Duration;
         private IEnumerator CoMeleeSwing()
         {
             float projectileSpeed = CurrentSkill.SkillData.Speed * _continuousSpeedRatio;
@@ -294,7 +293,7 @@ namespace STELLAREST_2D
         private readonly float _sensitivity = 0.6f;
         private void SetOffParticle()
         {
-            if (_initialTurningDir != Managers.Game.Player.TurningAngle)
+            if (_initOwnerLootAtDir != Managers.Game.Player.LookAtDir)
                 _offParticle = true;
             if (Managers.Game.Player.IsMoving == false)
                 _offParticle = true;

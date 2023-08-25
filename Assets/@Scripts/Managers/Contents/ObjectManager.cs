@@ -148,7 +148,6 @@ namespace STELLAREST_2D
         }
 
         // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-#if USE_LINQ
 
         // 해당 dist 안에 가장 몬스터가 밀집되어 있는 곳을 골라서 리턴해준다.
         public GameObject GetClosestTarget<T>(GameObject from, float fromRange, GameObject priority, float priorityRange) where T : BaseController
@@ -186,10 +185,7 @@ namespace STELLAREST_2D
 
             return null;
         }
-#else
-#endif
 
-#if USE_LINQ
         public GameObject GetClosestTarget<T>(GameObject from, float range) where T : BaseController
         {
             System.Type type = typeof(T);
@@ -209,10 +205,7 @@ namespace STELLAREST_2D
 
             return null;
         }
-#else
-#endif
 
-#if USE_LINQ
         public Vector2 GetRandomTargetingPosition<T>(GameObject from, float fromMinDistance = 1f, float fromMaxDistance = 22f,
                            Define.TemplateIDs.SkillType skillHitStatus = Define.TemplateIDs.SkillType.None) where T : BaseController
         {
@@ -239,10 +232,7 @@ namespace STELLAREST_2D
             }
             return Utils.GetRandomPosition(fromPos);
         }
-#else
-#endif
 
-#if USE_LINQ
         // +++ 개선 필요 +++
         public GameObject GetNextTarget(GameObject from, Define.TemplateIDs.SkillType checkBounceHitSkillType = Define.TemplateIDs.SkillType.None)
         {
@@ -256,10 +246,7 @@ namespace STELLAREST_2D
 
             return target;
         }
-#else
-#endif
 
-#if USE_LINQ
         public void ResetSkillHittedStatus(Define.TemplateIDs.SkillType skillType)
         {
             switch (skillType)
@@ -279,8 +266,6 @@ namespace STELLAREST_2D
                     break;
             }
         }
-#else
-#endif
     }
 }
 
