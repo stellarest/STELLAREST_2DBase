@@ -94,6 +94,11 @@ namespace STELLAREST_2D
                                     PAC.SimpleBowShot();
                                 }
                                 break;
+                            case (int)Define.TemplateIDs.Player.Reina_ElementalArcher:
+                                {
+                                    PAC.SimpleBowShot();
+                                }
+                                break;
 
 
 
@@ -394,7 +399,8 @@ namespace STELLAREST_2D
                 LeftHandMeleeWeapon.GetComponent<SpriteRenderer>().enabled = true;
 
             // +++ FIND OTHER HAND REINA BOW +++
-            if (this.CharaData.TemplateID == (int)Define.TemplateIDs.Player.Reina_ArrowMaster)
+            if (this.CharaData.TemplateID == (int)Define.TemplateIDs.Player.Reina_ArrowMaster ||
+                this.CharaData.TemplateID == (int)Define.TemplateIDs.Player.Reina_ElementalArcher)
                 Managers.Sprite.UpgradePlayerAppearance(this, newSkill.SkillData.InGameGrade, true);
             else
                 Managers.Sprite.UpgradePlayerAppearance(this, newSkill.SkillData.InGameGrade, false);
@@ -500,7 +506,8 @@ namespace STELLAREST_2D
         private void LateUpdate()
         {
             //Debug.Log("Angle : " + Vector2.Angle(ArmL.transform.localPosition, Indicator.localPosition));
-            if (_getReady && CharaData.TemplateID == (int)Define.TemplateIDs.Player.Reina_ArrowMaster)
+            if (_getReady && CharaData.TemplateID == (int)Define.TemplateIDs.Player.Reina_ArrowMaster ||
+                _getReady && CharaData.TemplateID == (int)Define.TemplateIDs.Player.Reina_ElementalArcher)
             {
                 float modifiedAngle = (Indicator.eulerAngles.z + _armBowFixedAngle);
                 if (AnimationLocalScale.x < 0)

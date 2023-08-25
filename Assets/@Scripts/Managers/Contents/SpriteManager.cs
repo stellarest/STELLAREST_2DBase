@@ -97,6 +97,7 @@ namespace STELLAREST_2D
             for (Define.InGameGrade grade = Define.InGameGrade.Normal; grade <= Define.InGameGrade.Legendary; ++grade)
             {
                 GameObject go = Managers.Resource.Load<GameObject>(pc.SkillBook.GetPlayerDefaultSkill(grade).SkillData.ModelingLabel);
+                Utils.LogStrong(go.gameObject.name + " !!");
                 charas[(int)grade - 1] = go.GetComponent<Character>();
             }
 

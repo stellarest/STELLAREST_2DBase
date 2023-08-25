@@ -59,7 +59,7 @@ namespace STELLAREST_2D
             Vector3 localScale = Managers.Game.Player.AnimationLocalScale;
             localScale *= 0.8f;
 
-            // +++++ 이건 FacingRight떄문에 이대로 해야할것임 +++++
+            // +++++ ContinuousAngles +++++
             float[] continuousAngles = new float[skillData.ContinuousAngles.Length];
             if (skillData.ContinuousAngles.Length > 0)
             {
@@ -67,18 +67,12 @@ namespace STELLAREST_2D
                 if (Managers.Game.Player.IsFacingRight == false)
                 {
                     for (int i = 0; i < continuousAngles.Length; ++i)
-                    {
                         continuousAngles[i] = skillData.ContinuousAngles[i] * -1;
-                        skillData.ContinuousFixRotations[i] = skillData.ContinuousFixRotations[i] * -1;
-                    }
                 }
                 else
                 {
                     for (int i = 0; i < continuousAngles.Length; ++i)
-                    {
                         continuousAngles[i] = skillData.ContinuousAngles[i];
-                        skillData.ContinuousFixRotations[i] = skillData.ContinuousFixRotations[i];
-                    }
                 }
             }
 
@@ -139,10 +133,8 @@ namespace STELLAREST_2D
 
                 rot = Quaternion.Euler(0, 0, continuousAngles[i]);
                 shootDir = rot * originShootDir;
-                pc.transform.rotation = Quaternion.Euler(0, 0, skillData.ContinuousFixRotations[i]
-                                                + indicatorAngle.z + continuousAngles[i]);
-
-                Managers.Effect.ShowArrowShotMuzzleEffect(Managers.Game.Player.FireSocket);
+                pc.transform.rotation = Quaternion.Euler(0, 0, 
+                    (skillData.ContinuousFixRotations[i] * (int)Managers.Game.Player.LookAtDir * -1) + indicatorAngle.z + continuousAngles[i]);
 
                 // +++++ TEMP +++++
                 pc.SetProjectileInfo(Owner, skill, shootDir, spawnPos, localScale, indicatorAngle, lootAtDir, 

@@ -105,11 +105,28 @@ namespace STELLAREST_2D
                     break;
 
                 case (int)Define.TemplateIDs.SkillType.ArrowMasterArrowShot:
-                {
-                    GetComponent<ArrowShot>().SetSkillInfo(Owner, currentSkill.SkillData.TemplateID);
-                    StartCoroutine(CoArrowShot());
-                }
-                break;
+                    {
+                        _currentPenetrationCount = 0;
+                        GetComponent<ArrowShot>().SetSkillInfo(Owner, currentSkill.SkillData.TemplateID);
+                        StartCoroutine(CoArrowShot());
+                    }
+                    break;
+
+                case (int)Define.TemplateIDs.SkillType.ElementalArcherArrowShot:
+                    {
+                        GetComponent<ArrowShot>().SetSkillInfo(Owner, currentSkill.SkillData.TemplateID);
+                        if (currentSkill.SkillData.InGameGrade == Define.InGameGrade.Epic)
+                        {
+                            //Managers.Effect.ShowWindTrailEffect(this);
+                            //Managers.Effect.ShowFireTrailEffect(this);
+                            //Managers.Effect.ShowIceTrailEffect(this);
+                            //Managers.Effect.ShowBubbleTrailEffect(this);
+                            Managers.Effect.ShowLightTrailEffect(this);
+                        }
+
+                        StartCoroutine(CoArrowShot());
+                    }
+                    break;
 
                 case (int)Define.TemplateIDs.SkillType.ThrowingStar:
                     {
@@ -371,12 +388,26 @@ namespace STELLAREST_2D
                             mc.OnDamaged(Owner, CurrentSkill);
 
                             if (_currentPenetrationCount == CurrentSkill.SkillData.PenetrationCount)
-                            {
-                                _currentPenetrationCount = 0;
                                 Managers.Object.Despawn(this.GetComponent<ProjectileController>());
-                            }
                             else
                                 _currentPenetrationCount++;
+                        }
+                        break;
+
+                    case (int)Define.TemplateIDs.SkillType.ElementalArcherArrowShot:
+                        {
+                            mc.OnDamaged(Owner, CurrentSkill);
+
+                            if (CurrentSkill.SkillData.InGameGrade == Define.InGameGrade.Epic)
+                            {
+                                //Managers.Effect.ShowImpactWindEffect(mc.Body.transform.position, CurrentSkill.SkillData.InGameGrade);
+                                //Managers.Effect.ShowImpactFireEffect(mc.Body.transform.position, CurrentSkill.SkillData.InGameGrade);
+                                //Managers.Effect.ShowImpactIceEffect(mc.Body.transform.position, CurrentSkill.SkillData.InGameGrade);
+                                //Managers.Effect.ShowImpactBubbleEffect(mc.Body.transform.position);
+                                Managers.Effect.ShowImpactLightEffect(mc.Body.transform.position);
+                            }
+                            
+                            Managers.Object.Despawn(this.GetComponent<ProjectileController>());
                         }
                         break;
 

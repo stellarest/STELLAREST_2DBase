@@ -320,6 +320,17 @@ namespace STELLAREST_2D
             IsPlayingGlitch = false;
         }
 
+        public IEnumerator CoTrailEffect(GameObject go, BaseController followTarget)
+        {
+            while (followTarget.IsValid())
+            {
+                go.transform.position = followTarget.transform.position;
+                yield return null;
+            }
+
+            Managers.Resource.Destroy(go);
+        }
+
         public void UpgradePlayerBuffEffect() => _upgradePlayerBuffEffect.SetActive(true);
         public void StartHitEffect(CreatureController cc)
         {
@@ -442,9 +453,152 @@ namespace STELLAREST_2D
             go.GetComponent<CustomAutoDestroy>().StartDestroy(1.5f);
         }
 
-        public void ShowArrowShotMuzzleEffect(Vector3 position)
+        public void ShowWindTrailEffect(BaseController followTarget)
         {
-            GameObject go = Managers.Resource.Instantiate(Define.PrefabLabels.ARROW_SHOT_MUZZLE_EFFECT, pooling: true);
+            GameObject go = Managers.Resource.Instantiate(Define.PrefabLabels.WIND_TRAIL_EFFECT, pooling: true);
+            go.GetComponent<BaseController>().StartTrailEffect(followTarget);
+        }
+
+        public void ShowImpactWindEffect(Vector3 position, Define.InGameGrade inGameGrade)
+        {
+            GameObject go = null;
+
+            switch (inGameGrade)
+            {
+                case Define.InGameGrade.Normal:
+                    return;
+
+                case Define.InGameGrade.Rare:
+                    {
+                        go = Managers.Resource.Instantiate(Define.PrefabLabels.IMPACT_WIND_LV1_EFFECT, pooling: true);
+                        go.GetComponent<CustomAutoDestroy>().StartDestroy(1.2f);
+                        go.transform.position = position;
+                    }
+                    break;
+
+                case Define.InGameGrade.Epic:
+                    {
+                        go = Managers.Resource.Instantiate(Define.PrefabLabels.IMPACT_WIND_LV2_EFFECT, pooling: true);
+                        go.GetComponent<CustomAutoDestroy>().StartDestroy(1.2f);
+                        go.transform.position = position;
+                    }
+                    break;
+
+                case Define.InGameGrade.Legendary:
+                    {
+                        go = Managers.Resource.Instantiate(Define.PrefabLabels.IMPACT_WIND_LV3_EFFECT, pooling: true);
+                        go.GetComponent<CustomAutoDestroy>().StartDestroy(1.2f);
+                        go.transform.position = position;
+                    }
+                    break;
+            }
+        }
+
+        public void ShowFireTrailEffect(BaseController followTarget)
+        {
+            GameObject go = Managers.Resource.Instantiate(Define.PrefabLabels.FIRE_TRAIL_EFFECT, pooling: true);
+            go.GetComponent<BaseController>().StartTrailEffect(followTarget);
+        }
+
+        public void ShowImpactFireEffect(Vector3 position, Define.InGameGrade inGameGrade)
+        {
+            GameObject go = null;
+
+            switch (inGameGrade)
+            {
+                case Define.InGameGrade.Normal:
+                    return;
+
+                case Define.InGameGrade.Rare:
+                    {
+                        go = Managers.Resource.Instantiate(Define.PrefabLabels.IMPACT_FIRE_LV1_EFFECT, pooling: true);
+                        go.GetComponent<CustomAutoDestroy>().StartDestroy(1.2f);
+                        go.transform.position = position;
+                    }
+                    break;
+
+                case Define.InGameGrade.Epic:
+                    {
+                        go = Managers.Resource.Instantiate(Define.PrefabLabels.IMPACT_FIRE_LV2_EFFECT, pooling: true);
+                        go.GetComponent<CustomAutoDestroy>().StartDestroy(1.2f);
+                        go.transform.position = position;
+                    }
+                    break;
+
+                case Define.InGameGrade.Legendary:
+                    {
+                        go = Managers.Resource.Instantiate(Define.PrefabLabels.IMPACT_FIRE_LV3_EFFECT, pooling: true);
+                        go.GetComponent<CustomAutoDestroy>().StartDestroy(1.2f);
+                        go.transform.position = position;
+                    }
+                    break;
+            }
+        }
+
+        public void ShowIceTrailEffect(BaseController followTarget)
+        {
+            GameObject go = Managers.Resource.Instantiate(Define.PrefabLabels.ICE_TRAIL_EFFECT, pooling: true);
+            go.GetComponent<BaseController>().StartTrailEffect(followTarget);
+        }
+
+        public void ShowImpactIceEffect(Vector3 position, Define.InGameGrade inGameGrade)
+        {
+            GameObject go = null;
+
+            switch (inGameGrade)
+            {
+                case Define.InGameGrade.Normal:
+                    return;
+
+                case Define.InGameGrade.Rare:
+                    {
+                        go = Managers.Resource.Instantiate(Define.PrefabLabels.IMPACT_ICE_LV1_EFFECT, pooling: true);
+                        go.GetComponent<CustomAutoDestroy>().StartDestroy(1.2f);
+                        go.transform.position = position;
+                    }
+                    break;
+
+                case Define.InGameGrade.Epic:
+                    {
+                        go = Managers.Resource.Instantiate(Define.PrefabLabels.IMPACT_ICE_LV2_EFFECT, pooling: true);
+                        go.GetComponent<CustomAutoDestroy>().StartDestroy(1.2f);
+                        go.transform.position = position;
+                    }
+                    break;
+
+                case Define.InGameGrade.Legendary:
+                    {
+                        go = Managers.Resource.Instantiate(Define.PrefabLabels.IMPACT_ICE_LV3_EFFECT, pooling: true);
+                        go.GetComponent<CustomAutoDestroy>().StartDestroy(1.2f);
+                        go.transform.position = position;
+                    }
+                    break;
+            }
+        }
+
+        public void ShowBubbleTrailEffect(BaseController followTarget)
+        {
+            GameObject go = Managers.Resource.Instantiate(Define.PrefabLabels.BUBBLE_TRAIL_EFFECT, pooling: true);
+            go.GetComponent<BaseController>().StartTrailEffect(followTarget);
+        }
+
+        public void ShowImpactBubbleEffect(Vector3 position)
+        {
+            GameObject go = Managers.Resource.Instantiate(Define.PrefabLabels.IMPACT_BUBBLE_EFFECT, pooling: true);
+            go.GetComponent<CustomAutoDestroy>().StartDestroy(1.2f);
+            go.transform.position = position;
+        }
+
+        public void ShowLightTrailEffect(BaseController followTarget)
+        {
+            GameObject go = Managers.Resource.Instantiate(Define.PrefabLabels.LIGHT_TRAIL_EFFECT, pooling: true);
+            go.GetComponent<BaseController>().StartTrailEffect(followTarget);
+        }
+
+        public void ShowImpactLightEffect(Vector3 position)
+        {
+            GameObject go = Managers.Resource.Instantiate(Define.PrefabLabels.IMPACT_LIGHT_EFFECT, pooling: true);
+            go.GetComponent<CustomAutoDestroy>().StartDestroy(1.2f);
             go.transform.position = position;
         }
 

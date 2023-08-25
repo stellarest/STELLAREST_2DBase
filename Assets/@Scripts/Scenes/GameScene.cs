@@ -79,7 +79,8 @@ namespace STELLAREST_2D
             // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Gary_PhantomKnight);
 
             // +++ REINA +++
-            var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Reina_ArrowMaster);
+            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Reina_ArrowMaster);
+            var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Reina_ElementalArcher);
 
             // +++ Kenneth +++
             // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Kenneth_Assassin);

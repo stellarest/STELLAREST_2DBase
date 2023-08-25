@@ -29,6 +29,9 @@ namespace STELLAREST_2D
         public enum InitialStatRatioGrade { None = 0, Low = 10, Average = 20, High = 30 }
         public enum LookAtDirection { Left = 1, Right = -1 }
 
+        public enum EffectLevel { Level1, level2, Level3 }
+        public enum ElementalType { Fire, Ice, Wind, Bubble, }
+
         public const float MAX_DODGE_CHANCE = 0.6f;
         
         public static class LoadJson
@@ -139,6 +142,7 @@ namespace STELLAREST_2D
             public const string STUN_EFFECT = "StunEffect.prefab";
             public const string CURSED_TEXT_EFFECT = "CursedTextEffect.prefab";
             public const string ARROW_SHOT_MUZZLE_EFFECT = "ArrowShotMuzzleEffect.prefab";
+            public const string ARROW_SHOT_LEGENDARY_TRAIL_EFFECT = "ArrowShotLegendaryTrailEffect.prefab";
 
             public const string GEM = "Gem.prefab";
             public const string GEM_GATHER = "GemGather.prefab";
@@ -149,6 +153,28 @@ namespace STELLAREST_2D
             public const string DEATH_CLAW_SLASH = "DeathClawSlash.prefab";
             public const string DEATH_CLAW_SLASH_LEGENDARY = "DeathClawSlash_Legendary.prefab";
             public const string IMPACT_BLOODY_EFFECT = "ImpactBloodyEffect.prefab";
+
+            public const string WIND_TRAIL_EFFECT = "WindTrailEffect.prefab";
+            public const string IMPACT_WIND_LV1_EFFECT = "ImpactWindLv1Effect.prefab";
+            public const string IMPACT_WIND_LV2_EFFECT = "ImpactWindLv2Effect.prefab";
+            public const string IMPACT_WIND_LV3_EFFECT = "ImpactWindLv3Effect.prefab";
+
+            public const string FIRE_TRAIL_EFFECT = "FireTrailEffect.prefab";
+            public const string IMPACT_FIRE_LV1_EFFECT = "ImpactFireLv1Effect.prefab";
+            public const string IMPACT_FIRE_LV2_EFFECT = "ImpactFireLv2Effect.prefab";
+            public const string IMPACT_FIRE_LV3_EFFECT = "ImpactFireLv3Effect.prefab";
+
+            public const string ICE_TRAIL_EFFECT = "IceTrailEffect.prefab";
+            public const string IMPACT_ICE_LV1_EFFECT = "ImpactIceLv1Effect.prefab";
+            public const string IMPACT_ICE_LV2_EFFECT = "ImpactIceLv2Effect.prefab";
+            public const string IMPACT_ICE_LV3_EFFECT = "ImpactIceLv3Effect.prefab";
+
+            public const string BUBBLE_TRAIL_EFFECT = "BubbleTrailEffect.prefab";
+            public const string IMPACT_BUBBLE_EFFECT = "ImpactBubbleEffect.prefab";
+
+            public const string LIGHT_TRAIL_EFFECT = "LightTrailEffect.prefab";
+            public const string IMPACT_LIGHT_EFFECT = "ImpactLightEffect.prefab";
+
         }
 
         public static class SpriteLabels
