@@ -94,16 +94,18 @@ namespace STELLAREST_2D
                 PhantomKnightMeleeSwing = 200108,
 
 
-                ArrowMasterArrowShot = 200112,
-                ElementalArcherArrowShot = 200116,
-                ForestWardenArrowShot = 200120,
+                ArrowMasterRangedShot = 200112,
+                ElementalArcherRangedShot = 200116,
+                ForestWardenRangedShot = 200120,
 
 
                 AssassinMeleeSwing = 200124,
                 ThiefMeleeSwing = 200128,
+                NinjaRangedShot = 200132,
 
 
                 WarriorMeleeSwing = 200136,
+                BarbarianRangedShot = 200140,
                 BerserkerMeleeSwing = 200144,
 
 

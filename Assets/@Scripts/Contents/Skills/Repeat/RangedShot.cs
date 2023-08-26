@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace STELLAREST_2D
 {
-    public class ArrowShot : RepeatSkill
+    public class RangedShot : RepeatSkill
     {
         public override void SetSkillInfo(CreatureController owner, int templateID)
         {

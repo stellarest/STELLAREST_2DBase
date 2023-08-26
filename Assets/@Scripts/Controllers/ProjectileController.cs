@@ -104,17 +104,17 @@ namespace STELLAREST_2D
                     }
                     break;
 
-                case (int)Define.TemplateIDs.SkillType.ArrowMasterArrowShot:
+                case (int)Define.TemplateIDs.SkillType.ArrowMasterRangedShot:
                     {
                         _currentPenetrationCount = 0;
-                        GetComponent<ArrowShot>().SetSkillInfo(Owner, currentSkill.SkillData.TemplateID);
+                        GetComponent<RangedShot>().SetSkillInfo(Owner, currentSkill.SkillData.TemplateID);
                         StartCoroutine(CoArrowShot());
                     }
                     break;
 
-                case (int)Define.TemplateIDs.SkillType.ElementalArcherArrowShot:
+                case (int)Define.TemplateIDs.SkillType.ElementalArcherRangedShot:
                     {
-                        GetComponent<ArrowShot>().SetSkillInfo(Owner, currentSkill.SkillData.TemplateID);
+                        GetComponent<RangedShot>().SetSkillInfo(Owner, currentSkill.SkillData.TemplateID);
                         if (currentSkill.SkillData.InGameGrade == Define.InGameGrade.Epic)
                         {
                             //Managers.Effect.ShowWindTrailEffect(this);
@@ -383,7 +383,7 @@ namespace STELLAREST_2D
                         }
                         break;
 
-                    case (int)Define.TemplateIDs.SkillType.ArrowMasterArrowShot:
+                    case (int)Define.TemplateIDs.SkillType.ArrowMasterRangedShot:
                         {
                             mc.OnDamaged(Owner, CurrentSkill);
 
@@ -394,7 +394,7 @@ namespace STELLAREST_2D
                         }
                         break;
 
-                    case (int)Define.TemplateIDs.SkillType.ElementalArcherArrowShot:
+                    case (int)Define.TemplateIDs.SkillType.ElementalArcherRangedShot:
                         {
                             mc.OnDamaged(Owner, CurrentSkill);
 
