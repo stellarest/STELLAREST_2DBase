@@ -176,6 +176,8 @@ namespace STELLAREST_2D
                 string className = Define.NameSpaceLabels.STELLAREST_2D + "." + skill.ToString();
                 Utils.LogStrong("CLASS NAME : " + className); // STELLAREST_2D.PaladinMeleeSwing
 
+                Debug.Break();
+
                 Define.InGameGrade skillGrade = Define.InGameGrade.Normal;
                 for (int i = templateID; i <= templateID + (int)Define.InGameGrade.Epic; ++i)
                 {
@@ -192,6 +194,9 @@ namespace STELLAREST_2D
 
                     if (primaryKey.Contains("RangedShot"))
                         className = Define.NameSpaceLabels.STELLAREST_2D + "." + "RangedShot";
+
+                    if (primaryKey.Contains("RangedMagicShot"))
+                        className = Define.NameSpaceLabels.STELLAREST_2D + "." + "RangedMagicShot";
 
                     if (typeof(RepeatSkill).IsAssignableFrom(System.Type.GetType(className)))
                     {

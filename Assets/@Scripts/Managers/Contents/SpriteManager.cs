@@ -85,7 +85,6 @@ namespace STELLAREST_2D
 
             //_cureatureSprites.Add(cc.CharaData.TemplateID, new CreatureSprite(eyesRenderer, eyesColor, mouthRenderer, mouthColor));
             _playerSprite = new PlayerSprite(eyebrowsRenderer, eyebrowsColor, eyesRenderer, eyesColor, mouthRenderer, mouthColor);
-
             InitPlayerAppearances(pc);
         }
 

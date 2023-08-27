@@ -81,6 +81,7 @@ namespace STELLAREST_2D
             // +++ REINA +++
             // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Reina_ArrowMaster);
             // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Reina_ElementalArcher);
+            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Reina_ForestWarden);
 
             // +++ Kenneth +++
             // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Kenneth_Assassin);
@@ -89,13 +90,26 @@ namespace STELLAREST_2D
 
             // +++ LIONEL +++
             // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Lionel_Warrior);
-            var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Lionel_Barbarian);
+            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Lionel_Barbarian);
             // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Lionel_Berserker);
+
+            // +++ CHRISTIAN +++
+            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Christian_Hunter);
+            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Christian_Desperado);
+            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Christian_Destroyer);
+
+            // +++ CHOLE +++
+            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Chloe_Archmage);
+            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Chloe_Trickster);
+            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Chloe_Frostweaver);
 
             // +++ STIGMA +++
             // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Stigma_SkeletonKing);
             // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Stigma_Pirate);
             // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Stigma_Mutant);
+
+            // +++ ELEANOR +++
+            var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Eleanor_Queen);
 
             // Camera.main.GetComponent<CameraController>().Target = player.gameObject;
             // GameObject.Find("CMcam").GetComponent<CameraController>().SetTarget(player.gameObject);

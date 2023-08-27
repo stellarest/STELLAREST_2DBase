@@ -79,7 +79,7 @@ namespace STELLAREST_2D.Data
         public float ContinuousSpacing;
         public float[] ContinuousSpeedRatios;
         public float[] ContinuousAngles;
-        public float[] ContinuousFixRotations;
+        public float[] ContinuousFixedRotations;
         public float[] ContinuousFlipXs;
         public float[] ContinuousFlipYs;
         public float[] ContinuousPowers;

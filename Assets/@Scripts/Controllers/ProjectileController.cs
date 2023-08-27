@@ -128,6 +128,13 @@ namespace STELLAREST_2D
                     }
                     break;
 
+                case (int)Define.TemplateIDs.SkillType.ForestWardenRangedShot:
+                    {
+                        GetComponent<RangedShot>().SetSkillInfo(Owner, currentSkill.SkillData.TemplateID);
+                        StartCoroutine(CoArrowShot());
+                    }
+                    break;
+
                 case (int)Define.TemplateIDs.SkillType.ThrowingStar:
                     {
                         _target = null;

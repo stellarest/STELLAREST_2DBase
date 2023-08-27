@@ -32,6 +32,8 @@ namespace STELLAREST_2D
 
         public Transform LegR { get; private set; } = null;
         public Transform ArmL { get; private set; } = null;
+        public Transform ArmR { get; private set; } = null;
+
         public GameObject LeftHandMeleeWeapon { get; private set; } = null;
         public GameObject Hair { get; private set; } = null;
 
@@ -87,8 +89,6 @@ namespace STELLAREST_2D
                                 }
                                 break;
 
-
-
                             case (int)Define.TemplateIDs.Player.Reina_ArrowMaster:
                                 {
                                     PAC.SimpleBowShot();
@@ -99,7 +99,11 @@ namespace STELLAREST_2D
                                     PAC.SimpleBowShot();
                                 }
                                 break;
-
+                            case (int)Define.TemplateIDs.Player.Reina_ForestWarden:
+                                {
+                                    PAC.SimpleBowShot();
+                                }
+                                break;
 
 
                             case (int)Define.TemplateIDs.Player.Kenneth_Assassin:
@@ -183,6 +187,8 @@ namespace STELLAREST_2D
             this.LegR = Utils.FindChild(LegR, "Shin").transform;
 
             ArmL = Utils.FindChild(gameObject, "ArmL", true).transform;
+            ArmR = Utils.FindChild(gameObject, "ArmR[1]", true).transform;
+
             LeftHandMeleeWeapon = Utils.FindChild(ArmL.gameObject, "MeleeWeapon", true);
             Hair = Utils.FindChild(gameObject, "Hair", true);
 
@@ -390,29 +396,46 @@ namespace STELLAREST_2D
             // StopPlayerDefaultSkill로 바꿔야함.
             PAC.OffReady();
 
-            while (PAC.AnimController.GetCurrentAnimatorStateInfo(0).IsName("IdleMelee") == false)
-                yield return null;
+            // +++ TEMP +++
+            if (IsChristian(CharaData.TemplateID) == false)
+            {
+                while (PAC.AnimController.GetCurrentAnimatorStateInfo(0).IsName("IdleMelee") == false)
+                {
+                    // 이 while 문은 공격 중일때 들어오는 부분인데, 현재 아직 공격중인 크리스티앙 애니메이션이 없음.
+                    yield return null;
+                }
+            }
 
             // +++ ENABLE ASSASSIN DOUBLE WEAPON +++
-            if (newSkill.SkillData.OriginTemplateID == (int)Define.TemplateIDs.SkillType.AssassinMeleeSwing &&
-                newSkill.SkillData.InGameGrade == Define.InGameGrade.Legendary)
+            if (IsAssassin(newSkill.SkillData.OriginTemplateID) && newSkill.SkillData.InGameGrade == Define.InGameGrade.Legendary)
                 LeftHandMeleeWeapon.GetComponent<SpriteRenderer>().enabled = true;
 
             // +++ FIND OTHER HAND REINA BOW +++
-            if (this.CharaData.TemplateID == (int)Define.TemplateIDs.Player.Reina_ArrowMaster ||
-                this.CharaData.TemplateID == (int)Define.TemplateIDs.Player.Reina_ElementalArcher)
+            if (IsReina(CharaData.TemplateID) || IsChristian(CharaData.TemplateID))
                 Managers.Sprite.UpgradePlayerAppearance(this, newSkill.SkillData.InGameGrade, true);
             else
                 Managers.Sprite.UpgradePlayerAppearance(this, newSkill.SkillData.InGameGrade, false);
 
             // +++ ADJUST THIEF HAIR MASK +++
-            if (newSkill.SkillData.OriginTemplateID == (int)Define.TemplateIDs.SkillType.ThiefMeleeSwing &&
-                newSkill.SkillData.InGameGrade > Define.InGameGrade.Rare)
+            if (IsThief(newSkill.SkillData.OriginTemplateID) && newSkill.SkillData.InGameGrade > Define.InGameGrade.Rare)
                 Hair.GetComponent<SpriteMask>().isCustomRangeActive = false;
 
             PAC.OnReady();
             newSkill.ActivateSkill();
         }
+
+        private bool IsAssassin(int templateID)
+            => templateID == 200124;
+
+        private bool IsThief(int templateID)
+            => templateID == 200128;
+
+        private bool IsReina(int templateID) 
+            => templateID == 100103 || templateID == 100104 || templateID == 100105 ? true : false;
+
+        private bool IsChristian(int templateID)
+            => templateID == 100112 || templateID == 100113 || templateID == 100114 ? true : false;
+        
 
         public override void OnDamaged(BaseController attacker, SkillBase skill)
                         => base.OnDamaged(attacker, skill);
@@ -427,7 +450,6 @@ namespace STELLAREST_2D
 
             if (Input.GetKeyDown(KeyCode.T))
             {
-
                 // Debug.Log(SkillBook.GetPlayerDefaultSkill(Define.InGameGrade.Normal).SkillData.ModelingLabel);
                 // Debug.Log(SkillBook.GetPlayerDefaultSkill(Define.InGameGrade.Rare).SkillData.ModelingLabel);
                 // Debug.Log(SkillBook.GetPlayerDefaultSkill(Define.InGameGrade.Epic).SkillData.ModelingLabel);
@@ -502,22 +524,48 @@ namespace STELLAREST_2D
         }
 
         private float _armBowFixedAngle = 110f;
-
+        private float _armRifleFixedAngle = 146f;
+        public float TEST_ANGLE = 0f;
         private void LateUpdate()
         {
             //Debug.Log("Angle : " + Vector2.Angle(ArmL.transform.localPosition, Indicator.localPosition));
-            if (_getReady && CharaData.TemplateID == (int)Define.TemplateIDs.Player.Reina_ArrowMaster ||
-                _getReady && CharaData.TemplateID == (int)Define.TemplateIDs.Player.Reina_ElementalArcher)
+            if (_getReady)
             {
-                float modifiedAngle = (Indicator.eulerAngles.z + _armBowFixedAngle);
-                if (AnimationLocalScale.x < 0)
-                {
-                    modifiedAngle = 360f - modifiedAngle;
-                }
 
-                ArmL.transform.localRotation = Quaternion.Euler(0, 0, modifiedAngle);
+                switch (CharaData.TemplateID)
+                {
+                    case (int)Define.TemplateIDs.Player.Reina_ArrowMaster:
+                    case (int)Define.TemplateIDs.Player.Reina_ElementalArcher:
+                    case (int)Define.TemplateIDs.Player.Reina_ForestWarden:
+                        {
+                            float modifiedAngle = (Indicator.eulerAngles.z + _armBowFixedAngle);
+                            if (AnimationLocalScale.x < 0)
+                                modifiedAngle = 360f - modifiedAngle;
+
+                            ArmL.transform.localRotation = Quaternion.Euler(0, 0, modifiedAngle);
+                        }
+                        break;
+
+
+                    case (int)Define.TemplateIDs.Player.Christian_Hunter:
+                    case (int)Define.TemplateIDs.Player.Christian_Desperado:
+                    case (int)Define.TemplateIDs.Player.Christian_Destroyer:
+                        {
+                            float modifiedAngle = (Indicator.eulerAngles.z + _armRifleFixedAngle);
+                            if (AnimationLocalScale.x < 0)
+                            {
+                                modifiedAngle = 360f - modifiedAngle - 65f;
+                                ArmR.transform.localRotation = Quaternion.Euler(0, 0, Mathf.Clamp(modifiedAngle, 15f, 91f));
+                            }
+                            else
+                                ArmR.transform.localRotation = Quaternion.Euler(0, 0, Mathf.Clamp(modifiedAngle, 378f, 450f));
+                        }
+                        break;
+
+                }
             }
 
+            // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
             // private Coroutine _coPlayAnims = null;
             // private IEnumerator CoPlayAnims(System.Action play1, System.Action play2)
             // {

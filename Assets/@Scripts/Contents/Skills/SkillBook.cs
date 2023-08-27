@@ -133,8 +133,9 @@ namespace STELLAREST_2D
 
                 rot = Quaternion.Euler(0, 0, continuousAngles[i]);
                 shootDir = rot * originShootDir;
+
                 pc.transform.rotation = Quaternion.Euler(0, 0, 
-                    (skillData.ContinuousFixRotations[i] * (int)Managers.Game.Player.LookAtDir * -1) + indicatorAngle.z + continuousAngles[i]);
+                    (skillData.ContinuousFixedRotations[i] * (int)Managers.Game.Player.LookAtDir * -1) + indicatorAngle.z + continuousAngles[i]);
 
                 // +++++ TEMP +++++
                 pc.SetProjectileInfo(Owner, skill, shootDir, spawnPos, localScale, indicatorAngle, lootAtDir, 

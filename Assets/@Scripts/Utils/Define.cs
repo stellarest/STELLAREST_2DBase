@@ -77,7 +77,7 @@ namespace STELLAREST_2D
                 Stigma_Pirate = 100119,
                 Stigma_Mutant = 100120,
 
-                Eleanor_Queen = 100121 // Legendary Hidden Character from the start
+                Eleanor_Queen = 100121 // Special Hidden Character
             }
 
             public enum Monster
@@ -89,30 +89,43 @@ namespace STELLAREST_2D
             {
                 None = 200000,
                 
+                // +++ GARY +++
                 PaladinMeleeSwing = 200100,
                 KnightMeleeSwing = 200104,
                 PhantomKnightMeleeSwing = 200108,
 
-
+                // +++ REINA +++
                 ArrowMasterRangedShot = 200112,
                 ElementalArcherRangedShot = 200116,
                 ForestWardenRangedShot = 200120,
 
-
+                // +++ KENNETH +++
                 AssassinMeleeSwing = 200124,
                 ThiefMeleeSwing = 200128,
                 NinjaRangedShot = 200132,
 
-
+                // +++ LIONEL +++
                 WarriorMeleeSwing = 200136,
                 BarbarianRangedShot = 200140,
                 BerserkerMeleeSwing = 200144,
 
+                // +++ CHRISTIAN +++
+                HunterRangedShot = 200148,
+                DesperadoRangedShot = 200152,
+                DestroyerRangedShot = 200156,
 
+                // +++ CHLOE +++
+                ArchmageRangedMagicShot = 200160,
+                TricksterRangedMagicShot = 200164,
+                FrostWeaverRangedMagicShot = 200168,
+
+                // +++ STIGMA +++
                 SkeletonKingMeleeSwing = 200172,
                 PirateMeleeSwing = 200176,
                 DeathClaw = 200180,
 
+                // +++ ELEANOR +++
+                QueenMeleeSwing_Special = 200184,
 
                 // +++ Public Repeat Skills +++
                 ThrowingStar = 200200,
