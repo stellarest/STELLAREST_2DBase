@@ -29,13 +29,14 @@ namespace STELLAREST_2D
         public enum InGameGrade { Normal = 1, Rare = 2, Epic = 3, Legendary = 4 }
         public enum CollisionLayers { Default = 0, PlayerBody = 6, PlayerAttack = 7, MonsterBody = 8, MonsterAttack = 9 }
 
-        public enum PlayerEmotion { None = 0, Default = 1, Greedy, Sick, Bunny, Kitty, Death }
         public enum InitialStatRatioGrade { None = 0, Low = 10, Average = 20, High = 30 }
         public enum LookAtDirection { Left = 1, Right = -1 }
 
         public enum EffectLevel { Level1, level2, Level3 }
         public enum ElementalType { Fire, Ice, Wind, Bubble, }
+        public enum ExpressionType { Default, Sick, Death, }
         public enum MonsterFace { Normal = 0, Angry = 1, Death = 2 }
+
 
         public static class TemplateIDs
         {
@@ -204,18 +205,13 @@ namespace STELLAREST_2D
                 public const string GEM_NORMAL = "Gem_Normal.sprite";
                 public const string GEM_LARGE = "Gem_Large.sprite";
 
-                public const string PLAYER_EYES_GREEDY = "Eyes_Greedy.sprite";
-                public const string PLAYER_MOUTH_GREEDY = "Mouth_Greedy.sprite";
+                public const string EYEBROWS_SICK = "Eyebrows_Sick.sprite";
+                public const string EYES_SICK = "Eyes_Sick.sprite";
+                public const string MOUTH_SICK = "Mouth_Sick.sprite";
 
-                public const string PLAYER_EYEBROWS_SICK = "Eyebrows_Sick.sprite.sprite";
-                public const string PLAYER_EYES_SICK = "Eyes_Sick.sprite";
-                public const string PLAYER_MOUTH_SICK = "Mouth_Sick.sprite";
-
-                public const string PLAYER_EYES_KITTY = "Eyes_Kitty.sprite";
-                public const string PLAYER_MOUTH_KITTY = "Mouth_Kitty.sprite";
-
-                public const string PLAYER_EYES_DIE = "Eyes_Die.sprite";
-                public const string PLAYER_MOUTH_DIE = "Mouth_Die.sprite";
+                public const string EYEBROWS_DEATH = "Eyebrows_Death.sprite";
+                public const string EYES_DEATH = "Eyes_Death.sprite";
+                public const string MOUTH_DEATH = "Mouth_Death.sprite";
             }
 
             public static class Materials

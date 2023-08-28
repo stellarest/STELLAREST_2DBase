@@ -453,7 +453,14 @@ namespace STELLAREST_2D
                         => base.OnDamaged(attacker, skill);
 
         // bool bChange = false;
-        public Define.PlayerEmotion emotion = Define.PlayerEmotion.Default;
+        public Define.ExpressionType MyExpression = Define.ExpressionType.Default;
+
+        [ContextMenu("TEST_EXPRESSION")]
+        public void TEST_EXPRESSION()
+        {
+            Managers.Sprite.PlayerEmotion.Expression(MyExpression);
+        }
+
 
         private void Update()
         {
@@ -462,8 +469,7 @@ namespace STELLAREST_2D
 
             if (Input.GetKeyDown(KeyCode.T))
             {
-                Managers.Sprite.PlayerEmotion.Sick();
-
+                // Managers.Sprite.PlayerEmotion.Sick();
                 // Debug.Log(SkillBook.GetPlayerDefaultSkill(Define.InGameGrade.Normal).SkillData.ModelingLabel);
                 // Debug.Log(SkillBook.GetPlayerDefaultSkill(Define.InGameGrade.Rare).SkillData.ModelingLabel);
                 // Debug.Log(SkillBook.GetPlayerDefaultSkill(Define.InGameGrade.Epic).SkillData.ModelingLabel);

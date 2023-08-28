@@ -9,62 +9,88 @@ using STELLAREST_2D.Data;
 
 namespace STELLAREST_2D
 {
-    public enum PlayerExpressionType
+    public enum FacialType
     {
-        Default,
-        Sick,
-        Angry,
+        Eyebrows,
+        Eyes,
+        Mouth,
+        Max,
     }
-
 
     public class PlayerEmotionController
     {
         public PlayerEmotionController(SpriteRenderer eyebrowsRenderer, SpriteRenderer eyesRenderer, SpriteRenderer mouthRenderer)
         {
             _eyebrowsRenderer = eyebrowsRenderer;
-            _defaultEyebrows = eyebrowsRenderer.sprite;
+            _dictEyebrows.Add(Define.ExpressionType.Default, eyebrowsRenderer.sprite);
             _defaultEyebrowsColor = eyebrowsRenderer.color;
 
             _eyesRenderer = eyesRenderer;
-            _defaultEyes = eyesRenderer.sprite;
+            _dictEyes.Add(Define.ExpressionType.Default, eyesRenderer.sprite);
+
             _defaultEyesColor = eyesRenderer.color;
 
             _mouthRenderer = mouthRenderer;
-            _defaultMouth = mouthRenderer.sprite;
+            _dictMouth.Add(Define.ExpressionType.Default, mouthRenderer.sprite);
             _defaultMouthColor = mouthRenderer.color;
 
             // InitSick();
+            InitExpressions();
         }
 
-        private Dictionary<PlayerExpressionType, Sprite> _eyebrows = new Dictionary<PlayerExpressionType, Sprite>();
-        private Dictionary<PlayerExpressionType, Sprite> _eyes = new Dictionary<PlayerExpressionType, Sprite>();
-        private Dictionary<PlayerExpressionType, Sprite> _mouth = new Dictionary<PlayerExpressionType, Sprite>();
+        private Dictionary<Define.ExpressionType, Sprite> _dictEyebrows = new Dictionary<Define.ExpressionType, Sprite>();
+        private Dictionary<Define.ExpressionType, Sprite> _dictEyes = new Dictionary<Define.ExpressionType, Sprite>();
+        private Dictionary<Define.ExpressionType, Sprite> _dictMouth = new Dictionary<Define.ExpressionType, Sprite>();
 
-        private void InitEyebrows()
+        private void InitExpressions()
         {
-            //Sprite eyebrows = Managers.Resource.Load<Sprite>(Define.SpriteLabels.)
+            Define.ExpressionType type = Define.ExpressionType.Sick;
+            var eyebrows = Managers.Resource.Load<Sprite>(Define.Labels.Sprites.EYEBROWS_SICK);
+            var eyes = Managers.Resource.Load<Sprite>(Define.Labels.Sprites.EYES_SICK);
+            var mouth = Managers.Resource.Load<Sprite>(Define.Labels.Sprites.MOUTH_SICK);
+
+            _dictEyebrows.Add(type, eyebrows);
+            _dictEyes.Add(type, eyes);
+            _dictMouth.Add(type, mouth);
+
+            type = Define.ExpressionType.Death;
+            eyebrows = Managers.Resource.Load<Sprite>(Define.Labels.Sprites.EYEBROWS_DEATH);
+            eyes = Managers.Resource.Load<Sprite>(Define.Labels.Sprites.EYES_DEATH);
+            mouth = Managers.Resource.Load<Sprite>(Define.Labels.Sprites.MOUTH_DEATH);
+
+            _dictEyebrows.Add(type, eyebrows);
+            _dictEyes.Add(type, eyes);
+            _dictMouth.Add(type, mouth);
         }
 
-        private void InitEyes()
-        {
-        }
 
         private SpriteRenderer _eyebrowsRenderer;
         private SpriteRenderer _eyesRenderer;
         private SpriteRenderer _mouthRenderer;
 
-        private Sprite _defaultEyebrows;
         private Color _defaultEyebrowsColor;
-
-        private Sprite _defaultEyes;
         private Color _defaultEyesColor;
-
-        private Sprite _defaultMouth;
         private Color _defaultMouthColor;
 
         private Sprite _sickEyebrows;
         private Sprite _sickEyes;
         private Sprite _sickMouth;
+
+        public void Expression(Define.ExpressionType expression)
+        {
+            _eyebrowsRenderer.sprite = _dictEyebrows[expression];
+            _eyesRenderer.sprite = _dictEyes[expression];
+            _mouthRenderer.sprite = _dictMouth[expression];
+
+            if (expression == Define.ExpressionType.Default)
+            {
+                _eyebrowsRenderer.color = _defaultEyebrowsColor;
+                _eyesRenderer.color = _defaultEyesColor;
+                _mouthRenderer.color = _defaultMouthColor;
+            }
+            else if (expression == Define.ExpressionType.Death)
+                _eyesRenderer.color = new Color(0f, 0.784f, 1f, 1f);
+        }
 
         private void InitSick()
         {
@@ -82,14 +108,14 @@ namespace STELLAREST_2D
 
         public void Default()
         {
-            _eyebrowsRenderer.sprite = _defaultEyebrows;
-            _eyebrowsRenderer.color = _defaultEyebrowsColor;
+            // _eyebrowsRenderer.sprite = _defaultEyebrows;
+            // _eyebrowsRenderer.color = _defaultEyebrowsColor;
 
-            _eyesRenderer.sprite = _defaultEyes;
-            _eyesRenderer.color = _defaultEyesColor;
+            // _eyesRenderer.sprite = _defaultEyes;
+            // _eyesRenderer.color = _defaultEyesColor;
             
-            _mouthRenderer.sprite = _defaultMouth;
-            _mouthRenderer.color = _defaultMouthColor;
+            // _mouthRenderer.sprite = _defaultMouth;
+            // _mouthRenderer.color = _defaultMouthColor;
         }
 
         public void Hit()
