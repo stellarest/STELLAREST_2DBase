@@ -111,9 +111,9 @@ namespace STELLAREST_2D
                 GameObject go = null;
                 // 생성만
                 if (SkillData.InGameGrade < Define.InGameGrade.Legendary)
-                    go = Managers.Resource.Instantiate(Define.PrefabLabels.DEATH_CLAW_SLASH, pooling: true);
+                    go = Managers.Resource.Instantiate(Define.Labels.Prefabs.DEATH_CLAW_SLASH, pooling: true);
                 else
-                    go = Managers.Resource.Instantiate(Define.PrefabLabels.DEATH_CLAW_SLASH_LEGENDARY, pooling: true);
+                    go = Managers.Resource.Instantiate(Define.Labels.Prefabs.DEATH_CLAW_SLASH_LEGENDARY, pooling: true);
 
                 go.GetComponent<DeathClawSlash>().Parent = this;
                 go.transform.position = mc.Body.transform.position;

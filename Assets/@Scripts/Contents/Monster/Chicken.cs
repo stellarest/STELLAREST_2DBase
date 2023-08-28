@@ -21,7 +21,7 @@ namespace STELLAREST_2D
                 GoCCEffect = null;
             }
 
-            Managers.Sprite.SetMonsterFace(this, Define.SpriteLabels.MonsterFace.Normal);
+            Managers.Sprite.SetMonsterFace(this, Define.MonsterFace.Normal);
             RigidBody.simulated = true;
             RigidBody.velocity = Vector2.zero;
             SkillBook.Stopped = false;

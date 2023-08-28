@@ -23,19 +23,21 @@ namespace STELLAREST_2D
         public List<SequenceSkill> LearnedSequenceSkills { get; } = new List<SequenceSkill>();
 
 
-        // +++ 최초 한 번 실행 +++
+        /// <summary>
+        /// Init Once
+        /// </summary>
         public void AddRepeatSkill(RepeatSkill repeatSkill) => RepeatSkills.Add(repeatSkill);
         public void AddSequenceSkill(SequenceSkill sequenceSkill) => SequenceSkills.Add(sequenceSkill);
 
         public SkillBase GetPlayerDefaultSkill(Define.InGameGrade grade)
-                => (RepeatSkills[(int)grade - 1].SkillData.IsPlayerDefaultAttack == false) ? null : RepeatSkills[(int)grade - 1];
+                => (int)grade - 1 >= RepeatSkills.Count || RepeatSkills[(int)grade - 1].SkillData.IsPlayerDefaultAttack == false ? null : RepeatSkills[(int)grade - 1];
 
         public SkillBase GetCurrentPlayerDefaultSkill
                 => LearnedRepeatSkills.FirstOrDefault(s => s.SkillData.IsPlayerDefaultAttack == true);
 
-        // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-        // +++++ Called From Animation Events : OnRepeatAttackHandler +++++
-        // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        /// <summary>
+        /// Called From Animation Events : OnRepeatAttackHandler
+        /// </summary>
         public void GeneratePlayerAttack(Define.TemplateIDs.SkillType skillType)
         {
             RepeatSkill skill = RepeatSkills.FirstOrDefault(s => s.SkillData.TemplateID == (int)skillType);

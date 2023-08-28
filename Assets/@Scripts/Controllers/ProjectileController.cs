@@ -81,6 +81,7 @@ namespace STELLAREST_2D
                 case (int)Define.TemplateIDs.SkillType.BerserkerMeleeSwing:
                 case (int)Define.TemplateIDs.SkillType.SkeletonKingMeleeSwing:
                 case (int)Define.TemplateIDs.SkillType.PirateMeleeSwing:
+                case (int)Define.TemplateIDs.SkillType.QueenMeleeSwing:
                     {
                         GetComponent<MeleeSwing>().SetSwingInfo(owner, currentSkill.SkillData.TemplateID, indicatorAngle,
                                     lootAtDir, continuousAngle, continuousFlipX, continuousFlipY);
@@ -95,7 +96,8 @@ namespace STELLAREST_2D
                             currentSkill.SkillData.OriginTemplateID == (int)Define.TemplateIDs.SkillType.ThiefMeleeSwing ||
                             currentSkill.SkillData.OriginTemplateID == (int)Define.TemplateIDs.SkillType.WarriorMeleeSwing ||
                             currentSkill.SkillData.OriginTemplateID == (int)Define.TemplateIDs.SkillType.BerserkerMeleeSwing ||
-                            currentSkill.SkillData.OriginTemplateID == (int)Define.TemplateIDs.SkillType.PirateMeleeSwing)
+                            currentSkill.SkillData.OriginTemplateID == (int)Define.TemplateIDs.SkillType.PirateMeleeSwing || 
+                            currentSkill.SkillData.OriginTemplateID == (int)Define.TemplateIDs.SkillType.QueenMeleeSwing)
                         {
                             _shootDir = Quaternion.Euler(0, 0, continuousAngle * -1) * _shootDir;
                         }

@@ -32,7 +32,7 @@ namespace STELLAREST_2D
             if (cc?.IsMonster() == true)
             {
                 mc = cc.GetComponent<MonsterController>();
-                Managers.Sprite.SetMonsterFace(mc, Define.SpriteLabels.MonsterFace.Death);
+                Managers.Sprite.SetMonsterFace(mc, Define.MonsterFace.Death);
             }
 
             float t = 0f;
@@ -50,7 +50,7 @@ namespace STELLAREST_2D
             cc[Define.CCState.Stun] = false;
             if (cc?.IsMonster() == true)
             {
-                Managers.Sprite.SetMonsterFace(mc, Define.SpriteLabels.MonsterFace.Normal);
+                Managers.Sprite.SetMonsterFace(mc, Define.MonsterFace.Normal);
                 mc.CoStartReadyToAction(false);
             }
         }

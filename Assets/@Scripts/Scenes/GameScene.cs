@@ -79,7 +79,7 @@ namespace STELLAREST_2D
             // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Gary_PhantomKnight);
 
             // +++ REINA +++
-            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Reina_ArrowMaster);
+            var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Reina_ArrowMaster);
             // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Reina_ElementalArcher);
             // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Reina_ForestWarden);
 
@@ -109,7 +109,7 @@ namespace STELLAREST_2D
             // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Stigma_Mutant);
 
             // +++ ELEANOR +++
-            var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Eleanor_Queen);
+            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Eleanor_Queen);
 
             // Camera.main.GetComponent<CameraController>().Target = player.gameObject;
             // GameObject.Find("CMcam").GetComponent<CameraController>().SetTarget(player.gameObject);
@@ -118,7 +118,7 @@ namespace STELLAREST_2D
             CMcam.GetComponent<CameraController>().SetTarget(player.gameObject);
 
             // Spawn Joystick
-            var joystick = Managers.Resource.Instantiate(Define.PrefabLabels.JOYSTICK);
+            var joystick = Managers.Resource.Instantiate(Define.Labels.Prefabs.JOYSTICK);
             joystick.name = "@Joystick"; // UI_Joystick라고 하기엔 좀 애매함
 
             // Create Spawning Pool

@@ -89,6 +89,8 @@ namespace STELLAREST_2D
                                 }
                                 break;
 
+
+
                             case (int)Define.TemplateIDs.Player.Reina_ArrowMaster:
                                 {
                                     PAC.SimpleBowShot();
@@ -104,6 +106,7 @@ namespace STELLAREST_2D
                                     PAC.SimpleBowShot();
                                 }
                                 break;
+
 
 
                             case (int)Define.TemplateIDs.Player.Kenneth_Assassin:
@@ -154,6 +157,14 @@ namespace STELLAREST_2D
                                         PAC.Jab1HLeft();
                                     else
                                         PAC.SlashPaired();
+                                }
+                                break;
+
+
+
+                            case (int)Define.TemplateIDs.Player.Eleanor_Queen:
+                                {
+                                    PAC.Slash1H();
                                 }
                                 break;
                         }
@@ -208,6 +219,7 @@ namespace STELLAREST_2D
             // +++++ Set Player Default Skill Automatically +++++
             // ++++++++++++++++++++++++++++++++++++++++++++++++++
             this.SkillBook.PlayerDefaultSkill = (Define.TemplateIDs.SkillType)SkillBook.GetPlayerDefaultSkill(Define.InGameGrade.Normal).SkillData.TemplateID;
+            Debug.Log("!!!!!!!!!!!!!!!!!!!!!!!! : " + SkillBook.PlayerDefaultSkill);
 
             // TODO
             // Define.TemplateIDs.SkillType.PaladinSwing : UI에서 최초 캐릭터 셀렉트시 결정 
@@ -220,12 +232,12 @@ namespace STELLAREST_2D
         {
             if (_indicator == null)
                 _indicator = Utils.FindChild<Transform>(this.gameObject,
-                    Define.PlayerController.INDICATOR, true);
+                    Define.Player.INDICATOR, true);
 
             if (_fireSocket == null)
             {
                 _fireSocket = Utils.FindChild<Transform>(this.gameObject,
-                    Define.PlayerController.FIRE_SOCKET, true);
+                    Define.Player.FIRE_SOCKET, true);
 
                 FireSocketSpriteRenderer = _fireSocket.GetComponent<SpriteRenderer>();
             }
@@ -281,7 +293,7 @@ namespace STELLAREST_2D
         }
 
         public bool IsFacingRight
-                => (_animChildObject.transform.localScale.x != Define.PlayerController.CONSTANT_SCALE_X * -1f) ? true : false;
+                => (_animChildObject.transform.localScale.x != Define.Player.LOCAL_SCALE_X * -1f) ? true : false;
         private void Turn(float angle)
         {
             if (Mathf.Sign(angle) < 0)
@@ -295,8 +307,8 @@ namespace STELLAREST_2D
                 _armBowFixedAngle = -110f;
             }
 
-            Vector3 turnChara = new Vector3((int)LookAtDir * Define.PlayerController.CONSTANT_SCALE_X * -1f,
-                                        Define.PlayerController.CONSTANT_SCALE_Y, Define.PlayerController.CONSTANT_SCALE_Z);
+            Vector3 turnChara = new Vector3((int)LookAtDir * Define.Player.LOCAL_SCALE_X * -1f,
+                                        Define.Player.LOCAL_SCALE_Y, 1);
             _animChildObject.transform.localScale = turnChara;
         }
 
@@ -450,6 +462,8 @@ namespace STELLAREST_2D
 
             if (Input.GetKeyDown(KeyCode.T))
             {
+                Managers.Sprite.PlayerEmotion.Sick();
+
                 // Debug.Log(SkillBook.GetPlayerDefaultSkill(Define.InGameGrade.Normal).SkillData.ModelingLabel);
                 // Debug.Log(SkillBook.GetPlayerDefaultSkill(Define.InGameGrade.Rare).SkillData.ModelingLabel);
                 // Debug.Log(SkillBook.GetPlayerDefaultSkill(Define.InGameGrade.Epic).SkillData.ModelingLabel);
@@ -483,14 +497,15 @@ namespace STELLAREST_2D
             if (Input.GetKeyDown(KeyCode.R))
             {
                 // PAC.DeathFront();
-                // Managers.Sprite.SetPlayerEmotion(Define.PlayerEmotion.Death);
-                var findGems = Managers.Object.GridController.
-                GatherObjects(transform.position, EnvCollectDist + 99f).ToList();
-                foreach (var gem in findGems)
-                {
-                    GemController gc = gem.GetComponent<GemController>();
-                    gc.GetGem();
-                }
+                // var findGems = Managers.Object.GridController.
+                // GatherObjects(transform.position, EnvCollectDist + 99f).ToList();
+                // foreach (var gem in findGems)
+                // {
+                //     GemController gc = gem.GetComponent<GemController>();
+                //     gc.GetGem();
+                // }
+
+                Managers.Sprite.PlayerEmotion.Default();
             }
 
             MoveByJoystick();

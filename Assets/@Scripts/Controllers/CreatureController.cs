@@ -2,6 +2,7 @@ using System.Collections;
 using System.Linq.Expressions;
 using System.Text;
 using UnityEngine;
+using UnityEngine.Experimental.Rendering;
 using UnityEngine.Rendering;
 
 namespace STELLAREST_2D
@@ -173,30 +174,41 @@ namespace STELLAREST_2D
             foreach (Define.TemplateIDs.SkillType skill in creatureData.InGameSkillList)
             {
                 int templateID = (int)skill;
-                string className = Define.NameSpaceLabels.STELLAREST_2D + "." + skill.ToString();
+                string className = Define.NameSpace + "." + skill.ToString();
                 Utils.LogStrong("CLASS NAME : " + className); // STELLAREST_2D.PaladinMeleeSwing
-
-                Debug.Break();
 
                 Define.InGameGrade skillGrade = Define.InGameGrade.Normal;
                 for (int i = templateID; i <= templateID + (int)Define.InGameGrade.Epic; ++i)
                 {
-                    string primaryKey = skill.ToString() + "_" + skillGrade.ToString() + ".prefab";
+                    // TODO : Special Skills
+                    // STELLAREST_2D.QueenMeleeSwing_Special
+                    string primaryKey = string.Empty;
+                    primaryKey = skill.ToString() + "_" + skillGrade.ToString() + ".prefab";
                     skillGrade++;
+                    // if (className.Contains("Special"))
+                    // {
+                    //     primaryKey = skill.ToString() + ".prefab";
+                    // }
+                    // else
+                    // {
+                    //     primaryKey = skill.ToString() + "_" + skillGrade.ToString() + ".prefab";
+                    //     skillGrade++;
+                    // }
 
                     Debug.Log("PRIMARY KEY : " + primaryKey);
                     GameObject go = Managers.Resource.Instantiate(primaryKey);
                     if (go == null)
                         continue;
 
+                    // +++ TODO : USE STRING BUILDER? +++
                     if (primaryKey.Contains("MeleeSwing"))
-                        className = Define.NameSpaceLabels.STELLAREST_2D + "." + "MeleeSwing";
+                        className = Define.NameSpace + "." + "MeleeSwing";
 
                     if (primaryKey.Contains("RangedShot"))
-                        className = Define.NameSpaceLabels.STELLAREST_2D + "." + "RangedShot";
+                        className = Define.NameSpace + "." + "RangedShot";
 
                     if (primaryKey.Contains("RangedMagicShot"))
-                        className = Define.NameSpaceLabels.STELLAREST_2D + "." + "RangedMagicShot";
+                        className = Define.NameSpace + "." + "RangedMagicShot";
 
                     if (typeof(RepeatSkill).IsAssignableFrom(System.Type.GetType(className)))
                     {
@@ -244,7 +256,7 @@ namespace STELLAREST_2D
                     if (Managers.Effect.IsPlayingGlitch || Random.Range(0f, 1f) <= Mathf.Min(CharaData.DodgeChance, Define.MAX_DODGE_CHANCE))
                     {
                         Managers.Effect.ShowDodgeText(this);
-                        CoEffectHologram(); // --> 괜찮은듯. 홀로그램 발동할 때 표정 수정하고 한 번 테스트 해볼것
+                        CoEffectHologram(); // --> 괜찮은듯. 홀로그램 발동할 때 표정 수정하고 한 번 테스트 해볼것 !!
                         // 그리고 공격중에는 눈이 이상하게 나오니까, 이거 예외 줄것
                         // Eyebrows까지 없애야할듯
                         yield break;
@@ -307,6 +319,7 @@ namespace STELLAREST_2D
 
         // +++++ CREATURE EFFECT +++++
         // +++++ Base Controller로 옮겨야할수도 있음 +++++
+        // +++++ Co시리즈는 Base로 옮기자 !!
         public void CoEffectFadeOut(float startTime, float desiredTime, bool onDespawn = true) 
                 => StartCoroutine(Managers.Effect.CoFadeOut(this, startTime, desiredTime, onDespawn));
 

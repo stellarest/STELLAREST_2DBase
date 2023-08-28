@@ -28,13 +28,13 @@ namespace STELLAREST_2D
                 if (_gemSize == GemSize.Normal)
                 {
                     transform.localScale = Vector2.one * 0.85f;
-                    spr.sprite = Managers.Resource.Load<Sprite>(Define.SpriteLabels.GEM_NORMAL);
+                    spr.sprite = Managers.Resource.Load<Sprite>(Define.Labels.Sprites.GEM_NORMAL);
                 }
                 else
                 {
                     // transform.localScale = new Vector2(1.25f, 1.25f);
                     transform.localScale = Vector2.one;
-                    spr.sprite = Managers.Resource.Load<Sprite>(Define.SpriteLabels.GEM_LARGE);
+                    spr.sprite = Managers.Resource.Load<Sprite>(Define.Labels.Sprites.GEM_LARGE);
                 }
             }
         }

@@ -19,13 +19,13 @@ namespace STELLAREST_2D
         public void Init()
         {
             CreatureDict = LoadJson<Data.CreatureDataLoader, int, Data.CreatureData>
-                            (Define.LoadJson.CREATURE).MakeDict();
+                            (Define.Labels.Data.CREATURE).MakeDict();
 
             SkillDict = LoadJson<Data.SkillDataLoader, int, Data.SkillData>
-                            (Define.LoadJson.SKILL).MakeDict();
+                            (Define.Labels.Data.SKILL).MakeDict();
 
             PassiveSkillDict = LoadJson<Data.PassiveSkillDataLoader, int, Data.PassiveSkillData>
-                            (Define.LoadJson.PASSIVE_SKILL).MakeDict();
+                            (Define.Labels.Data.PASSIVE_SKILL).MakeDict();
         }
 
         private T LoadJson<T, Key, Value>(string path) where T : ILoader<Key, Value>

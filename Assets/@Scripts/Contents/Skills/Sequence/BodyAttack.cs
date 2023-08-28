@@ -41,9 +41,10 @@ namespace STELLAREST_2D
             float elapsedTime = 0f;
             float desiredReachTime = 0.15f;
             float percent = 0f;
-            float endWait = 1f;
+            //float endWait = 1f;
+            float endWait = 0.5f;
 
-            Managers.Sprite.SetMonsterFace(Owner as MonsterController, Define.SpriteLabels.MonsterFace.Angry);
+            Managers.Sprite.SetMonsterFace(Owner as MonsterController, Define.MonsterFace.Angry);
             mc.CreatureState = Define.CreatureState.Attack;
             _attackCol.enabled = true;
             while (percent < 1f)
@@ -59,7 +60,7 @@ namespace STELLAREST_2D
                     yield return new WaitUntil(() => _returnBody);
                     mc.CreatureState = Define.CreatureState.Idle;
                     yield return new WaitForSeconds(endWait);
-                    Managers.Sprite.SetMonsterFace(Owner as MonsterController, Define.SpriteLabels.MonsterFace.Normal);
+                    Managers.Sprite.SetMonsterFace(Owner as MonsterController, Define.MonsterFace.Normal);
                     mc.CreatureState = Define.CreatureState.Run;
                     yield break;
                 }

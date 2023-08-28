@@ -36,7 +36,7 @@ namespace STELLAREST_2D
 
                     Managers.Effect.Init();
                     Managers.Effect.AddCreatureMaterials(pc);
-                    Managers.Sprite.InitPlayerSprite(pc);
+                    Managers.Sprite.InitPlayerSprites(pc);
 
                     return pc as T;
                 }
@@ -46,7 +46,7 @@ namespace STELLAREST_2D
                     GameObject go = Managers.Resource.Instantiate(Managers.Data.CreatureDict[templateID].PrimaryLabel, pooling: true);
                     go.transform.position = position;
                     Vector3 spawnEffectPos = new Vector3(go.transform.position.x, go.transform.position.y + 3.8f, go.transform.position.z);
-                    Managers.Effect.ShowSpawnEffect(Define.PrefabLabels.SPAWN_EFFECT, spawnEffectPos);
+                    Managers.Effect.ShowSpawnEffect(Define.Labels.Prefabs.SPAWN_EFFECT, spawnEffectPos);
 
                     Chicken mc = go.GetOrAddComponent<Chicken>();
                     mc.SetInfo(templateID);
@@ -66,7 +66,7 @@ namespace STELLAREST_2D
             else if (type == typeof(GemController))
             {
                 //GameObject go = Managers.Resource.Instantiate(Define.PrefabLabels.EXP_GEM, pooling: true);
-                GameObject go = Managers.Resource.Instantiate(Define.PrefabLabels.GEM, pooling: true);
+                GameObject go = Managers.Resource.Instantiate(Define.Labels.Prefabs.GEM, pooling: true);
                 go.transform.position = position;
 
                 GemController gc = go.GetOrAddComponent<GemController>();
