@@ -7,6 +7,7 @@ using System.Linq;
 using Unity.VisualScripting;
 using STELLAREST_2D.Data;
 using UnityEngine.Playables;
+using TMPro;
 
 namespace STELLAREST_2D
 {
@@ -27,17 +28,20 @@ namespace STELLAREST_2D
         public PlayerExpressionController(PlayerController player, SpriteRenderer eyebrowsRenderer, SpriteRenderer eyesRenderer, SpriteRenderer mouthRenderer)
         {
             _player = player;
-
+ 
             _eyebrowsRenderer = eyebrowsRenderer;
-            _eyebrows.Add(Define.ExpressionType.Default, eyebrowsRenderer.sprite);
+            if (_eyebrowsRenderer.sprite != null)
+                _eyebrows.Add(Define.ExpressionType.Default, eyebrowsRenderer.sprite);
             _eyebrowsDefaultColor = eyebrowsRenderer.color;
 
             _eyesRenderer = eyesRenderer;
-            _eyes.Add(Define.ExpressionType.Default, eyesRenderer.sprite);
+            if (_eyesRenderer.sprite != null)
+                _eyes.Add(Define.ExpressionType.Default, eyesRenderer.sprite);
             _eyesDefaultColor = eyesRenderer.color;
 
             _mouthRenderer = mouthRenderer;
-            _mouth.Add(Define.ExpressionType.Default, mouthRenderer.sprite);
+            if (_mouthRenderer.sprite != null)
+                _mouth.Add(Define.ExpressionType.Default, mouthRenderer.sprite);
             _mouthDefaultColor = mouthRenderer.color;
 
             // InitSick();
@@ -52,22 +56,48 @@ namespace STELLAREST_2D
 
         private void InitExpressions()
         {
-            Define.ExpressionType type = Define.ExpressionType.Angry;
-            var eyebrows = Managers.Resource.Load<Sprite>(Define.Labels.Sprites.EYEBROWS_SMALL_ANGRY);
-            var mouth = Managers.Resource.Load<Sprite>(Define.Labels.Sprites.MOUTH_SMALL_ANGRY);
+            // +++ BATTLE +++
+            Define.ExpressionType type = Define.ExpressionType.Battle;
+            var eyebrows = Managers.Resource.Load<Sprite>(Define.Labels.Sprites.EYEBROWS_BATTLE);
+            var mouth = Managers.Resource.Load<Sprite>(Define.Labels.Sprites.MOUTH_BATTLE);
 
             _eyebrows.Add(type, eyebrows);
             _mouth.Add(type, mouth);
+
+            // +++ ANGRY +++
+            type = Define.ExpressionType.Angry;
+
+            eyebrows = Managers.Resource.Load<Sprite>(Define.Labels.Sprites.EYEBROWS_ANGRY);
+            mouth = Managers.Resource.Load<Sprite>(Define.Labels.Sprites.MOUTH_ANGRY);
+
+            _eyebrows.Add(type, eyebrows);
+            _mouth.Add(type, mouth);
+
+            // +++ CONCENTRATION +++
+            type = Define.ExpressionType.Concentration;
+            mouth = Managers.Resource.Load<Sprite>(Define.Labels.Sprites.MOUTH_CONCENTRATION);
+
+            _mouth.Add(type, mouth);
+
+            // +++ KITTY +++
+            type = Define.ExpressionType.Kitty;
+            var eyes = Managers.Resource.Load<Sprite>(Define.Labels.Sprites.EYES_KITTY);
+            mouth = Managers.Resource.Load<Sprite>(Define.Labels.Sprites.MOUTH_KITTY);
+
+            _eyes.Add(type, eyes);
+            _mouth.Add(type, mouth);
             
+            // +++ SICK +++
             type = Define.ExpressionType.Sick;
             eyebrows = Managers.Resource.Load<Sprite>(Define.Labels.Sprites.EYEBROWS_SICK);
-            var eyes = Managers.Resource.Load<Sprite>(Define.Labels.Sprites.EYES_SICK);
+            eyes = Managers.Resource.Load<Sprite>(Define.Labels.Sprites.EYES_SICK);
             mouth = Managers.Resource.Load<Sprite>(Define.Labels.Sprites.MOUTH_SICK);
 
             _eyebrows.Add(type, eyebrows);
             _eyes.Add(type, eyes);
             _mouth.Add(type, mouth);
 
+            // +++ DEATH +++
             type = Define.ExpressionType.Death;
             eyebrows = Managers.Resource.Load<Sprite>(Define.Labels.Sprites.EYEBROWS_DEATH);
             eyes = Managers.Resource.Load<Sprite>(Define.Labels.Sprites.EYES_DEATH);
@@ -110,10 +140,16 @@ namespace STELLAREST_2D
                     }
                     break;
 
+                case Define.ExpressionType.Battle:
                 case Define.ExpressionType.Angry:
                     {
-                        // TODO : 캐릭터에 따라서 분기해야함
                         _eyebrowsRenderer.sprite = _eyebrows[expression];
+                        _mouthRenderer.sprite = _mouth[expression];
+                    }
+                    break;
+
+                case Define.ExpressionType.Concentration:
+                    {
                         _mouthRenderer.sprite = _mouth[expression];
                     }
                     break;
@@ -135,7 +171,11 @@ namespace STELLAREST_2D
             if (expression == Define.ExpressionType.Death)
                 _eyesRenderer.color = new Color(0f, 0.784f, 1f, 1f);
 
-            _eyebrowsRenderer.sprite = _eyebrows[expression];
+            if (expression == Define.ExpressionType.Kitty)
+                _eyebrowsRenderer.sprite = _eyebrows[Define.ExpressionType.Default];
+            else
+                _eyebrowsRenderer.sprite = _eyebrows[expression];
+
             _eyesRenderer.sprite = _eyes[expression];
             _mouthRenderer.sprite = _mouth[expression];
 
@@ -190,6 +230,13 @@ namespace STELLAREST_2D
                 if (sprArr[i].gameObject.name.Contains("Eyebrows"))
                 {
                     _eyebrowsRenderer = sprArr[i];
+
+                    if (_eyebrows.ContainsKey(Define.ExpressionType.Default))
+                    {
+                        _eyebrows.Remove(Define.ExpressionType.Default);
+                        _eyebrows.Add(Define.ExpressionType.Default, sprArr[i].sprite);
+                    }
+
                     _eyebrowsDefaultColor = sprArr[i].color;
                     continue;
                 }
@@ -197,6 +244,13 @@ namespace STELLAREST_2D
                 if (sprArr[i].gameObject.name.Contains("Eyes"))
                 {
                     _eyesRenderer = sprArr[i];
+                    
+                    if (_eyes.ContainsKey(Define.ExpressionType.Default))
+                    {
+                        _eyes.Remove(Define.ExpressionType.Default);
+                        _eyes.Add(Define.ExpressionType.Default, sprArr[i].sprite);
+                    }
+
                     _eyesDefaultColor = sprArr[i].color;
                     continue;
                 }
@@ -204,6 +258,13 @@ namespace STELLAREST_2D
                 if (sprArr[i].gameObject.name.Contains("Mouth"))
                 {
                     _mouthRenderer = sprArr[i];
+
+                    if (_mouth.ContainsKey(Define.ExpressionType.Default))
+                    {
+                        _mouth.Remove(Define.ExpressionType.Default);
+                        _mouth.Add(Define.ExpressionType.Default, sprArr[i].sprite);
+                    }
+
                     _mouthDefaultColor = sprArr[i].color;
                     continue;
                 }

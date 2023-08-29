@@ -34,9 +34,8 @@ namespace STELLAREST_2D
 
         public enum EffectLevel { Level1, level2, Level3 }
         public enum ElementalType { Fire, Ice, Wind, Bubble, }
-        public enum ExpressionType { Default, Angry, Sick, Death, }
+        public enum ExpressionType { Default, Battle, Angry, Concentration, Kitty, Sick, Death, }
         public enum MonsterFace { Normal = 0, Angry = 1, Death = 2 }
-
 
         public static class TemplateIDs
         {
@@ -204,8 +203,16 @@ namespace STELLAREST_2D
                 public const string GEM_NORMAL = "Gem_Normal.sprite";
                 public const string GEM_LARGE = "Gem_Large.sprite";
 
-                public const string EYEBROWS_SMALL_ANGRY = "Eyebrows_SmallAngry.sprite";
-                public const string MOUTH_SMALL_ANGRY = "Mouth_SmallAngry.sprite";
+                public const string EYEBROWS_BATTLE = "Eyebrows_Battle.sprite";
+                public const string MOUTH_BATTLE = "Mouth_Battle.sprite";
+
+                public const string EYEBROWS_ANGRY = "Eyebrows_Angry.sprite";
+                public const string MOUTH_ANGRY = "Mouth_Angry.sprite";
+
+                public const string MOUTH_CONCENTRATION = "Mouth_Concentration.sprite";
+
+                public const string EYES_KITTY = "Eyes_Kitty.sprite";
+                public const string MOUTH_KITTY = "Mouth_Kitty.sprite";
 
                 public const string EYEBROWS_SICK = "Eyebrows_Sick.sprite";
                 public const string EYES_SICK = "Eyes_Sick.sprite";
