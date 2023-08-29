@@ -34,13 +34,12 @@ namespace STELLAREST_2D
 
         public enum EffectLevel { Level1, level2, Level3 }
         public enum ElementalType { Fire, Ice, Wind, Bubble, }
-        public enum ExpressionType { Default, Sick, Death, }
+        public enum ExpressionType { Default, Angry, Sick, Death, }
         public enum MonsterFace { Normal = 0, Angry = 1, Death = 2 }
 
 
         public static class TemplateIDs
         {
-
             // ++++++++++ 나중에 하나로 통합이 가능할까? ++++++++++ 
             // GARY -> Paladin, Knight, Phantom Knight
             // 어떻게?
@@ -204,6 +203,9 @@ namespace STELLAREST_2D
             {
                 public const string GEM_NORMAL = "Gem_Normal.sprite";
                 public const string GEM_LARGE = "Gem_Large.sprite";
+
+                public const string EYEBROWS_SMALL_ANGRY = "Eyebrows_SmallAngry.sprite";
+                public const string MOUTH_SMALL_ANGRY = "Mouth_SmallAngry.sprite";
 
                 public const string EYEBROWS_SICK = "Eyebrows_Sick.sprite";
                 public const string EYES_SICK = "Eyes_Sick.sprite";

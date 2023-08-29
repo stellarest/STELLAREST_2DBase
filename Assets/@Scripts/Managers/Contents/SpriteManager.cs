@@ -6,6 +6,7 @@ using Assets.FantasyMonsters.Scripts;
 using System.Linq;
 using Unity.VisualScripting;
 using STELLAREST_2D.Data;
+using UnityEngine.Playables;
 
 namespace STELLAREST_2D
 {
@@ -17,125 +18,214 @@ namespace STELLAREST_2D
         Max,
     }
 
-    public class PlayerEmotionController
+    // _eyesRenderer.color = new Color(0f, 0.784f, 1f, 1f);
+    // _eyebrowsRenderer.sprite = _eyebrows[expression];
+    // _eyesRenderer.sprite = _eyes[expression];
+    // _mouthRenderer.sprite = _mouth[expression];
+    public class PlayerExpressionController
     {
-        public PlayerEmotionController(SpriteRenderer eyebrowsRenderer, SpriteRenderer eyesRenderer, SpriteRenderer mouthRenderer)
+        public PlayerExpressionController(PlayerController player, SpriteRenderer eyebrowsRenderer, SpriteRenderer eyesRenderer, SpriteRenderer mouthRenderer)
         {
+            _player = player;
+
             _eyebrowsRenderer = eyebrowsRenderer;
-            _dictEyebrows.Add(Define.ExpressionType.Default, eyebrowsRenderer.sprite);
-            _defaultEyebrowsColor = eyebrowsRenderer.color;
+            _eyebrows.Add(Define.ExpressionType.Default, eyebrowsRenderer.sprite);
+            _eyebrowsDefaultColor = eyebrowsRenderer.color;
 
             _eyesRenderer = eyesRenderer;
-            _dictEyes.Add(Define.ExpressionType.Default, eyesRenderer.sprite);
-
-            _defaultEyesColor = eyesRenderer.color;
+            _eyes.Add(Define.ExpressionType.Default, eyesRenderer.sprite);
+            _eyesDefaultColor = eyesRenderer.color;
 
             _mouthRenderer = mouthRenderer;
-            _dictMouth.Add(Define.ExpressionType.Default, mouthRenderer.sprite);
-            _defaultMouthColor = mouthRenderer.color;
+            _mouth.Add(Define.ExpressionType.Default, mouthRenderer.sprite);
+            _mouthDefaultColor = mouthRenderer.color;
 
             // InitSick();
             InitExpressions();
         }
 
-        private Dictionary<Define.ExpressionType, Sprite> _dictEyebrows = new Dictionary<Define.ExpressionType, Sprite>();
-        private Dictionary<Define.ExpressionType, Sprite> _dictEyes = new Dictionary<Define.ExpressionType, Sprite>();
-        private Dictionary<Define.ExpressionType, Sprite> _dictMouth = new Dictionary<Define.ExpressionType, Sprite>();
+        private Dictionary<Define.ExpressionType, Sprite> _eyebrows = new Dictionary<Define.ExpressionType, Sprite>();
+        private Dictionary<Define.ExpressionType, Sprite> _eyes = new Dictionary<Define.ExpressionType, Sprite>();
+        private Dictionary<Define.ExpressionType, Sprite> _mouth = new Dictionary<Define.ExpressionType, Sprite>();
+        private Define.ExpressionType _expression = Define.ExpressionType.Default;
+        private PlayerController _player = null;
 
         private void InitExpressions()
         {
-            Define.ExpressionType type = Define.ExpressionType.Sick;
-            var eyebrows = Managers.Resource.Load<Sprite>(Define.Labels.Sprites.EYEBROWS_SICK);
-            var eyes = Managers.Resource.Load<Sprite>(Define.Labels.Sprites.EYES_SICK);
-            var mouth = Managers.Resource.Load<Sprite>(Define.Labels.Sprites.MOUTH_SICK);
+            Define.ExpressionType type = Define.ExpressionType.Angry;
+            var eyebrows = Managers.Resource.Load<Sprite>(Define.Labels.Sprites.EYEBROWS_SMALL_ANGRY);
+            var mouth = Managers.Resource.Load<Sprite>(Define.Labels.Sprites.MOUTH_SMALL_ANGRY);
 
-            _dictEyebrows.Add(type, eyebrows);
-            _dictEyes.Add(type, eyes);
-            _dictMouth.Add(type, mouth);
+            _eyebrows.Add(type, eyebrows);
+            _mouth.Add(type, mouth);
+            
+            type = Define.ExpressionType.Sick;
+            eyebrows = Managers.Resource.Load<Sprite>(Define.Labels.Sprites.EYEBROWS_SICK);
+            var eyes = Managers.Resource.Load<Sprite>(Define.Labels.Sprites.EYES_SICK);
+            mouth = Managers.Resource.Load<Sprite>(Define.Labels.Sprites.MOUTH_SICK);
+
+            _eyebrows.Add(type, eyebrows);
+            _eyes.Add(type, eyes);
+            _mouth.Add(type, mouth);
 
             type = Define.ExpressionType.Death;
             eyebrows = Managers.Resource.Load<Sprite>(Define.Labels.Sprites.EYEBROWS_DEATH);
             eyes = Managers.Resource.Load<Sprite>(Define.Labels.Sprites.EYES_DEATH);
             mouth = Managers.Resource.Load<Sprite>(Define.Labels.Sprites.MOUTH_DEATH);
 
-            _dictEyebrows.Add(type, eyebrows);
-            _dictEyes.Add(type, eyes);
-            _dictMouth.Add(type, mouth);
+            _eyebrows.Add(type, eyebrows);
+            _eyes.Add(type, eyes);
+            _mouth.Add(type, mouth);
         }
-
 
         private SpriteRenderer _eyebrowsRenderer;
+        private Color _eyebrowsDefaultColor;
+
         private SpriteRenderer _eyesRenderer;
+        private Color _eyesDefaultColor;
+
         private SpriteRenderer _mouthRenderer;
+        private Color _mouthDefaultColor;
 
-        private Color _defaultEyebrowsColor;
-        private Color _defaultEyesColor;
-        private Color _defaultMouthColor;
+        private bool _hit = false;
+        private bool _isEmotional = false;
 
-        private Sprite _sickEyebrows;
-        private Sprite _sickEyes;
-        private Sprite _sickMouth;
-
-        public void Expression(Define.ExpressionType expression)
+        public void Expression(Define.ExpressionType expression, float duration = 3f)
         {
-            _eyebrowsRenderer.sprite = _dictEyebrows[expression];
-            _eyesRenderer.sprite = _dictEyes[expression];
-            _mouthRenderer.sprite = _dictMouth[expression];
+            if (_hit || _isEmotional)
+                return;
 
-            if (expression == Define.ExpressionType.Default)
+            _expression = expression;
+            switch (expression)
             {
-                _eyebrowsRenderer.color = _defaultEyebrowsColor;
-                _eyesRenderer.color = _defaultEyesColor;
-                _mouthRenderer.color = _defaultMouthColor;
+                case Define.ExpressionType.Default:
+                    {
+                        _eyebrowsRenderer.color = _eyebrowsDefaultColor;
+                        _eyesRenderer.color = _eyesDefaultColor;
+                        _mouthRenderer.color = _mouthDefaultColor;
+
+                        _eyebrowsRenderer.sprite = _eyebrows[expression];
+                        _eyesRenderer.sprite = _eyes[expression];
+                        _mouthRenderer.sprite = _mouth[expression];
+                    }
+                    break;
+
+                case Define.ExpressionType.Angry:
+                    {
+                        // TODO : 캐릭터에 따라서 분기해야함
+                        _eyebrowsRenderer.sprite = _eyebrows[expression];
+                        _mouthRenderer.sprite = _mouth[expression];
+                    }
+                    break;
+
+                default:
+                    {
+                        _isEmotional = true;
+                        _player.CoExpression(expression, duration);
+                    }
+                    break;
             }
-            else if (expression == Define.ExpressionType.Death)
+        }
+
+        public IEnumerator CoExpression(Define.ExpressionType expression, float duration)
+        {
+            float t = 0f;
+            float percent = 0f;
+
+            if (expression == Define.ExpressionType.Death)
                 _eyesRenderer.color = new Color(0f, 0.784f, 1f, 1f);
+
+            _eyebrowsRenderer.sprite = _eyebrows[expression];
+            _eyesRenderer.sprite = _eyes[expression];
+            _mouthRenderer.sprite = _mouth[expression];
+
+            while (percent < 1f)
+            {
+                t += Time.deltaTime;
+                percent = t / duration;
+                yield return null;
+            }
+
+            Reset();
+            _isEmotional = false;
         }
 
-        private void InitSick()
+        private void Reset()
         {
-            // _sickEyebrows = Managers.Resource.Load<Sprite>(Define.SpriteLabels.Player.EYEBROWS_SICK);
-            // _sickEyes = Managers.Resource.Load<Sprite>(Define.SpriteLabels.Player.EYES_SICK);
-            // _sickMouth = Managers.Resource.Load<Sprite>(Define.SpriteLabels.Player.MOUTH_SICK);
-        }
+            _expression = Define.ExpressionType.Default;
+            _eyebrowsRenderer.color = _eyebrowsDefaultColor;
+            _eyebrowsRenderer.sprite = _eyebrows[_expression];
 
-        public void Sick()
-        {
-            _eyebrowsRenderer.sprite = _sickEyebrows;
-            _eyesRenderer.sprite = _sickEyes;
-            _mouthRenderer.sprite = _sickMouth;
-        }
+            _eyesRenderer.color = _eyesDefaultColor;
+            _eyesRenderer.sprite = _eyes[_expression];
 
-        public void Default()
-        {
-            // _eyebrowsRenderer.sprite = _defaultEyebrows;
-            // _eyebrowsRenderer.color = _defaultEyebrowsColor;
-
-            // _eyesRenderer.sprite = _defaultEyes;
-            // _eyesRenderer.color = _defaultEyesColor;
-            
-            // _mouthRenderer.sprite = _defaultMouth;
-            // _mouthRenderer.color = _defaultMouthColor;
+            _mouthRenderer.color = _mouthDefaultColor;
+            _mouthRenderer.sprite = _mouth[_expression];
         }
 
         public void Hit()
         {
-            _eyebrowsRenderer.sprite = null;
+            _hit = true;
             _eyesRenderer.sprite = null;
-            _mouthRenderer.sprite = null;
+        }
+
+        public void EndHit()
+        {
+            var eyes = _eyes.TryGetValue(_expression, out var sprite) ? sprite : _eyes[Define.ExpressionType.Default];
+            _eyesRenderer.sprite = eyes;
+            _hit = false;
+        }
+
+        public void UpdateDefaultFace(PlayerController pc)
+        {
+            SpriteRenderer[] sprArr = pc.GetComponentsInChildren<SpriteRenderer>();
+            for (int i = 0; i < sprArr.Length; ++i)
+            {
+                if (sprArr[i].sprite == null)
+                    continue;
+
+                if (sprArr[i].gameObject.name.Contains(Define.Player.FIRE_SOCKET))
+                    continue;
+
+                if (sprArr[i].gameObject.name.Contains("Eyebrows"))
+                {
+                    _eyebrowsRenderer = sprArr[i];
+                    _eyebrowsDefaultColor = sprArr[i].color;
+                    continue;
+                }
+
+                if (sprArr[i].gameObject.name.Contains("Eyes"))
+                {
+                    _eyesRenderer = sprArr[i];
+                    _eyesDefaultColor = sprArr[i].color;
+                    continue;
+                }
+
+                if (sprArr[i].gameObject.name.Contains("Mouth"))
+                {
+                    _mouthRenderer = sprArr[i];
+                    _mouthDefaultColor = sprArr[i].color;
+                    continue;
+                }
+            }
         }
     }
 
+    /// <summary>
+    /// TODO
+    /// Expression Duration
+    /// Hit
+    /// </summary>
     public class SpriteManager
     {
-        public  PlayerEmotionController PlayerEmotion = null;
+        public PlayerExpressionController PlayerExpressionController { get; private set; } = null;
 
         private Dictionary<int, Character[]> _playerAppearances = new Dictionary<int, Character[]>();
 
         /// <summary>
         /// +++ INPUT PLAYER DEFAULT SKILL IN CREATURE DATA SHEET BEFORE +++
         /// </summary>
-        private void InitPlayerAppearances(PlayerController pc)
+        private void LoadPlayerAppearances(PlayerController pc)
         {
             Character[] charas = null;
             int skillCount = pc.SkillBook.RepeatSkills.Where(s => s.SkillData.IsPlayerDefaultAttack).ToArray().Length;
@@ -186,85 +276,9 @@ namespace STELLAREST_2D
                 }
             }
 
-            PlayerEmotion = new PlayerEmotionController(eyebrowsRenderer, eyesRenderer, mouthRenderer);
-            InitPlayerAppearances(pc);
+            PlayerExpressionController = new PlayerExpressionController(pc, eyebrowsRenderer, eyesRenderer, mouthRenderer);
+            LoadPlayerAppearances(pc);
         }
-
-        // TEMP
-        // public void SetPlayerEmotion(Define.PlayerEmotion emotion)
-        // {
-        //     switch (emotion)
-        //     {
-        //         case Define.PlayerEmotion.None:
-        //             _playerEmotion._eyebrowsRenderer.sprite = null;
-        //             _playerEmotion._eyesRenderer.sprite = null;
-        //             _playerEmotion._mouthRenderer.sprite = null;
-        //             break;
-
-        //         case Define.PlayerEmotion.Default:
-        //             {
-        //                 _playerEmotion._eyebrowsRenderer.sprite = Managers.Resource.Load<Sprite>(Define.SpriteLabels.Player.EYEBROWS_DEFAULT);
-        //                 _playerEmotion._eyebrowsRenderer.color = PlayerDefaultEyebrowsColor;
-
-        //                 _playerEmotion._eyesRenderer.sprite = Managers.Resource.Load<Sprite>(Define.SpriteLabels.Player.EYES_MALE_DEFAULT);
-        //                 _playerEmotion._eyesRenderer.color = PlayerDefaultEyesColor;
-
-        //                 _playerEmotion._mouthRenderer.sprite = Managers.Resource.Load<Sprite>(Define.SpriteLabels.Player.MOUTH_DEFAULT_2);
-        //                 _playerEmotion._mouthRenderer.color = PlayerDefaultMouthColor;
-        //             }
-        //             break;
-
-        //         case Define.PlayerEmotion.Greedy:
-        //             {
-        //                 _playerEmotion._eyesRenderer.sprite = Managers.Resource.Load<Sprite>(Define.SpriteLabels.Player.EYES_GREEDY);
-        //                 _playerEmotion._eyesRenderer.color = Color.yellow;
-
-        //                 _playerEmotion._mouthRenderer.sprite = Managers.Resource.Load<Sprite>(Define.SpriteLabels.Player.MOUTH_GREEDY);
-        //                 _playerEmotion._mouthRenderer.color = PlayerDefaultMouthColor;
-        //             }
-        //             break;
-
-        //         case Define.PlayerEmotion.Sick:
-        //             {
-        //                 _playerEmotion._eyesRenderer.sprite = Managers.Resource.Load<Sprite>(Define.SpriteLabels.Player.EYES_SICK);
-        //                 _playerEmotion._eyesRenderer.color = PlayerDefaultEyesColor;
-
-        //                 _playerEmotion._mouthRenderer.sprite = Managers.Resource.Load<Sprite>(Define.SpriteLabels.Player.MOUTH_SICK);
-        //                 _playerEmotion._mouthRenderer.color = PlayerDefaultMouthColor;
-        //             }
-        //             break;
-
-        //         case Define.PlayerEmotion.Bunny:
-        //             {
-        //                 _playerEmotion._eyesRenderer.sprite = Managers.Resource.Load<Sprite>(Define.SpriteLabels.Player.EYES_BUNNY);
-        //                 _playerEmotion._eyesRenderer.color = PlayerDefaultEyesColor;
-
-        //                 _playerEmotion._mouthRenderer.sprite = Managers.Resource.Load<Sprite>(Define.SpriteLabels.Player.MOUTH_BUNNY);
-        //                 _playerEmotion._mouthRenderer.color = PlayerDefaultMouthColor;
-        //             }
-        //             break;
-
-        //         case Define.PlayerEmotion.Kitty:
-        //             {
-        //                 _playerEmotion._eyesRenderer.sprite = Managers.Resource.Load<Sprite>(Define.SpriteLabels.Player.EYES_KITTY);
-        //                 _playerEmotion._eyesRenderer.color = PlayerDefaultEyesColor;
-
-        //                 _playerEmotion._mouthRenderer.sprite = Managers.Resource.Load<Sprite>(Define.SpriteLabels.Player.MOUTH_KITTY);
-        //                 _playerEmotion._mouthRenderer.color = PlayerDefaultMouthColor;
-        //             }
-        //             break;
-
-        //         case Define.PlayerEmotion.Death:
-        //             {
-        //                 _playerEmotion._eyesRenderer.sprite = Managers.Resource.Load<Sprite>(Define.SpriteLabels.Player.EYES_DIE);
-        //                 _playerEmotion._eyesRenderer.color = new Color(0f, 0.784f, 1f, 1f);
-
-        //                 _playerEmotion._mouthRenderer.sprite = Managers.Resource.Load<Sprite>(Define.SpriteLabels.Player.MOUTH_DIE);
-        //                 _playerEmotion._mouthRenderer.color = PlayerDefaultMouthColor;
-        //             }
-        //             break;
-        //     }
-        // }
 
         public void SetMonsterFace(MonsterController mc, Define.MonsterFace monsterFace) 
                 => mc?.GetComponent<Monster>().SetHead((int)monsterFace);

@@ -21,7 +21,7 @@ namespace STELLAREST_2D
             return true;
         }
 
-        public void StartTrailEffect(BaseController followTarget) 
+        public void CoTrailEffect(BaseController followTarget) 
                     => StartCoroutine(Managers.Effect.CoTrailEffect(gameObject, followTarget));
 
         // private void Update()

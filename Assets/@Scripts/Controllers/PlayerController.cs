@@ -14,6 +14,7 @@ using System.Transactions;
 using Cinemachine.Utility;
 using System.Security.Cryptography;
 using JetBrains.Annotations;
+using System.Linq.Expressions;
 
 namespace STELLAREST_2D
 {
@@ -432,6 +433,8 @@ namespace STELLAREST_2D
             if (IsThief(newSkill.SkillData.OriginTemplateID) && newSkill.SkillData.InGameGrade > Define.InGameGrade.Rare)
                 Hair.GetComponent<SpriteMask>().isCustomRangeActive = false;
 
+            Managers.Sprite.PlayerExpressionController.UpdateDefaultFace(this);
+
             PAC.OnReady();
             newSkill.ActivateSkill();
         }
@@ -455,12 +458,10 @@ namespace STELLAREST_2D
         // bool bChange = false;
         public Define.ExpressionType MyExpression = Define.ExpressionType.Default;
 
-        [ContextMenu("TEST_EXPRESSION")]
-        public void TEST_EXPRESSION()
+        private void TEST_EXPRESSION()
         {
-            Managers.Sprite.PlayerEmotion.Expression(MyExpression);
+            Managers.Sprite.PlayerExpressionController.Expression(MyExpression);
         }
-
 
         private void Update()
         {
@@ -502,6 +503,7 @@ namespace STELLAREST_2D
 
             if (Input.GetKeyDown(KeyCode.R))
             {
+                TEST_EXPRESSION();
                 // PAC.DeathFront();
                 // var findGems = Managers.Object.GridController.
                 // GatherObjects(transform.position, EnvCollectDist + 99f).ToList();
@@ -510,8 +512,6 @@ namespace STELLAREST_2D
                 //     GemController gc = gem.GetComponent<GemController>();
                 //     gc.GetGem();
                 // }
-
-                Managers.Sprite.PlayerEmotion.Default();
             }
 
             MoveByJoystick();
@@ -585,51 +585,6 @@ namespace STELLAREST_2D
 
                 }
             }
-
-            // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-            // private Coroutine _coPlayAnims = null;
-            // private IEnumerator CoPlayAnims(System.Action play1, System.Action play2)
-            // {
-            //     play1.Invoke();
-            //     yield return new WaitUntil(() => PAC.AnimController.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1f);
-            //     play2.Invoke();
-            //     yield return new WaitUntil(() => PAC.AnimController.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1f);
-            //     _coPlayAnims = null;
-            // }
-
-            // private IEnumerator WaitEndStateAndPlayAnim()
-            // {
-            //     PAC.Jab1H(); // Play Attack Anim1
-            //     while (true)
-            //     {
-            //         AnimatorStateInfo currentAnimInfo = PAC.AnimController.GetCurrentAnimatorStateInfo(0);
-            //         if (currentAnimInfo.normalizedTime >= 1f)
-            //         {
-            //             break;
-            //         }
-
-            //         Debug.Log("Waiting for animation to finish...");
-            //         yield return null;
-            //     }
-
-            //     Debug.Log("START !!!");
-            //     PAC.Jab2H(); // Play Attack Anim2
-            // }
-
-            //AnimatorStateInfo currentAnimationInfo = PAC.AnimController.GetCurrentAnimatorStateInfo(0);
-            // Debug.Log(PAC.AnimController.GetCurrentAnimatorClipInfo(0)[0].clip.name);
-            // Debug.Log(PAC.AnimController.GetCurrentAnimatorStateInfo(0).shortNameHash);
-
-            // private void TestVec()
-            // {
-            //     Vector2 myPos = transform.position;
-            //     Vector2 upDir = Quaternion.Euler(0, 0, 45f * 0.5f) * ShootDir;
-            //     Vector2 downDir = Quaternion.Euler(0, 0, -45f * 0.5f) * ShootDir;
-            //     Debug.Log("UP SCALE : " + upDir.magnitude); // 1f
-            //     Debug.Log("DOWN SCALE : " + downDir.magnitude); // 1f
-            //     Debug.DrawRay(myPos, upDir * 10, Color.red, -1f);
-            //     Debug.DrawRay(myPos, downDir * 10, Color.red, -1f);
-            // }
         }
 
         private void OnDestroy()
@@ -641,60 +596,7 @@ namespace STELLAREST_2D
                 AnimEvents.OnRepeatAttack -= SkillBook.GeneratePlayerAttack;
         }
 
-        // "GuardSword1_Rare.sprite"
-        // [ContextMenu("ChangeWeaponTest")]
-        // public void ChangeWeaponTest()
-        // {
-        //     GetComponent<Character>().PrimaryMeleeWeapon = Managers.Resource.Load<Sprite>("GuardSword1_Rare.sprite");
-        //     GetComponent<Character>().PrimaryMeleeWeaponRenderer.sprite = GetComponent<Character>().PrimaryMeleeWeapon;
-        // }
-
-        // private void CollectEnv2() // LEGACY
-        // {
-        //     float sqrCollectDist = EnvCollectDist * EnvCollectDist;
-
-        //     // ToList로 사본을 먼저 만들고 순회
-        //     List<GemController> gems = Managers.Object.Gems.ToList();
-        //     foreach (GemController gem in gems)
-        //     {
-        //         Vector3 dir = gem.transform.position - transform.position;
-        //         if (dir.sqrMagnitude <= sqrCollectDist)
-        //         {
-        //             Managers.Game.Gem += 1;
-        //             Managers.Object.Despawn(gem);
-        //         }
-        //     }
-
-        //     // (선택)0.5f : 오브젝트의 크기를 더하면 된다. 구슬의 중심점만 닿으면 되면 빼도 됨.
-        //     var findGems = Managers.Object.GridController.GatherObjects(transform.position, EnvCollectDist + 0.5f);
-        //     Debug.Log($"Search Gems : {findGems.Count} / Total Gems : {gems.Count}");
-        // }
-
-        // // TEMP : FireProjectile
-        // private Coroutine _coFireProjectile;
-        // private void StartProjectile()
-        // {
-        //     if (_coFireProjectile != null)
-        //         StopCoroutine(_coFireProjectile);
-
-        //     _coFireProjectile = StartCoroutine(CoStartProjectile());
-        // }
-
-        // private IEnumerator CoStartProjectile()
-        // {
-        //     // 몇 초 마다 한 번씩 쏜다 -> 데이터 시트에서 꺼내온다. 지금은 0.5초
-        //     WaitForSeconds wait = new WaitForSeconds(0.5f);
-        //     while (true)
-        //     {
-        //         // 나중에 총구모양 있으면 총구 모양 위치에다가
-        //         ProjectileController pc = Managers.Object.
-        //                         Spawn<ProjectileController>(_fireSocket.position, 
-        //                         (int)Define.PlayerData.SkillTemplateIDs.FireBall);
-        //         yield return new WaitUntil(() => (pc != null)); // 이 코루틴 하나로 다해결
-        //         pc.SetInfo(this, (_fireSocket.position - _indicator.position).normalized);
-
-        //         yield return wait;
-        //     }
-        // }
+        public void CoExpression(Define.ExpressionType expression, float duration)
+                => StartCoroutine(Managers.Sprite.PlayerExpressionController.CoExpression(expression, duration));
     }
 }

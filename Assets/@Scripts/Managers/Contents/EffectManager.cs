@@ -339,7 +339,7 @@ namespace STELLAREST_2D
 
             if (cc?.IsMonster() == false)
             {
-                Managers.Sprite.PlayerEmotion.Hit();
+                Managers.Sprite.PlayerExpressionController.Hit();
             }
 
             for (int i = 0; i < mats.Length; ++i)
@@ -361,7 +361,7 @@ namespace STELLAREST_2D
                 mats[i].spriteRender.material = mats[i].matOrigin;
 
             if (cc?.IsMonster() == false)
-                Managers.Sprite.PlayerEmotion.Default();
+                Managers.Sprite.PlayerExpressionController.EndHit();
         }
 
         public void ShowSpawnEffect(string effectLabel, Vector3 position)
@@ -457,7 +457,7 @@ namespace STELLAREST_2D
         public void ShowWindTrailEffect(BaseController followTarget)
         {
             GameObject go = Managers.Resource.Instantiate(Define.Labels.Prefabs.WIND_TRAIL_EFFECT, pooling: true);
-            go.GetComponent<BaseController>().StartTrailEffect(followTarget);
+            go.GetComponent<BaseController>().CoTrailEffect(followTarget);
         }
 
         public void ShowImpactWindEffect(Vector3 position, Define.InGameGrade inGameGrade)
@@ -498,7 +498,7 @@ namespace STELLAREST_2D
         public void ShowFireTrailEffect(BaseController followTarget)
         {
             GameObject go = Managers.Resource.Instantiate(Define.Labels.Prefabs.FIRE_TRAIL_EFFECT, pooling: true);
-            go.GetComponent<BaseController>().StartTrailEffect(followTarget);
+            go.GetComponent<BaseController>().CoTrailEffect(followTarget);
         }
 
         public void ShowImpactFireEffect(Vector3 position, Define.InGameGrade inGameGrade)
@@ -539,7 +539,7 @@ namespace STELLAREST_2D
         public void ShowIceTrailEffect(BaseController followTarget)
         {
             GameObject go = Managers.Resource.Instantiate(Define.Labels.Prefabs.ICE_TRAIL_EFFECT, pooling: true);
-            go.GetComponent<BaseController>().StartTrailEffect(followTarget);
+            go.GetComponent<BaseController>().CoTrailEffect(followTarget);
         }
 
         public void ShowImpactIceEffect(Vector3 position, Define.InGameGrade inGameGrade)
@@ -580,7 +580,7 @@ namespace STELLAREST_2D
         public void ShowBubbleTrailEffect(BaseController followTarget)
         {
             GameObject go = Managers.Resource.Instantiate(Define.Labels.Prefabs.BUBBLE_TRAIL_EFFECT, pooling: true);
-            go.GetComponent<BaseController>().StartTrailEffect(followTarget);
+            go.GetComponent<BaseController>().CoTrailEffect(followTarget);
         }
 
         public void ShowImpactBubbleEffect(Vector3 position)
@@ -593,7 +593,7 @@ namespace STELLAREST_2D
         public void ShowLightTrailEffect(BaseController followTarget)
         {
             GameObject go = Managers.Resource.Instantiate(Define.Labels.Prefabs.LIGHT_TRAIL_EFFECT, pooling: true);
-            go.GetComponent<BaseController>().StartTrailEffect(followTarget);
+            go.GetComponent<BaseController>().CoTrailEffect(followTarget);
         }
 
         public void ShowImpactLightEffect(Vector3 position)
