@@ -20,7 +20,7 @@ namespace STELLAREST_2D
         public enum SortingOrder { Map = 100, Player = 200, Item = 209, Monster = 210, Skill = 211, ParticleEffect = 230, CCStatus = 260 }
         public enum StageType { Normal, MiddleBoss, Boss, }
         // public enum CCStatus { None, Stun, KnockBack, Poisoned, Frozen, Cursed, Confused, Silent, Max }
-        public enum CCState { None, Stun, KnockBack, Poisoned, Bloody, Frozen, Cursed, Confused, Silent, Max }
+        public enum CCType { Stun = 1, KnockBack, Max }
 
         // public enum MonsterState { Idle = 0, Run = 1, Skill = 2, Attack = 3, Death = 9 }
 
@@ -34,7 +34,7 @@ namespace STELLAREST_2D
 
         public enum EffectLevel { Level1, level2, Level3 }
         public enum ElementalType { Fire, Ice, Wind, Bubble, }
-        public enum ExpressionType { Default, Battle, Angry, Concentration, Kitty, Sick, Death, }
+        public enum ExpressionType { Default, Battle, Concentration, Angry, Kitty, Sick, Death, }
         public enum MonsterFace { Normal = 0, Angry = 1, Death = 2 }
 
         public static class TemplateIDs
@@ -131,6 +131,12 @@ namespace STELLAREST_2D
 
                 BodyAttack = 200300,
             }
+
+            // +++++ TEMP +++++
+            public enum ImpactHitEffect
+            {
+                Leaves = 300001, // Forest Warden Epic Effect
+            }
         }
 
         public static class Player
@@ -193,6 +199,8 @@ namespace STELLAREST_2D
 
                 public const string LIGHT_TRAIL_EFFECT = "LightTrailEffect.prefab";
                 public const string IMPACT_LIGHT_EFFECT = "ImpactLightEffect.prefab";
+
+                public const string IMPACT_HIT_LEAVES_EFFECT = "ImpactHitLeavesEffect.prefab";
             }
 
             /// <summary>

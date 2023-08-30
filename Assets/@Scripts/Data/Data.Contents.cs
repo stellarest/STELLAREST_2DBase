@@ -89,6 +89,10 @@ namespace STELLAREST_2D.Data
         public float SelfRotationZSpeed;
         public int PenetrationCount;
         public int HitEffectTemplateID;
+        public bool HasCC;
+        public Define.CCType CCType;
+        public float CCRate;
+        public float CCDuration;
         public float CoolTime;
     }
 

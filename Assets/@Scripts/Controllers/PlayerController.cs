@@ -28,6 +28,8 @@ namespace STELLAREST_2D
 
         private Transform _fireSocket;
         public Vector3 FireSocket => _fireSocket.position;
+        public Transform GetFireSocket => _fireSocket;
+
         public SpriteRenderer FireSocketSpriteRenderer { get; private set; } = null;
         public Vector3 ShootDir => (_fireSocket.position - _indicator.position).normalized;
 
@@ -104,6 +106,10 @@ namespace STELLAREST_2D
                                 break;
                             case (int)Define.TemplateIDs.Player.Reina_ForestWarden:
                                 {
+                                    SkillData skillData = SkillBook.GetCurrentPlayerDefaultSkill.SkillData;
+                                    if (skillData.InGameGrade >= Define.InGameGrade.Epic)
+                                        PAC.AttackAnimSpeed(1.2f);
+
                                     PAC.SimpleBowShot();
                                 }
                                 break;
@@ -445,7 +451,7 @@ namespace STELLAREST_2D
         private bool IsThief(int templateID)
             => templateID == 200128;
 
-        private bool IsReina(int templateID) 
+        public bool IsReina(int templateID) 
             => templateID == 100103 || templateID == 100104 || templateID == 100105 ? true : false;
 
         private bool IsChristian(int templateID)

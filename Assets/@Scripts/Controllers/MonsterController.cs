@@ -97,7 +97,7 @@ namespace STELLAREST_2D
             float desiredTime = Random.Range(CharaData.MinReadyToActionTime, CharaData.MaxReadyToActionTime);
             
             if (isSpawned == false)
-                desiredTime = 0.25f;
+                desiredTime = 0.5f;
 
             while (percent < 1f)
             {
@@ -106,8 +106,11 @@ namespace STELLAREST_2D
                 yield return null;
             }
 
-            if (_ccStates[(int)Define.CCState.Stun] == false && _ccStates[(int)Define.CCState.None])
-                CreatureState = Define.CreatureState.Run;
+            CreatureState = Define.CreatureState.Run;
+
+
+            //if (_ccStates[(int)Define.CCType.Stun] == false && _ccStates[(int)Define.CCType.None])
+                // CreatureState = Define.CreatureState.Run;
 
             // LEGACY
             // if (CCStatus != Define.CCStatus.Stun)
@@ -141,12 +144,12 @@ namespace STELLAREST_2D
                 return;
             }
 
-            if (_ccStates[(int)Define.CCState.Stun])
+            if (_ccStates[(int)Define.CCType.Stun])
             {
                 return;
             }
 
-            if (_ccStates[(int)Define.CCState.KnockBack])
+            if (_ccStates[(int)Define.CCType.KnockBack])
             {
                 return;
             }

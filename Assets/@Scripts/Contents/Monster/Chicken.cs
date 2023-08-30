@@ -12,7 +12,6 @@ namespace STELLAREST_2D
             base.Init();
 
             CreatureState = Define.CreatureState.Idle;
-            //CCStatus = Define.CCStatus.None;
             ResetCCStates();
 
             if (GoCCEffect != null)

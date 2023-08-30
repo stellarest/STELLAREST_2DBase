@@ -13,37 +13,33 @@ namespace STELLAREST_2D
         
         public GameObject GoCCEffect { get; set; } = null;
 
-        protected bool[] _ccStates = null;
-        public bool this[Define.CCState ccState]
+        //protected bool[] _ccStates = null;
+        public bool[] _ccStates = null;
+
+        public bool this[Define.CCType cc]
         {
-            get => _ccStates[(int)ccState];
+            get => _ccStates[(int)cc];
             set
             {
-                _ccStates[(int)ccState] = value;
-
-                if (_ccStates[(int)Define.CCState.Stun])
+                // 일단 몬스터만 적용한거라.
+                _ccStates[(int)cc] = value;
+                if (_ccStates[(int)Define.CCType.Stun])
                 {
                     CreatureState = Define.CreatureState.Idle;
-
-                    // 넉백 상태인 경우에는 그대로 뒤로 쭈욱 밀려나간다
-                    if (_ccStates[(int)Define.CCState.KnockBack] == false)
-                        RigidBody.velocity = Vector2.zero;
-
                     BodyCol.isTrigger = true;
                     SkillBook.StopSkills();
                 }
-                else if (_ccStates[(int)Define.CCState.Stun] == false)
+                else if (_ccStates[(int)Define.CCType.Stun] == false)
                     SkillBook.Stopped = false;
-
-
-                if (_ccStates[(int)Define.CCState.KnockBack])
-                {
-                    // 점프모션이나 뒤로 걷는 모션도 있겠지만 일단 Idle
-                    CreatureState = Define.CreatureState.Idle;
-                    SkillBook.Stopped = false;
-                }
-
                 // 이후, 그밖에 ccState가 중복되었을 때 처리...
+
+                
+                if (_ccStates[(int)Define.CCType.KnockBack])
+                {
+                }
+                else if (_ccStates[(int)Define.CCType.KnockBack] == false)
+                {
+                }
             }
         }
 
@@ -52,12 +48,7 @@ namespace STELLAREST_2D
             if (_ccStates != null)
             {
                 for (int i = 0; i < _ccStates.Length; ++i)
-                {
-                    if (i == (int)Define.CCState.None)
-                        this[Define.CCState.None + i] = true;
-                    else
-                        this[Define.CCState.None + i] = false;
-                }
+                    _ccStates[i] = false;
             }
         }
 
@@ -132,23 +123,31 @@ namespace STELLAREST_2D
 
             if (_ccStates == null)
             {
-                _ccStates = new bool[(int)Define.CCState.Max];
-                for (int i = 0; i < (int)Define.CCState.Max; ++i)
-                {
-                    if (i == (int)Define.CCState.None)
-                    {
-                        // 이렇게 사용하면 인덱서 프로퍼티에 적용이 안됨
-                        //_ccStates[i] = true;
-                        Debug.Log(gameObject.name + "@@@");
-                        this[Define.CCState.None + i] = true;
-                    }
-                    else
-                    {
-                        //_ccStates[i] = false;
-                        this[Define.CCState.None + i] = false;
-                    }
-                }
+                _ccStates = new bool[(int)Define.CCType.Max];
+
+                for (int i = 0; i < _ccStates.Length; ++i)
+                    _ccStates[i] = false;
             }
+
+            // if (_ccStates == null)
+            // {
+            //     _ccStates = new bool[(int)Define.CCType.Max];
+            //     for (int i = 0; i < (int)Define.CCType.Max; ++i)
+            //     {
+            //         if (i == (int)Define.CCType.None)
+            //         {
+            //             // 이렇게 사용하면 인덱서 프로퍼티에 적용이 안됨
+            //             //_ccStates[i] = true;
+            //             Debug.Log(gameObject.name + "@@@");
+            //             this[Define.CCType.None + i] = true;
+            //         }
+            //         else
+            //         {
+            //             //_ccStates[i] = false;
+            //             this[Define.CCType.None + i] = false;
+            //         }
+            //     }
+            // }
 
             SetInitialStat(creatureData);
             SetInitialSkill(creatureData);
@@ -331,10 +330,13 @@ namespace STELLAREST_2D
 
         public void CoEffectGlitch() => StartCoroutine(Managers.Effect.CoEffectGlitch(this));
 
-        public void CoStartStun(CreatureController cc, GameObject goCCEffect, float duration) 
-                => StartCoroutine(Managers.CC.CoStartStun(cc, goCCEffect, duration));
+        public void CoCCStun(CreatureController cc, GameObject goCCEffect, float duration) 
+                => StartCoroutine(Managers.CC.CoStun(cc, goCCEffect, duration));
 
-        public void CoStartKnockBack(CreatureController cc, Vector2 hitPoint, Vector2 knockBackDir, float duration, float intensity)
-                => StartCoroutine(Managers.CC.CoStartKnockBack(cc, hitPoint, knockBackDir, duration, intensity));
+        public void CoCCKnockBack(CreatureController cc, Vector3 dir, float duration)
+                => StartCoroutine(Managers.CC.CoKnockBack(cc, dir, duration));
+
+        // public void CoStartKnockBack(CreatureController cc, Vector2 hitPoint, Vector2 knockBackDir, float duration, float intensity)
+        //         => StartCoroutine(Managers.CC.CoStartKnockBack(cc, hitPoint, knockBackDir, duration, intensity));
     }
 }

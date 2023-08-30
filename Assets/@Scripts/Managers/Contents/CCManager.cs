@@ -1,33 +1,73 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.Design.Serialization;
+using System.Threading.Tasks;
+using STELLAREST_2D.Data;
 using UnityEngine;
 
 namespace STELLAREST_2D
 {
+    public static class CCStun
+    {
+        public const float CHICKEN_FOR_WIDTH = 2f;
+        public const float CHICKEN_FOR_HEIGHT = 1.7f;
+    }
+
     public class CCManager
     {
-        private const float CHICKEN_FOR_WIDTH = 2f;
-        private const float CHICKEN_FOR_HEIGHT = 1.7f;
-
         // Chicen : y - 7.83, scale : 2, 2
-        // +++ 주의 사항 : CC만 담당한다 +++
-        // 크리쳐의 HP가 몇 이상일때 적용하거나 안하는건 데미지를 전달하는 Trigger쪽에서 결정할일이다.
-        public void ApplyStun<T>(T c, float duration) where T : CreatureController
+        // +++ 주의 사항 : CC만 담당, 데미지 X +++
+        public void ApplyCC<T>(T creature, SkillData skillData, ProjectileController projectileAttacker = null) where T : CreatureController
         {
-            if (c?.IsValid() == false)
+            if (creature?.IsValid() == false)
                 return;
 
-            CreatureController cc = c.GetComponent<CreatureController>();
-            GameObject stunEffect = Managers.Effect.ShowStunEffect();
-            stunEffect.transform.localScale = ApplyCCEffectScale(cc);
-            cc.CoStartStun(cc, stunEffect, duration); // StartCoroutine만 cc에서 해주는것이다
+            switch (skillData.CCType)
+            {
+                case Define.CCType.Stun:
+                    ApplyStun<T>(creature, skillData.CCDuration);
+                    break;
+
+                case Define.CCType.KnockBack:
+                    {
+                        Vector3 attackerShootDir = projectileAttacker.ShootDir;
+                        ApplyKnockBack<T>(creature, attackerShootDir, skillData.CCDuration);
+                    }
+                    break;
+            }
         }
 
-        public IEnumerator CoStartStun(CreatureController cc, GameObject goCCEffect, float duration)
+        private void ApplyStun<T>(T creature, float duration) where T : CreatureController
+        {
+            if (creature?.IsValid() == false)
+                return;
+
+            if (creature[Define.CCType.Stun])
+                return;
+
+            CreatureController cc = creature.GetComponent<CreatureController>();
+            GameObject stunEffect = Managers.Effect.ShowStunEffect();
+            stunEffect.transform.localScale = ApplyCCEffectScale(cc, Define.CCType.Stun);
+            cc.CoCCStun(cc, stunEffect, duration); // StartCoroutine만 cc에서 해주는것이다
+        }
+
+        private void ApplyKnockBack<T>(T creature, Vector3 dir, float duration) where T : CreatureController
+        {
+            if (creature?.IsValid() == false)
+                return;
+
+            if (creature[Define.CCType.KnockBack])
+                return;
+
+            CreatureController cc = creature.GetComponent<CreatureController>();
+            cc.CoCCKnockBack(cc, dir, duration);
+        }
+
+        public IEnumerator CoStun(CreatureController cc, GameObject goCCEffect, float duration)
         {
             cc.GoCCEffect = goCCEffect;
-            cc[Define.CCState.Stun] = true;
+            cc[Define.CCType.Stun] = true; // !!! 인덱서로 Set 할것. 반드시 !!!
             MonsterController mc = null;
             if (cc?.IsMonster() == true)
             {
@@ -39,7 +79,7 @@ namespace STELLAREST_2D
             float percent = 0f;
             while (percent < 1f)
             {
-                goCCEffect.transform.position = ApplyCCEffectPosition(cc);
+                goCCEffect.transform.position = ApplyCCEffectPosition(cc, Define.CCType.Stun);
                 t += Time.deltaTime;
                 percent = t / duration;
                 yield return null;
@@ -47,7 +87,8 @@ namespace STELLAREST_2D
 
             cc.GoCCEffect = null;
             Managers.Resource.Destroy(goCCEffect);
-            cc[Define.CCState.Stun] = false;
+            cc[Define.CCType.Stun] = false;
+
             if (cc?.IsMonster() == true)
             {
                 Managers.Sprite.SetMonsterFace(mc, Define.MonsterFace.Normal);
@@ -55,63 +96,87 @@ namespace STELLAREST_2D
             }
         }
 
-        public void ApplyKnockBack<T>(T c, Vector2 hitPoint, Vector2 knockBackDir, float duration, float intensity) where T : CreatureController
+        public IEnumerator CoKnockBack(CreatureController cc, Vector3 attackerShootDir, float duration)
         {
-            if (c?.IsValid() == false)
-                return;
-
-            CreatureController cc = c.GetComponent<CreatureController>();
-            cc.CoStartKnockBack(cc, hitPoint, knockBackDir, duration, intensity);
-        }
-
-        // 스턴과 다르게 히트 할때마다 수시로 발동해야되서 스턴보다 무조건 구려야함
-        // 그래서 넉백은 mc.CoStartReadyToAction(false) 이런거 절대하면 안됨
-        public IEnumerator CoStartKnockBack(CreatureController cc, Vector2 hitPoint, Vector2 knockBackDir, float duration, float intensity)
-        {
-            if (cc?.IsValid() == false)
-                yield break;
-
-            cc[Define.CCState.KnockBack] = true;
             float t = 0f;
             float percent = 0f;
-
-            Vector2 startPos = Vector2.zero;
-            Vector2 endPos = startPos + (knockBackDir * intensity);
+            cc[Define.CCType.KnockBack] = true;
             while (percent < 1f)
             {
-                startPos = cc.transform.position;
                 t += Time.deltaTime;
                 percent = t / duration;
-                cc.transform.position = Vector2.MoveTowards(startPos, endPos, Time.deltaTime * intensity);
-            }
+                //cc.transform.position += (attackerShootDir * 0.5f);
+                //cc.transform.position += (attackerShootDir * 0.35f);
+                cc.transform.position += (attackerShootDir * 0.4f);
 
-            cc[Define.CCState.KnockBack] = false;
-            yield return null;
+                yield return null;
+            }
+            cc[Define.CCType.KnockBack] = false;
         }
 
-        private Vector3 ApplyCCEffectScale(CreatureController cc)
+        private Vector3 ApplyCCEffectScale(CreatureController creature, Define.CCType ccType)
         {
-            Define.CreatureType type = cc.CreatureType;
-            switch (type)
+            Define.CreatureType type = creature.CreatureType;
+            if (ccType == Define.CCType.Stun)
             {
-                case Define.CreatureType.Chicken:
-                    return new Vector3(CHICKEN_FOR_WIDTH, CHICKEN_FOR_WIDTH, 1f);
+                switch (type)
+                {
+                    case Define.CreatureType.Chicken:
+                        return new Vector3(CCStun.CHICKEN_FOR_WIDTH, CCStun.CHICKEN_FOR_WIDTH, 1f);
+                }
             }
 
             return Vector3.zero;
         }
 
-        private Vector2 ApplyCCEffectPosition(CreatureController cc)
+        private Vector2 ApplyCCEffectPosition(CreatureController cc, Define.CCType ccType)
         {
             Define.CreatureType type = cc.CreatureType;
-            switch (type)
+            if (ccType == Define.CCType.Stun)
             {
-                case Define.CreatureType.Chicken:
-                    return new Vector2(cc.transform.position.x, cc.transform.position.y + CHICKEN_FOR_HEIGHT);
+                switch (type)
+                {
+                    case Define.CreatureType.Chicken:
+                        return new Vector2(cc.transform.position.x, cc.transform.position.y + CCStun.CHICKEN_FOR_HEIGHT);
+                }
             }
 
             return Vector2.zero;
         }
+
+        // public void ApplyKnockBack<T>(T c, Vector2 hitPoint, Vector2 knockBackDir, float duration, float intensity) where T : CreatureController
+        // {
+        //     if (c?.IsValid() == false)
+        //         return;
+
+        //     CreatureController cc = c.GetComponent<CreatureController>();
+        //     cc.CoStartKnockBack(cc, hitPoint, knockBackDir, duration, intensity);
+        // }
+
+        // // 스턴과 다르게 히트 할때마다 수시로 발동해야되서 스턴보다 무조건 구려야함
+        // // 그래서 넉백은 mc.CoStartReadyToAction(false) 이런거 절대하면 안됨
+        // public IEnumerator CoStartKnockBack(CreatureController cc, Vector2 hitPoint, Vector2 knockBackDir, float duration, float intensity)
+        // {
+        //     if (cc?.IsValid() == false)
+        //         yield break;
+
+        //     cc[Define.CCType.KnockBack] = true;
+        //     float t = 0f;
+        //     float percent = 0f;
+
+        //     Vector2 startPos = Vector2.zero;
+        //     Vector2 endPos = startPos + (knockBackDir * intensity);
+        //     while (percent < 1f)
+        //     {
+        //         startPos = cc.transform.position;
+        //         t += Time.deltaTime;
+        //         percent = t / duration;
+        //         cc.transform.position = Vector2.MoveTowards(startPos, endPos, Time.deltaTime * intensity);
+        //     }
+
+        //     cc[Define.CCType.KnockBack] = false;
+        //     yield return null;
+        // }
 
 
 

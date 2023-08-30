@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Runtime.InteropServices;
 using UnityEngine;
 
 namespace STELLAREST_2D
@@ -24,6 +25,8 @@ namespace STELLAREST_2D
         }
 
         private Vector3 _shootDir;
+        public Vector3 ShootDir => _shootDir;
+
         private float _speed;
         private Define.LookAtDirection _initOwnerLootAtDir = Define.LookAtDirection.Right;
 
@@ -190,7 +193,6 @@ namespace STELLAREST_2D
                 }
 
                 ControlCollisionTime(CurrentSkill.SkillData.Duration * CurrentSkill.SkillData.CollisionKeepingRatio);
-
                 yield return null;
             }
         }
@@ -340,7 +342,7 @@ namespace STELLAREST_2D
             }
         }
 
-        private IEnumerator CoDotDamage<T>(T cc, int dotCount, float delay = 0.1f) where T : CreatureController
+        private IEnumerator CoDotDamage<T>(T cc, SkillBase attacker, int dotCount, float delay = 0.1f) where T : CreatureController
         {
             int currentCount = 0;
             float t = 0f;
@@ -356,6 +358,11 @@ namespace STELLAREST_2D
 
                 yield return null;
             }
+
+            Debug.Log(attacker.SkillData.Name);
+            Debug.Log(attacker.SkillData.InGameGrade);
+            Managers.Effect.ShowImpactHitLeavesEffect(attacker.transform.position);
+            Managers.Object.Despawn(attacker.GetComponent<ProjectileController>());
         }
 
         private void OnTriggerEnter2D(Collider2D other)
@@ -417,6 +424,28 @@ namespace STELLAREST_2D
                             }
                             
                             Managers.Object.Despawn(this.GetComponent<ProjectileController>());
+                        }
+                        break;
+
+                    case (int)Define.TemplateIDs.SkillType.ForestWardenRangedShot:
+                        {
+                            mc.OnDamaged(Owner, CurrentSkill);
+                            if (CurrentSkill.SkillData.HasCC)
+                            {
+                                if (Random.Range(0f, 1f) <= CurrentSkill.SkillData.CCRate)
+                                {
+                                    //Vector3 hitPoint = other.ClosestPoint(new Vector2(transform.position.x, transform.position.y));
+                                    Managers.CC.ApplyCC<MonsterController>(mc, CurrentSkill.SkillData, this);
+                                    if (CurrentSkill.SkillData.InGameGrade < Define.InGameGrade.Legendary)
+                                    {
+                                        Managers.Object.Despawn(this.GetComponent<ProjectileController>());
+                                    }
+                                    else
+                                    {
+                                        StartCoroutine(CoDotDamage<MonsterController>(mc, CurrentSkill, 2, 0.05f));
+                                    }
+                                }
+                            }
                         }
                         break;
 

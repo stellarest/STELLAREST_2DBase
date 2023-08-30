@@ -4,6 +4,7 @@ using UnityEngine;
 using DamageNumbersPro;
 using UnityEngine.Rendering;
 using UnityEngine.iOS;
+using Unity.VisualScripting;
 
 namespace STELLAREST_2D
 {
@@ -601,6 +602,21 @@ namespace STELLAREST_2D
             GameObject go = Managers.Resource.Instantiate(Define.Labels.Prefabs.IMPACT_LIGHT_EFFECT, pooling: true);
             go.GetComponent<CustomAutoDestroy>().StartDestroy(1.2f);
             go.transform.position = position;
+        }
+
+        public void ShowBowMuzzleEffect(Vector3 position, Transform followTickSocketOwner = null)
+        {
+            GameObject go = Managers.Resource.Instantiate(Define.Labels.Prefabs.ARROW_SHOT_MUZZLE_EFFECT, pooling: true);
+            go.transform.position = position; // 움직이는것조차 따라가는 것을 하고싶다면 코루틴 돌리던지 컴포넌트 붙이던지
+            // 근데 코루틴은 너무 비효율적일 것 같은데.
+            if (followTickSocketOwner != null)
+                go.GetComponent<MovementToOwner>().SetOwner(followTickSocketOwner);
+        }
+
+        public void ShowImpactHitLeavesEffect(Vector3 Position)
+        {
+            GameObject go = Managers.Resource.Instantiate(Define.Labels.Prefabs.IMPACT_HIT_LEAVES_EFFECT, pooling: true);
+            go.transform.position = Position;
         }
 
         public void ShowEffectText(string prefabLabel, Vector3 pos, string text)

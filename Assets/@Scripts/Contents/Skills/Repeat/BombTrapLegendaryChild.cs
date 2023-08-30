@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Net.NetworkInformation;
 using UnityEngine;
+using UnityEngine.Animations;
 
 namespace STELLAREST_2D
 {
@@ -53,13 +54,24 @@ namespace STELLAREST_2D
             if (mc.IsValid() == false)
                 return;
 
-            if (mc[Define.CCState.Stun] && mc.GoCCEffect != null)
+            if (mc[Define.CCType.Stun] && mc.GoCCEffect != null)
                 return;
 
             if (mc.CharaData.Hp > 0)
             {
+                if (_parent.SkillData.HasCC)
+                {
+                    if (Random.Range(0f, 1f) <= _parent.SkillData.CCRate)
+                        Managers.CC.ApplyCC<MonsterController>(mc, _parent.SkillData);
+                }
+
                 // Managers.CC.ApplyCC<MonsterController>(mc, Define.CCState.Stun, 3f);
-                Managers.CC.ApplyStun<MonsterController>(mc, 3f);
+                // Managers.CC.ApplyStun<MonsterController>(mc, 3f);
+                // Define.CCType ccType = _parent.SkillData.CCType;
+                // float ccRate = _parent.SkillData.CCRate;
+                // float duration = _parent.SkillData.CCDuration;
+                // if (Random.Range(0f, 1f) <= ccRate)
+                //     Managers.CC.ApplyCC<MonsterController>(mc, ccType, duration, Vector3.zero);
             }
         }
     }

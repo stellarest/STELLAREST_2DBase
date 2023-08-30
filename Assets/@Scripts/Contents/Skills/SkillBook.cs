@@ -48,6 +48,7 @@ namespace STELLAREST_2D
         {
             Data.SkillData skillData = skill.SkillData;
             Vector3 originShootDir = Managers.Game.Player.ShootDir;
+
             Define.LookAtDirection lootAtDir = Managers.Game.Player.LookAtDir;
             Vector3 indicatorAngle = Managers.Game.Player.Indicator.eulerAngles;
 
@@ -139,6 +140,19 @@ namespace STELLAREST_2D
                 pc.transform.rotation = Quaternion.Euler(0, 0, 
                     (skillData.ContinuousFixedRotations[i] * (int)Managers.Game.Player.LookAtDir * -1) + indicatorAngle.z + continuousAngles[i]);
 
+                // +++++ 임시 +++++
+                if (skillData.OriginTemplateID == (int)Define.TemplateIDs.SkillType.ElementalArcherRangedShot ||
+                    skillData.OriginTemplateID == (int)Define.TemplateIDs.SkillType.ForestWardenRangedShot)
+                {
+                    Managers.Effect.ShowBowMuzzleEffect(Managers.Game.Player.FireSocket, Managers.Game.Player.GetFireSocket);
+                    spawnPos = Managers.Game.Player.FireSocket;
+                    shootDir = Managers.Game.Player.ShootDir;
+                }
+                else if (skillData.OriginTemplateID == (int)Define.TemplateIDs.SkillType.ArrowMasterRangedShot)
+                {
+                    Managers.Effect.ShowBowMuzzleEffect(Managers.Game.Player.FireSocket, Managers.Game.Player.GetFireSocket);
+                }
+                
                 // +++++ TEMP +++++
                 pc.SetProjectileInfo(Owner, skill, shootDir, spawnPos, localScale, indicatorAngle, lootAtDir, 
                     skillData.ContinuousSpeedRatios[i], continuousAngles[i], skillData.ContinuousFlipXs[i], skillData.ContinuousFlipYs[i],
