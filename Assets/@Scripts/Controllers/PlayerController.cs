@@ -48,6 +48,9 @@ namespace STELLAREST_2D
         private GameObject _animChildObject;
         public Vector3 AnimationLocalScale => _animChildObject.transform.localScale;
         public AnimationEvents AnimEvents { get; private set; }
+
+        public float ATTACK_SPEED_TEST = 2f;
+
         public override void UpdateAnimation()
         {
             switch (_cretureState)
@@ -96,6 +99,9 @@ namespace STELLAREST_2D
 
                             case (int)Define.TemplateIDs.Player.Reina_ArrowMaster:
                                 {
+                                    // SkillData skillData = SkillBook.GetCurrentPlayerDefaultSkill.SkillData;
+                                    // if (skillData.InGameGrade >= Define.InGameGrade.Epic)
+                                    //     PAC.AttackAnimSpeed(ATTACK_SPEED_TEST);
                                     PAC.SimpleBowShot();
                                 }
                                 break;
@@ -108,8 +114,7 @@ namespace STELLAREST_2D
                                 {
                                     SkillData skillData = SkillBook.GetCurrentPlayerDefaultSkill.SkillData;
                                     if (skillData.InGameGrade >= Define.InGameGrade.Epic)
-                                        PAC.AttackAnimSpeed(1.2f);
-
+                                        PAC.AttackAnimSpeed(1.3f);
                                     PAC.SimpleBowShot();
                                 }
                                 break;

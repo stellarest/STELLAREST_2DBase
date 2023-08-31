@@ -188,6 +188,23 @@ namespace STELLAREST_2D
                 latestSkill.DeactivateSkill();
                 LearnedRepeatSkills.Add(newSkill);
 
+                // +++ CHECK BUFF ONCE +++
+                if (newSkill.SkillData.BuffTemplateID != Define.TemplateIDs.BuffType.None)
+                {
+                    Data.BuffData buffData = Managers.Data.BuffDict[(int)newSkill.SkillData.BuffTemplateID];
+                    string label = buffData.PrimaryLabel;
+
+                    GameObject go = Managers.Resource.Instantiate(label, pooling: false);
+                    BuffBase buff = go.GetComponent<BuffBase>();
+                    buff.StartBuff(Owner, newSkill, buffData);
+                    Owner.Buff = buff;
+                }
+
+                // TODO : Epic Skill... Buff On
+                // 나중에 Buff Effect ID로 설정해서 생성할것.
+                // if (newSkill.SkillData.InGameGrade == Define.InGameGrade.Epic)
+                //     Managers.Effect.ShowBuffEffect(Define.Buff.DamageUpSeconds, Owner.transform);
+
                 if (newSkill.SkillData.IsPlayerDefaultAttack)
                 {
                     Managers.Game.Player.AnimEvents.PlayerDefaultSkill++;

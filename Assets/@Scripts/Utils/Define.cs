@@ -37,6 +37,8 @@ namespace STELLAREST_2D
         public enum ExpressionType { Default, Battle, Concentration, Angry, Kitty, Sick, Death, }
         public enum MonsterFace { Normal = 0, Angry = 1, Death = 2 }
 
+        public enum ImpactHits { None, Leaves, ArrowBigHit, }
+
         public static class TemplateIDs
         {
             // ++++++++++ 나중에 하나로 통합이 가능할까? ++++++++++ 
@@ -133,9 +135,22 @@ namespace STELLAREST_2D
             }
 
             // +++++ TEMP +++++
+            public enum ItemType
+            {
+                PiggyBank = 300101,
+            }
+
+
+            // +++++ TEMP +++++
             public enum ImpactHitEffect
             {
-                Leaves = 300001, // Forest Warden Epic Effect
+                Leaves = 400101, // Forest Warden Epic Effect
+            }
+
+            public enum BuffType
+            {
+                None = -1,
+                Concentration = 500100,
             }
         }
 
@@ -201,6 +216,9 @@ namespace STELLAREST_2D
                 public const string IMPACT_LIGHT_EFFECT = "ImpactLightEffect.prefab";
 
                 public const string IMPACT_HIT_LEAVES_EFFECT = "ImpactHitLeavesEffect.prefab";
+                public const string IMPACT_ARROW_BIG_HIT_EFFECT = "ImpactArrowBigHitEffect.prefab";
+
+                public const string CONCENTRATION_BUFF = "ConcentrationBuff.prefab";
             }
 
             /// <summary>
@@ -247,6 +265,7 @@ namespace STELLAREST_2D
                 public const string STAGE = "Stage.json";
                 public const string SKILL = "SkillData.json";
                 public const string PASSIVE_SKILL = "PassiveSkillData.json";
+                public const string BUFF = "BuffData.json";
             }
         }
     }

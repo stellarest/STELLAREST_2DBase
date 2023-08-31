@@ -88,6 +88,7 @@ namespace STELLAREST_2D.Data
         public int BounceCount;
         public float SelfRotationZSpeed;
         public int PenetrationCount;
+        public Define.TemplateIDs.BuffType BuffTemplateID;
         public int HitEffectTemplateID;
         public bool HasCC;
         public Define.CCType CCType;
@@ -154,6 +155,41 @@ namespace STELLAREST_2D.Data
             Dictionary<int, PassiveSkillData> dict = new Dictionary<int, PassiveSkillData>();
             foreach (PassiveSkillData passiveSkill in passiveSkills)
                 dict.Add(passiveSkill.TemplateID, passiveSkill);
+
+            return dict;
+        }
+    }
+
+    [Serializable]
+    public class BuffData
+    {
+        public int TemplateID;
+        public string Name;
+        public string Description;
+        public string PrimaryLabel;
+        public string HitEffectLabel; // +++ TEMP +++
+        public float Duration;
+        public float CoolTime;
+        public bool IsLoopType;
+        public BuffBase.BuffType BuffType;
+    }
+
+    [Serializable]
+    public class BuffDataLoader : ILoader<int, BuffData>
+    {
+        public List<BuffData> buffs = new List<BuffData>();
+
+        public Dictionary<int, BuffData> MakeDict()
+        {
+            if (buffs.Count == 0)
+            {
+                Debug.LogError("Failed to load PassiveSkillData.json");
+                Debug.Break();
+            }
+
+            Dictionary<int, BuffData> dict = new Dictionary<int, BuffData>();
+            foreach (BuffData buff in buffs)
+                dict.Add(buff.TemplateID, buff);
 
             return dict;
         }

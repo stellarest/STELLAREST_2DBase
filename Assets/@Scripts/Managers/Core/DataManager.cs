@@ -16,6 +16,9 @@ namespace STELLAREST_2D
         public Dictionary<int, Data.SkillData> SkillDict { get; private set; } = new Dictionary<int, Data.SkillData>();
         public Dictionary<int, Data.PassiveSkillData> PassiveSkillDict { get; private set; } = new Dictionary<int, Data.PassiveSkillData>();
 
+        public Dictionary<int, Data.BuffData> BuffDict { get; private set; } = new Dictionary<int, Data.BuffData>();
+
+
         public void Init()
         {
             CreatureDict = LoadJson<Data.CreatureDataLoader, int, Data.CreatureData>
@@ -26,6 +29,9 @@ namespace STELLAREST_2D
 
             PassiveSkillDict = LoadJson<Data.PassiveSkillDataLoader, int, Data.PassiveSkillData>
                             (Define.Labels.Data.PASSIVE_SKILL).MakeDict();
+
+            BuffDict = LoadJson<Data.BuffDataLoader, int, Data.BuffData>
+                            (Define.Labels.Data.BUFF).MakeDict();
         }
 
         private T LoadJson<T, Key, Value>(string path) where T : ILoader<Key, Value>

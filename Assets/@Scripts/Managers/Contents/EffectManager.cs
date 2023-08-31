@@ -613,11 +613,52 @@ namespace STELLAREST_2D
                 go.GetComponent<MovementToOwner>().SetOwner(followTickSocketOwner);
         }
 
-        public void ShowImpactHitLeavesEffect(Vector3 Position)
+        // public GameObject ShowImpactHitLeavesEffect(Vector3 Position)
+        // {
+        //     GameObject go = Managers.Resource.Instantiate(Define.Labels.Prefabs.IMPACT_HIT_LEAVES_EFFECT, pooling: true);
+        //     go.transform.position = Position;
+
+        //     return go;
+        // }
+
+        public GameObject ShowImpactHitEffect(Define.ImpactHits impactHit, Vector3 position)
         {
-            GameObject go = Managers.Resource.Instantiate(Define.Labels.Prefabs.IMPACT_HIT_LEAVES_EFFECT, pooling: true);
-            go.transform.position = Position;
+            GameObject go = null;
+            switch (impactHit)
+            {
+                case Define.ImpactHits.None:
+                    return null;
+
+                case Define.ImpactHits.Leaves:
+                    go = Managers.Resource.Instantiate(Define.Labels.Prefabs.IMPACT_HIT_LEAVES_EFFECT, pooling: true);
+                    break;
+
+                case Define.ImpactHits.ArrowBigHit:
+                    go = Managers.Resource.Instantiate(Define.Labels.Prefabs.IMPACT_ARROW_BIG_HIT_EFFECT, pooling: true);
+                    break;
+            }
+            go.transform.position = position;
+
+            return go;
         }
+
+        // public GameObject ShowBuffEffect(Define.Buff buff, Transform target)
+        // {
+        //     GameObject go = null;
+        //     switch (buff)
+        //     {
+        //         case Define.Buff.None:
+        //             return null;
+
+        //         case Define.Buff.DamageUpSeconds:
+        //             go = Managers.Resource.Instantiate(Define.Labels.Prefabs.DAMAGE_AND_ATTACK_SPEED_UP_BUFF_EFFECT, pooling: false);
+        //             go.GetComponent<DamageUpSeconds>().StartBuff(target);
+        //             break;
+        //     }
+            
+        //     return go;
+        // }
+
 
         public void ShowEffectText(string prefabLabel, Vector3 pos, string text)
         {

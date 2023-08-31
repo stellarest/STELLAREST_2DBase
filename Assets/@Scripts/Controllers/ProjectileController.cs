@@ -359,10 +359,12 @@ namespace STELLAREST_2D
                 yield return null;
             }
 
-            Debug.Log(attacker.SkillData.Name);
-            Debug.Log(attacker.SkillData.InGameGrade);
-            Managers.Effect.ShowImpactHitLeavesEffect(attacker.transform.position);
-            Managers.Object.Despawn(attacker.GetComponent<ProjectileController>());
+            if (attacker.SkillData.OriginTemplateID == (int)Define.TemplateIDs.SkillType.ForestWardenRangedShot)
+            {
+                GameObject go = Managers.Effect.ShowImpactHitEffect(Define.ImpactHits.Leaves, this.transform.position);
+                go.GetComponent<ImpactHit>().SetInfo(Define.ImpactHits.Leaves, Owner, CurrentSkill, this);
+                Managers.Object.Despawn(this.GetComponent<ProjectileController>());
+            }
         }
 
         private void OnTriggerEnter2D(Collider2D other)
@@ -401,12 +403,21 @@ namespace STELLAREST_2D
 
                     case (int)Define.TemplateIDs.SkillType.ArrowMasterRangedShot:
                         {
-                            mc.OnDamaged(Owner, CurrentSkill);
+                            if (CurrentSkill.SkillData.InGameGrade < Define.InGameGrade.Epic)
+                            {
+                                mc.OnDamaged(Owner, CurrentSkill);
+                            }
+                            else // EPIC && LEGENDARY
+                            {
+                                // Hmm...
+                                // GameObject go = Managers.Effect.ShowImpactHitEffect(Define.ImpactHits.ArrowBigHit, this.transform.position);
+                                // go.GetComponent<ImpactHit>().SetInfo(Define.ImpactHits.ArrowBigHit, Owner, CurrentSkill, this);
+                                // mc.OnDamaged(Owner, CurrentSkill);
 
-                            if (_currentPenetrationCount == CurrentSkill.SkillData.PenetrationCount)
-                                Managers.Object.Despawn(this.GetComponent<ProjectileController>());
-                            else
-                                _currentPenetrationCount++;
+                                if (Owner.Buff.IsBuffOn)
+                                    Managers.Effect.ShowImpactHitEffect(Define.ImpactHits.ArrowBigHit, this.transform.position);
+                                mc.OnDamaged(Owner, CurrentSkill);
+                            }
                         }
                         break;
 
@@ -438,11 +449,17 @@ namespace STELLAREST_2D
                                     Managers.CC.ApplyCC<MonsterController>(mc, CurrentSkill.SkillData, this);
                                     if (CurrentSkill.SkillData.InGameGrade < Define.InGameGrade.Legendary)
                                     {
+                                        if (CurrentSkill.SkillData.InGameGrade == Define.InGameGrade.Epic)
+                                        {
+                                            GameObject go = Managers.Effect.ShowImpactHitEffect(Define.ImpactHits.Leaves, this.transform.position);
+                                            go.GetComponent<ImpactHit>().SetInfo(Define.ImpactHits.Leaves, Owner, CurrentSkill, this);
+                                        }
+
                                         Managers.Object.Despawn(this.GetComponent<ProjectileController>());
                                     }
                                     else
                                     {
-                                        StartCoroutine(CoDotDamage<MonsterController>(mc, CurrentSkill, 2, 0.05f));
+                                        StartCoroutine(CoDotDamage<MonsterController>(mc, CurrentSkill, 4, 0.05f));
                                     }
                                 }
                             }

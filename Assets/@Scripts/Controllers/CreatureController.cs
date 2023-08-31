@@ -12,6 +12,7 @@ namespace STELLAREST_2D
         public Define.CreatureType CreatureType { get; protected set; } = Define.CreatureType.Creture;
         
         public GameObject GoCCEffect { get; set; } = null;
+        public BuffBase Buff { get; set; } = null;
 
         //protected bool[] _ccStates = null;
         public bool[] _ccStates = null;
@@ -261,9 +262,9 @@ namespace STELLAREST_2D
                         yield break;
                     }
 
-                    Debug.Log("Damage To Player !!");
                     //attacker.GetComponent<CreatureController>().AttackCol.enabled = false;
 
+                    // Debug.Log("DMG To Player !!");
                     _isPlayingPlayerHitEffect = true;
                     Managers.Effect.StartHitEffect(this);
                     Managers.Effect.ShowDamageFont(this, resultDamage);
@@ -274,7 +275,7 @@ namespace STELLAREST_2D
                 }
                 else
                 {
-                    Debug.Log("Damage To Monster !!");
+                    // Debug.Log("DMG To Monster !!");
                     Managers.Effect.StartHitEffect(this);
                     Managers.Effect.ShowDamageFont(this, resultDamage, isCritical);
 

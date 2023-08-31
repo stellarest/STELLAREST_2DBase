@@ -12,6 +12,13 @@ namespace STELLAREST_2D
         public CreatureController Owner { get; protected set; }
         public Data.SkillData SkillData { get; protected set; }
 
+        private float? _damageBuffRatio = null;
+        public float? DamageBuffRatio
+        {
+            get => _damageBuffRatio;
+            set => _damageBuffRatio = value;
+        }
+
         public virtual void OnPreSpawned() => gameObject.SetActive(false);
         public virtual void ActivateSkill() => gameObject.SetActive(true);
         public virtual void DeactivateSkill() => gameObject.SetActive(false);
@@ -20,6 +27,10 @@ namespace STELLAREST_2D
         public float GetDamage()
         {
             float damage = Random.Range(SkillData.MinDamage, SkillData.MaxDamage);
+
+            if (_damageBuffRatio.HasValue)
+                damage = damage + (damage * _damageBuffRatio.Value);
+
             if (Random.Range(0f, 0.99f + Mathf.Epsilon) < Owner.CharaData.CriticalChance)
             {
                 IsCritical = true;
@@ -27,7 +38,9 @@ namespace STELLAREST_2D
                 damage = damage * criticalRatio;
             }
 
-            return damage + (damage * Owner.CharaData.DamageUp);
+            float damageResult = damage + (damage * Owner.CharaData.DamageUp);
+
+            return damageResult;
         }
 
         public virtual void SetSkillInfo(CreatureController owner, int templateID)

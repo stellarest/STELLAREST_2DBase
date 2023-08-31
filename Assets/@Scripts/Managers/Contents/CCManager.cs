@@ -107,7 +107,11 @@ namespace STELLAREST_2D
                 percent = t / duration;
                 //cc.transform.position += (attackerShootDir * 0.5f);
                 //cc.transform.position += (attackerShootDir * 0.35f);
-                cc.transform.position += (attackerShootDir * 0.4f);
+                Vector2 pos = cc.transform.position;
+                if (Managers.Stage.IsOutOfPos(pos))
+                    continue;
+                else
+                    cc.transform.position += attackerShootDir * 0.05f;
 
                 yield return null;
             }
