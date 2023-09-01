@@ -507,7 +507,10 @@ namespace STELLAREST_2D
 
             if (Input.GetKeyDown(KeyCode.R))
             {
-                TEST_EXPRESSION();
+                if (Buff != null && CharaData.TemplateID == (int)Define.TemplateIDs.Player.Gary_Paladin)
+                    Buff.GetComponent<GuardiansShield>().Play();
+
+                // TEST_EXPRESSION();
                 // PAC.DeathFront();
                 // var findGems = Managers.Object.GridController.
                 // GatherObjects(transform.position, EnvCollectDist + 99f).ToList();

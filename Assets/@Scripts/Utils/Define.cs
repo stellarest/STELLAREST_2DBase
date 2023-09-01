@@ -160,7 +160,7 @@ namespace STELLAREST_2D
             public enum UltimateSequenceType
             {
                 None = -1,
-                HeavensJudgment = 600100,
+                HeavensJudgment = 500100,
             }
 
             public enum HitEffectType
@@ -210,6 +210,7 @@ namespace STELLAREST_2D
                 public const string DMG_NUMBER_TO_MONSTER = "DmgNumber_ToMonster.prefab";
                 public const string DMG_NUMBER_TO_MONSTER_CRITICAL = "DmgNumber_ToMonsterCritical.prefab";
                 public const string DMG_NUMBER_TO_PLAYER = "DmgNumber_ToPlayer.prefab";
+                public const string DMG_NUMBER_TO_SHIELD = "DmgNumber_ToShield.prefab";
 
                 public const string DMG_TEXT_TO_MONSTER_CRITICAL = "DmgText_ToMonsterCritical.prefab"; // 크리티컬 text는 몬스터에게만 적용
                 public const string DMG_TEXT_TO_PLAYER_DODGE = "DmgText_ToPlayerDodge.prefab"; // 플레이어에게만 적용

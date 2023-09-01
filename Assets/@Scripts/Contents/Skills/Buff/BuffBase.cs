@@ -19,7 +19,8 @@ namespace STELLAREST_2D
 
         protected CreatureController _target;
         protected SkillBase _skill;
-        protected Data.BonusBuffData _buffData;
+        protected Data.BonusBuffData _buffData = null;
+        public Data.BonusBuffData BuffData => _buffData;
 
         protected ParticleSystem[] _particles = null;
         public bool IsBuffOn { get; protected set; } = false;
@@ -38,7 +39,7 @@ namespace STELLAREST_2D
             gameObject.transform.position = target.transform.position;
 
             Init();
-            
+
             if (_coBuff != null)
             {
                 _coBuff = null;

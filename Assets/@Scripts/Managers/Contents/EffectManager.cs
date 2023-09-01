@@ -429,6 +429,16 @@ namespace STELLAREST_2D
             }
         }
 
+        public void ShowShieldDamageFont(CreatureController cc, float damage)
+        {
+            if (cc.IsValid() == false)
+                return;
+
+            Vector3 defaultSpawnPos = cc.transform.position + (Vector3.up * 2.5f);
+            Managers.Resource.Load<GameObject>
+                (Define.Labels.Prefabs.DMG_NUMBER_TO_SHIELD).GetComponent<DamageNumber>().Spawn(defaultSpawnPos, damage);
+        }
+
         public void ShowDodgeText(CreatureController cc)
         {
             if (cc.IsValid() == false)

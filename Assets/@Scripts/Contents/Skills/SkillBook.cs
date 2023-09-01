@@ -196,14 +196,7 @@ namespace STELLAREST_2D
                 // +++ CHECK BONUS BUFF ONCE +++
                 if (newSkill.SkillData.BonusBuffTemplateID != Define.TemplateIDs.BonusBuffType.None)
                 {
-                    // BUFF : MOVE TO SKILLBASE (TODO)
-                    Data.BonusBuffData buffData = Managers.Data.BuffDict[(int)newSkill.SkillData.BonusBuffTemplateID];
-                    string label = buffData.PrimaryLabel;
-                    GameObject go = Managers.Resource.Instantiate(label, pooling: false);
-                    BuffBase buff = go.GetComponent<BuffBase>();
-                    buff.StartBuff(Owner, newSkill, buffData);
-                    Owner.Buff = buff;
-
+                    Owner.UpgradeBonusBuff(newSkill, (int)newSkill.SkillData.BonusBuffTemplateID);
 
                     // +++ CONCENTARION TEMP +++
                     // Data.BuffData buffData = Managers.Data.BuffDict[(int)newSkill.SkillData.BuffTemplateID];
@@ -213,11 +206,6 @@ namespace STELLAREST_2D
                     // buff.StartBuff(Owner, newSkill, buffData);
                     // Owner.Buff = buff;
                 }
-
-                // TODO : Epic Skill... Buff On
-                // 나중에 Buff Effect ID로 설정해서 생성할것.
-                // if (newSkill.SkillData.InGameGrade == Define.InGameGrade.Epic)
-                //     Managers.Effect.ShowBuffEffect(Define.Buff.DamageUpSeconds, Owner.transform);
 
                 if (newSkill.SkillData.IsPlayerDefaultAttack)
                 {

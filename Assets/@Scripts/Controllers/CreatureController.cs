@@ -1,3 +1,4 @@
+using System.Buffers;
 using System.Collections;
 using System.Linq.Expressions;
 using System.Text;
@@ -13,7 +14,17 @@ namespace STELLAREST_2D
         public Define.CreatureType CreatureType { get; protected set; } = Define.CreatureType.Creture;
         
         public GameObject GoCCEffect { get; set; } = null;
-        public BuffBase Buff { get; set; } = null;
+        public BuffBase Buff { get; private set; } = null;
+
+        public void UpgradeBonusBuff(SkillBase skill, int templateID)
+        {
+            Data.BonusBuffData buffData = Managers.Data.BuffDict[templateID];
+            string label = buffData.PrimaryLabel;
+            GameObject go = Managers.Resource.Instantiate(label, pooling: false);
+            BuffBase buff = go.GetComponent<BuffBase>();
+            buff.StartBuff(this, skill, buffData);
+            this.Buff = buff;
+        }
 
         //protected bool[] _ccStates = null;
         public bool[] _ccStates = null;
@@ -266,8 +277,19 @@ namespace STELLAREST_2D
 
                     // +++++ DMG TO PLAYER +++++
                     _isPlayingPlayerHitEffect = true;
-                    Managers.Effect.StartHitEffect(this);
-                    Managers.Effect.ShowDamageFont(this, resultDamage);
+
+                    if (CharaData.ShieldHp > 0f)
+                    {
+                        Buff.GetComponent<GuardiansShield>().Hit();
+                        Managers.Effect.ShowShieldDamageFont(this, resultDamage);
+                        CharaData.ShieldHp -= damage;
+                    }
+                    else
+                    {
+                        Managers.Effect.StartHitEffect(this);
+                        Managers.Effect.ShowDamageFont(this, resultDamage);
+                        CharaData.Hp -= damage;
+                    }
 
                     yield return new WaitForSeconds(0.1f);
                     Managers.Effect.EndHitEffect(this);
@@ -279,16 +301,13 @@ namespace STELLAREST_2D
                     Managers.Effect.StartHitEffect(this);
                     Managers.Effect.ShowDamageFont(this, resultDamage, isCritical);
 
+                    CharaData.Hp -= damage;
+
                     yield return new WaitForSeconds(0.1f);
                     Managers.Effect.EndHitEffect(this);
                 }
 
                 skill.IsCritical = isCritical ? !isCritical : isCritical;
-
-                if (CharaData.ShieldHp > 0f)
-                    CharaData.ShieldHp -= damage;
-                else
-                    CharaData.Hp -= damage;
 
                 if (CharaData.Hp <= 0)
                 {

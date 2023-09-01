@@ -122,7 +122,7 @@ namespace STELLAREST_2D
             this.Luck = currentCharaData.Luck + (currentCharaData.Luck * value.LuckUp);
             this.TotalExp = currentCharaData.TotalExp;
 
-            Utils.LogStrong("Success Upgrade Character Stat !!");
+            Utils.LogStrong("Success Upgrade Bonus Stat !!");
             return new CharacterData(owner, currentCharaData.TemplateID, currentCharaData.Name, currentCharaData.Description, MaxHp, Damage, 
                         Critical, AttackSpeed, CoolDown, Armor, Dodge, MoveSpeed, CollectRange, Luck, TotalExp);
         }
