@@ -31,14 +31,14 @@ namespace STELLAREST_2D
             if (_damageBuffRatio.HasValue)
                 damage = damage + (damage * _damageBuffRatio.Value);
 
-            if (Random.Range(0f, 0.99f + Mathf.Epsilon) < Owner.CharaData.CriticalChance)
+            if (Random.Range(0f, 0.99f + Mathf.Epsilon) < Owner.CharaData.Critical)
             {
                 IsCritical = true;
                 float criticalRatio = Random.Range(1.5f, 2f);
                 damage = damage * criticalRatio;
             }
 
-            float damageResult = damage + (damage * Owner.CharaData.DamageUp);
+            float damageResult = damage + (damage * Owner.CharaData.Damage);
 
             return damageResult;
         }

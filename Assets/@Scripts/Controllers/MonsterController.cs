@@ -94,7 +94,9 @@ namespace STELLAREST_2D
 
             float delta = 0f;
             float percent = 0f;
-            float desiredTime = Random.Range(CharaData.MinReadyToActionTime, CharaData.MaxReadyToActionTime);
+            //float desiredTime = Random.Range(CharaData.MinReadyToActionTime, CharaData.MaxReadyToActionTime);
+            float desiredTime = Random.Range(3f, 4f);
+
             
             if (isSpawned == false)
                 desiredTime = 0.5f;
@@ -161,34 +163,34 @@ namespace STELLAREST_2D
             // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
             // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-            // if (RigidBody.velocity != Vector2.zero)
-            //     MAC.Run();
+            if (RigidBody.velocity != Vector2.zero)
+                MAC.Run();
 
-            // Vector2 predictedPos = new Vector2(transform.position.x + RigidBody.velocity.x,
-            //                                     transform.position.y + RigidBody.velocity.y);
-            // if (Managers.Stage.IsOutOfPos(predictedPos))
-            // {
-            //     BodyCol.isTrigger = true;
-            //     RigidBody.velocity = Vector2.zero;
-            //     Managers.Stage.SetInLimitPos(this);
-            // }
+            Vector2 predictedPos = new Vector2(transform.position.x + RigidBody.velocity.x,
+                                                transform.position.y + RigidBody.velocity.y);
+            if (Managers.Stage.IsOutOfPos(predictedPos))
+            {
+                BodyCol.isTrigger = true;
+                RigidBody.velocity = Vector2.zero;
+                Managers.Stage.SetInLimitPos(this);
+            }
 
-            // PlayerController pc = Managers.Game.Player;
-            // if (pc.IsValid() == false)
-            //     return;
+            PlayerController pc = Managers.Game.Player;
+            if (pc.IsValid() == false)
+                return;
 
-            // Vector3 toPlayer = pc.transform.position - transform.position;
-            // FlipX(toPlayer.x > 0 ? -1 : 1);
-            // if (CreatureState != Define.CreatureState.Run)
-            //     return;
+            Vector3 toPlayer = pc.transform.position - transform.position;
+            FlipX(toPlayer.x > 0 ? -1 : 1);
+            if (CreatureState != Define.CreatureState.Run)
+                return;
 
-            // Vector3 newPos = transform.position + (toPlayer.normalized * Time.deltaTime * CharaData.MoveSpeed);
-            // //transform.position = newPos;
-            // RigidBody.MovePosition(newPos);
+            Vector3 newPos = transform.position + (toPlayer.normalized * Time.deltaTime * CharaData.MoveSpeed);
+            //transform.position = newPos;
+            RigidBody.MovePosition(newPos);
 
-            // float sqrDist = 2f * 2f;
-            // if (toPlayer.sqrMagnitude <= sqrDist)
-            //     CreatureState = Define.CreatureState.Skill;
+            float sqrDist = 2f * 2f;
+            if (toPlayer.sqrMagnitude <= sqrDist)
+                CreatureState = Define.CreatureState.Skill;
         }
 
         private void FlipX(float flipX)

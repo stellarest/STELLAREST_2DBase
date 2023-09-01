@@ -2,27 +2,71 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using STELLAREST_2D;
+using Unity.VisualScripting;
 
 namespace STELLAREST_2D.Test
 {
     public class Test : MonoBehaviour
     {
-        [ContextMenu("T_ParticleSorting")]
-        private void TEST_ParticleSorting()
+
+        public ParticleSystem[] ShieldOns = null;
+        public ParticleSystem[] ShieldOffs = null;
+
+        private void Update()
         {
-            foreach (var pr in GetComponentsInChildren<ParticleSystemRenderer>())
+            if (Input.GetKeyDown(KeyCode.O))
             {
-                pr.sortingOrder = (int)Define.SortingOrder.ParticleEffect;
+                TEST_ON();
+            }
+
+            if (Input.GetKeyDown(KeyCode.P))
+            {
+                TEST_OFF();
+            }      
+        }
+
+        [ContextMenu("TEST_ON")]
+        private void TEST_ON()
+        {
+            for (int i = 0; i < ShieldOffs.Length; ++i)
+                ShieldOffs[i].gameObject.SetActive(false);
+
+            for (int i = 0; i < ShieldOns.Length; ++i)
+            {
+                ShieldOns[i].gameObject.SetActive(true);
+                ShieldOns[i].Play();
             }
         }
 
-        [ContextMenu("ReplaceTest")]
-        private void ReplaceTest()
+        [ContextMenu("TEST_OFF")]
+        private void TEST_OFF()
         {
-            string str = "Hello World";
-            string result = str.Replace("Hello", "Goodbye");
-            Debug.Log("RESULT : " + result);
+            for (int i = 0; i < ShieldOns.Length; ++i)
+                ShieldOns[i].gameObject.SetActive(false);
+
+            for (int i = 0; i < ShieldOffs.Length; ++i)
+            {
+                ShieldOffs[i].gameObject.SetActive(true);
+                ShieldOffs[i].Play();
+            }
         }
+
+        // [ContextMenu("T_ParticleSorting")]
+        // private void TEST_ParticleSorting()
+        // {
+        //     foreach (var pr in GetComponentsInChildren<ParticleSystemRenderer>())
+        //     {
+        //         pr.sortingOrder = (int)Define.SortingOrder.ParticleEffect;
+        //     }
+        // }
+
+        // [ContextMenu("ReplaceTest")]
+        // private void ReplaceTest()
+        // {
+        //     string str = "Hello World";
+        //     string result = str.Replace("Hello", "Goodbye");
+        //     Debug.Log("RESULT : " + result);
+        // }
 
         // [ContextMenu("TTTTT")]
         // public void TTTTT()

@@ -19,23 +19,39 @@ namespace STELLAREST_2D
 
         protected CreatureController _target;
         protected SkillBase _skill;
-        protected Data.BuffData _buffData;
-
+        protected Data.BonusBuffData _buffData;
 
         protected ParticleSystem[] _particles = null;
         public bool IsBuffOn { get; protected set; } = false;
+        protected Coroutine _coBuff = null;
 
-        public void StartBuff(CreatureController target, SkillBase skill, Data.BuffData buffData)
+        public void StartBuff(CreatureController target, SkillBase skill, Data.BonusBuffData buffData)
         {
             _target = target;
             _skill = skill;
             _buffData = buffData;
-            _particles = GetComponentsInChildren<ParticleSystem>();
-            gameObject.transform.SetParent(target.transform);
-            gameObject.transform.localPosition = Vector3.zero;
+            if (buffData.IsOnParent)
+            {
+                gameObject.transform.SetParent(target.transform);
+                gameObject.transform.localPosition = Vector3.zero;
+            }
+            gameObject.transform.position = target.transform.position;
+
+            Init();
+            
+            if (_coBuff != null)
+            {
+                _coBuff = null;
+                StopCoroutine(_coBuff);
+            }
 
             IsBuffOn = true;
-            StartCoroutine(CoBuff());
+            _coBuff = StartCoroutine(CoBuff());
+        }
+
+        protected virtual void Init() 
+        { 
+            _particles = GetComponentsInChildren<ParticleSystem>();
         }
 
         public void DestroyBuff()
@@ -46,7 +62,7 @@ namespace STELLAREST_2D
             Managers.Resource.Destroy(gameObject);
         }
 
-        protected virtual void Play()
+        public virtual void Play()
         {
             if (_particles.Length > 0)
             {
@@ -55,7 +71,7 @@ namespace STELLAREST_2D
             }
         }
 
-        protected virtual void Stop()
+        public virtual void Stop()
         {
             if (_particles.Length > 0)
             {

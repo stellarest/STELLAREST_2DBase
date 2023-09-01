@@ -414,8 +414,8 @@ namespace STELLAREST_2D
                                 // go.GetComponent<ImpactHit>().SetInfo(Define.ImpactHits.ArrowBigHit, Owner, CurrentSkill, this);
                                 // mc.OnDamaged(Owner, CurrentSkill);
 
-                                if (Owner.Buff.IsBuffOn)
-                                    Managers.Effect.ShowImpactHitEffect(Define.ImpactHits.ArrowBigHit, this.transform.position);
+                                // if (Owner.Buff != null && Owner.Buff.IsBuffOn)
+                                //     Managers.Effect.ShowImpactHitEffect(Define.ImpactHits.ArrowBigHit, this.transform.position);
                                 mc.OnDamaged(Owner, CurrentSkill);
                             }
                         }
@@ -424,6 +424,7 @@ namespace STELLAREST_2D
                     case (int)Define.TemplateIDs.SkillType.ElementalArcherRangedShot:
                         {
                             mc.OnDamaged(Owner, CurrentSkill);
+                            Managers.Object.Despawn(this.GetComponent<ProjectileController>());
 
                             if (CurrentSkill.SkillData.InGameGrade == Define.InGameGrade.Epic)
                             {
@@ -431,10 +432,8 @@ namespace STELLAREST_2D
                                 //Managers.Effect.ShowImpactFireEffect(mc.Body.transform.position, CurrentSkill.SkillData.InGameGrade);
                                 //Managers.Effect.ShowImpactIceEffect(mc.Body.transform.position, CurrentSkill.SkillData.InGameGrade);
                                 //Managers.Effect.ShowImpactBubbleEffect(mc.Body.transform.position);
-                                Managers.Effect.ShowImpactLightEffect(mc.Body.transform.position);
+                                //Managers.Effect.ShowImpactLightEffect(mc.Body.transform.position);
                             }
-                            
-                            Managers.Object.Despawn(this.GetComponent<ProjectileController>());
                         }
                         break;
 

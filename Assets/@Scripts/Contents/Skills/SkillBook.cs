@@ -22,7 +22,6 @@ namespace STELLAREST_2D
         public List<RepeatSkill> LearnedRepeatSkills { get; } = new List<RepeatSkill>();
         public List<SequenceSkill> LearnedSequenceSkills { get; } = new List<SequenceSkill>();
 
-
         /// <summary>
         /// Init Once
         /// </summary>
@@ -188,16 +187,31 @@ namespace STELLAREST_2D
                 latestSkill.DeactivateSkill();
                 LearnedRepeatSkills.Add(newSkill);
 
-                // +++ CHECK BUFF ONCE +++
-                if (newSkill.SkillData.BuffTemplateID != Define.TemplateIDs.BuffType.None)
+                // +++ CHECK BONUS STAT ONCE +++
+                if (newSkill.SkillData.BonusStatTemplateID != Define.TemplateIDs.BonusStatType.None)
                 {
-                    Data.BuffData buffData = Managers.Data.BuffDict[(int)newSkill.SkillData.BuffTemplateID];
-                    string label = buffData.PrimaryLabel;
+                    Owner.UpgradeCharacterData((int)newSkill.SkillData.BonusStatTemplateID);
+                }
 
+                // +++ CHECK BONUS BUFF ONCE +++
+                if (newSkill.SkillData.BonusBuffTemplateID != Define.TemplateIDs.BonusBuffType.None)
+                {
+                    // BUFF : MOVE TO SKILLBASE (TODO)
+                    Data.BonusBuffData buffData = Managers.Data.BuffDict[(int)newSkill.SkillData.BonusBuffTemplateID];
+                    string label = buffData.PrimaryLabel;
                     GameObject go = Managers.Resource.Instantiate(label, pooling: false);
                     BuffBase buff = go.GetComponent<BuffBase>();
                     buff.StartBuff(Owner, newSkill, buffData);
                     Owner.Buff = buff;
+
+
+                    // +++ CONCENTARION TEMP +++
+                    // Data.BuffData buffData = Managers.Data.BuffDict[(int)newSkill.SkillData.BuffTemplateID];
+                    // string label = buffData.PrimaryLabel;
+                    // GameObject go = Managers.Resource.Instantiate(label, pooling: false);
+                    // BuffBase buff = go.GetComponent<BuffBase>();
+                    // buff.StartBuff(Owner, newSkill, buffData);
+                    // Owner.Buff = buff;
                 }
 
                 // TODO : Epic Skill... Buff On

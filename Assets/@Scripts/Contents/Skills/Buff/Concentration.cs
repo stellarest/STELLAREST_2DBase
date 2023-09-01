@@ -73,6 +73,10 @@ namespace STELLAREST_2D
                 yield return null;
             }
         }
+
+        protected override void Init()
+        {
+        }
     }
 }
 

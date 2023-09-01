@@ -5,9 +5,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using UnityEngine;
 
-// ENV
-// - EXP GEM
-// - SOUL
 namespace STELLAREST_2D.Data
 {
     [Serializable]
@@ -15,25 +12,19 @@ namespace STELLAREST_2D.Data
     {
         public int TemplateID;
         public string Name;
+        public string Description;
         public string PrimaryLabel;
         public float MaxHp;
-        public float MaxHpUp;
-        public float HpRegen;
-        public float LifeStealChance;
-        public float DamageUp;
-        public float CriticalChance;
-        public float CoolTimeDown;
+        public float Damage;
+        public float Critical;
+        public float AttackSpeed;
+        public float CoolDown;
         public float Armor;
-        public float ArmorUp;
-        public float DodgeChance;
-        public float Resistance;
+        public float Dodge;
         public float MoveSpeed;
-        public float MoveSpeedUp;
         public float CollectRange;
         public float Luck;
         public float TotalExp;
-        public float MinReadyToActionTime;
-        public float MaxReadyToActionTime;
         public List<int> InGameSkillList;
     }
 
@@ -88,8 +79,10 @@ namespace STELLAREST_2D.Data
         public int BounceCount;
         public float SelfRotationZSpeed;
         public int PenetrationCount;
-        public Define.TemplateIDs.BuffType BuffTemplateID;
-        public int HitEffectTemplateID;
+        public Define.TemplateIDs.BonusStatType BonusStatTemplateID;
+        public Define.TemplateIDs.BonusBuffType BonusBuffTemplateID;
+        public Define.TemplateIDs.HitEffectType HitEffectTemplateID;
+        public Define.TemplateIDs.UltimateSequenceType UltimateSequenceTemplateID;
         public bool HasCC;
         public Define.CCType CCType;
         public float CCRate;
@@ -119,76 +112,75 @@ namespace STELLAREST_2D.Data
     }
 
     [Serializable]
-    public class PassiveSkillData
+    public class BonusStatData
     {
         public int TemplateID;
         public string Name;
         public string Description;
-        public Define.InGameGrade InGameGrade;
+        Define.InGameGrade InGameGrade;
         public float MaxHpUp;
-        public float HpRegenUp;
-        public float LifeStealChanceUp;
         public float DamageUp;
-        public float CriticalChanceUp;
-        public float CoolTimeDown;
+        public float CriticalUp;
+        public float AttackSpeedUp;
+        public float CoolDownUp;
         public float ArmorUp;
-        public float DodgeChanceUp;
-        public float ResistanceUp;
+        public float DodgeUp;
         public float MoveSpeedUp;
+        public float CollectRangeUp;
         public float LuckUp;
-        public float ExpUp;
     }
 
     [Serializable]
-    public class PassiveSkillDataLoader : ILoader<int, PassiveSkillData>
+    public class BonusStatDataLoader : ILoader<int, BonusStatData>
     {
-        public List<PassiveSkillData> passiveSkills = new List<PassiveSkillData>();
+        public List<BonusStatData> bonusStats = new List<BonusStatData>();
 
-        public Dictionary<int, PassiveSkillData> MakeDict()
+        public Dictionary<int, BonusStatData> MakeDict()
         {
-            if (passiveSkills.Count == 0)
+            if (bonusStats.Count == 0)
             {
                 Debug.LogError("Failed to load PassiveSkillData.json");
                 Debug.Break();
             }
 
-            Dictionary<int, PassiveSkillData> dict = new Dictionary<int, PassiveSkillData>();
-            foreach (PassiveSkillData passiveSkill in passiveSkills)
-                dict.Add(passiveSkill.TemplateID, passiveSkill);
+            Dictionary<int, BonusStatData> dict = new Dictionary<int, BonusStatData>();
+            foreach (BonusStatData bonusStat in bonusStats)
+                dict.Add(bonusStat.TemplateID, bonusStat);
 
             return dict;
         }
     }
 
     [Serializable]
-    public class BuffData
+    public class BonusBuffData
     {
         public int TemplateID;
         public string Name;
         public string Description;
         public string PrimaryLabel;
-        public string HitEffectLabel; // +++ TEMP +++
+        public Define.InGameGrade InGameGrade;
         public float Duration;
         public float CoolTime;
+        public bool IsOnParent;
         public bool IsLoopType;
         public BuffBase.BuffType BuffType;
     }
 
     [Serializable]
-    public class BuffDataLoader : ILoader<int, BuffData>
+    public class BonusBuffDataLoader : ILoader<int, BonusBuffData>
     {
-        public List<BuffData> buffs = new List<BuffData>();
+        public List<BonusBuffData> bonusBuffs = new List<BonusBuffData>();
 
-        public Dictionary<int, BuffData> MakeDict()
+        public Dictionary<int, BonusBuffData> MakeDict()
         {
-            if (buffs.Count == 0)
+            if (bonusBuffs.Count == 0)
             {
                 Debug.LogError("Failed to load PassiveSkillData.json");
                 Debug.Break();
             }
 
-            Dictionary<int, BuffData> dict = new Dictionary<int, BuffData>();
-            foreach (BuffData buff in buffs)
+            Dictionary<int, BonusBuffData> dict = new Dictionary<int, BonusBuffData>();
+            foreach (BonusBuffData buff in bonusBuffs)
                 dict.Add(buff.TemplateID, buff);
 
             return dict;

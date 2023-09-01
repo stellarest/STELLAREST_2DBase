@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Linq.Expressions;
 using System.Text;
+using STELLAREST_2D.Data;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.Rendering;
@@ -69,7 +70,30 @@ namespace STELLAREST_2D
         public Rigidbody2D RigidBody { get; protected set; }
         public Collider2D BodyCol { get; protected set; }
         public SkillBook SkillBook { get; protected set; }
+
+        [field: SerializeField]
         public CharacterData CharaData { get; protected set; }
+
+        public void UpgradeCharacterData(int templateID)
+                => this.CharaData = CharaData.UpgradeCreatureStat(this, CharaData, templateID);
+
+        /*
+            public int TemplateID;
+            public string Name;
+            public string Description;
+            Define.InGameGrade InGameGrade;
+            public float MaxHpUp;
+            public float DamageUp;
+            public float CriticalUp;
+            public float AttackSpeedUp;
+            public float CoolDownUp;
+            public float ArmorUp;
+            public float DodgeUp;
+            public float MoveSpeed;
+            public float CollectRangeUp;
+            public float LuckUp;
+        */
+
         public bool IsPlayingDamageEffect { get; set; } = false;
         
         private Vector2 _moveDir;
@@ -130,26 +154,6 @@ namespace STELLAREST_2D
                     _ccStates[i] = false;
             }
 
-            // if (_ccStates == null)
-            // {
-            //     _ccStates = new bool[(int)Define.CCType.Max];
-            //     for (int i = 0; i < (int)Define.CCType.Max; ++i)
-            //     {
-            //         if (i == (int)Define.CCType.None)
-            //         {
-            //             // 이렇게 사용하면 인덱서 프로퍼티에 적용이 안됨
-            //             //_ccStates[i] = true;
-            //             Debug.Log(gameObject.name + "@@@");
-            //             this[Define.CCType.None + i] = true;
-            //         }
-            //         else
-            //         {
-            //             //_ccStates[i] = false;
-            //             this[Define.CCType.None + i] = false;
-            //         }
-            //     }
-            // }
-
             SetInitialStat(creatureData);
             SetInitialSkill(creatureData);
 
@@ -157,7 +161,7 @@ namespace STELLAREST_2D
         }
 
         protected virtual void SetInitialStat(Data.CreatureData creatureData)
-                                    => CharaData = new CharacterData(creatureData);
+                                    => CharaData = new CharacterData(this, creatureData);
 
         // TODO : 개선 필요
         protected virtual void SetInitialSkill(Data.CreatureData creatureData)
@@ -253,18 +257,14 @@ namespace STELLAREST_2D
 
                 if (this?.IsMonster() == false)
                 {
-                    if (Managers.Effect.IsPlayingGlitch || Random.Range(0f, 1f) <= Mathf.Min(CharaData.DodgeChance, Define.MAX_DODGE_CHANCE))
+                    if (Managers.Effect.IsPlayingGlitch || Random.Range(0f, 1f) <= Mathf.Min(CharaData.Dodge, Define.MAX_DODGE_CHANCE))
                     {
                         Managers.Effect.ShowDodgeText(this);
-                        CoEffectHologram(); // --> 괜찮은듯. 홀로그램 발동할 때 표정 수정하고 한 번 테스트 해볼것 !!
-                        // 그리고 공격중에는 눈이 이상하게 나오니까, 이거 예외 줄것
-                        // Eyebrows까지 없애야할듯
+                        CoEffectHologram(); // --> 괜찮은듯.
                         yield break;
                     }
 
-                    //attacker.GetComponent<CreatureController>().AttackCol.enabled = false;
-
-                    // Debug.Log("DMG To Player !!");
+                    // +++++ DMG TO PLAYER +++++
                     _isPlayingPlayerHitEffect = true;
                     Managers.Effect.StartHitEffect(this);
                     Managers.Effect.ShowDamageFont(this, resultDamage);
@@ -275,7 +275,7 @@ namespace STELLAREST_2D
                 }
                 else
                 {
-                    // Debug.Log("DMG To Monster !!");
+                    // +++++ DMG TO MONSTER +++++
                     Managers.Effect.StartHitEffect(this);
                     Managers.Effect.ShowDamageFont(this, resultDamage, isCritical);
 
@@ -285,7 +285,11 @@ namespace STELLAREST_2D
 
                 skill.IsCritical = isCritical ? !isCritical : isCritical;
 
-                CharaData.Hp -= damage;
+                if (CharaData.ShieldHp > 0f)
+                    CharaData.ShieldHp -= damage;
+                else
+                    CharaData.Hp -= damage;
+
                 if (CharaData.Hp <= 0)
                 {
                     CharaData.Hp = 0;

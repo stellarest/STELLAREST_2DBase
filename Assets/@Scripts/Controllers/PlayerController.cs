@@ -5,16 +5,7 @@ using System.Linq;
 using UnityEngine;
 using Assets.HeroEditor.Common.Scripts.CharacterScripts;
 using UnityEngine.Rendering;
-using System.Reflection;
-using Unity.VisualScripting;
 using STELLAREST_2D.Data;
-using System.Runtime.CompilerServices;
-using HeroEditor.Common;
-using System.Transactions;
-using Cinemachine.Utility;
-using System.Security.Cryptography;
-using JetBrains.Annotations;
-using System.Linq.Expressions;
 
 namespace STELLAREST_2D
 {
@@ -180,13 +171,15 @@ namespace STELLAREST_2D
                                 }
                                 break;
                         }
-
-                        // PAC.Slash1H();
-                        // PAC.Slash2H();
-                        // PAC.Cast1H();
+        
                         StartAttackPos = transform.position;
                     }
+                    break;
 
+                case Define.CreatureState.Death:
+                    {
+                        Utils.LogStrong("### INVINCIBLA PLAYER NOW ###");
+                    }
                     break;
             }
         }

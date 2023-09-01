@@ -37,7 +37,7 @@ namespace STELLAREST_2D
         public enum ExpressionType { Default, Battle, Concentration, Angry, Kitty, Sick, Death, }
         public enum MonsterFace { Normal = 0, Angry = 1, Death = 2 }
 
-        public enum ImpactHits { None, Leaves, ArrowBigHit, }
+        public enum ImpactHits { None, Leaves, CriticalHit, }
 
         public static class TemplateIDs
         {
@@ -84,7 +84,7 @@ namespace STELLAREST_2D
 
             public enum SkillType
             {
-                None = 200000,
+                None = -1,
                 
                 // +++ GARY +++
                 PaladinMeleeSwing = 200100,
@@ -134,10 +134,46 @@ namespace STELLAREST_2D
                 BodyAttack = 200300,
             }
 
+            public enum BonusStatType
+            {
+                None = -1,
+
+                MaxHpUp_Normal = 300100,
+                MaxHpUp_Rare = 300101,
+                MaxHpUp_Epic = 300102,
+                MaxHpUp_Legendary = 300103,
+
+
+                ArmorUp_Normal = 300600,
+                ArmorUp_Rare = 300601,
+                ArmorUp_Epic = 300602,
+                ArmorUp_Legendary = 300603,
+            }
+
+            public enum BonusBuffType
+            {
+                None = -1,
+                GuardiansShield = 400100,
+                Concentration = 400112,
+            }
+
+            public enum UltimateSequenceType
+            {
+                None = -1,
+                HeavensJudgment = 600100,
+            }
+
+            public enum HitEffectType
+            {
+                None = -1,
+                ImpactCriticalHitEffect = 500100,
+            }
+
+
             // +++++ TEMP +++++
             public enum ItemType
             {
-                PiggyBank = 300101,
+                //PiggyBank = 700101,
             }
 
 
@@ -147,10 +183,9 @@ namespace STELLAREST_2D
                 Leaves = 400101, // Forest Warden Epic Effect
             }
 
-            public enum BuffType
+            public enum CCType
             {
-                None = -1,
-                Concentration = 500100,
+
             }
         }
 
@@ -216,7 +251,7 @@ namespace STELLAREST_2D
                 public const string IMPACT_LIGHT_EFFECT = "ImpactLightEffect.prefab";
 
                 public const string IMPACT_HIT_LEAVES_EFFECT = "ImpactHitLeavesEffect.prefab";
-                public const string IMPACT_ARROW_BIG_HIT_EFFECT = "ImpactArrowBigHitEffect.prefab";
+                public const string IMPACT_CRITICAL_HIT_EFFECT = "ImpactCriticalHitEffect.prefab";
 
                 public const string CONCENTRATION_BUFF = "ConcentrationBuff.prefab";
             }
@@ -264,8 +299,8 @@ namespace STELLAREST_2D
                 public const string CREATURE = "CreatureData.json";
                 public const string STAGE = "Stage.json";
                 public const string SKILL = "SkillData.json";
-                public const string PASSIVE_SKILL = "PassiveSkillData.json";
-                public const string BUFF = "BuffData.json";
+                public const string BONUS_STAT = "BonusStatData.json";
+                public const string BONUS_BUFF = "BonusBuffData.json";
             }
         }
     }

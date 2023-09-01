@@ -57,6 +57,13 @@ namespace STELLAREST_2D
             Screen.sleepTimeout = SleepTimeout.NeverSleep;
             
             Managers.Data.Init();
+
+            // foreach (KeyValuePair<int, Data.BonusStatData> bonusStat in Managers.Data.BonusStatDict)
+            // {
+            //     Debug.Log("TemplateID : " + bonusStat.Key);
+            //     Debug.Log("Name : " + bonusStat.Value.Name);
+            // }
+            // Debug.Break();
             
             //Managers.UI.ShowFixedSceneUI<UI_GameScene>();
 
@@ -74,12 +81,12 @@ namespace STELLAREST_2D
 
             // Spawn Player
             // +++ GARY +++
-            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Gary_Paladin);
+            var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Gary_Paladin);
             // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Gary_Knight);
             // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Gary_PhantomKnight);
 
             // +++ REINA +++
-            var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Reina_ArrowMaster);
+            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Reina_ArrowMaster);
             // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Reina_ElementalArcher);
             // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Reina_ForestWarden);
 

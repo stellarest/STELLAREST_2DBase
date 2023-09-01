@@ -633,8 +633,8 @@ namespace STELLAREST_2D
                     go = Managers.Resource.Instantiate(Define.Labels.Prefabs.IMPACT_HIT_LEAVES_EFFECT, pooling: true);
                     break;
 
-                case Define.ImpactHits.ArrowBigHit:
-                    go = Managers.Resource.Instantiate(Define.Labels.Prefabs.IMPACT_ARROW_BIG_HIT_EFFECT, pooling: true);
+                case Define.ImpactHits.CriticalHit:
+                    go = Managers.Resource.Instantiate(Define.Labels.Prefabs.IMPACT_CRITICAL_HIT_EFFECT, pooling: true);
                     break;
             }
             go.transform.position = position;
