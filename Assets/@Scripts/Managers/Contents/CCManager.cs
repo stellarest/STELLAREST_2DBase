@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using STELLAREST_2D.Data;
 using UnityEngine;
 
+// using CCType = STELLAREST_2D.Define.TemplateIDs.CCType;
+
 namespace STELLAREST_2D
 {
     public static class CCStun
@@ -23,19 +25,19 @@ namespace STELLAREST_2D
             if (creature?.IsValid() == false)
                 return;
 
-            switch (skillData.CCType)
-            {
-                case Define.CCType.Stun:
-                    ApplyStun<T>(creature, skillData.CCDuration);
-                    break;
+            // switch (skillData.CCType)
+            // {
+            //     case Define.TemplateIDs.CCType.Stun:
+            //         ApplyStun<T>(creature, skillData.CCDuration);
+            //         break;
 
-                case Define.CCType.KnockBack:
-                    {
-                        Vector3 attackerShootDir = projectileAttacker.ShootDir;
-                        ApplyKnockBack<T>(creature, attackerShootDir, skillData.CCDuration);
-                    }
-                    break;
-            }
+            //     case Define.TemplateIDs.CCType.KnockBack:
+            //         {
+            //             Vector3 attackerShootDir = projectileAttacker.ShootDir;
+            //             ApplyKnockBack<T>(creature, attackerShootDir, skillData.CCDuration);
+            //         }
+            //         break;
+            // }
         }
 
         private void ApplyStun<T>(T creature, float duration) where T : CreatureController
@@ -43,13 +45,13 @@ namespace STELLAREST_2D
             if (creature?.IsValid() == false)
                 return;
 
-            if (creature[Define.CCType.Stun])
-                return;
+            // if (creature[Define.TemplateIDs.CCType.Stun])
+            //     return;
 
             CreatureController cc = creature.GetComponent<CreatureController>();
             GameObject stunEffect = Managers.Effect.ShowStunEffect();
-            stunEffect.transform.localScale = ApplyCCEffectScale(cc, Define.CCType.Stun);
-            cc.CoCCStun(cc, stunEffect, duration); // StartCoroutine만 cc에서 해주는것이다
+            //stunEffect.transform.localScale = ApplyCCEffectScale(cc, Define.TemplateIDs.CCType.Stun);
+            // cc.CoCCStun(cc, stunEffect, duration); // StartCoroutine만 cc에서 해주는것이다
         }
 
         private void ApplyKnockBack<T>(T creature, Vector3 dir, float duration) where T : CreatureController
@@ -57,17 +59,17 @@ namespace STELLAREST_2D
             if (creature?.IsValid() == false)
                 return;
 
-            if (creature[Define.CCType.KnockBack])
-                return;
+            // if (creature[Define.TemplateIDs.CCType.KnockBack])
+            //     return;
 
             CreatureController cc = creature.GetComponent<CreatureController>();
-            cc.CoCCKnockBack(cc, dir, duration);
+            // cc.CoCCKnockBack(cc, dir, duration);
         }
 
         public IEnumerator CoStun(CreatureController cc, GameObject goCCEffect, float duration)
         {
-            cc.GoCCEffect = goCCEffect;
-            cc[Define.CCType.Stun] = true; // !!! 인덱서로 Set 할것. 반드시 !!!
+            //cc.GoCCEffect = goCCEffect;
+            // cc[Define.TemplateIDs.CCType.Stun] = true; // !!! 인덱서로 Set 할것. 반드시 !!!
             MonsterController mc = null;
             if (cc?.IsMonster() == true)
             {
@@ -79,15 +81,15 @@ namespace STELLAREST_2D
             float percent = 0f;
             while (percent < 1f)
             {
-                goCCEffect.transform.position = ApplyCCEffectPosition(cc, Define.CCType.Stun);
+                //goCCEffect.transform.position = ApplyCCEffectPosition(cc, Define.TemplateIDs.CCType.Stun);
                 t += Time.deltaTime;
                 percent = t / duration;
                 yield return null;
             }
 
-            cc.GoCCEffect = null;
+            //cc.GoCCEffect = null;
             Managers.Resource.Destroy(goCCEffect);
-            cc[Define.CCType.Stun] = false;
+            //cc[Define.TemplateIDs.CCType.Stun] = false;
 
             if (cc?.IsMonster() == true)
             {
@@ -100,7 +102,7 @@ namespace STELLAREST_2D
         {
             float t = 0f;
             float percent = 0f;
-            cc[Define.CCType.KnockBack] = true;
+            //cc[Define.TemplateIDs.CCType.KnockBack] = true;
             while (percent < 1f)
             {
                 t += Time.deltaTime;
@@ -115,35 +117,35 @@ namespace STELLAREST_2D
 
                 yield return null;
             }
-            cc[Define.CCType.KnockBack] = false;
+            //cc[Define.TemplateIDs.VFX.CCType.KnockBack] = false;
         }
 
-        private Vector3 ApplyCCEffectScale(CreatureController creature, Define.CCType ccType)
+        private Vector3 ApplyCCEffectScale(CreatureController creature, Define.TemplateIDs.VFX.Environment ccType)
         {
-            Define.CreatureType type = creature.CreatureType;
-            if (ccType == Define.CCType.Stun)
-            {
-                switch (type)
-                {
-                    case Define.CreatureType.Chicken:
-                        return new Vector3(CCStun.CHICKEN_FOR_WIDTH, CCStun.CHICKEN_FOR_WIDTH, 1f);
-                }
-            }
+            // Define.CreatureType type = creature.CreatureType;
+            // if (ccType == Define.TemplateIDs.CCType.Stun)
+            // {
+            //     switch (type)
+            //     {
+            //         case Define.CreatureType.Chicken:
+            //             return new Vector3(CCStun.CHICKEN_FOR_WIDTH, CCStun.CHICKEN_FOR_WIDTH, 1f);
+            //     }
+            // }
 
             return Vector3.zero;
         }
 
-        private Vector2 ApplyCCEffectPosition(CreatureController cc, Define.CCType ccType)
+        private Vector2 ApplyCCEffectPosition(CreatureController cc, Define.TemplateIDs.VFX.Environment ccType)
         {
-            Define.CreatureType type = cc.CreatureType;
-            if (ccType == Define.CCType.Stun)
-            {
-                switch (type)
-                {
-                    case Define.CreatureType.Chicken:
-                        return new Vector2(cc.transform.position.x, cc.transform.position.y + CCStun.CHICKEN_FOR_HEIGHT);
-                }
-            }
+            // Define.CreatureType type = cc.CreatureType;
+            // if (ccType == Define.TemplateIDs.CCType.Stun)
+            // {
+            //     switch (type)
+            //     {
+            //         case Define.CreatureType.Chicken:
+            //             return new Vector2(cc.transform.position.x, cc.transform.position.y + CCStun.CHICKEN_FOR_HEIGHT);
+            //     }
+            // }
 
             return Vector2.zero;
         }

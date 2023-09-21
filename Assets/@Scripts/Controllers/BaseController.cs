@@ -1,36 +1,18 @@
+using UnityEditor;
 using UnityEngine;
 
 namespace STELLAREST_2D
 {
     public class BaseController : MonoBehaviour
     {
-        public Define.ObjectType ObjectType { get; protected set; }
+        public bool IsFirstPooling { get; protected set; } = true;
+        public Define.ObjectType ObjectType { get; set; } = Define.ObjectType.None;
 
-        private void Awake()
-        {
-            Init();
-        }
-
-        private bool _init = false;
-        public virtual bool Init()
-        {
-            if (_init)
-                return false;
-
-            _init = true;
-            return true;
-        }
-
+        protected virtual void SetRenderSorting() { }
         public void CoTrailEffect(BaseController followTarget) 
                     => StartCoroutine(Managers.Effect.CoTrailEffect(gameObject, followTarget));
-
-        // private void Update()
-        // {
-        //     UpdateController();
-        // }
-
-        // public virtual void UpdateController()
-        // {
-        // }
+        public void EffectHit()
+        {
+        }
     }
 }

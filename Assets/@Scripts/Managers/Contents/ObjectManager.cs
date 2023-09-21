@@ -22,87 +22,132 @@ namespace STELLAREST_2D
             GridController = UnityEngine.GameObject.Find("@Grid").GetComponent<GridController>();
         }
 
-        public T Spawn<T>(Vector3 position, int templateID = -1) where T : BaseController
+        public T Spawn<T>(Vector3 spawnPos, int templateID, Define.ObjectType spawnObjectType, bool isPooling = false) where T : BaseController
         {
-            System.Type type = typeof(T);
-            if (typeof(T).IsSubclassOf(typeof(CreatureController)))
+            switch (spawnObjectType)
             {
-                if (type == typeof(PlayerController))
-                {
-                    GameObject go = Managers.Resource.Instantiate(Managers.Data.CreatureDict[templateID].PrimaryLabel, pooling: false);
-                    PlayerController pc = go.GetOrAddComponent<PlayerController>();
-                    Player = pc;
-                    pc.SetInfo(templateID);
+                case Define.ObjectType.Player:
+                    {
+                        GameObject go = Managers.Resource.Instantiate(Managers.Data.CreaturesDict[templateID].PrimaryLabel, pooling: isPooling);
+                        go.transform.position = spawnPos;
 
-                    Managers.Effect.Init();
-                    Managers.Effect.AddCreatureMaterials(pc);
-                    Managers.Sprite.InitPlayerSprites(pc);
+                        PlayerController pc = go.GetComponent<PlayerController>();
+                        pc.ObjectType = spawnObjectType;
+                        
+                        pc.Init(templateID);
+                        Player = pc;
 
-                    return pc as T;
+                        // Managers.Effect.Init();
+                        // Managers.Effect.AddCreatureMaterials(pc);
+                        // Managers.Sprite.InitPlayerSprites(pc);
+
+                        return pc as T;
+                    }
+
+                case Define.ObjectType.Monster:
+                    {
+                        switch (templateID)
+                        {
+                            case (int)Define.TemplateIDs.Creatures.Monster.Chicken:
+                                {
+                                    GameObject go = Managers.Resource.Instantiate(Managers.Data.CreaturesDict[templateID].PrimaryLabel, pooling: isPooling);
+                                    go.transform.position = spawnPos;
+
+                                    Chicken chicken = go.GetComponent<Chicken>();
+                                    chicken.ObjectType = spawnObjectType;
+
+                                    chicken.Init(templateID);
+                                    Monsters.Add(chicken);
+
+                                    return chicken as T;
+                                }
+                            default:
+                                return Managers.Resource.Instantiate(Managers.Data.CreaturesDict[templateID].PrimaryLabel, pooling: isPooling) as T;
+                        }
                 }
 
-                if (type == typeof(Chicken))
+                case Define.ObjectType.Projectile:
                 {
-                    GameObject go = Managers.Resource.Instantiate(Managers.Data.CreatureDict[templateID].PrimaryLabel, pooling: true);
-                    go.transform.position = position;
-                    Vector3 spawnEffectPos = new Vector3(go.transform.position.x, go.transform.position.y + 3.8f, go.transform.position.z);
-                    Managers.Effect.ShowSpawnEffect(Define.Labels.Prefabs.SPAWN_EFFECT, spawnEffectPos);
+                        GameObject go = Managers.Resource.Instantiate(Managers.Data.SkillsDict[templateID].PrimaryLabel, pooling: isPooling);
+                        go.transform.position = spawnPos;
+                        ProjectileController pc = go.GetOrAddComponent<ProjectileController>();
+                        pc.ObjectType = spawnObjectType;
 
-                    Chicken mc = go.GetOrAddComponent<Chicken>();
-                    mc.SetInfo(templateID);
-                    mc.Init();
-                    Monsters.Add(mc);
-
-                    Managers.Effect.AddCreatureMaterials(mc);
-                    Managers.Effect.SetDefaultMaterials(mc);
-
-                    // mc.CoEffectFade();
-                    // mc.CoEffectFadeIn(2f);
-                    mc.CoStartReadyToAction();
-
-                    return mc as T;
+                        Projectiles.Add(pc);
+                        return pc as T;
                 }
-            }
-            else if (type == typeof(GemController))
-            {
-                //GameObject go = Managers.Resource.Instantiate(Define.PrefabLabels.EXP_GEM, pooling: true);
-                GameObject go = Managers.Resource.Instantiate(Define.Labels.Prefabs.GEM, pooling: true);
-                go.transform.position = position;
-
-                GemController gc = go.GetOrAddComponent<GemController>();
-
-                // gc.Init();
-                // bool changeSprite = Random.Range(0, 2) == 0 ? true : false;
-                // string spriteKey = "";
-                // if (changeSprite)
-                // {
-                //     spriteKey = Random.Range(0, 2) == 0 ?
-                //                 Define.SpriteLabels.EXP_GEM_BLUE : Define.SpriteLabels.EXP_GEM_YELLOW;
-
-                //     Sprite yellowOrBlue = Managers.Resource.Load<Sprite>(spriteKey);
-                //     if (yellowOrBlue != null)
-                //         gc.GetComponent<SpriteRenderer>().sprite = yellowOrBlue;
-                // }
-
-                GridController.Add(go);
-                Gems.Add(gc);
-
-                return gc as T;
-            }
-            else if (type == typeof(ProjectileController))
-            {
-                GameObject go = Managers.Resource.Instantiate(Managers.Data.SkillDict[templateID].PrimaryLabel, pooling: true);
-                go.transform.position = position;
-
-                ProjectileController pc = go.GetOrAddComponent<ProjectileController>();
-                pc.Init();
-                Projectiles.Add(pc);
-
-                return pc as T;
             }
 
             return null;
         }
+
+        // public T Spawn<T>(Vector3 position, int templateID = -1) where T : BaseController
+        // {
+        //     System.Type type = typeof(T);
+        //     if (typeof(T).IsSubclassOf(typeof(CreatureController)))
+        //     {
+        //         if (type == typeof(PlayerController))
+        //         {
+        //             GameObject go = Managers.Resource.Instantiate(Managers.Data.CreaturesDict[templateID].PrimaryLabel, pooling: false);
+        //             PlayerController pc = go.GetOrAddComponent<PlayerController>();
+        //             Player = pc;
+        //             pc.SetInitialInfo(templateID);
+
+        //             Managers.Effect.Init();
+        //             Managers.Effect.AddCreatureMaterials(pc);
+        //             Managers.Sprite.InitPlayerSprites(pc);
+
+        //             return pc as T;
+        //         }
+
+        //         if (type == typeof(Chicken))
+        //         {
+        //             GameObject go = Managers.Resource.Instantiate(Managers.Data.CreaturesDict[templateID].PrimaryLabel, pooling: true);
+        //             go.transform.position = position;
+        //             Vector3 spawnEffectPos = new Vector3(go.transform.position.x, go.transform.position.y + 3.8f, go.transform.position.z);
+        //             Managers.Effect.ShowSpawnEffect(Define.Labels.Prefabs.SPAWN_EFFECT, spawnEffectPos);
+
+        //             Chicken mc = go.GetOrAddComponent<Chicken>();
+        //             mc.SetInitialInfo(templateID);
+        //             mc.Init();
+        //             Monsters.Add(mc);
+
+        //             Managers.Effect.AddCreatureMaterials(mc);
+        //             Managers.Effect.SetDefaultMaterials(mc);
+
+        //             // mc.CoEffectFade();
+        //             // mc.CoEffectFadeIn(2f);
+        //             mc.CoStartReadyToAction();
+
+        //             return mc as T;
+        //         }
+        //     }
+        //     else if (type == typeof(GemController))
+        //     {
+        //         GameObject go = Managers.Resource.Instantiate(Define.Labels.Prefabs.GEM, pooling: true);
+        //         go.transform.position = position;
+
+        //         GemController gc = go.GetOrAddComponent<GemController>();
+
+        //         GridController.Add(go);
+        //         Gems.Add(gc);
+
+        //         return gc as T;
+        //     }
+        //     else if (type == typeof(ProjectileController))
+        //     {
+        //         GameObject go = Managers.Resource.Instantiate(Managers.Data.RepeatSkillsDict[templateID].PrimaryLabel, pooling: true);
+        //         go.transform.position = position;
+        //         ProjectileController pc = go.GetOrAddComponent<ProjectileController>();
+                
+        //         pc.Init();
+        //         Projectiles.Add(pc);
+
+        //         return pc as T;
+        //     }
+
+        //     return null;
+        // }
 
         public void Despawn<T>(T obj) where T : BaseController
         {
@@ -118,7 +163,7 @@ namespace STELLAREST_2D
             }
             else if (typeof(T).IsSubclassOf(typeof(CreatureController)))
             {
-                Utils.LogStrong("DESPAWN MONSTER...2 !!!");
+                //Utils.LogStrong("DESPAWN MONSTER...2 !!!");
                 Monsters.Remove(obj as MonsterController);
                 Managers.Resource.Destroy(obj.gameObject);
             }
@@ -206,66 +251,66 @@ namespace STELLAREST_2D
             return null;
         }
 
-        public Vector2 GetRandomTargetingPosition<T>(GameObject from, float fromMinDistance = 1f, float fromMaxDistance = 22f,
-                           Define.TemplateIDs.SkillType skillHitStatus = Define.TemplateIDs.SkillType.None) where T : BaseController
-        {
-            System.Type type = typeof(T);
-            Vector2 fromPos = from.transform.position;
-            if (type == typeof(MonsterController))
-            {
-                List<MonsterController> toMonsters = this.Monsters.ToList();
-                if (toMonsters.Count != 0)
-                {
-                    List<MonsterController> toFilteredMonsters = toMonsters
-                            .Where(m => m.IsValid() && m.IsCreatureDead() == false && m.IsSkillHittedStatus(skillHitStatus) == false)
-                            .Where(m => (m.transform.position - from.transform.position).sqrMagnitude >= fromMinDistance && (m.transform.position - from.transform.position).sqrMagnitude <= fromMaxDistance * fromMaxDistance)
-                            .ToList();
+        // public Vector2 GetRandomTargetingPosition<T>(GameObject from, float fromMinDistance = 1f, float fromMaxDistance = 22f,
+        //                    Define.TemplateIDs.CreatureStatus.RepeatSkill skillHitStatus = Define.TemplateIDs.CreatureStatus.RepeatSkill.None) where T : BaseController
+        // {
+        //     System.Type type = typeof(T);
+        //     Vector2 fromPos = from.transform.position;
+        //     if (type == typeof(MonsterController))
+        //     {
+        //         List<MonsterController> toMonsters = this.Monsters.ToList();
+        //         if (toMonsters.Count != 0)
+        //         {
+        //             List<MonsterController> toFilteredMonsters = toMonsters
+        //                     .Where(m => m.IsValid() && m.IsCreatureDead() == false && m.IsSkillHittedStatus(skillHitStatus) == false)
+        //                     .Where(m => (m.transform.position - from.transform.position).sqrMagnitude >= fromMinDistance && (m.transform.position - from.transform.position).sqrMagnitude <= fromMaxDistance * fromMaxDistance)
+        //                     .ToList();
 
-                    if (toFilteredMonsters.Count > 0)
-                    {
-                        int randIdx = Random.Range(0, toFilteredMonsters.Count);
-                        return toFilteredMonsters[randIdx].transform.position;
-                    }
-                    else
-                        return Utils.GetRandomPosition(fromPos);
-                }
-            }
-            return Utils.GetRandomPosition(fromPos);
-        }
+        //             if (toFilteredMonsters.Count > 0)
+        //             {
+        //                 int randIdx = Random.Range(0, toFilteredMonsters.Count);
+        //                 return toFilteredMonsters[randIdx].transform.position;
+        //             }
+        //             else
+        //                 return Utils.GetRandomPosition(fromPos);
+        //         }
+        //     }
+        //     return Utils.GetRandomPosition(fromPos);
+        // }
 
-        // +++ 개선 필요 +++
-        public GameObject GetNextTarget(GameObject from, Define.TemplateIDs.SkillType checkBounceHitSkillType = Define.TemplateIDs.SkillType.None)
-        {
-            GameObject target = null;
-            List<MonsterController> toMonsters = this.Monsters.ToList();
-            target = toMonsters
-                    .Where(m => m.IsSkillHittedStatus(checkBounceHitSkillType) == false)
-                    .OrderBy(m => (m.transform.position - from.transform.position).sqrMagnitude)
-                    .FirstOrDefault()?
-                    .gameObject;
+        // // +++ 개선 필요 +++
+        // public GameObject GetNextTarget(GameObject from, Define.TemplateIDs.CreatureStatus.RepeatSkill checkBounceHitSkillType = Define.TemplateIDs.CreatureStatus.RepeatSkill.None)
+        // {
+        //     GameObject target = null;
+        //     List<MonsterController> toMonsters = this.Monsters.ToList();
+        //     target = toMonsters
+        //             .Where(m => m.IsSkillHittedStatus(checkBounceHitSkillType) == false)
+        //             .OrderBy(m => (m.transform.position - from.transform.position).sqrMagnitude)
+        //             .FirstOrDefault()?
+        //             .gameObject;
 
-            return target;
-        }
+        //     return target;
+        // }
 
-        public void ResetSkillHittedStatus(Define.TemplateIDs.SkillType skillType)
-        {
-            switch (skillType)
-            {
-                case Define.TemplateIDs.SkillType.ThrowingStar:
-                    {
-                        foreach (var monster in Monsters.ToList())
-                            monster.IsThrowingStarHit = false;
-                    }
-                    break;
+        // public void ResetSkillHittedStatus(Define.TemplateIDs.CreatureStatus.RepeatSkill skillType)
+        // {
+        //     switch (skillType)
+        //     {
+        //         case Define.TemplateIDs.CreatureStatus.RepeatSkill.ThrowingStar:
+        //             {
+        //                 foreach (var monster in Monsters.ToList())
+        //                     monster.IsThrowingStarHit = false;
+        //             }
+        //             break;
 
-                case Define.TemplateIDs.SkillType.LazerBolt:
-                    {
-                        foreach (var monster in Monsters.ToList())
-                            monster.IsLazerBoltHit = false;
-                    }
-                    break;
-            }
-        }
+        //         case Define.TemplateIDs.CreatureStatus.RepeatSkill.LazerBolt:
+        //             {
+        //                 foreach (var monster in Monsters.ToList())
+        //                     monster.IsLazerBoltHit = false;
+        //             }
+        //             break;
+        //     }
+        // }
     }
 }
 

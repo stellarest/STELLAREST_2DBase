@@ -39,14 +39,6 @@ namespace STELLAREST_2D
             }
         }
 
-        public override bool Init()
-        {
-            base.Init();
-            // Debug.Log("GC INIT");
-
-            return true;
-        }
-
         private Coroutine _coMoveToPlayer = null;
         public void GetGem()
         {

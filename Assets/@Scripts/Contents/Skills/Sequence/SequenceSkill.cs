@@ -19,7 +19,7 @@ namespace STELLAREST_2D
             if (Owner?.IsMonster() == false)
             {
                 pc = Owner.GetComponent<PlayerController>();
-                pac = pc.PAC;
+                pac = pc.PlayerAnim;
 
             }
             else

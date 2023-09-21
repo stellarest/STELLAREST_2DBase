@@ -6,27 +6,27 @@ namespace STELLAREST_2D
 {
     public class BossController : MonsterController
     {
-        public override bool Init()
-        {
-            base.Init();
+        // public override bool Init()
+        // {
+        //     base.Init();
 
-            //CreatureState = Define.GameData.CreatureState.Moving;
+        //     //CreatureState = Define.GameData.CreatureState.Moving;
 
-            // 무조건 일단 Skill로 시작 가능
-            // CreatureState = Define.CreatureState.Skill;
-            // Skills.AddSkill<BossMove>(transform.position);
-            // Skills.AddSkill<Dash>(transform.position);
-            // // 만약에 3단 대쉬를 만든다면? 
-            // // Dash 내부적으로 수정해주거나
-            // Skills.AddSkill<Dash>(transform.position);
-            // Skills.AddSkill<Dash>(transform.position); // 이런식으로 대쉬를 두번 더 추가해주면 됨
-            SkillBook.StartNextSequenceSkill();
+        //     // 무조건 일단 Skill로 시작 가능
+        //     // CreatureState = Define.CreatureState.Skill;
+        //     // Skills.AddSkill<BossMove>(transform.position);
+        //     // Skills.AddSkill<Dash>(transform.position);
+        //     // // 만약에 3단 대쉬를 만든다면? 
+        //     // // Dash 내부적으로 수정해주거나
+        //     // Skills.AddSkill<Dash>(transform.position);
+        //     // Skills.AddSkill<Dash>(transform.position); // 이런식으로 대쉬를 두번 더 추가해주면 됨
+        //     SkillBook.StartNextSequenceSkill();
 
-            // 그래서 보스는 SequenceSkill 방식으로 만들고 일반 쫄몹은 원래 썼던 State Pattern이나
-            // 그냥 플레이어만 졸졸졸 쫓아다니는 방식으로 만들어도 되고 진짜로 진짜로 마음대로 만들어주면 됨
+        //     // 그래서 보스는 SequenceSkill 방식으로 만들고 일반 쫄몹은 원래 썼던 State Pattern이나
+        //     // 그냥 플레이어만 졸졸졸 쫓아다니는 방식으로 만들어도 되고 진짜로 진짜로 마음대로 만들어주면 됨
 
-            return true;
-        }
+        //     return true;
+        // }
         
         // public override void UpdateAnimation()
         // {

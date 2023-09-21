@@ -5,8 +5,38 @@ namespace STELLAREST_2D
 {
     public class GameManager
     {
+        private bool _isGameStart = false;
+        public bool IsGameStart 
+        { 
+            get => _isGameStart;
+            private set
+            {
+                _isGameStart = true;
+                _isGameOver = false;
+            }
+        }
+
+        private bool _isGameOver = false;
+        public bool IsGameOver
+        {
+            get => _isGameOver;
+            private set
+            {
+                _isGameOver = true;
+                _isGameStart = false;
+            }
+        }
+
+        public void GAME_START() => IsGameStart = true;
+        public void GAME_OVER() => IsGameOver = true;
+
         public PlayerController Player { get => Managers.Object?.Player; }
         public int Gold { get; set; }
+        
+        public float TakeDamagee()
+        {
+            return 0f;
+        }
 
         private int _gem = 0;
         public event Action<int> OnGemCountChanged;
@@ -20,9 +50,9 @@ namespace STELLAREST_2D
             }
         }
 
-        private Vector2 _moveDir;
-        public event Action<Vector2> OnMoveDirChanged;
-        public Vector2 MoveDir
+        private Vector3 _moveDir;
+        public event Action<Vector3> OnMoveDirChanged;
+        public Vector3 MoveDir
         {
             get => _moveDir;
             set
@@ -43,5 +73,22 @@ namespace STELLAREST_2D
                 OnKillCountChanged?.Invoke(KillCount);
             }
         }
+
+        public bool IsCreature(CreatureController creture, int templateID)
+        {
+            return false;
+        }
+
+        private bool IsAssassin(int templateID)
+            => templateID == 200124;
+
+        private bool IsThief(int templateID)
+            => templateID == 200128;
+
+        public bool IsReina(int templateID)
+            => templateID == 100103 || templateID == 100104 || templateID == 100105 ? true : false;
+
+        private bool IsChristian(int templateID)
+            => templateID == 100112 || templateID == 100113 || templateID == 100114 ? true : false;
     }
 }

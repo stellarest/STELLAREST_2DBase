@@ -7,33 +7,35 @@ namespace STELLAREST_2D
 {
     public class Chicken : MonsterController
     {
-        public override bool Init()
+        public override void InitMonster()
         {
-            base.Init();
-
+            base.InitMonster();
             CreatureState = Define.CreatureState.Idle;
-            ResetCCStates();
+            // MonsterType = Define.MonsterType.Chicken;
+            
+            // ResetCCStates();
+            // if (GoCCEffect != null)
+            // {
+            //     Managers.Resource.Destroy(GoCCEffect);
+            //     GoCCEffect = null;
+            // }
 
-            if (GoCCEffect != null)
-            {
-                Managers.Resource.Destroy(GoCCEffect);
-                GoCCEffect = null;
-            }
+            // Managers.Sprite.SetMonsterFace(this, Define.MonsterFace.Normal);
+            // RigidBody.simulated = true;
+            // RigidBody.velocity = Vector2.zero;
+            // SkillBook.Stopped = false;
+            // BodyCol.isTrigger = false;
+            // IsThrowingStarHit = false;
+            // IsLazerBoltHit = false;
 
-            Managers.Sprite.SetMonsterFace(this, Define.MonsterFace.Normal);
-            RigidBody.simulated = true;
-            RigidBody.velocity = Vector2.zero;
-            SkillBook.Stopped = false;
-            BodyCol.isTrigger = false;
-            IsThrowingStarHit = false;
-            IsLazerBoltHit = false;
+            // //CreatureType = Define.CreatureType.Monster;
+            // if (SkillBook.SequenceSkills.Count != 0)
+            //     SkillBook.SequenceSkills[(int)Define.InGameGrade.Normal - 1].gameObject.SetActive(true);
+        }
 
-            CreatureType = Define.CreatureType.Chicken;
-
-            if (SkillBook.SequenceSkills.Count != 0)
-                SkillBook.SequenceSkills[(int)Define.InGameGrade.Normal - 1].gameObject.SetActive(true);
-
-            return true;
+        public override void ResetMonster()
+        {
+            base.ResetMonster();
         }
 
         [ContextMenu("TEST_CC")]

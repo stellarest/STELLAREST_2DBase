@@ -22,9 +22,7 @@ namespace STELLAREST_2D
         public Vector2Int MaximumPosition
                 => new Vector2Int(Mathf.FloorToInt(RightTop.x), Mathf.FloorToInt(RightTop.y));
 
-        public void SetInLimitPos(CreatureController cc)
-                => SetInLimitPos(cc.transform);
-
+        public void SetInLimitPos(CreatureController cc) => SetInLimitPos(cc.transform);
         public void SetInLimitPos(Transform transform)
         {
             // Min

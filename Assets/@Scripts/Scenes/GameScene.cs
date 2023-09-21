@@ -7,7 +7,6 @@ using Cinemachine;
 using STELLAREST_2D.UI; // 이 스크립트에서 UI 스크립트 사용중을 간편하게 확인할 수 있어서 .UI의 네임을 추가해주었다
 using DG.Tweening;
 
-
 namespace STELLAREST_2D
 {
     public class GameScene : MonoBehaviour
@@ -54,6 +53,7 @@ namespace STELLAREST_2D
 
         private void StartLoaded()
         {
+            DOTween.SetTweensCapacity(200, 200);
             Screen.sleepTimeout = SleepTimeout.NeverSleep;
             
             Managers.Data.Init();
@@ -67,12 +67,11 @@ namespace STELLAREST_2D
             
             //Managers.UI.ShowFixedSceneUI<UI_GameScene>();
 
-            Managers.Game.OnKillCountChanged -= OnKillCountChangedHandler;
-            Managers.Game.OnKillCountChanged += OnKillCountChangedHandler;
+            // Managers.Game.OnKillCountChanged -= OnKillCountChangedHandler;
+            // Managers.Game.OnKillCountChanged += OnKillCountChangedHandler;
 
-            Managers.Game.OnGemCountChanged -= OnGemCountChangedHandler;
-            Managers.Game.OnGemCountChanged += OnGemCountChangedHandler;
-            DOTween.SetTweensCapacity(200, 200);
+            // Managers.Game.OnGemCountChanged -= OnGemCountChangedHandler;
+            // Managers.Game.OnGemCountChanged += OnGemCountChangedHandler;
 
             // Spawn Test Map
             //var testMap = Managers.Resource.Instantiate(Define.PrefabLabels.TEST_MAP);
@@ -81,8 +80,10 @@ namespace STELLAREST_2D
 
             // Spawn Player
             // +++ GARY +++
-            var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Gary_Paladin);
-            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Gary_Knight);
+            var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Creatures.Player.Gary_Paladin, 
+                                                                Define.ObjectType.Player, isPooling: false);
+            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Creatures.Player.Gary_Knight, 
+            //                                                     Define.ObjectType.Player, isPooling: false);
             // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Gary_PhantomKnight);
 
             // +++ REINA +++
@@ -129,17 +130,12 @@ namespace STELLAREST_2D
             joystick.name = "@Joystick"; // UI_Joystick라고 하기엔 좀 애매함
 
             // Create Spawning Pool
-            _spawningPool = gameObject.AddComponent<SpawningPool>();
-            
-            // TEST
-            // Managers.Object.Spawn<Chicken>(new Vector3(3, 3, 1), (int)Define.TemplateIDs.Monster.Chicken);
-            // Managers.Object.Spawn<Chicken>(new Vector3(8, 3, 1), (int)Define.TemplateIDs.Monster.Chicken);
-            // Managers.Object.Spawn<Chicken>(new Vector3(5, -6, 1), (int)Define.TemplateIDs.Monster.Chicken);
+            // _spawningPool = gameObject.AddComponent<SpawningPool>();
             
             // Init Collision Layer
             Managers.Collision.SetCollisionLayers(Define.CollisionLayers.PlayerAttack, Define.CollisionLayers.MonsterBody, true);
-            Managers.Collision.SetCollisionLayers(Define.CollisionLayers.PlayerBody, Define.CollisionLayers.MonsterAttack, true);
-            Managers.Collision.SetCollisionLayers(Define.CollisionLayers.MonsterBody, Define.CollisionLayers.MonsterBody, true);
+            // Managers.Collision.SetCollisionLayers(Define.CollisionLayers.PlayerBody, Define.CollisionLayers.MonsterAttack, true);
+            // Managers.Collision.SetCollisionLayers(Define.CollisionLayers.MonsterBody, Define.CollisionLayers.MonsterBody, true);
 
             // Camera Target
             // Test Gem Spawn

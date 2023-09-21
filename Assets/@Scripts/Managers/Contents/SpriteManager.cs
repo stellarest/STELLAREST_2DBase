@@ -11,14 +11,6 @@ using TMPro;
 
 namespace STELLAREST_2D
 {
-    public enum FacialType
-    {
-        Eyebrows,
-        Eyes,
-        Mouth,
-        Max,
-    }
-
     // _eyesRenderer.color = new Color(0f, 0.784f, 1f, 1f);
     // _eyebrowsRenderer.sprite = _eyebrows[expression];
     // _eyesRenderer.sprite = _eyes[expression];
@@ -48,6 +40,7 @@ namespace STELLAREST_2D
             InitExpressions();
         }
 
+        
         private Dictionary<Define.ExpressionType, Sprite> _eyebrows = new Dictionary<Define.ExpressionType, Sprite>();
         private Dictionary<Define.ExpressionType, Sprite> _eyes = new Dictionary<Define.ExpressionType, Sprite>();
         private Dictionary<Define.ExpressionType, Sprite> _mouth = new Dictionary<Define.ExpressionType, Sprite>();
@@ -157,7 +150,7 @@ namespace STELLAREST_2D
                 default:
                     {
                         _isEmotional = true;
-                        _player.CoExpression(expression, duration);
+                        _player.Expression(expression, duration);
                     }
                     break;
             }
@@ -224,7 +217,7 @@ namespace STELLAREST_2D
                 if (sprArr[i].sprite == null)
                     continue;
 
-                if (sprArr[i].gameObject.name.Contains(Define.Player.FIRE_SOCKET))
+                if (sprArr[i].gameObject.name.Contains(Define.PLAYER_FIRE_SOCKET))
                     continue;
 
                 if (sprArr[i].gameObject.name.Contains("Eyebrows"))
@@ -283,27 +276,31 @@ namespace STELLAREST_2D
 
         private Dictionary<int, Character[]> _playerAppearances = new Dictionary<int, Character[]>();
 
+        //private Dictionary<BaseController, SpriteController> _spriteDict = new Dictionary<BaseController, SpriteController>();
+
+        
+
         /// <summary>
         /// +++ INPUT PLAYER DEFAULT SKILL IN CREATURE DATA SHEET BEFORE +++
         /// </summary>
         private void LoadPlayerAppearances(PlayerController pc)
         {
-            Character[] charas = null;
-            int skillCount = pc.SkillBook.RepeatSkills.Where(s => s.SkillData.IsPlayerDefaultAttack).ToArray().Length;
-            if (skillCount >= 4)
-                charas = new Character[(int)Define.InGameGrade.Legendary];
-            else
-                charas = new Character[(int)Define.InGameGrade.Normal];
+            // Character[] charas = null;
+            // int skillCount = pc.SkillBook.RepeatSkills.Where(s => s.RepeatSkillData.IsDefaultType).ToArray().Length;
+            // if (skillCount >= 4)
+            //     charas = new Character[(int)Define.InGameGrade.Legendary];
+            // else
+            //     charas = new Character[(int)Define.InGameGrade.Normal]; // QUEEN ELEANOR
 
-            for (Define.InGameGrade grade = Define.InGameGrade.Normal; grade <= Define.InGameGrade.Legendary; ++grade)
-            {
-                GameObject go = Managers.Resource.Load<GameObject>(pc.SkillBook.GetPlayerDefaultSkill(grade).SkillData.ModelingLabel);
-                charas[(int)grade - 1] = go.GetComponent<Character>();
-                if (skillCount == 1)
-                    break;
-            }
+            // for (Define.InGameGrade grade = Define.InGameGrade.Normal; grade <= Define.InGameGrade.Legendary; ++grade)
+            // {
+            //     GameObject go = Managers.Resource.Load<GameObject>(pc.SkillBook.GetDefaultRepeatSkill(grade).RepeatSkillData.MasteryModelingLabel);
+            //     charas[(int)grade - 1] = go.GetComponent<Character>();
+            //     if (skillCount == 1)
+            //         break;
+            // }
 
-            _playerAppearances.Add(pc.CharaData.TemplateID, charas);
+            // _playerAppearances.Add(pc.CreatureStat.TemplateID, charas);
         }
 
         public void InitPlayerSprites(PlayerController pc)
@@ -318,7 +315,7 @@ namespace STELLAREST_2D
                 if (sprArr[i].sprite == null)
                     continue;
 
-                if (sprArr[i].gameObject.name.Contains(Define.Player.FIRE_SOCKET))
+                if (sprArr[i].gameObject.name.Contains(Define.PLAYER_FIRE_SOCKET))
                     continue;
 
                 if (sprArr[i].gameObject.name.Contains("Eyebrows"))
@@ -344,32 +341,32 @@ namespace STELLAREST_2D
         public void SetMonsterFace(MonsterController mc, Define.MonsterFace monsterFace) 
                 => mc?.GetComponent<Monster>().SetHead((int)monsterFace);
 
-        public void UpgradePlayerAppearance(PlayerController pc, Define.InGameGrade grade, bool includeInactive = false)
-        {
-            SpriteRenderer[] currentSPRs = pc.GetComponentsInChildren<SpriteRenderer>(includeInactive);
-            for (int i = 0; i < currentSPRs.Length; ++i)
-                currentSPRs[i].sprite = null;
+        // public void UpgradePlayerAppearance(PlayerController pc, Define.InGameGrade grade, bool includeInactive = false)
+        // {
+        //     SpriteRenderer[] currentSPRs = pc.GetComponentsInChildren<SpriteRenderer>(includeInactive);
+        //     for (int i = 0; i < currentSPRs.Length; ++i)
+        //         currentSPRs[i].sprite = null;
 
-            Character next = _playerAppearances[pc.CharaData.TemplateID][(int)grade - 1];
-            SpriteRenderer[] nextSPRs = next.GetComponentsInChildren<SpriteRenderer>(includeInactive);
+        //     Character next = _playerAppearances[pc.CreatureStat.TemplateID][(int)grade - 1];
+        //     SpriteRenderer[] nextSPRs = next.GetComponentsInChildren<SpriteRenderer>(includeInactive);
             
-            int length = Mathf.Max(currentSPRs.Length, nextSPRs.Length);
+        //     int length = Mathf.Max(currentSPRs.Length, nextSPRs.Length);
 
-            for (int i = 0; i < length; ++i)
-            {
-                // Prevent out of idx
-                if (i < currentSPRs.Length && i < nextSPRs.Length)
-                {
-                    SpriteRenderer currentSPR = currentSPRs[i];
-                    SpriteRenderer nextSPR = nextSPRs[i];
+        //     for (int i = 0; i < length; ++i)
+        //     {
+        //         // Prevent out of idx
+        //         if ((i < currentSPRs.Length) && (i < nextSPRs.Length))
+        //         {
+        //             SpriteRenderer currentSPR = currentSPRs[i];
+        //             SpriteRenderer nextSPR = nextSPRs[i];
 
-                    currentSPR.sprite = nextSPR.sprite;
-                    currentSPR.color = nextSPR.color;
-                }
-            }
+        //             currentSPR.sprite = nextSPR.sprite;
+        //             currentSPR.color = nextSPR.color;
+        //         }
+        //     }
 
-            // Managers.Effect.UpgradePlayerBuffEffect(); 이것도 사실 Legendary에서만 약간 간지나게 적용하면 될 것 같음
-            Managers.Effect.ChangeCreatureMaterials(pc);
-        }
+        //     // Managers.Effect.UpgradePlayerBuffEffect(); 이것도 사실 Legendary에서만 약간 간지나게 적용하면 될 것 같음
+        //     Managers.Effect.ChangeCreatureMaterials(pc);
+        // }
     }
 }

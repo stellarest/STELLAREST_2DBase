@@ -14,14 +14,8 @@ namespace STELLAREST_2D
         private Grid _grid;
         private Dictionary<Vector3Int, Cell> _cells = new Dictionary<Vector3Int, Cell>();
 
-        public override bool Init()
-        {
-            base.Init();
-
-            _grid = gameObject.GetOrAddComponent<Grid>();
-
-            return true;
-        }
+        private void Awake() 
+                => _grid = gameObject.GetOrAddComponent<Grid>();
 
         public void Add(GameObject go)
         {

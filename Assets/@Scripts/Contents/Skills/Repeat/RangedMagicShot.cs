@@ -24,5 +24,15 @@ namespace STELLAREST_2D
             GetComponent<Rigidbody2D>().simulated = false;
             GetComponent<Collider2D>().enabled = false;
         }
+
+        public override void SetParticleInfo(Vector3 startAngle, Define.LookAtDirection lookAtDir, 
+                                            float continuousAngle, float continuousFlipX, float continuousFlipY)
+        {
+        }
+
+        public override void InitRepeatSkill(RepeatSkill originRepeatSkill)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

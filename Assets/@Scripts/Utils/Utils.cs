@@ -1,11 +1,21 @@
 using System.Diagnostics;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 
 using Debug = UnityEngine.Debug;
+using STELLAREST_2D.Data;
+using System.Runtime.InteropServices.WindowsRuntime;
+using System.Xml.Schema;
+using Assets.HeroEditor.InventorySystem.Scripts.Data;
+//using Unity.Mathematics;
+
+public class ShowOnlyAttribute : PropertyAttribute
+{
+}
 
 namespace STELLAREST_2D
-{
+{    
     public class Utils
     {
         public static T GetOrAddComponent<T>(GameObject go) where T : UnityEngine.Component
@@ -13,6 +23,7 @@ namespace STELLAREST_2D
             T component = go.GetComponent<T>();
             if (component == null)
                 component = go.AddComponent<T>();
+
             return component;
         }
 
@@ -81,23 +92,89 @@ namespace STELLAREST_2D
             return fromPos;
         }
 
+#if UNITY_EDITOR
         [Conditional("UNITY_EDITOR")]
-        public static void Log(object message)
+        public static void Log(object message) 
+            => Debug.Log($"<color=white>{message.ToString()}</color>");
+
+        [Conditional("UNITY_EDITOR")]
+        public static void Log(object called, object byMethod, object target, object message, bool clearPrevLogs = false)
         {
-            Debug.Log($"<color=white>{message.ToString()}</color>");
+            if (clearPrevLogs)
+                ClearLog();
+
+            Utils.Log("----------------------------------------");
+            Utils.Log($"Called : {called}");
+            Utils.Log($"By : {byMethod}");
+            if (target != null)
+            {
+                target = $"<color=cyan>[{target}]</color>";
+                message = $"{target} : {message}";
+                Utils.Log(message);
+            }
+            else
+                Utils.Log(message);
+            Utils.Log("----------------------------------------");
         }
 
         [Conditional("UNITY_EDITOR")]
-        public static void LogStrong(object message)
+        public static void LogBreak(object message)
         {
-            Debug.Log($"<color=magenta>{message.ToString()}</color>");
-        }
-
-        [Conditional("UNITY_EDITOR")]
-        public static void LogError(object message)
-        {
-            Debug.LogError(message.ToString());
+            Utils.Log("[\n");
+            Utils.Log(message);
+            Utils.Log("\n                   ] : Paused by Utils.LogBreak");
             Debug.Break();
         }
+
+        [Conditional("UNITY_EDITOR")]
+        public static void LogStrong(object calledByMethodOnly, object message = null)
+        {
+            Debug.Log($"<color=yellow> ↓ [   LOG STRONG   ] ↓</color>");
+            if (message == null)
+                message = $"{calledByMethodOnly}";
+            else
+                message = $"{calledByMethodOnly}, {message}";
+
+            Debug.LogWarning($"<color=yellow>{message}</color>");
+            Debug.Log($"<color=yellow> ↑ [   LOG STRONG   ] ↑</color>");
+        }
+
+        [Conditional("UNITY_EDITOR")]
+        public static void LogStrong(object calledBy, object calledByMethod, object message = null)
+        {
+            Debug.Log($"<color=yellow> ↓ [   LOG STRONG   ] ↓</color>");
+            if (message == null)
+                message = $"{calledBy}, {calledByMethod}";
+            else
+                message = $"{calledBy}, {calledByMethod}, {message}";
+
+            Debug.LogWarning($"<color=yellow>{message}</color>");
+            Debug.Log($"<color=yellow> ↑ [   LOG STRONG   ] ↑</color>");
+        }
+
+        [Conditional("UNITY_EDITOR")]
+        public static void LogCritical(object calledBy, object calledByMethod, object message = null)
+        {
+            Debug.Log($"<color=red> ↓↓↓ [   LOG CRITICAL   ] ↓↓↓</color>");
+
+            Debug.LogError($"<color=red>Called : {calledBy}</color>");
+            Debug.LogError($"<color=red>By : {calledByMethod}</color>");
+            if (message != null)
+                Debug.LogError($"<color=red>{message}</color>");
+
+            Debug.Log($"<color=red> ↑↑↑ [   LOG CRITICAL   ] ↑↑↑</color>");
+            Debug.Break();
+        }
+
+        [Conditional("UNITY_EDITOR")]
+        public static void ClearLog()
+        {
+            var assembly = Assembly.GetAssembly(typeof(UnityEditor.Editor));
+            var type = assembly.GetType("UnityEditor.LogEntries");
+            var method = type.GetMethod("Clear");
+            method.Invoke(new object(), null);
+            Debug.Log("##### [[[ Debug Message ]]] #####");
+        }
+#endif
     }
 }

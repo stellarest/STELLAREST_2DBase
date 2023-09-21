@@ -1,304 +1,401 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using HeroEditor.Common.Enums;
+using Unity.Collections;
+using UnityEditor.Rendering.Universal;
 using UnityEngine;
-using Assets.HeroEditor.Common.Scripts.CharacterScripts;
 using UnityEngine.Rendering;
-using STELLAREST_2D.Data;
+using UnityEngine.UIElements;
+
+using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 
 namespace STELLAREST_2D
 {
     public class PlayerController : CreatureController
     {
-        public PlayerAnimationController PAC { get; protected set; }
-        public float EnvCollectDist { get; private set; } = 5f; // 이건 데이터 시트로 안빼도 됨
+        private readonly float EnvCollectDist = 5f; // +++ NO DATE SHEET +++
+        private float _armBowFixedAngle = 110f;
+        private float _armRifleFixedAngle = 146f;
+        public class PlayerBody
+        {
+            public PlayerBody(Transform hair, Transform armLeft, Transform armRight, Transform leftHandMeleeWeapon,
+                            Transform legLeft, Transform legRight)
+            {
+                this.Hair = hair;
+                this.ArmLeft = armLeft;
+                this.ArmRight = armRight;
+                this.LeftHandMeleeWeapon = leftHandMeleeWeapon;
+                this.LegLeft = legLeft;
+                this.LegRight = legRight;
 
-        private Transform _indicator;
-        public Transform Indicator => _indicator;
+                if (Hair == null || ArmLeft == null || ArmRight == null || LeftHandMeleeWeapon == null ||
+                    LegLeft == null || LegRight == null)
+                    Utils.LogCritical(nameof(PlayerController), nameof(PlayerBody));
+            }
 
-        private Transform _fireSocket;
-        public Vector3 FireSocket => _fireSocket.position;
-        public Transform GetFireSocket => _fireSocket;
+            public Transform Hair { get; private set; } = null;
+            public Transform ArmLeft { get; private set; } = null;
+            public Transform ArmRight { get; private set; } = null;
+            public Transform LeftHandMeleeWeapon { get; private set; } = null;
 
-        public SpriteRenderer FireSocketSpriteRenderer { get; private set; } = null;
-        public Vector3 ShootDir => (_fireSocket.position - _indicator.position).normalized;
+            public Transform LegLeft { get; private set; } = null;
+            public Transform LegRight { get; private set; } = null;
+        }
 
-        public Transform LegR { get; private set; } = null;
-        public Transform ArmL { get; private set; } = null;
-        public Transform ArmR { get; private set; } = null;
-
-        public GameObject LeftHandMeleeWeapon { get; private set; } = null;
-        public GameObject Hair { get; private set; } = null;
+        public PlayerBody BodyParts { get; protected set; } = null;
+        public PlayerAnimationController PlayerAnim { get; protected set; } = null;
 
 
-        [field: SerializeField]
-        public float TurningAngle { get; private set; }
-        public Define.LookAtDirection LookAtDir { get; private set; } = Define.LookAtDirection.Right;
+        private GameObject _animChild = null;
+        public Vector3 LocalScale
+        {
+            get => _animChild.transform.localScale;
+            set => _animChild.transform.localScale = value;
+        }
 
-        private GameObject _animChildObject;
-        public Vector3 AnimationLocalScale => _animChildObject.transform.localScale;
-        public AnimationEvents AnimEvents { get; private set; }
+        public override void Init(int templateID)
+        {
+            base.Init(templateID);
+            Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.PlayerBody);
 
-        public float ATTACK_SPEED_TEST = 2f;
+            InitChildInfo();
+            AddCallbacks();
+
+            CreatureState = Define.CreatureState.Idle;
+        }
+
+        private void InitChildInfo()
+        {
+            _animChild = Utils.FindChild(gameObject, "Animation");
+
+            AnimCallback = _animChild.GetComponent<AnimationCallback>();
+            PlayerAnim = gameObject.GetOrAddComponent<PlayerAnimationController>();
+            PlayerAnim.InitAnimationController(this);
+
+            Transform hair = Utils.FindChild<Transform>(gameObject, "Hair", true);
+            Transform armL = Utils.FindChild<Transform>(gameObject, "ArmL", true);
+            Transform armR = Utils.FindChild<Transform>(gameObject, "ArmR[1]", true);
+            Transform leftHandMeleeWeapon = Utils.FindChild<Transform>(armL.gameObject, "MeleeWeapon", true);
+            Transform legL = Utils.FindChild<Transform>(gameObject, "Leg[L]", true);
+            Transform legR = Utils.FindChild<Transform>(gameObject, "Leg[R]", true);
+            BodyParts = new PlayerBody(hair: hair, armLeft: armL, armRight: armR, leftHandMeleeWeapon: leftHandMeleeWeapon,
+                                    legLeft: legL, legRight: legR);
+
+            Indicator = Utils.FindChild<Transform>(this.gameObject,
+                Define.PLAYER_INDICATOR, true);
+
+            FireSocket = Utils.FindChild<Transform>(this.gameObject,
+                Define.PLAYER_FIRE_SOCKET, true);
+
+            BodyCollider.enabled = true;
+        }
+
+        private void AddCallbacks()
+        {
+            Managers.Game.OnMoveDirChanged += OnMoveDirChangedHandler;
+            AnimCallback.OnSkillEnabled += SkillBook.OnSkillEnabledHandler;
+        }
+
+        private void RemoveCallbacks()
+        {
+            if (Managers.Game != null)
+                Managers.Game.OnMoveDirChanged -= OnMoveDirChangedHandler;
+
+            if (this.IsValid())
+                AnimCallback.OnSkillEnabled -= SkillBook.OnSkillEnabledHandler;
+        }
+
+        private void OnMoveDirChangedHandler(Vector3 moveDir)
+        {
+            this.MoveDir = moveDir;
+            if (moveDir == Vector3.zero)
+            {
+                CreatureState = Define.CreatureState.Idle;
+                // FireSocketRenderer.enabled = false; // 게임 옵션으로 줄거라 여기서는 뺌
+            }
+            else
+            {
+                CreatureState = Define.CreatureState.Run;
+                if (Managers.Game.IsGameStart == false)
+                {
+                    Managers.Game.GAME_START();
+                    //SkillBook.LevelUp(SkillBook.DefaultRepeatSkillType);
+                    PlayerAnim.Ready(true);
+                }
+            }
+        }
 
         public override void UpdateAnimation()
         {
-            switch (_cretureState)
+            switch (CreatureState)
             {
                 case Define.CreatureState.Idle:
                     {
-                        PAC.Idle();
+                        PlayerAnim.Idle();
                     }
                     break;
 
                 case Define.CreatureState.Walk:
                     {
-                        PAC.Walk();
+                        PlayerAnim.Walk();
                     }
                     break;
 
                 case Define.CreatureState.Run:
                     {
-                        PAC.Run();
+                        PlayerAnim.Run();
                     }
                     break;
 
                 case Define.CreatureState.Attack:
                     {
+                        AttackStartPoint = transform.position;
+                        PlayerAnim.Slash1H();
+
                         // 애초에 Weapon Type을 받아와서 재생하는게 더 깔끔할수도 있음.
                         // 근데 이것도 ㄱㅊ
-                        switch (CharaData.TemplateID)
-                        {
-                            case (int)Define.TemplateIDs.Player.Gary_Paladin:
-                                {
-                                    PAC.Slash1H();
-                                }
-                                break;
-                            case (int)Define.TemplateIDs.Player.Gary_Knight:
-                                {
-                                    PAC.Slash2H();
-                                }
-                                break;
-                            case (int)Define.TemplateIDs.Player.Gary_PhantomKnight:
-                                {
-                                    PAC.Slash1H();
-                                }
-                                break;
+                        // switch (CreatureData.TemplateID)
+                        // {
+                        //     case (int)Define.TemplateIDs.Creatures.Player.Gary_Paladin:
+                        //         {
+                        //             PAC.Slash1H();
+                        //         }
+                        //         break;
+                        //     case (int)Define.TemplateIDs.Creatures.Player.Gary_Knight:
+                        //         {
+                        //             PAC.Slash2H();
+                        //         }
+                        //         break;
+                        //     case (int)Define.TemplateIDs.Creatures.Player.Gary_PhantomKnight:
+                        //         {
+                        //             PAC.Slash1H();
+                        //         }
+                        //         break;
 
+                        //     case (int)Define.TemplateIDs.Creatures.Player.Reina_ArrowMaster:
+                        //         {
+                        //             // SkillData skillData = SkillBook.GetCurrentPlayerDefaultSkill.SkillData;
+                        //             // if (skillData.InGameGrade >= Define.InGameGrade.Epic)
+                        //             //     PAC.AttackAnimSpeed(ATTACK_SPEED_TEST);
+                        //             PAC.SimpleBowShot();
+                        //         }
+                        //         break;
+                        //     case (int)Define.TemplateIDs.Creatures.Player.Reina_ElementalArcher:
+                        //         {
+                        //             PAC.SimpleBowShot();
+                        //         }
+                        //         break;
+                        //     case (int)Define.TemplateIDs.Creatures.Player.Reina_ForestWarden:
+                        //         {
+                        //             RepeatSkillData skillData = SkillBook.GetCurrentPlayerDefaultSkill.SkillData;
+                        //             if (skillData.InGameGrade >= Define.InGameGrade.Epic)
+                        //                 PAC.AttackAnimSpeed(1.3f);
+                        //             PAC.SimpleBowShot();
+                        //         }
+                        //         break;
 
+                        //     case (int)Define.TemplateIDs.Creatures.Player.Kenneth_Assassin:
+                        //         {
+                        //             RepeatSkillData skillData = SkillBook.GetCurrentPlayerDefaultSkill.SkillData;
 
-                            case (int)Define.TemplateIDs.Player.Reina_ArrowMaster:
-                                {
-                                    // SkillData skillData = SkillBook.GetCurrentPlayerDefaultSkill.SkillData;
-                                    // if (skillData.InGameGrade >= Define.InGameGrade.Epic)
-                                    //     PAC.AttackAnimSpeed(ATTACK_SPEED_TEST);
-                                    PAC.SimpleBowShot();
-                                }
-                                break;
-                            case (int)Define.TemplateIDs.Player.Reina_ElementalArcher:
-                                {
-                                    PAC.SimpleBowShot();
-                                }
-                                break;
-                            case (int)Define.TemplateIDs.Player.Reina_ForestWarden:
-                                {
-                                    SkillData skillData = SkillBook.GetCurrentPlayerDefaultSkill.SkillData;
-                                    if (skillData.InGameGrade >= Define.InGameGrade.Epic)
-                                        PAC.AttackAnimSpeed(1.3f);
-                                    PAC.SimpleBowShot();
-                                }
-                                break;
+                        //             // Bonus Stat으로 바꾸기.
+                        //             //float animSpeed = skillData.AnimationSpeed;
+                        //             //PAC.AttackAnimSpeed(animSpeed);
+                        //             if (skillData.InGameGrade < Define.InGameGrade.Legendary)
+                        //                 PAC.Jab1H();
+                        //             else
+                        //                 PAC.JabPaired();
+                        //         }
+                        //         break;
+                        //     case (int)Define.TemplateIDs.Creatures.Player.Kenneth_Thief:
+                        //         {
+                        //             RepeatSkillData skillData = SkillBook.GetCurrentPlayerDefaultSkill.SkillData;
+                        //             if (skillData.InGameGrade > Define.InGameGrade.Epic)
+                        //                 PAC.SlashDouble();
+                        //             else
+                        //                 PAC.SlashPaired();
+                        //         }
+                        //         break;
 
+                        //     case (int)Define.TemplateIDs.Creatures.Player.Lionel_Warrior:
+                        //         {
+                        //             PAC.Jab2H();
+                        //         }
+                        //         break;
+                        //     case (int)Define.TemplateIDs.Creatures.Player.Lionel_Berserker:
+                        //         {
+                        //             PAC.SlashPaired();
+                        //         }
+                        //         break;
 
+                        //     case (int)Define.TemplateIDs.Creatures.Player.Stigma_SkeletonKing:
+                        //         {
+                        //             PAC.Slash2H();
+                        //         }
+                        //         break;
+                        //     case (int)Define.TemplateIDs.Creatures.Player.Stigma_Pirate:
+                        //         {
+                        //             RepeatSkillData skillData = SkillBook.GetCurrentPlayerDefaultSkill.SkillData;
+                        //             if (skillData.InGameGrade < Define.InGameGrade.Legendary)
+                        //                 PAC.Jab1HLeft();
+                        //             else
+                        //                 PAC.SlashPaired();
+                        //         }
+                        //         break;
 
-                            case (int)Define.TemplateIDs.Player.Kenneth_Assassin:
-                                {
-                                    SkillData skillData = SkillBook.GetCurrentPlayerDefaultSkill.SkillData;
-                                    float animSpeed = skillData.AnimationSpeed;
-                                    PAC.AttackAnimSpeed(animSpeed);
-                                    if (skillData.InGameGrade < Define.InGameGrade.Legendary)
-                                        PAC.Jab1H();
-                                    else
-                                        PAC.JabPaired();
-                                }
-                                break;
-                            case (int)Define.TemplateIDs.Player.Kenneth_Thief:
-                                {
-                                    SkillData skillData = SkillBook.GetCurrentPlayerDefaultSkill.SkillData;
-                                    if (skillData.InGameGrade > Define.InGameGrade.Epic)
-                                        PAC.SlashDouble();
-                                    else
-                                        PAC.SlashPaired();
-                                }
-                                break;
+                        //     case (int)Define.TemplateIDs.Creatures.Player.Eleanor_Queen:
+                        //         {
+                        //             PAC.Slash1H();
+                        //         }
+                        //         break;
+                        // }
 
-
-
-                            case (int)Define.TemplateIDs.Player.Lionel_Warrior:
-                                {
-                                    PAC.Jab2H();
-                                }
-                                break;
-                            case (int)Define.TemplateIDs.Player.Lionel_Berserker:
-                                {
-                                    PAC.SlashPaired();
-                                }
-                                break;
-
-
-
-                            case (int)Define.TemplateIDs.Player.Stigma_SkeletonKing:
-                                {
-                                    PAC.Slash2H();
-                                }
-                                break;
-                            case (int)Define.TemplateIDs.Player.Stigma_Pirate:
-                                {
-                                    SkillData skillData = SkillBook.GetCurrentPlayerDefaultSkill.SkillData;
-                                    if (skillData.InGameGrade < Define.InGameGrade.Legendary)
-                                        PAC.Jab1HLeft();
-                                    else
-                                        PAC.SlashPaired();
-                                }
-                                break;
-
-
-
-                            case (int)Define.TemplateIDs.Player.Eleanor_Queen:
-                                {
-                                    PAC.Slash1H();
-                                }
-                                break;
-                        }
-        
-                        StartAttackPos = transform.position;
+                        //StartAttackPos = transform.position;
                     }
                     break;
 
                 case Define.CreatureState.Death:
                     {
-                        Utils.LogStrong("### INVINCIBLA PLAYER NOW ###");
+                        //Utils.LogStrong("### INVINCIBLA PLAYER NOW ###");
                     }
                     break;
             }
         }
 
-        public override bool Init()
+        private void Update()
         {
-            if (base.Init() == false)
-                return false;
+            // ++++++++++++++++++++++++++
+            // +++++ CLEAR LOG AREA (R Key) +++++
+#if UNITY_EDITOR
+            DEV_CLEAR_LOG();
+#endif
+            // ++++++++++++++++++++++++++
+            // ++++++++++++++++++++++++++
 
-            ObjectType = Define.ObjectType.Player;
-            CreatureType = Define.CreatureType.Gary; // 조정 필요
+            MoveByJoystick();
+            CollectEnv();
 
-            Managers.Game.OnMoveDirChanged += OnMoveDirChangedHandler;
-
-            _animChildObject = Utils.FindChild(gameObject, "Animation");
-            AnimEvents = _animChildObject.GetComponent<AnimationEvents>();
-            PAC = gameObject.GetOrAddComponent<PlayerAnimationController>();
-            PAC.Owner = this;
-
-            GameObject LegR = Utils.FindChild(gameObject, "Leg[R]", true);
-            this.LegR = Utils.FindChild(LegR, "Shin").transform;
-
-            ArmL = Utils.FindChild(gameObject, "ArmL", true).transform;
-            ArmR = Utils.FindChild(gameObject, "ArmR[1]", true).transform;
-
-            LeftHandMeleeWeapon = Utils.FindChild(ArmL.gameObject, "MeleeWeapon", true);
-            Hair = Utils.FindChild(gameObject, "Hair", true);
-
-            CreatureState = Define.CreatureState.Idle;
-
-            // TODO : 스킬은 처음에 UI에서 고르던 다른 방식으로 하던 지금처럼 하던 마음대로 채택
-            Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.PlayerBody);
-            return true;
-        }
-
-        public override void SetInfo(int templateID)
-        {
-            base.SetInfo(templateID);
-            GetIndicator();
-
-            // ++++++++++++++++++++++++++++++++++++++++++++++++++
-            // +++++ Set Player Default Skill Automatically +++++
-            // ++++++++++++++++++++++++++++++++++++++++++++++++++
-            this.SkillBook.PlayerDefaultSkill = (Define.TemplateIDs.SkillType)SkillBook.GetPlayerDefaultSkill(Define.InGameGrade.Normal).SkillData.TemplateID;
-            Debug.Log("!!!!!!!!!!!!!!!!!!!!!!!! : " + SkillBook.PlayerDefaultSkill);
-
-            // TODO
-            // Define.TemplateIDs.SkillType.PaladinSwing : UI에서 최초 캐릭터 셀렉트시 결정 
-            //AnimEvents.PlayerDefaultAttack = Define.TemplateIDs.SkillType.PaladinMeleeSwing;
-            AnimEvents.PlayerDefaultSkill = this.SkillBook.PlayerDefaultSkill;
-            AnimEvents.OnRepeatAttack += SkillBook.GeneratePlayerAttack;
-        }
-
-        private void GetIndicator()
-        {
-            if (_indicator == null)
-                _indicator = Utils.FindChild<Transform>(this.gameObject,
-                    Define.Player.INDICATOR, true);
-
-            if (_fireSocket == null)
+            if (Input.GetKeyDown(KeyCode.Q))
             {
-                _fireSocket = Utils.FindChild<Transform>(this.gameObject,
-                    Define.Player.FIRE_SOCKET, true);
+                SkillBook.LevelUp(SkillTemplate.PaladinMastery);
 
-                FireSocketSpriteRenderer = _fireSocket.GetComponent<SpriteRenderer>();
+                //SkillBook.Activate(SkillBook.DefaultRepeatSkillType);
+                //RendererController.Reset();
+
+                // SpriteRenderer[] SPRs = RendererController.GetSpriteRenderers(this, Grade);
+                // foreach (var spr in SPRs)
+                // {
+                //     Utils.Log("ROOT : " + spr.transform.root.name);
+                //     Debug.Log(spr.gameObject.name);
+                // }
+                // Utils.Log("=========================");
+
+                // Managers.Pool.ResetPools();
+                // 바뀌는거 확인했었음
+
+                // // PALADIN NORMAL LENGTH : 81
+                // SpriteRenderer[] currentSPRs = RendererController.GetSpriteRenderers(this, Define.InGameGrade.Normal);
+                // // PALADIN RARE, EPIC, LEGENDARY : 80
+                // // 스프라이트 바꿀 때 부위 옵션주거나 맞춰야할듯
+                // SpriteRenderer[] nextSPRs =  RendererController.GetSpriteRenderers(this, Define.InGameGrade.Rare);
+                // int length = Mathf.Max(currentSPRs.Length, nextSPRs.Length);
+                // for (int i = 0; i < length; ++i)
+                // {
+                //     // Prevent out of idx
+                //     if (i < currentSPRs.Length && i < nextSPRs.Length)
+                //     {
+                //         currentSPRs[i].sprite = nextSPRs[i].sprite;
+                //         currentSPRs[i].color = nextSPRs[i].color;
+                //     }
+                //     else
+                //         Utils.LogStrong("OOPS !!");
+                // }
             }
 
-            // _indicator.gameObject.SetActive(false);
-            _indicator.gameObject.SetActive(true);
-
-            GetComponent<CircleCollider2D>().enabled = true;
+            // if (Input.GetKeyDown(KeyCode.R)) SkillBook.Activate(SkillBook.DefaultRepeatSkillType);
+            // if (Input.GetKeyDown(KeyCode.T)) SkillBook.Activate(SkillBook.DefaultRepeatSkillType, false);
+            // if (Input.GetKeyDown(KeyCode.Space)) SkillBook.LevelUp(SkillBook.DefaultRepeatSkillType);
         }
 
-        protected override void SetSortingGroup()
-                => GetComponent<SortingGroup>().sortingOrder = (int)Define.SortingOrder.Player;
-
-        public Vector3 StartAttackPos { get; private set; }
-        public Vector3 EndAttackPos { get; set; }
-        public float MovementPower
-                => (EndAttackPos - StartAttackPos).magnitude;
-
-        private bool _getReady = false;
-
-        public void MoveByJoystick()
+        private void LateUpdate()
         {
-            Vector3 dir = MoveDir.normalized * CharaData.MoveSpeed * Time.deltaTime;
+            if (Managers.Game.IsGameStart)
+            {
+                switch (CreatureStat.TemplateID)
+                {
+                    case (int)Define.TemplateIDs.Creatures.Player.Reina_ArrowMaster:
+                    case (int)Define.TemplateIDs.Creatures.Player.Reina_ElementalArcher:
+                    case (int)Define.TemplateIDs.Creatures.Player.Reina_ForestWarden:
+                        {
+                            float modifiedAngle = (Indicator.eulerAngles.z + _armBowFixedAngle);
+                            if (LocalScale.x < 0)
+                                modifiedAngle = 360f - modifiedAngle;
+
+                            //ArmL.transform.localRotation = Quaternion.Euler(0, 0, modifiedAngle);
+                            BodyParts.ArmLeft.localRotation = Quaternion.Euler(0, 0, modifiedAngle);
+                        }
+                        break;
+
+
+                    case (int)Define.TemplateIDs.Creatures.Player.Christian_Hunter:
+                    case (int)Define.TemplateIDs.Creatures.Player.Christian_Desperado:
+                    case (int)Define.TemplateIDs.Creatures.Player.Christian_Destroyer:
+                        {
+                            float modifiedAngle = (Indicator.eulerAngles.z + _armRifleFixedAngle);
+                            if (LocalScale.x < 0)
+                            {
+                                modifiedAngle = 360f - modifiedAngle - 65f;
+                                //ArmR.transform.localRotation = Quaternion.Euler(0, 0, Mathf.Clamp(modifiedAngle, 15f, 91f));
+                                BodyParts.ArmRight.localRotation = Quaternion.Euler(0, 0, Mathf.Clamp(modifiedAngle, 15f, 91f));
+                            }
+                            else
+                            {
+                                //ArmR.transform.localRotation = Quaternion.Euler(0, 0, Mathf.Clamp(modifiedAngle, 378f, 450f));
+                                BodyParts.ArmRight.localRotation = Quaternion.Euler(0, 0, Mathf.Clamp(modifiedAngle, 378f, 450f));
+                            }
+                        }
+                        break;
+                }
+            }
+        }
+
+        public Define.ExpressionType Testxpression = Define.ExpressionType.Default;
+        private void TEST_EXPRESSION()
+        {
+            Managers.Sprite.PlayerExpressionController.Expression(Testxpression);
+        }
+        private void MoveByJoystick()
+        {
+            // MoveDir = OnMoveDirChanged in GameManager
+            Vector3 dir = MoveDir.normalized * CreatureStat.MoveSpeed * Time.deltaTime;
             transform.position += dir;
 
             // Get Degrees = 180f / PI = Rad2Deg
             // if (_moveDir != Vector2.zero)
             //     _indicator.eulerAngles = new Vector3(0, 0, Mathf.Atan2(-dir.x, dir.y) * 180f / Mathf.PI);
-            if (MoveDir != Vector2.zero)
+            // if (MoveDir != Vector3.zero)
+            // {
+            //     float degree = Mathf.Atan2(-dir.x, dir.y) * Mathf.Rad2Deg;
+            //     //_indicator.eulerAngles = new Vector3(0, 0, degree);
+            //     //_indicator.rotation = Quaternion.Euler(0, 0, degree);
+            //     Indicator.localRotation = Quaternion.Euler(0, 0, degree);
+            //     Turn(degree);
+            //     Managers.Stage.SetInLimitPos(this);
+            // }
+
+            if (IsMoving)
             {
-                if (_getReady == false)
-                {
-                    _getReady = true;
-
-                    if (CharaData.TemplateID != (int)Define.TemplateIDs.Player.Stigma_Mutant)
-                        SkillBook.UpgradeRepeatSkill((int)SkillBook.PlayerDefaultSkill);
-                    else
-                        SkillBook.UpgradeRepeatSkill((int)Define.TemplateIDs.SkillType.DeathClaw);
-
-                    PAC.OnReady();
-                }
-
                 float degree = Mathf.Atan2(-dir.x, dir.y) * Mathf.Rad2Deg;
                 //_indicator.eulerAngles = new Vector3(0, 0, degree);
                 //_indicator.rotation = Quaternion.Euler(0, 0, degree);
-                _indicator.localRotation = Quaternion.Euler(0, 0, degree);                
+                Indicator.localRotation = Quaternion.Euler(0, 0, degree);
 
                 Turn(degree);
-                // InGameLimitPos(transform.position);
                 Managers.Stage.SetInLimitPos(this);
             }
-            //RigidBody.velocity = Vector3.zero;
         }
-
-        public bool IsFacingRight
-                => (_animChildObject.transform.localScale.x != Define.Player.LOCAL_SCALE_X * -1f) ? true : false;
         private void Turn(float angle)
         {
             if (Mathf.Sign(angle) < 0)
@@ -312,57 +409,20 @@ namespace STELLAREST_2D
                 _armBowFixedAngle = -110f;
             }
 
-            Vector3 turnChara = new Vector3((int)LookAtDir * Define.Player.LOCAL_SCALE_X * -1f,
-                                        Define.Player.LOCAL_SCALE_Y, 1);
-            _animChildObject.transform.localScale = turnChara;
+            // Vector3 turnChara = new Vector3((int)LookAtDir * Define.PLAYER_LOCAL_SCALE_X * -1f, Define.PLAYER_LOCAL_SCALE_Y, 1);
+            // _animChild.transform.localScale = turnChara;
+            _animChild.transform.localScale = new Vector3((int)LookAtDir * Define.PLAYER_LOCAL_SCALE_X * -1f, Define.PLAYER_LOCAL_SCALE_Y, 1);
         }
-
-        private void InGameLimitPos(Vector3 position)
-        {
-            // Min
-            if (position.x <= Managers.Stage.LeftBottom.x)
-                transform.position = new Vector2(Managers.Stage.LeftBottom.x, transform.position.y);
-            if (position.y <= Managers.Stage.LeftBottom.y)
-                transform.position = new Vector2(transform.position.x, Managers.Stage.LeftBottom.y);
-
-            // Max
-            if (position.x >= Managers.Stage.RightTop.x)
-                transform.position = new Vector2(Managers.Stage.RightTop.x, transform.position.y);
-            if (position.y >= Managers.Stage.RightTop.y)
-                transform.position = new Vector2(transform.position.x, Managers.Stage.RightTop.y);
-        }
-
-        public bool IsInLimitPos()
-        {
-            if (Mathf.Abs(transform.position.x - Managers.Stage.LeftBottom.x) < Mathf.Epsilon ||
-                Mathf.Abs(transform.position.y - Managers.Stage.LeftBottom.y) < Mathf.Epsilon ||
-                Mathf.Abs(transform.position.x - Managers.Stage.RightTop.x) < Mathf.Epsilon ||
-                Mathf.Abs(transform.position.y - Managers.Stage.RightTop.y) < Mathf.Epsilon)
-                return true;
-            else
-                return false;
-        }
-
-        public bool IsInLimitMaxPosX => Mathf.Abs(transform.position.x - Managers.Stage.RightTop.x) < Mathf.Epsilon ||
-                                        Mathf.Abs(transform.position.x - Managers.Stage.LeftBottom.x) < Mathf.Epsilon;
-
-        public bool IsInLimitMaxPosY => Mathf.Abs(transform.position.y - Managers.Stage.RightTop.y) < Mathf.Epsilon ||
-                                        Mathf.Abs(transform.position.y - Managers.Stage.LeftBottom.y) < Mathf.Epsilon;
-
+        public bool IsFacingRight => (_animChild.transform.localScale.x != Define.PLAYER_LOCAL_SCALE_X * -1f) ? true : false;
         private void CollectEnv()
         {
             // float sqrCollectDist = EnvCollectDist * EnvCollectDist;
-            float sqrCollectDist = CharaData.CollectRange * CharaData.CollectRange;
+            float sqrCollectDist = CreatureStat.CollectRange * CreatureStat.CollectRange;
 
             // var allSpawnedGems = Managers.Object.Gems.ToList();
             var findGems = Managers.Object.GridController.
                             GatherObjects(transform.position, EnvCollectDist).ToList();
 
-            // 맵안에 있는 잼들은 디폴트로 시간이 지나면 다 죽임.
-            // foreach (GemController allSpawnedGem in allSpawnedGems)
-            //     allSpawnedGem.Alive = false;
-
-            // 플레이어가 이동하다가 발견된 잼은 살림
             foreach (var findGem in findGems)
             {
                 GemController gc = findGem.GetComponent<GemController>();
@@ -381,229 +441,320 @@ namespace STELLAREST_2D
             //Debug.Log($"Find Gem : {findGems.Count} / Total Gem : {allSpawnedGems.Count}");
         }
 
-        private void OnMoveDirChangedHandler(Vector2 moveDir)
-        {
-            this.MoveDir = moveDir;
-            if (moveDir == Vector2.zero)
-            {
-                CreatureState = Define.CreatureState.Idle;
-                // _indicator.gameObject.SetActive(false);
-                FireSocketSpriteRenderer.enabled = false;
-                //FireSocketSpriteRenderer.enabled = true;
+        public bool IsInLimitMaxPosX => Mathf.Abs(transform.position.x - Managers.Stage.RightTop.x) < Mathf.Epsilon ||
+                                Mathf.Abs(transform.position.x - Managers.Stage.LeftBottom.x) < Mathf.Epsilon;
 
-            }
-            else
-            {
-                CreatureState = Define.CreatureState.Run;
-                // _indicator.gameObject.SetActive(true);
-                // FireSocketSpriteRenderer.enabled = true;
-                FireSocketSpriteRenderer.enabled = false; // 냐중에 어떻게 해야할지 고쳐야함
-                //FireSocketSpriteRenderer.enabled = true;
-            }
+        public bool IsInLimitMaxPosY => Mathf.Abs(transform.position.y - Managers.Stage.RightTop.y) < Mathf.Epsilon ||
+                                        Mathf.Abs(transform.position.y - Managers.Stage.LeftBottom.y) < Mathf.Epsilon;
+
+        protected override void SetRenderSorting()
+            => GetComponent<SortingGroup>().sortingOrder = (int)Define.SortingOrder.Player;
+
+        public override void OnDamaged(BaseController attacker, SkillBase skill) 
+            => base.OnDamaged(attacker, skill);
+
+        public void Expression(Define.ExpressionType expression, float duration)
+            => StartCoroutine(Managers.Sprite.PlayerExpressionController.CoExpression(expression, duration));
+
+        private void OnDestroy() 
+            => RemoveCallbacks();
+
+
+        // private void InGameLimitPos(Vector3 position)
+        // {
+        //     // Min
+        //     if (position.x <= Managers.Stage.LeftBottom.x)
+        //         transform.position = new Vector2(Managers.Stage.LeftBottom.x, transform.position.y);
+        //     if (position.y <= Managers.Stage.LeftBottom.y)
+        //         transform.position = new Vector2(transform.position.x, Managers.Stage.LeftBottom.y);
+
+        //     // Max
+        //     if (position.x >= Managers.Stage.RightTop.x)
+        //         transform.position = new Vector2(Managers.Stage.RightTop.x, transform.position.y);
+        //     if (position.y >= Managers.Stage.RightTop.y)
+        //         transform.position = new Vector2(transform.position.x, Managers.Stage.RightTop.y);
+        // }
+
+        // public bool IsInLimitPos()
+        // {
+        //     if (Mathf.Abs(transform.position.x - Managers.Stage.LeftBottom.x) < Mathf.Epsilon ||
+        //         Mathf.Abs(transform.position.y - Managers.Stage.LeftBottom.y) < Mathf.Epsilon ||
+        //         Mathf.Abs(transform.position.x - Managers.Stage.RightTop.x) < Mathf.Epsilon ||
+        //         Mathf.Abs(transform.position.y - Managers.Stage.RightTop.y) < Mathf.Epsilon)
+        //         return true;
+        //     else
+        //         return false;
+        // }
+
+        // private IEnumerator CoIsIdle()
+        // {
+        //     while (Anima)
+        // }
+
+        public bool AllStopAction()
+        {
+            //SkillBook.ActivateAll(Define.SkillType.Repeat, false);
+            return false;
         }
 
-        public void UpgradePlayerAppearance(SkillBase newSkill)
+        private IEnumerator CoAllStopAction()
         {
-            StartCoroutine(CoUpgradePlayerAppearance(newSkill));
+            yield return null;
         }
 
-        private IEnumerator CoUpgradePlayerAppearance(SkillBase newSkill)
+        public void ChangePlayerAppearance(SkillBase newSkill)
         {
-            SkillBook.StopSkills(); // 이걸로하면 나중에 Sequence Skill이 Active가 안될텐뎅
-            // StopPlayerDefaultSkill로 바꿔야함.
-            PAC.OffReady();
-
-            // +++ TEMP +++
-            if (IsChristian(CharaData.TemplateID) == false)
-            {
-                while (PAC.AnimController.GetCurrentAnimatorStateInfo(0).IsName("IdleMelee") == false)
-                {
-                    // 이 while 문은 공격 중일때 들어오는 부분인데, 현재 아직 공격중인 크리스티앙 애니메이션이 없음.
-                    yield return null;
-                }
-            }
-
-            // +++ ENABLE ASSASSIN DOUBLE WEAPON +++
-            if (IsAssassin(newSkill.SkillData.OriginTemplateID) && newSkill.SkillData.InGameGrade == Define.InGameGrade.Legendary)
-                LeftHandMeleeWeapon.GetComponent<SpriteRenderer>().enabled = true;
-
-            // +++ FIND OTHER HAND REINA BOW +++
-            if (IsReina(CharaData.TemplateID) || IsChristian(CharaData.TemplateID))
-                Managers.Sprite.UpgradePlayerAppearance(this, newSkill.SkillData.InGameGrade, true);
-            else
-                Managers.Sprite.UpgradePlayerAppearance(this, newSkill.SkillData.InGameGrade, false);
-
-            // +++ ADJUST THIEF HAIR MASK +++
-            if (IsThief(newSkill.SkillData.OriginTemplateID) && newSkill.SkillData.InGameGrade > Define.InGameGrade.Rare)
-                Hair.GetComponent<SpriteMask>().isCustomRangeActive = false;
-
-            Managers.Sprite.PlayerExpressionController.UpdateDefaultFace(this);
-
-            PAC.OnReady();
-            newSkill.ActivateSkill();
+            //StartCoroutine(CoChangePlayerAppearance(newSkill));
         }
 
-        private bool IsAssassin(int templateID)
-            => templateID == 200124;
 
-        private bool IsThief(int templateID)
-            => templateID == 200128;
-
-        public bool IsReina(int templateID) 
-            => templateID == 100103 || templateID == 100104 || templateID == 100105 ? true : false;
-
-        private bool IsChristian(int templateID)
-            => templateID == 100112 || templateID == 100113 || templateID == 100114 ? true : false;
-        
-
-        public override void OnDamaged(BaseController attacker, SkillBase skill)
-                        => base.OnDamaged(attacker, skill);
-
-        // bool bChange = false;
-        public Define.ExpressionType MyExpression = Define.ExpressionType.Default;
-
-        private void TEST_EXPRESSION()
+#if UNITY_EDITOR
+        [ContextMenu("UNITY_EDITOR")]
+        private void DEV_CLEAR_LOG()
         {
-            Managers.Sprite.PlayerExpressionController.Expression(MyExpression);
-        }
-
-        private void Update()
-        {
-            // Debug.Log(Mathf.Abs(transform.position.x - Managers.Stage.LeftBottom.x));
-            // Debug.Log(Managers.Stage.IsInLimitPos(this.transform));
-
-            if (Input.GetKeyDown(KeyCode.T))
-            {
-                // Managers.Sprite.PlayerEmotion.Sick();
-                // Debug.Log(SkillBook.GetPlayerDefaultSkill(Define.InGameGrade.Normal).SkillData.ModelingLabel);
-                // Debug.Log(SkillBook.GetPlayerDefaultSkill(Define.InGameGrade.Rare).SkillData.ModelingLabel);
-                // Debug.Log(SkillBook.GetPlayerDefaultSkill(Define.InGameGrade.Epic).SkillData.ModelingLabel);
-                // Debug.Log(SkillBook.GetPlayerDefaultSkill(Define.InGameGrade.Legendary).SkillData.ModelingLabel);
-
-                // CoGlitchEffect(CreatureData.TemplateID);
-                // bChange = !bChange;
-                // Managers.Sprite.SetPlayerEmotion(bChange ? Define.PlayerEmotion.Sick : Define.PlayerEmotion.Default);
-                // Managers.Sprite.SetPlayerEmotion(emotion);
-                // CoFadeEffect(CreatureData.TemplateID + (int)Define.InGameGrade.Legendary);
-                // Debug.Log(SkillBook.RepeatCurrentGrade(Define.TemplateIDs.SkillType.PaladinSwing));
-                // PAC.DieFront();
-                // Managers.Effect.ShowDodgeText(this);
-                // PAC.Jab1H();
-                // PAC.DeathBack();
-                // PAC.Slash1H();
-
-                // CoEffectHologram();
-                // Managers.Sprite.SetPlayerEmotion(Define.PlayerEmotion.Kitty);
-                // Vector3 spawnEffectPos = new Vector3(transform.position.x, transform.position.y + 3f, transform.position.z);
-                // Managers.Effect.ShowSpawnEffect(Define.PrefabLabels.SPAWN_EFFECT, spawnEffectPos);
-
-                // for (int i = 0; i < 100; ++i)
-                // {
-                //     Vector3 randPos = Utils.GenerateMonsterSpawnPosition(Managers.Game.Player.transform.position, 10f, 20f);
-                //     GemController gc = Managers.Object.Spawn<GemController>(randPos);
-                //     gc.GemSize = UnityEngine.Random.Range(0, 2) == 0 ? gc.GemSize = GemSize.Normal : gc.GemSize = GemSize.Large;
-                // }
-            }
-
             if (Input.GetKeyDown(KeyCode.R))
-            {
-                if (Buff != null && CharaData.TemplateID == (int)Define.TemplateIDs.Player.Gary_Paladin)
-                    Buff.GetComponent<GuardiansShield>().Play();
-
-                // TEST_EXPRESSION();
-                // PAC.DeathFront();
-                // var findGems = Managers.Object.GridController.
-                // GatherObjects(transform.position, EnvCollectDist + 99f).ToList();
-                // foreach (var gem in findGems)
-                // {
-                //     GemController gc = gem.GetComponent<GemController>();
-                //     gc.GetGem();
-                // }
-            }
-
-            MoveByJoystick();
-            CollectEnv();
-
-            if (Input.GetKeyDown(KeyCode.Alpha1))
-                SkillBook.UpgradeRepeatSkill((int)Define.TemplateIDs.SkillType.ThrowingStar);
-
-            if (Input.GetKeyDown(KeyCode.Alpha2))
-                SkillBook.UpgradeRepeatSkill((int)Define.TemplateIDs.SkillType.LazerBolt);
-
-            if (Input.GetKeyDown(KeyCode.Alpha3))
-                SkillBook.UpgradeRepeatSkill((int)Define.TemplateIDs.SkillType.Boomerang);
-
-            if (Input.GetKeyDown(KeyCode.Alpha4))
-                SkillBook.UpgradeRepeatSkill((int)Define.TemplateIDs.SkillType.Spear);
-
-            if (Input.GetKeyDown(KeyCode.Alpha5))
-                SkillBook.UpgradeRepeatSkill((int)Define.TemplateIDs.SkillType.BombTrap);
-
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                //SkillBook.UpgradeRepeatSkill((int)Define.TemplateIDs.SkillType.PaladinMeleeSwing);
-                //SkillBook.UpgradeRepeatSkill((int)Define.TemplateIDs.SkillType.KnightMeleeSwing);
-
-                if (CharaData.TemplateID != (int)Define.TemplateIDs.Player.Stigma_Mutant)
-                    SkillBook.UpgradeRepeatSkill((int)SkillBook.PlayerDefaultSkill);
-                else
-                    SkillBook.UpgradeRepeatSkill((int)Define.TemplateIDs.SkillType.DeathClaw);
-            }
+                Utils.ClearLog();
         }
+#endif
 
-        private float _armBowFixedAngle = 110f;
-        private float _armRifleFixedAngle = 146f;
-        public float TEST_ANGLE = 0f;
-        private void LateUpdate()
-        {
-            //Debug.Log("Angle : " + Vector2.Angle(ArmL.transform.localPosition, Indicator.localPosition));
-            if (_getReady)
-            {
+        // private IEnumerator CoChangePlayerAppearance(SkillBase newSkill)
+        // {
+        //     SkillBook.StopSkills(); // 이걸로하면 나중에 Sequence Skill이 Active가 안될텐뎅
+        //     // StopPlayerDefaultSkill로 바꿔야함.
+        //     PlayerAnim.Ready(false);
 
-                switch (CharaData.TemplateID)
-                {
-                    case (int)Define.TemplateIDs.Player.Reina_ArrowMaster:
-                    case (int)Define.TemplateIDs.Player.Reina_ElementalArcher:
-                    case (int)Define.TemplateIDs.Player.Reina_ForestWarden:
-                        {
-                            float modifiedAngle = (Indicator.eulerAngles.z + _armBowFixedAngle);
-                            if (AnimationLocalScale.x < 0)
-                                modifiedAngle = 360f - modifiedAngle;
+        //     // +++ TEMP +++
+        //     // if (IsChristian(CreatureStat.TemplateID) == false)
+        //     // {
+        //     //     while (PlayerAnim.AnimController.GetCurrentAnimatorStateInfo(0).IsName("IdleMelee") == false)
+        //     //     {
+        //     //         // 이 while 문은 공격 중일때 들어오는 부분인데, 현재 아직 공격중인 크리스티앙 애니메이션이 없음.
+        //     //         yield return null;
+        //     //     }
+        //     // }
 
-                            ArmL.transform.localRotation = Quaternion.Euler(0, 0, modifiedAngle);
-                        }
-                        break;
+        //     // +++ ENABLE ASSASSIN DOUBLE WEAPON +++
+        //     // if (IsAssassin(newSkill.SkillData.OriginTemplateID) && newSkill.SkillData.InGameGrade == Define.InGameGrade.Legendary)
+        //     //     LeftHandMeleeWeapon.GetComponent<SpriteRenderer>().enabled = true;
 
+        //     // // +++ FIND OTHER HAND REINA BOW +++
+        //     // if (IsReina(CreatureData.TemplateID) || IsChristian(CreatureData.TemplateID))
+        //     //     Managers.Sprite.UpgradePlayerAppearance(this, newSkill.SkillData.InGameGrade, true);
+        //     // else
+        //     //     Managers.Sprite.UpgradePlayerAppearance(this, newSkill.SkillData.InGameGrade, false);
 
-                    case (int)Define.TemplateIDs.Player.Christian_Hunter:
-                    case (int)Define.TemplateIDs.Player.Christian_Desperado:
-                    case (int)Define.TemplateIDs.Player.Christian_Destroyer:
-                        {
-                            float modifiedAngle = (Indicator.eulerAngles.z + _armRifleFixedAngle);
-                            if (AnimationLocalScale.x < 0)
-                            {
-                                modifiedAngle = 360f - modifiedAngle - 65f;
-                                ArmR.transform.localRotation = Quaternion.Euler(0, 0, Mathf.Clamp(modifiedAngle, 15f, 91f));
-                            }
-                            else
-                                ArmR.transform.localRotation = Quaternion.Euler(0, 0, Mathf.Clamp(modifiedAngle, 378f, 450f));
-                        }
-                        break;
+        //     // // +++ ADJUST THIEF HAIR MASK +++
+        //     // if (IsThief(newSkill.SkillData.OriginTemplateID) && newSkill.SkillData.InGameGrade > Define.InGameGrade.Rare)
+        //     //     Hair.GetComponent<SpriteMask>().isCustomRangeActive = false;
 
-                }
-            }
-        }
+        //     Managers.Sprite.PlayerExpressionController.UpdateDefaultFace(this);
 
-        private void OnDestroy()
-        {
-            if (Managers.Game != null)
-                Managers.Game.OnMoveDirChanged -= OnMoveDirChangedHandler;
-
-            if (this.IsValid())
-                AnimEvents.OnRepeatAttack -= SkillBook.GeneratePlayerAttack;
-        }
-
-        public void CoExpression(Define.ExpressionType expression, float duration)
-                => StartCoroutine(Managers.Sprite.PlayerExpressionController.CoExpression(expression, duration));
+        //     PlayerAnim.Ready(true);
+        //     newSkill.Activate();
+        // }
     }
 }
+
+/*
+            캐릭터 별로, 하는것이 좋을 것 같음.
+            Gary (캐릭터 공용 스킬)
+            - Endurance
+            > Gary가 매 웨이브를 클리어할 때 마다 방어력 1% 증가 (최대 + 10%) (O)
+            > Gary가 매 웨이브를 클리어할 때 마다 방어력 1% 증가 (최대 + 20%) (V)
+            > Gary가 매 웨이브를 클리어할 때 마다 방어력 2% 증가 (최대 + 20%) (V)
+            > Gary가 매 웨이브를 클리어할 때 마다 방어력 2% 증가 (최대 + 40%) (V)
+
+            +++++ 사실, 게임 자체는 이게 끝임 +++++
+            웨이브당 시간 : 30초 ~ 100초
+            Normal (20 waves) - Forest
+            - Clear Gary : Unlock Knight
+            Normal (Master) (30 waves) - Volcano
+            - Clear Gary : The load of swordman + lv.2
+
+            Hard (20 waves) - Forest
+            - Clear Gary : Unlock Phantom Knight
+            Hard (Master) (30 waves) - Volcano
+            - Clear Gary : The load of swordman + lv.3
+
+            Expert (20 waves) - Forest
+            - Clear Gary : 모든 캐릭터에게 전용 스킬 전승("수호자의 방패", "재정비", "차가운 심장")
+            * 동시에 여러개 배울 수 있음. 근데 비용이 가능할까? 캐릭터 전용 스킬은 매우 비쌈.
+            * 자신의 스킬은 원래부터 똑같은 가격, 그러나 다른 캐릭터의 스킬 가격은 100% 증가된 가격으로 구매 가능.
+            * 모든 캐릭터에게 전승되는 것이므로 모든 캐릭터가 사용할 수 있는 스킬인지 확인
+
+            Exper (Master) (30 waves) - Volcano
+            - Clear Gary : The load of swordman + lv.4
+
+            Extreme (Endless Mode) - 일반, Master 난이도를 모두 클리어시 활성화되는 최종 난이도
+            - Forest, Volcano 중에서 선택 (Boss Arena On / Off)
+
+            Paladin Mastery
+            > 방어력 +20%에서 게임 시작 (O)
+            > 검기 1개 추가 (V)
+            > "수호자의 쉴드" 활성화 (V)
+            > 얼티밋 팔라딘, "하늘의 심판" 궁극기 활성화 (V)
+
+            Paladin Mastery + Lv.2
+            > 방어력 +20%, 최대 체력 +20%에서 게임 시작 (O)
+            > 검기 1개 추가 (O)
+            > "수호자의 쉴드" 활성화 (V)
+            > 얼티밋 팔라딘, "하늘의 심판" 궁극기 활성화 (V)
+
+            Paladin Mastery + Lv.3
+            > 방어력 +10, 최대 체력 +20%에서 게임 시작 (O)
+            > 검기 1개 추가 (O)
+            > "수호자의 쉴드" 활성화 (O)
+            > 얼티밋 팔라딘, "하늘의 심판" 궁극기 활성화 (V)
+    
+            Paladin Mastery + Lv.4
+            > 방어력 +10, 최대 체력 +20%에서 게임 시작 (O)
+            > 검기 1개 추가 (O)
+            > "수호자의 쉴드" 활성화 (O)
+            > 얼티밋 팔라딘, "하늘의 심판" 궁극기 활성화 (O)
+
+            * 디스플레이 명칭 "캐릭터 공용 스킬" : 인내심
+            * 디스플레이 명칭 "캐릭터 전용 스킬" : 수호자의 쉴드
+            * 디스플레이 명칭 "캐릭터 전용 궁극기 스킬" : 하늘의 심판
+
+            Knight Mastery
+            > 나이트의 기본 공격은 몬스터의 방어력을 무시
+            > 검기의 크기 증가
+            > "재정비" 활성화 (V)
+            > 얼티밋 나이트, "슬래셔" 궁극기 활성화 (V)
+
+            Phantom Knight Mastery
+            > 3번 히트시 불안정한 불안정한 추가 데미지(1 ~ 99)
+            > 불안정한 검기의 모양
+            > "차가운 심장" 활성화 (V)
+            > 얼티밋 팬텀 나이트, "공포의 군주" 궁극기 활성화 (V)
+
+            Reina (캐릭터 공용 스킬)
+            > 매 웨이브를 클리어할 때 마다 기본 스킬 데미지 1% 증가 (최대 + 10%) (V)
+            > 매 웨이브를 클리어할 때 마다 기본 스킬 데미지 1% 증가 (최대 + 20%) (V)
+            > 매 웨이브를 클리어할 때 마다 기본 스킬 데미지 2% 증가 (최대 + 20%) (V)
+            > 매 웨이브를 클리어할 때 마다 기본 스킬 데미지 2% 증가 (최대 + 40%) (V)
+
+            Arrow Master Mastery
+            > 화살이 가장 가까운 몬스터에게 오토 에이밍
+            > 화살의 개수 추가
+            > "집중" 활성화 (V)
+            > Ultimate Arrow Master, "연발 사격" 궁극기 활성화 (V)
+
+            Elemental Archer Mastery
+            > 5초 마다 몬스터를 넉백하는 화살을 발사
+            > 검기 1개 추가 (V)
+            > "수호자의 쉴드" 활성화 (V)
+            > 얼티밋 팔라딘, "하늘의 심판" 궁극기 활성화 (V)
+
+            Elemental Archer Mastery
+            > 최대 체력 +20%, 방어력 +10%에서 게임 시작 (O)
+            > 검기 1개 추가 (V)
+            > "수호자의 쉴드" 활성화 (V)
+            > 얼티밋 팔라딘, "하늘의 심판" 궁극기 활성화 (V)
+
+            Kenneth (캐릭터 공용 스킬)
+            > 매 웨이브를 클리어할 때 마다 기본 공격 속도 1% 증가 (최대 + 10%) (O)
+            > 매 웨이브를 클리어할 때 마다 기본 공격 속도 1% 증가 (최대 + 20%) (V)
+            > 매 웨이브를 클리어할 때 마다 기본 공격 속도 2% 증가 (최대 + 20%) (V)
+            > 매 웨이브를 클리어할 때 마다 기본 공격 속도 2% 증가 (최대 + 40%) (V)
+
+
+            * 마스터리 스킬은 레벨업 할 때 마다 외형이 변경됨
+
+            Paladin Mastery
+            > 방어력 +20%에서 게임 시작 (O)
+            > 검기 1개 추가 (V)
+            > "Guardian's Shield"
+            > 얼티밋 팔라딘, "하늘의 심판" 궁극기 활성화 (V)
+
+            Knight Mastery
+            > 나이트의 기본 공격은 몬스터의 방어력을 무시
+            > 검기의 크기 증가
+            > "Second Wind"
+            > 얼티밋 나이트, "슬래셔" 궁극기 활성화 (V)
+
+            Phantom Knight Mastery
+            > 랜덤한 쿨타임(5초 ~ 20초)에 불안정한 추가 데미지를 입힘(1 ~ 99)
+            > 검기의 모양이 불안정하게 변경(최대 3회 추가 타격)
+            > "Soul Eater" 적을 처치하면 최대 체력의 1~3% 회복 (랜덤) / 1% ~ 2% (60%), 2% ~ 3% (40%)
+            > 얼티밋 팬텀 나이트, "공포의 군주" 궁극기 활성화 (V)
+
+            Arrow Master Mastery
+            > 화살이 가장 가까운 몬스터에게 오토 에이밍
+            > 화살의 개수 추가
+            > "Concentration"
+            > Ultimate Arrow Master, "연발 사격" 궁극기 활성화 (V)
+
+            Elemental Archer Mastery
+            > 몬스터를 넉백하는 화살을 발사
+            > 넉백 거리 증가
+            > ""
+            > Ultimate Elemental Archer, "Elemental Arrow" 궁극기 활성화 (V), Elemental Trail + Elemental Explosion
+
+            "Raining Cloud" : 맵 전체에 비가 내림. 스폰된 전체 몬스터의 방어력 -10% 감소 (Archmage)
+
+            Forest Warden Mastery
+            > 10%확률로 적을 2초간 기절시키는 깃털 화살 발사
+            > "Shield of leaves"
+            > Ultimate Forest Warden, "Summon Black Phanther" 활성화
+
+            Assassin Mastery
+            > Dodge +20%
+            > 찌르기 공격 1회 추가
+            > "Shadow Step"
+            > Ultimate Assassin, "Shadow Strike" 궁극기 활성화 (V)
+            * Shadow Strike : 하나의 적에게 근접했을 때 다양한 각도로 여러번 텔포 타면서 빠르게 근접 공격. 하나의 대상만 여러번 공격을 가함.
+
+            Thief Mastery
+            > Luck +30%
+            > 검기 1회 추가
+            > "Let's Sweep" : 웨이브 종료시 못잡은 몬스터 한마리당 1GEM 획득
+            > Ultimate Thief, "Plunder" 궁극기 활성화 (V)
+
+            Ninja Mastery
+            > MoveSpeed +50%
+            > 표창 2개 추가
+            > "Shadow Clone Technique" : 체력이 50% 이하일 때 발동, 20%의 확률로 몬스터가 밀집되어 있지 않은 지역으로 텔레포트, 쿨타임 30초
+            > Ultimate Thief, "질주" 궁극기 활성화 (V)
+
+            Pirate Mastery
+            > 타격을 1회씩 할 때 마다 몬스터에게 저주를 걸 확률이 1% 증가(성공시 확률 초기화)
+            > 검기의 모양 변경
+            > "Plunder" 활성화
+            > Ultimate Pirate, "Pirate's Bomb Cannon" 궁극기 활성화 (V)
+
+            Paladin - "Guardian's Sheild"
+            Knight - "BUCKLE UP" (재정비)
+            Phantom Knight - "Soul Eater" 적을 처치하면 최대 체력의 1~3% 회복 (랜덤) / 1% ~ 2% (60%), 2% ~ 3% (40%)
+
+            Arrow Master - "Concentration"
+            Elemental Archer - "Rainning Cloud"
+            Forest Warden - "Shield of leaves"
+
+            Assassin - "Shadow Step" (던파 소울브링어 잠깐씩 반짝거리는거처럼 아주 잠깐 공격을 회피)
+            Thief - "Let's Sweep"
+            Ninja - "Shadow Clone Technique"
+            Ninja Rare Mastery : 가까이 다가오는 적에게 검기를 날림
+            Mastery Level 마다 스킬의 네이밍 디스플레이가 있어야할 것 같음
+            (ex) Ninja Master + Lv.2 : Ninja Slash
+            WindlinesStormy
+
+            Warrior - "Wind Blade" (SwordWhirlwindBlue)
+            Barbarian - "Wild Stance"
+            Berserker - "Revenger"
+
+            Hunter - "Head Shot" (1% 확률로 즉사, 보스에게 +500%의 데미지, 쿨타임 20초)
+            Desperado - "Technical Dexterity"
+            Destroyer - "Rocket Explosion"
+
+            Archmage - "Raining Cloud"  
+            Trickster - "Magical Hit" (Impact_Cartoon_Hit_V1 ~ V3 - 전용 스킬, Impact_Cartoon_Hit_V4, V5 - 궁)
+            Frost Weaver - "Frozen Heart"
+
+            SkeletonKing - "Summon : Skeleton Warriors" 
+            Pirate - "Dark Smoke" (자신의 모습을 5초간 감춤, 쿨타임 30초) (CFXR4 Explosion Purple (HDR) + Dark Smoke)
+            Mutant - "Zombie Virus" (Venom Explosion)
+
+            Queen - "For the queen" (고위 기사 3명 소환)
+            // WindlinesStormy : 보스 스킬로 하면 될듯
+*/

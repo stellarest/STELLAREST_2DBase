@@ -55,7 +55,7 @@ namespace STELLAREST_2D
         public void SetStrongTintWhite(float value)
                 => _matStrongTintWhite.SetFloat(SHADER_STRONG_TINT_WHITE, value);
 
-        private GameObject _upgradePlayerBuffEffect;
+        //private GameObject _upgradePlayerBuffEffect;
         private int SHADER_HIT_EFFECT = Shader.PropertyToID("_StrongTintFade");
         private int SHADER_FADE_EFFECT = Shader.PropertyToID("_CustomFadeAlpha");
         private int SHADER_GLITCH = Shader.PropertyToID("_GlitchFade");
@@ -65,6 +65,7 @@ namespace STELLAREST_2D
         private Dictionary<GameObject, CreatureMaterial[]> _creatureMats = new Dictionary<GameObject, CreatureMaterial[]>();
         private Dictionary<GameObject, EnvMaterial> _envSimpleMats = new Dictionary<GameObject ,EnvMaterial>();
 
+        // 먹는거 조심...
         public void Init()
         {
             _matHitWhite = Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_HIT_WHITE);
@@ -74,8 +75,20 @@ namespace STELLAREST_2D
             _matHologram = Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_HOLOGRAM);
             _matStrongTintWhite = Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_STRONG_TINT_WHITE);
 
-            if (_upgradePlayerBuffEffect == null)
-                _upgradePlayerBuffEffect = Utils.FindChild(Managers.Game.Player.gameObject, Define.Player.UPGRADE_PLAYER_BUFF);
+            // if (_upgradePlayerBuffEffect == null)
+            //     _upgradePlayerBuffEffect = Utils.FindChild(Managers.Game.Player.gameObject, Define.Player.UPGRADE_PLAYER_BUFF);
+        }
+
+        public void Hit(BaseController target, Define.TemplateIDs.VFX.Impact effectHit, float duration)
+        {
+            //skill.RepeatSkillData.ImpactHitEffectType
+            //target.Star();
+            //Define.TemplateIDs.VFX.Impact effectHit = skillFromAttacker.
+        }
+
+        private IEnumerator CoHitEffect()
+        {
+            yield return null;
         }
 
         public void ChangeCreatureMaterials(CreatureController cc)
@@ -109,7 +122,7 @@ namespace STELLAREST_2D
                     if (sprArr[i].sprite == null)
                         continue;
 
-                    if (sprArr[i].gameObject.name.Contains(Define.Player.FIRE_SOCKET))
+                    if (sprArr[i].gameObject.name.Contains(Define.PLAYER_FIRE_SOCKET))
                         continue;
 
                     ++length;
@@ -125,7 +138,7 @@ namespace STELLAREST_2D
                     if (sprArr[i].sprite == null)
                         continue;
 
-                    if (sprArr[i].gameObject.name.Contains(Define.Player.FIRE_SOCKET))
+                    if (sprArr[i].gameObject.name.Contains(Define.PLAYER_FIRE_SOCKET))
                         continue;
 
                     playerMats[index++] = new CreatureMaterial(sprArr[i], sprArr[i].material, sprArr[i].color);
@@ -287,7 +300,7 @@ namespace STELLAREST_2D
             //CreatureMaterial[] mats = _creatureMats[cc.CharaData.TemplateID];
             CreatureMaterial[] mats = _creatureMats[cc.gameObject];
 
-            float duration = _upgradePlayerBuffEffect.GetComponent<ParticleSystem>().main.duration;
+            // float duration = _upgradePlayerBuffEffect.GetComponent<ParticleSystem>().main.duration;
 
             // if (cc?.IsMonster() == false)
             //     Managers.Sprite.SetPlayerEmotion(Define.PlayerEmotion.Greedy);
@@ -296,7 +309,8 @@ namespace STELLAREST_2D
                 mats[i].spriteRender.material = _matGlitch;
 
             float delta = 0f;
-            float desiredTime = duration;
+            //float desiredTime = duration;
+            float desiredTime = 2f;
             float percent = 1f;
             while (percent > 0f)
             {
@@ -332,7 +346,7 @@ namespace STELLAREST_2D
             Managers.Resource.Destroy(go);
         }
 
-        public void UpgradePlayerBuffEffect() => _upgradePlayerBuffEffect.SetActive(true);
+        // public void UpgradePlayerBuffEffect() => _upgradePlayerBuffEffect.SetActive(true);
         public void StartHitEffect(CreatureController cc)
         {
             //CreatureMaterial[] mats = _creatureMats[cc.CharaData.TemplateID];
@@ -374,7 +388,8 @@ namespace STELLAREST_2D
         public void ShowPlayerDust()
         {
             GameObject go = Managers.Resource.Instantiate(Define.Labels.Prefabs.DUST, pooling: true);
-            go.transform.position = Managers.Game.Player.LegR.position + (Vector3.down * 0.35f);
+            //go.transform.position = Managers.Game.Player.LegR.position + (Vector3.down * 0.35f);
+            go.transform.position = Managers.Game.Player.BodyParts.LegRight.position + (Vector3.down * 0.35f);
         }
 
         public void ShowGemGather(GemController gc)
@@ -410,7 +425,7 @@ namespace STELLAREST_2D
             }
             else
             {
-                if (cc.CharaData.TemplateID == (int)Define.TemplateIDs.Monster.Chicken)
+                if (cc.CreatureStat.TemplateID == (int)Define.TemplateIDs.Creatures.Monster.Chicken)
                     defaultSpawnPos -= Vector3.up;
 
                 if (isCritical)
@@ -473,37 +488,37 @@ namespace STELLAREST_2D
 
         public void ShowImpactWindEffect(Vector3 position, Define.InGameGrade inGameGrade)
         {
-            GameObject go = null;
+            // GameObject go = null;
 
-            switch (inGameGrade)
-            {
-                case Define.InGameGrade.Normal:
-                    return;
+            // switch (inGameGrade)
+            // {
+            //     case Define.InGameGrade.Normal:
+            //         return;
 
-                case Define.InGameGrade.Rare:
-                    {
-                        go = Managers.Resource.Instantiate(Define.Labels.Prefabs.IMPACT_WIND_LV1_EFFECT, pooling: true);
-                        go.GetComponent<CustomAutoDestroy>().StartDestroy(1.2f);
-                        go.transform.position = position;
-                    }
-                    break;
+            //     case Define.InGameGrade.Rare:
+            //         {
+            //             go = Managers.Resource.Instantiate(Define.Labels.Prefabs.IMPACT_WIND_LV1_EFFECT, pooling: true);
+            //             go.GetComponent<CustomAutoDestroy>().StartDestroy(1.2f);
+            //             go.transform.position = position;
+            //         }
+            //         break;
 
-                case Define.InGameGrade.Epic:
-                    {
-                        go = Managers.Resource.Instantiate(Define.Labels.Prefabs.IMPACT_WIND_LV2_EFFECT, pooling: true);
-                        go.GetComponent<CustomAutoDestroy>().StartDestroy(1.2f);
-                        go.transform.position = position;
-                    }
-                    break;
+            //     case Define.InGameGrade.Epic:
+            //         {
+            //             go = Managers.Resource.Instantiate(Define.Labels.Prefabs.IMPACT_WIND_LV2_EFFECT, pooling: true);
+            //             go.GetComponent<CustomAutoDestroy>().StartDestroy(1.2f);
+            //             go.transform.position = position;
+            //         }
+            //         break;
 
-                case Define.InGameGrade.Legendary:
-                    {
-                        go = Managers.Resource.Instantiate(Define.Labels.Prefabs.IMPACT_WIND_LV3_EFFECT, pooling: true);
-                        go.GetComponent<CustomAutoDestroy>().StartDestroy(1.2f);
-                        go.transform.position = position;
-                    }
-                    break;
-            }
+            //     case Define.InGameGrade.Legendary:
+            //         {
+            //             go = Managers.Resource.Instantiate(Define.Labels.Prefabs.IMPACT_WIND_LV3_EFFECT, pooling: true);
+            //             go.GetComponent<CustomAutoDestroy>().StartDestroy(1.2f);
+            //             go.transform.position = position;
+            //         }
+            //         break;
+            // }
         }
 
         public void ShowFireTrailEffect(BaseController followTarget)
@@ -514,37 +529,37 @@ namespace STELLAREST_2D
 
         public void ShowImpactFireEffect(Vector3 position, Define.InGameGrade inGameGrade)
         {
-            GameObject go = null;
+            // GameObject go = null;
 
-            switch (inGameGrade)
-            {
-                case Define.InGameGrade.Normal:
-                    return;
+            // switch (inGameGrade)
+            // {
+            //     case Define.InGameGrade.Normal:
+            //         return;
 
-                case Define.InGameGrade.Rare:
-                    {
-                        go = Managers.Resource.Instantiate(Define.Labels.Prefabs.IMPACT_FIRE_LV1_EFFECT, pooling: true);
-                        go.GetComponent<CustomAutoDestroy>().StartDestroy(1.2f);
-                        go.transform.position = position;
-                    }
-                    break;
+            //     case Define.InGameGrade.Rare:
+            //         {
+            //             go = Managers.Resource.Instantiate(Define.Labels.Prefabs.IMPACT_FIRE_LV1_EFFECT, pooling: true);
+            //             go.GetComponent<CustomAutoDestroy>().StartDestroy(1.2f);
+            //             go.transform.position = position;
+            //         }
+            //         break;
 
-                case Define.InGameGrade.Epic:
-                    {
-                        go = Managers.Resource.Instantiate(Define.Labels.Prefabs.IMPACT_FIRE_LV2_EFFECT, pooling: true);
-                        go.GetComponent<CustomAutoDestroy>().StartDestroy(1.2f);
-                        go.transform.position = position;
-                    }
-                    break;
+            //     case Define.InGameGrade.Epic:
+            //         {
+            //             go = Managers.Resource.Instantiate(Define.Labels.Prefabs.IMPACT_FIRE_LV2_EFFECT, pooling: true);
+            //             go.GetComponent<CustomAutoDestroy>().StartDestroy(1.2f);
+            //             go.transform.position = position;
+            //         }
+            //         break;
 
-                case Define.InGameGrade.Legendary:
-                    {
-                        go = Managers.Resource.Instantiate(Define.Labels.Prefabs.IMPACT_FIRE_LV3_EFFECT, pooling: true);
-                        go.GetComponent<CustomAutoDestroy>().StartDestroy(1.2f);
-                        go.transform.position = position;
-                    }
-                    break;
-            }
+            //     case Define.InGameGrade.Legendary:
+            //         {
+            //             go = Managers.Resource.Instantiate(Define.Labels.Prefabs.IMPACT_FIRE_LV3_EFFECT, pooling: true);
+            //             go.GetComponent<CustomAutoDestroy>().StartDestroy(1.2f);
+            //             go.transform.position = position;
+            //         }
+            //         break;
+            // }
         }
 
         public void ShowIceTrailEffect(BaseController followTarget)
@@ -555,37 +570,37 @@ namespace STELLAREST_2D
 
         public void ShowImpactIceEffect(Vector3 position, Define.InGameGrade inGameGrade)
         {
-            GameObject go = null;
+            // GameObject go = null;
 
-            switch (inGameGrade)
-            {
-                case Define.InGameGrade.Normal:
-                    return;
+            // switch (inGameGrade)
+            // {
+            //     case Define.InGameGrade.Normal:
+            //         return;
 
-                case Define.InGameGrade.Rare:
-                    {
-                        go = Managers.Resource.Instantiate(Define.Labels.Prefabs.IMPACT_ICE_LV1_EFFECT, pooling: true);
-                        go.GetComponent<CustomAutoDestroy>().StartDestroy(1.2f);
-                        go.transform.position = position;
-                    }
-                    break;
+            //     case Define.InGameGrade.Rare:
+            //         {
+            //             go = Managers.Resource.Instantiate(Define.Labels.Prefabs.IMPACT_ICE_LV1_EFFECT, pooling: true);
+            //             go.GetComponent<CustomAutoDestroy>().StartDestroy(1.2f);
+            //             go.transform.position = position;
+            //         }
+            //         break;
 
-                case Define.InGameGrade.Epic:
-                    {
-                        go = Managers.Resource.Instantiate(Define.Labels.Prefabs.IMPACT_ICE_LV2_EFFECT, pooling: true);
-                        go.GetComponent<CustomAutoDestroy>().StartDestroy(1.2f);
-                        go.transform.position = position;
-                    }
-                    break;
+            //     case Define.InGameGrade.Epic:
+            //         {
+            //             go = Managers.Resource.Instantiate(Define.Labels.Prefabs.IMPACT_ICE_LV2_EFFECT, pooling: true);
+            //             go.GetComponent<CustomAutoDestroy>().StartDestroy(1.2f);
+            //             go.transform.position = position;
+            //         }
+            //         break;
 
-                case Define.InGameGrade.Legendary:
-                    {
-                        go = Managers.Resource.Instantiate(Define.Labels.Prefabs.IMPACT_ICE_LV3_EFFECT, pooling: true);
-                        go.GetComponent<CustomAutoDestroy>().StartDestroy(1.2f);
-                        go.transform.position = position;
-                    }
-                    break;
-            }
+            //     case Define.InGameGrade.Legendary:
+            //         {
+            //             go = Managers.Resource.Instantiate(Define.Labels.Prefabs.IMPACT_ICE_LV3_EFFECT, pooling: true);
+            //             go.GetComponent<CustomAutoDestroy>().StartDestroy(1.2f);
+            //             go.transform.position = position;
+            //         }
+            //         break;
+            // }
         }
 
         public void ShowBubbleTrailEffect(BaseController followTarget)
@@ -631,26 +646,26 @@ namespace STELLAREST_2D
         //     return go;
         // }
 
-        public GameObject ShowImpactHitEffect(Define.ImpactHits impactHit, Vector3 position)
-        {
-            GameObject go = null;
-            switch (impactHit)
-            {
-                case Define.ImpactHits.None:
-                    return null;
+        // public GameObject ShowImpactHitEffect(Define.ImpactHits impactHit, Vector3 position)
+        // {
+        //     GameObject go = null;
+        //     switch (impactHit)
+        //     {
+        //         case Define.ImpactHits.None:
+        //             return null;
 
-                case Define.ImpactHits.Leaves:
-                    go = Managers.Resource.Instantiate(Define.Labels.Prefabs.IMPACT_HIT_LEAVES_EFFECT, pooling: true);
-                    break;
+        //         case Define.ImpactHits.Leaves:
+        //             go = Managers.Resource.Instantiate(Define.Labels.Prefabs.IMPACT_HIT_LEAVES_EFFECT, pooling: true);
+        //             break;
 
-                case Define.ImpactHits.CriticalHit:
-                    go = Managers.Resource.Instantiate(Define.Labels.Prefabs.IMPACT_CRITICAL_HIT_EFFECT, pooling: true);
-                    break;
-            }
-            go.transform.position = position;
+        //         case Define.ImpactHits.CriticalHit:
+        //             go = Managers.Resource.Instantiate(Define.Labels.Prefabs.IMPACT_CRITICAL_HIT_EFFECT, pooling: true);
+        //             break;
+        //     }
+        //     go.transform.position = position;
 
-            return go;
-        }
+        //     return go;
+        // }
 
         // public GameObject ShowBuffEffect(Define.Buff buff, Transform target)
         // {

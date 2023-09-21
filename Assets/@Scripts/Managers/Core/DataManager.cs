@@ -12,25 +12,28 @@ namespace STELLAREST_2D
 
     public class DataManager
     {
-        public Dictionary<int, Data.CreatureData> CreatureDict { get; private set; } = new Dictionary<int, Data.CreatureData>();
-        public Dictionary<int, Data.SkillData> SkillDict { get; private set; } = new Dictionary<int, Data.SkillData>();
-        public Dictionary<int, Data.BonusStatData> BonusStatDict { get; private set; } = new Dictionary<int, Data.BonusStatData>();
-
-        public Dictionary<int, Data.BonusBuffData> BuffDict { get; private set; } = new Dictionary<int, Data.BonusBuffData>();
+        public Dictionary<int, Data.CreatureData> CreaturesDict { get; private set; } = new Dictionary<int, Data.CreatureData>();
+        public Dictionary<int, Data.CreatureStatData> StatsDict { get; private set; } = new Dictionary<int, Data.CreatureStatData>();
+        public Dictionary<int, Data.SkillData> SkillsDict { get; private set; } = new Dictionary<int, Data.SkillData>();
+        //public Dictionary<int, Data.SequenceSkillData> SequenceSkillsDict { get; private set; } = new Dictionary<int, Data.SequenceSkillData>();
+        //public Dictionary<int, Data.BuffSkillData> BuffSkillsDict { get; private set; } = new Dictionary<int, Data.BuffSkillData>();
 
         public void Init()
         {
-            CreatureDict = LoadJson<Data.CreatureDataLoader, int, Data.CreatureData>
+            CreaturesDict = LoadJson<Data.CreatureDataLoader, int, Data.CreatureData>
                             (Define.Labels.Data.CREATURE).MakeDict();
 
-            SkillDict = LoadJson<Data.SkillDataLoader, int, Data.SkillData>
+            StatsDict = LoadJson<Data.CreatureStatDataLoader, int, Data.CreatureStatData>
+                            (Define.Labels.Data.CREATURE_STAT).MakeDict();
+
+            SkillsDict = LoadJson<Data.SkillDataLoader, int, Data.SkillData>
                             (Define.Labels.Data.SKILL).MakeDict();
 
-            BonusStatDict = LoadJson<Data.BonusStatDataLoader, int, Data.BonusStatData>
-                            (Define.Labels.Data.BONUS_STAT).MakeDict();
+            // SequenceSkillsDict = LoadJson<Data.SequenceSkillDataLoader, int, Data.SequenceSkillData>
+            //                 (Define.Labels.Data.SEQUENCE_SKILL).MakeDict();
 
-            BuffDict = LoadJson<Data.BonusBuffDataLoader, int, Data.BonusBuffData>
-                            (Define.Labels.Data.BONUS_BUFF).MakeDict();
+            // BuffSkillsDict = LoadJson<Data.BuffSkillDataLoader, int, Data.BuffSkillData>
+            //                 (Define.Labels.Data.BUFF_SKILL).MakeDict();
         }
 
         private T LoadJson<T, Key, Value>(string path) where T : ILoader<Key, Value>

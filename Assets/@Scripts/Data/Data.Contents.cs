@@ -16,6 +16,7 @@ namespace STELLAREST_2D.Data
         public string PrimaryLabel;
         public float MaxHp;
         public float Damage;
+        public float DefaultSkillDamage;
         public float Critical;
         public float AttackSpeed;
         public float CoolDown;
@@ -25,7 +26,9 @@ namespace STELLAREST_2D.Data
         public float CollectRange;
         public float Luck;
         public float TotalExp;
-        public List<int> InGameSkillList;
+        public int OtherExclusiveSkillSocket;
+        public List<int> RepeatSkillList;
+        public List<int> SequenceSkillList;
     }
 
     [Serializable]
@@ -49,22 +52,65 @@ namespace STELLAREST_2D.Data
     }
 
     [Serializable]
+    public class CreatureStatData
+    {
+        public int TemplateID;
+        public string Name;
+        public string Description;
+        Define.InGameGrade InGameGrade;
+        public float MaxHpUp;
+        public float DamageUp; // 전체 데미지 증가량 (적게 증가함)
+        public float DefaultSkillDamageUp; // DefaultSkillDamage 데미지 증가량 (크게 증가함)
+        public float CriticalUp;
+        public float AttackSpeedUp;
+        public float CoolDownUp;
+        public float ArmorUp;
+        public float DodgeUp;
+        public float MoveSpeedUp;
+        public float CollectRangeUp;
+        public float LuckUp;
+    }
+
+    [Serializable]
+    public class CreatureStatDataLoader : ILoader<int, CreatureStatData>
+    {
+        public List<CreatureStatData> creatureStats = new List<CreatureStatData>();
+
+        public Dictionary<int, CreatureStatData> MakeDict()
+        {
+            if (creatureStats.Count == 0)
+            {
+                Debug.LogError("Failed to load CreatureStatData.json");
+                Debug.Break();
+            }
+
+            Dictionary<int, CreatureStatData> dict = new Dictionary<int, CreatureStatData>();
+            foreach (CreatureStatData stat in creatureStats)
+                dict.Add(stat.TemplateID, stat);
+
+            return dict;
+        }
+    }
+
+    [Serializable]
     public class SkillData
     {
         public int TemplateID;
-        public int OriginTemplateID;
+        public Define.TemplateIDs.Status.Skill OriginalTemplate;
+        public Define.SkillType SkillType;
         public string Name;
+        public string Description;
         public string PrimaryLabel;
         public string ModelingLabel;
-        public bool IsPlayerDefaultAttack;
+        public bool IsExclusive;
+        public bool IsProjectile;
         public bool IsOnFireSocket;
-        public bool IsOnlyFixedRotation;
-        public bool[] IsOnHits;
-        public Define.InGameGrade InGameGrade;
+        public Define.InGameGrade Grade;
+        public Define.InGameGrade MaxGrade;
         public float MinDamage;
         public float MaxDamage;
-        public float Speed;
-        public float AnimationSpeed;
+        public float MovementSpeed;
+        public float RotationSpeed;
         public float Duration;
         public int ContinuousCount;
         public float ContinuousSpacing;
@@ -73,20 +119,18 @@ namespace STELLAREST_2D.Data
         public float[] ContinuousFixedRotations;
         public float[] ContinuousFlipXs;
         public float[] ContinuousFlipYs;
-        public float[] ContinuousPowers;
-        public Vector2[] InterpolateTargetScales;
-        public float CollisionKeepingRatio;
+        public Vector3[] AdditionalLocalPositions;
+        public Vector3[] ScaleInterpolations;
+        public bool[] IsOnlyVisibles;
+        public float ColliderLifeRatio;
         public int BounceCount;
-        public float SelfRotationZSpeed;
         public int PenetrationCount;
-        public Define.TemplateIDs.BonusStatType BonusStatTemplateID;
-        public Define.TemplateIDs.BonusBuffType BonusBuffTemplateID;
-        public Define.TemplateIDs.HitEffectType HitEffectTemplateID;
-        public Define.TemplateIDs.UltimateSequenceType UltimateSequenceTemplateID;
-        public bool HasCC;
-        public Define.CCType CCType;
-        public float CCRate;
-        public float CCDuration;
+        public Define.TemplateIDs.Status.AfterEffect AfterEffectType;
+        public Define.TemplateIDs.VFX.Muzzle VFX_Muzzle;
+        public Define.TemplateIDs.VFX.Impact VFX_Impact;
+        public Define.TemplateIDs.VFX.Environment VFX_Environment;
+        public List<int> UpgradeStatList;
+        public Define.TemplateIDs.Status.Skill UnlockSkillTemplate;
         public float CoolTime;
     }
 
@@ -112,47 +156,7 @@ namespace STELLAREST_2D.Data
     }
 
     [Serializable]
-    public class BonusStatData
-    {
-        public int TemplateID;
-        public string Name;
-        public string Description;
-        Define.InGameGrade InGameGrade;
-        public float MaxHpUp;
-        public float DamageUp;
-        public float CriticalUp;
-        public float AttackSpeedUp;
-        public float CoolDownUp;
-        public float ArmorUp;
-        public float DodgeUp;
-        public float MoveSpeedUp;
-        public float CollectRangeUp;
-        public float LuckUp;
-    }
-
-    [Serializable]
-    public class BonusStatDataLoader : ILoader<int, BonusStatData>
-    {
-        public List<BonusStatData> bonusStats = new List<BonusStatData>();
-
-        public Dictionary<int, BonusStatData> MakeDict()
-        {
-            if (bonusStats.Count == 0)
-            {
-                Debug.LogError("Failed to load PassiveSkillData.json");
-                Debug.Break();
-            }
-
-            Dictionary<int, BonusStatData> dict = new Dictionary<int, BonusStatData>();
-            foreach (BonusStatData bonusStat in bonusStats)
-                dict.Add(bonusStat.TemplateID, bonusStat);
-
-            return dict;
-        }
-    }
-
-    [Serializable]
-    public class BonusBuffData
+    public class BuffSkillData
     {
         public int TemplateID;
         public string Name;
@@ -167,11 +171,11 @@ namespace STELLAREST_2D.Data
     }
 
     [Serializable]
-    public class BonusBuffDataLoader : ILoader<int, BonusBuffData>
+    public class BuffSkillDataLoader : ILoader<int, BuffSkillData>
     {
-        public List<BonusBuffData> bonusBuffs = new List<BonusBuffData>();
+        public List<BuffSkillData> bonusBuffs = new List<BuffSkillData>();
 
-        public Dictionary<int, BonusBuffData> MakeDict()
+        public Dictionary<int, BuffSkillData> MakeDict()
         {
             if (bonusBuffs.Count == 0)
             {
@@ -179,8 +183,8 @@ namespace STELLAREST_2D.Data
                 Debug.Break();
             }
 
-            Dictionary<int, BonusBuffData> dict = new Dictionary<int, BonusBuffData>();
-            foreach (BonusBuffData buff in bonusBuffs)
+            Dictionary<int, BuffSkillData> dict = new Dictionary<int, BuffSkillData>();
+            foreach (BuffSkillData buff in bonusBuffs)
                 dict.Add(buff.TemplateID, buff);
 
             return dict;

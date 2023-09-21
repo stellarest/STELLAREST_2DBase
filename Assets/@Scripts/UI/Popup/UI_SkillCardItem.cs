@@ -13,7 +13,7 @@ namespace STELLAREST_2D.UI
         public void SetInfo(int templateID)
         {
             _templateID = templateID;
-            Managers.Data.SkillDict.TryGetValue(templateID, out _skillData);
+            Managers.Data.SkillsDict.TryGetValue(templateID, out _skillData);
         }
 
         public void OnClickItem()

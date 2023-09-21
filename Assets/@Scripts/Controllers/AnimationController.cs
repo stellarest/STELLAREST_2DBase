@@ -6,14 +6,13 @@ namespace STELLAREST_2D
 {
     public class AnimationController : BaseController
     {
-        public CreatureController Owner { get; set; }
+        public CreatureController Owner { get; protected set; }
         public Animator AnimController { get; protected set; }
 
-        public override bool Init()
+        public void InitAnimationController(CreatureController owner)
         {
-            base.Init();
-            AnimController = gameObject.GetComponentInChildren<Animator>();
-            return true;
+            Owner = owner;
+            AnimController = GetComponentInChildren<Animator>();
         }
     }
 }

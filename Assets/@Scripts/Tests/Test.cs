@@ -3,14 +3,37 @@ using System.Collections.Generic;
 using UnityEngine;
 using STELLAREST_2D;
 using Unity.VisualScripting;
+using Assets.HeroEditor.Common.Scripts.CharacterScripts.Firearms;
 
 namespace STELLAREST_2D.Test
 {
+    // +++++ TEMP CODES +++++
+    // gc.Init();
+    // bool changeSprite = Random.Range(0, 2) == 0 ? true : false;
+    // string spriteKey = "";
+    // if (changeSprite)
+    // {
+    //     spriteKey = Random.Range(0, 2) == 0 ?
+    //                 Define.SpriteLabels.EXP_GEM_BLUE : Define.SpriteLabels.EXP_GEM_YELLOW;
+
+    //     Sprite yellowOrBlue = Managers.Resource.Load<Sprite>(spriteKey);
+    //     if (yellowOrBlue != null)
+    //         gc.GetComponent<SpriteRenderer>().sprite = yellowOrBlue;
+    // }
+
     public class Test : MonoBehaviour
     {
 
         public ParticleSystem[] ShieldOns = null;
         public ParticleSystem[] ShieldOffs = null;
+
+        public Vector3 TargetScale = Vector3.zero;
+
+        [ContextMenu("DELETE_COMP")]
+        private void DELETE_COMP()
+        {
+            UnityEngine.Object.DestroyImmediate(GetComponentInChildren<FingerTrigger>());
+        }
 
         private void Update()
         {
@@ -21,8 +44,38 @@ namespace STELLAREST_2D.Test
 
             if (Input.GetKeyDown(KeyCode.P))
             {
-                TEST_OFF();
+                StartCoroutine(DoScaleUp());
             }      
+        }
+
+        [ContextMenu("DO_SCALE_UP")]
+        private void DO_SCALE_UP()
+        {
+            StartCoroutine(DoScaleUp());
+        }
+
+        private IEnumerator DoScaleUp()
+        {
+            float t = 0f;
+            float percent = 0f;
+            Vector3 start = transform.localScale;
+            while (percent < 1f)
+            {
+                t += Time.deltaTime;
+                percent = t / 2f;
+                transform.localScale = Vector3.Lerp(start, TargetScale, percent);
+                yield return null;
+            }
+        }
+
+        [ContextMenu("STRING_LENGTH_TEST")]
+        private void STRING_LENGTH_TEST()
+        {
+            string strEmpty = "";
+            Debug.Log("STR EMPTY : " + strEmpty.Length); // 0
+
+            string strHello = "Hello";
+            Debug.Log("STR HELLO : " + strHello.Length); // 5
         }
 
         [ContextMenu("TEST_ON")]
