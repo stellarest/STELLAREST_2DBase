@@ -27,7 +27,7 @@ namespace STELLAREST_2D
             if (IsBuffOn)
             {
                 // 1f -> 2f : +100% Anim Speed
-                _player.PlayerAnim.AttackAnimSpeed(_buffData.BuffType.AttackSpeedUpRatio);
+                //_player.PlayerAnim.AttackAnimSpeed(_buffData.BuffType.AttackSpeedUpRatio);
                 _skill.DamageBuffRatio = _buffData.BuffType.DamageUpRatio;
             }
 
@@ -40,7 +40,7 @@ namespace STELLAREST_2D
                     Debug.Log("Duration : " + t + "/" + _buffData.Duration);
                     if (percent >= 1f)
                     {
-                        _player.PlayerAnim.AttackAnimSpeed(1f);
+                        //_player.PlayerAnim.AttackAnimSpeed(1f);
                         _skill.DamageBuffRatio = null;
                         IsBuffOn = false;
                         t = 0f;
@@ -54,7 +54,7 @@ namespace STELLAREST_2D
                     Debug.Log("CoolTime : " + t + "/" + _buffData.CoolTime);
                     if (percent >= 1f)
                     {
-                        _player.PlayerAnim.AttackAnimSpeed(_buffData.BuffType.AttackSpeedUpRatio);
+                        //_player.PlayerAnim.AttackAnimSpeed(_buffData.BuffType.AttackSpeedUpRatio);
                         _skill.DamageBuffRatio = _buffData.BuffType.DamageUpRatio;
                         IsBuffOn = true;
                         t = 0f;

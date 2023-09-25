@@ -8,14 +8,9 @@ namespace STELLAREST_2D
 {
     public class Boomerang : RepeatSkill
     {
-        public override void InitRepeatSkill(RepeatSkill originRepeatSkill)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override void SetParticleInfo(Vector3 startAngle, Define.LookAtDirection lookAtDir, float continuousAngle, float continuousFlipX, float continuousFlipY)
-        {
-        }
+        // public override void SetParticleInfo(Vector3 startAngle, Define.LookAtDirection lookAtDir, float continuousAngle, float continuousFlipX, float continuousFlipY)
+        // {
+        // }
 
         protected override void DoSkillJob()
         {

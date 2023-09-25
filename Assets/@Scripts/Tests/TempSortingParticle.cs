@@ -10,7 +10,7 @@ namespace STELLAREST_2D
         private void Temp_SetParticleOrder()
         {
             foreach (var pr in GetComponentsInChildren<ParticleSystemRenderer>())
-                pr.sortingOrder = (int)Define.SortingOrder.ParticleEffect;
+                pr.sortingOrder = (int)Define.SortingOrder.Skill;
         }
     }
 }

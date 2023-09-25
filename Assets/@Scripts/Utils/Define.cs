@@ -11,15 +11,15 @@ namespace STELLAREST_2D
         public const float PLAYER_LOCAL_SCALE_X = 1.25f; // Initial ScaleX : 0.8f
         public const float PLAYER_LOCAL_SCALE_Y = 1.25f; // Initial ScaleY : 0.8f
 
-        public const string PLAYER_INDICATOR = "Indicator";
-        public const string PLAYER_FIRE_SOCKET = "FireSocket";
-        public const string NAME_SPACE_MAIN = "STELLAREST_2D";
+        public const string INDICATOR = "Indicator";
+        public const string FIRE_SOCKET = "FireSocket";
+        public const string ANIMATION_BODY = "AnimationBody";
 
         public enum UIEvent { Click, Pressed, PointerDown, PointerUp, BeginDrag, Drag, EndDrag, }
         public enum Scene { Unknown, DevScene, GameScene, }
         public enum Sound { BGM, Effect, }
-        public enum ObjectType { None = -1, Player, Monster, EliteMonster, Boss, Projectile, }
-        public enum MonsterType { Monster = 1, Chicken, }
+        public enum ObjectType { None = -1, Player = 1, Monster, EliteMonster, Boss, Skill, Projectile, }
+        public enum MonsterType { None = -1, Chicken = 1, }
 
 
         public enum InGameGrade { Default = 1, Elite, Ultimate }
@@ -30,7 +30,7 @@ namespace STELLAREST_2D
      
 
         public enum WaveType { None, Elite, MiddleBoss, Boss }
-        public enum SortingOrder { Map = 100, Player = 200, Item = 209, Monster = 210, Skill = 211, ParticleEffect = 230, CCStatus = 260 }
+        public enum SortingOrder { Map = 100, Player = 200, Item = 209, Monster = 210, Skill = 230, EnvEffect = 260 }
         public enum StageType { Normal, MiddleBoss, Boss, }
         // public enum CCStatus { None, Stun, KnockBack, Poisoned, Frozen, Cursed, Confused, Silent, Max }
         public enum SkillType { None = -1, Repeat = 1, Sequence }
@@ -109,6 +109,7 @@ namespace STELLAREST_2D
                 {
                     None = -1,
 
+                    // Exclusive Skills
                     // +++ GARY +++
                     PaladinMastery = 200200,
                     KnightMastery = 200203,
@@ -147,8 +148,9 @@ namespace STELLAREST_2D
                     // // +++ ELEANOR +++
                     // QueenMeleeSwing = 200284,
 
-                    // // +++ PUBLIC REPEAT SKILLS +++
-                    // ThrowingStar = 200300,
+                    // Public Skills (+ Monster)
+                    ThrowingStar = 200300,
+
                     // LazerBolt = 200304,
                     // Boomerang = 200308,
                     // Spear = 200312,

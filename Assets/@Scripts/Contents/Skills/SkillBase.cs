@@ -1,20 +1,60 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Assets.HeroEditor.Common.Scripts.ExampleScripts;
 using Unity.VisualScripting;
 using UnityEngine;
 
 using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 
 namespace STELLAREST_2D
-{
+{    
     [System.Serializable]
     public class SkillBase : BaseController
     {
+        public System.EventHandler<ProjectileLaunchInfoEventArgs> OnProjectileLaunchInfo = null;
         public CreatureController Owner { get; protected set; } = null;
-        public Data.SkillData Data { get; protected set; }  = null;
+        public Data.SkillData Data { get; protected set; } = null;
+        public ProjectileController PC { get; protected set; } = null;
+        public Collider2D HitCollider { get; protected set; } = null;
 
+        public virtual void InitOrigin(CreatureController owner, Data.SkillData data)
+        {
+            this.Owner = owner;
+            this.Data = data;
+            
+            this.IsLearned = false;
+            this.IsLast = false;
+        }
+
+        public virtual void InitClone(CreatureController ownerFromOrigin, Data.SkillData dataFromOrigin)
+        {
+            if (this.IsFirstPooling)
+            {
+                this.Owner = ownerFromOrigin;
+                this.Data = dataFromOrigin;
+
+                if (this.Data.IsProjectile)
+                {
+                    this.PC = GetComponent<ProjectileController>();
+                    this.PC.HitCollider = GetComponent<Collider2D>();
+                    this.PC.Owner = ownerFromOrigin;
+                    this.PC.Data = dataFromOrigin;
+                    this.OnProjectileLaunchInfo += this.PC.OnProjectileLaunchInfoHandler;
+                }
+
+                if (ownerFromOrigin?.IsPlayer() == true)
+                    Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.PlayerAttack);
+                else
+                    Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.MonsterAttack);
+
+                IsFirstPooling = false;
+            }
+        }
+
+        // -----------------------------------------------------------------------------
+        // +++ Projectile is must be skill. But, skill is not sometimes projectile +++
+        // -----------------------------------------------------------------------------
         private bool _isLearned = false;
         public bool IsLearned
         {
@@ -33,16 +73,17 @@ namespace STELLAREST_2D
                 {
                     if (this.IsStopped)
                     {
-                        //Utils.Log($"{this.Data.Name} is <color=cyan>already</color> stopped");
                         Utils.Log(nameof(SkillBase), nameof(IsLast), Data.Name, "is already stopped.");
                         return;
                     }
 
                     this.Deactivate();
-                    Utils.Log(nameof(SkillBase), nameof(IsLast), Data.Name, "is deactivated.");
+                    Utils.Log(nameof(SkillBase), nameof(IsLast), Data.Name, "is off now.");
                 }
             }
         }
+
+        public virtual IEnumerator CoLaunchProjectile() { yield return null; }
 
         public bool IsStopped { get; protected set; } = false;
 
@@ -53,19 +94,6 @@ namespace STELLAREST_2D
             set => _damageBuffRatio = value;
         }
 
-        public virtual void Init(CreatureController owner, Data.SkillData data, int templateID) 
-        {
-            _isLearned = false;
-            _isLast = false;
-
-            // 당연히 스킬마다 Owner와 Data를 설정해야함. !!
-            this.Owner = owner;
-            this.Data = data;
-            owner.SkillBook.SkillGroupsDict.AddGroup(templateID, new SkillGroup(this));
-        }
-
-        public virtual void SetParticleInfo(Vector3 startAngle, Define.LookAtDirection lookAtDir, float continuousAngle, float continuousFlipX, float continuousFlipY) { }
-        public virtual void OnPreSpawned() => gameObject.SetActive(false);
         public virtual void Activate()
         {
             if (gameObject.activeSelf)
@@ -74,9 +102,18 @@ namespace STELLAREST_2D
                 return;
             }
 
+            IsStopped = false;
             gameObject.SetActive(true);
         }
-        public virtual void Deactivate() => gameObject.SetActive(false);
+        
+        public virtual void Deactivate(bool isPoolingClear = false)
+        {
+            IsStopped = true;
+            gameObject.SetActive(false);
+
+            if(isPoolingClear)
+                Managers.Pool.ClearPool(this.gameObject);
+        } 
 
         public bool IsCritical { get; set; } = false;
 
@@ -97,7 +134,8 @@ namespace STELLAREST_2D
             yield return new WaitForSeconds(delaySeconds);
             if (this.IsValid())
             {
-                Managers.Object.Despawn(this.GetComponent<ProjectileController>());
+                //Managers.Object.Despawn(this.GetComponent<ProjectileController>());
+                Managers.Object.Despawn(this.GetComponent<SkillBase>());
             }
         }
 

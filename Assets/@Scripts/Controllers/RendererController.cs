@@ -11,7 +11,7 @@ namespace STELLAREST_2D
         GetSpriteRenderers(Moderator) : Next Sprite Renderers
     */
 
-    public class RendererController : CreatureController
+    public class RendererController : MonoBehaviour
     {
         // +++++ Base Container +++++
         public class BaseContainer
@@ -123,8 +123,8 @@ namespace STELLAREST_2D
             List<SkillBase> skillList = new List<SkillBase>();
             foreach (KeyValuePair<int, SkillGroup> pair in owner.SkillBook.SkillGroupsDict)
             {
-                for (int i = 0; i < pair.Value.SkillCount; ++i)
-                    skillList.Add(pair.Value.SkillMembers[i].SkillOrigin);
+                for (int i = 0; i < pair.Value.MemberCount; ++i)
+                    skillList.Add(pair.Value.Members[i].SkillOrigin);
             }
 
             SkillBase[] skills = skillList.Where(s => s.Data.ModelingLabel.Length > 0).ToArray();
@@ -177,7 +177,7 @@ namespace STELLAREST_2D
                 if (spriteRenderer.sprite == null)
                     return null;
 
-                if (spriteRenderer.gameObject.name.Contains(Define.PLAYER_FIRE_SOCKET))
+                if (spriteRenderer.gameObject.name.Contains(Define.FIRE_SOCKET))
                     return null;
 
                 return spriteRenderer;

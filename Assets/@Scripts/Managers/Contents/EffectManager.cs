@@ -122,7 +122,7 @@ namespace STELLAREST_2D
                     if (sprArr[i].sprite == null)
                         continue;
 
-                    if (sprArr[i].gameObject.name.Contains(Define.PLAYER_FIRE_SOCKET))
+                    if (sprArr[i].gameObject.name.Contains(Define.FIRE_SOCKET))
                         continue;
 
                     ++length;
@@ -138,7 +138,7 @@ namespace STELLAREST_2D
                     if (sprArr[i].sprite == null)
                         continue;
 
-                    if (sprArr[i].gameObject.name.Contains(Define.PLAYER_FIRE_SOCKET))
+                    if (sprArr[i].gameObject.name.Contains(Define.FIRE_SOCKET))
                         continue;
 
                     playerMats[index++] = new CreatureMaterial(sprArr[i], sprArr[i].material, sprArr[i].color);

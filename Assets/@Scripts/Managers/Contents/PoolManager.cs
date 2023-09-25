@@ -77,7 +77,7 @@ namespace STELLAREST_2D
         // 스킬을 찍는 UI가 나오면 현재 작동하고 있는 모든 스킬을 먼저 Deactivate한다.
         // 이후에 모든 스킬을 찍고 난 이후에, UI가 꺼지면 ResetPools를 실행한다.
         // 이후에는 다시 AcquiredSkills를 Activate하면 된다.
-        public void ResetPools()
+        public void ClearPools()
         {
             foreach (KeyValuePair<string, Pool> pool in _pools)
             {
@@ -89,6 +89,21 @@ namespace STELLAREST_2D
             }
 
             _pools.Clear();
+        }
+
+        public void ClearPool(GameObject go)
+        {
+            if (_pools.TryGetValue(go.name, out Pool value) == false)
+            {
+                Utils.LogStrong(nameof(PoolManager), nameof(ClearPool), $"Failed to ClearPool.");
+                return;
+            }
+            
+            Transform root = value.Root;
+            for (int i = 0; i < root.childCount; ++i)
+                UnityEngine.Object.Destroy(root.GetChild(i).gameObject);
+
+            _pools.Remove(go.name);
         }
 
         public GameObject Pop(GameObject prefab) // 꺼냄

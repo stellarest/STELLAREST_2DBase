@@ -65,7 +65,6 @@ namespace STELLAREST_2D // UI가 맞긴한데 조금 애매하니까 일단 .UI�
             // _moveDir = (touchDir / magnitude); // normalized vector 구하기
             Vector2 newHandlerPosition = _touchPosition + (_moveDir * moveDist);
             _handler.transform.position = newHandlerPosition;
-
             Managers.Game.MoveDir = _moveDir;
         }
 

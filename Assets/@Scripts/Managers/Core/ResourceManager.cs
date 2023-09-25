@@ -34,11 +34,11 @@ namespace STELLAREST_2D
             GameObject prefab = Load<GameObject>($"{key}");
             if (prefab == null)
             {
-                Debug.LogWarning($"Failed to load prefab : {key}");
+                Utils.LogStrong(nameof(ResourceManager), nameof(Instantiate), $"Failed to load prefab : {key}");
                 return null;
             }
 
-            // Pooling
+            // Pop : 꺼냄, "팝" 튀어 나와라
             if (pooling)
                 return Managers.Pool.Pop(prefab);
 
@@ -53,10 +53,7 @@ namespace STELLAREST_2D
                 return;
 
             if (Managers.Pool.Push(go))
-            {
-                // Debug.Log("DES PROJ..2");
                 return;
-            }
 
             UnityEngine.Object.Destroy(go, Time.deltaTime);
         }

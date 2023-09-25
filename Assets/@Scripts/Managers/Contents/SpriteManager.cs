@@ -217,7 +217,7 @@ namespace STELLAREST_2D
                 if (sprArr[i].sprite == null)
                     continue;
 
-                if (sprArr[i].gameObject.name.Contains(Define.PLAYER_FIRE_SOCKET))
+                if (sprArr[i].gameObject.name.Contains(Define.FIRE_SOCKET))
                     continue;
 
                 if (sprArr[i].gameObject.name.Contains("Eyebrows"))
@@ -315,7 +315,7 @@ namespace STELLAREST_2D
                 if (sprArr[i].sprite == null)
                     continue;
 
-                if (sprArr[i].gameObject.name.Contains(Define.PLAYER_FIRE_SOCKET))
+                if (sprArr[i].gameObject.name.Contains(Define.FIRE_SOCKET))
                     continue;
 
                 if (sprArr[i].gameObject.name.Contains("Eyebrows"))

@@ -5,30 +5,31 @@ namespace STELLAREST_2D
 {
     public class GameManager
     {
+        public void GAME_START() => IsGameStart = true;
         private bool _isGameStart = false;
         public bool IsGameStart 
         { 
             get => _isGameStart;
             private set
             {
-                _isGameStart = true;
-                _isGameOver = false;
+                _isGameStart = value;
+                if (_isGameStart)
+                    IsGameOver = false;
             }
         }
 
+        public void GAME_OVER() => IsGameOver = true;
         private bool _isGameOver = false;
         public bool IsGameOver
         {
             get => _isGameOver;
             private set
             {
-                _isGameOver = true;
-                _isGameStart = false;
+                _isGameOver = value;
+                if (_isGameOver)
+                    IsGameStart = false;
             }
         }
-
-        public void GAME_START() => IsGameStart = true;
-        public void GAME_OVER() => IsGameOver = true;
 
         public PlayerController Player { get => Managers.Object?.Player; }
         public int Gold { get; set; }
@@ -50,13 +51,13 @@ namespace STELLAREST_2D
             }
         }
 
-        private Vector3 _moveDir;
-        public event Action<Vector3> OnMoveDirChanged;
+        private Vector3 _moveDir = Vector3.zero;
+        public event Action<Vector3> OnMoveDirChanged = null;
         public Vector3 MoveDir
         {
             get => _moveDir;
             set
-            {
+            {   
                 _moveDir = value;
                 OnMoveDirChanged?.Invoke(_moveDir);
             }

@@ -1,23 +1,32 @@
 // using System.Collections;
 // using System.Collections.Generic;
+using System;
+using System.Collections;
+using STELLAREST_2D.Data;
+using Unity.VisualScripting;
+using UnityEditor.AnimatedValues;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace STELLAREST_2D
 {
     public class ThrowingStar : RepeatSkill
     {
-        public override void InitRepeatSkill(RepeatSkill originRepeatSkill)
+        public override void InitOrigin(CreatureController owner, SkillData data)
         {
-            throw new System.NotImplementedException();
+            base.InitOrigin(owner, data);
+            GetComponent<SpriteRenderer>().enabled = false;
+            GetComponent<Collider2D>().enabled = false;
         }
 
-        public override void SetParticleInfo(Vector3 startAngle, Define.LookAtDirection lookAtDir, float continuousAngle, float continuousFlipX, float continuousFlipY)
+        public override void InitClone(CreatureController owner, SkillData data)
         {
+            base.InitClone(owner, data);
+            SetSortingGroup();
         }
 
-        protected override void DoSkillJob()
-        {
-        }
+        protected override void SetSortingGroup()
+            => GetComponent<SpriteRenderer>().sortingOrder = (int)Define.SortingOrder.Skill;
     }
 }
 
@@ -46,7 +55,7 @@ namespace STELLAREST_2D
 //             {
 //                 ProjectileController pc = Managers.Object.Spawn<ProjectileController>(Owner.transform.position,
 //                                         SkillData.TemplateID);
-                
+
 //                 pc.GetComponent<ThrowingStar>().SetSkillInfo(Owner, SkillData.TemplateID);
 //                 pc.SetProjectileInfo(this.Owner, this, Managers.Game.Player.ShootDir, 
 //                     Owner.transform.position, pc.transform.localScale, Vector3.zero);

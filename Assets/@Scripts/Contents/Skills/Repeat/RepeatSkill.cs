@@ -14,44 +14,10 @@ namespace STELLAREST_2D
     {
         private Coroutine _coSkillActivate = null;
 
-        // private bool _isLearned = false;
-        // public bool IsLearned
-        // {
-        //     get => _isLearned; 
-        //     set
-        //     {
-        //         _isLearned = value;
-        //     }
-        // }
-
-        // private bool _isLast = false;
-        // public bool IsLast
-        // {
-        //     get => _isLast;
-        //     set
-        //     {
-        //         _isLast = value;
-        //         if (_isLast == false)
-        //         {
-        //             if (IsStopped)
-        //             {
-        //                 Utils.Log($"{Data.Name} is already stopped.");
-        //                 return;
-        //             }
-
-        //             this.Deactivate();
-        //             Utils.Log(this.Data.Name + " deactivated !!");
-        //         }
-        //     }
-        // }
-
-        //public Data.SkillData Data => this.SkillData;
-        public abstract void InitRepeatSkill(RepeatSkill originRepeatSkill);
-        
-        // SkillBook에서 Activate 시켜보자.
         public override void Activate()
         {
             base.Activate();
+
             if (_coSkillActivate != null)
                 StopCoroutine(_coSkillActivate);
 
@@ -59,7 +25,97 @@ namespace STELLAREST_2D
             _coSkillActivate = StartCoroutine(CoStartSkill());
         }
 
-        public override void Deactivate()
+        protected virtual IEnumerator CoStartSkill()
+        {
+            WaitForSeconds wait = new WaitForSeconds(Data.CoolTime);
+            while (true)
+            {
+                DoSkillJob();
+                yield return wait;
+            }
+        }
+
+        protected virtual void DoSkillJob()
+        {
+            Owner.AttackStartPoint = transform.position; // -->> CHECK THIS AFTER
+            StartCoroutine(CoCloneSkill());
+        }
+
+        protected virtual IEnumerator CoCloneSkill()
+        {
+            int continuousCount = this.Data.ContinuousCount;
+            Define.LookAtDirection lootAtDir = Owner.LookAtDir;
+            Vector3 shootDir = Owner.ShootDir;
+            Vector3 localScale = Owner.LocalScale;
+            localScale *= 0.8f;
+
+            Vector3 indicatorAngle = Owner.Indicator.eulerAngles;
+            float movementSpeed = this.Data.MovementSpeed;
+            float rotationSpeed = this.Data.RotationSpeed;
+            float lifeTime = this.Data.Duration;
+            float colliderPreDisableLifeRatio = this.Data.ColliderPreDisableLifeRatio;
+
+            float[] continuousAngles = new float[continuousCount];
+            float[] continuousSpeedRatios = new float[continuousCount];
+            float[] continuousFlipXs = new float[continuousCount];
+            float[] continuousFlipYs = new float[continuousCount];
+            float[] interpolateTargetScaleXs = new float[continuousCount];
+            float[] interpolateTargetScaleYs = new float[continuousCount];
+            bool[] isOnlyVisibles = new bool[continuousCount];
+            for (int i = 0; i < continuousCount; ++i)
+            {
+                continuousSpeedRatios[i] = this.Data.ContinuousSpeedRatios[i];
+                continuousFlipXs[i] = this.Data.ContinuousFlipXs[i];
+                continuousFlipYs[i] = this.Data.ContinuousFlipYs[i];
+                isOnlyVisibles[i] = this.Data.IsOnlyVisibles[i];
+                if (this.Owner.IsFacingRight == false)
+                {
+                    continuousAngles[i] = this.Data.ContinuousAngles[i] * -1;
+                    interpolateTargetScaleXs[i] = this.Data.ScaleInterpolations[i].x * -1;
+                    interpolateTargetScaleYs[i] = this.Data.ScaleInterpolations[i].y;
+                }
+                else
+                {
+                    continuousAngles[i] = this.Data.ContinuousAngles[i];
+                    interpolateTargetScaleXs[i] = this.Data.ScaleInterpolations[i].x;
+                    interpolateTargetScaleYs[i] = this.Data.ScaleInterpolations[i].y;
+                }
+            }
+
+            for (int i = 0; i < continuousCount; ++i)
+            {
+                Vector3 spawnPos = (this.Data.IsOnFireSocket) ? this.Owner.FireSocketPosition : this.Owner.transform.position;
+                SkillBase clone = Managers.Object.Spawn<SkillBase>(spawnPos: spawnPos, templateID: this.Data.TemplateID,
+                        spawnObjectType: Define.ObjectType.Skill, isPooling: true);
+                clone.InitClone(this.Owner, this.Data);
+                if (clone.PC != null)
+                {
+                    clone.OnProjectileLaunchInfo?.Invoke(this, new ProjectileLaunchInfoEventArgs(
+                        lootAtDir: lootAtDir,
+                        shootDir: shootDir,
+                        localScale: localScale,
+                        indicatorAngle: indicatorAngle,
+                        movementSpeed: movementSpeed,
+                        rotationSpeed: rotationSpeed,
+                        lifeTime: lifeTime,
+                        colliderPreDisableLifeRatio: colliderPreDisableLifeRatio,
+                        continuousAngle: continuousAngles[i],
+                        continuousSpeedRatio: continuousSpeedRatios[i],
+                        continuousFlipX: continuousFlipXs[i],
+                        continuousFlipY: continuousFlipYs[i],
+                        interpolateTargetScaleX: interpolateTargetScaleXs[i],
+                        interpolateTargetScaleY: interpolateTargetScaleYs[i],
+                        isOnlyVisible: isOnlyVisibles[i]
+                    ));
+
+                    clone.PC.Launch();
+                }
+
+                yield return new WaitForSeconds(Data.ContinuousSpacing);
+            }
+        }
+
+        public override void Deactivate(bool isPoolingClear = false)
         {
             if (IsStopped)
             {
@@ -76,17 +132,5 @@ namespace STELLAREST_2D
 
             IsStopped = true;
         }
-
-        protected virtual IEnumerator CoStartSkill()
-        {
-            WaitForSeconds wait = new WaitForSeconds(Data.CoolTime);
-            while (true)
-            {
-                DoSkillJob();
-                yield return wait;
-            }
-        }
-
-        protected abstract void DoSkillJob();
     }
 }

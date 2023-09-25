@@ -13,6 +13,7 @@ namespace STELLAREST_2D
         public PlayerController Player { get; private set; }
         public HashSet<MonsterController> Monsters { get; } = new HashSet<MonsterController>();
         public HashSet<ProjectileController> Projectiles { get; } = new HashSet<ProjectileController>();
+        public HashSet<SkillBase> Skills { get; } = new HashSet<SkillBase>();
         public HashSet<GemController> Gems { get; } = new HashSet<GemController>();
         // EnvCont는 나중에 추가하던지
         public GridController GridController { get; private set; }
@@ -33,13 +34,9 @@ namespace STELLAREST_2D
 
                         PlayerController pc = go.GetComponent<PlayerController>();
                         pc.ObjectType = spawnObjectType;
-                        
-                        pc.Init(templateID);
-                        Player = pc;
 
-                        // Managers.Effect.Init();
-                        // Managers.Effect.AddCreatureMaterials(pc);
-                        // Managers.Sprite.InitPlayerSprites(pc);
+                        pc.Init(templateID);
+                        this.Player = pc;
 
                         return pc as T;
                     }
@@ -53,7 +50,7 @@ namespace STELLAREST_2D
                                     GameObject go = Managers.Resource.Instantiate(Managers.Data.CreaturesDict[templateID].PrimaryLabel, pooling: isPooling);
                                     go.transform.position = spawnPos;
 
-                                    Chicken chicken = go.GetComponent<Chicken>();
+                                    ChickenController chicken = go.GetComponent<ChickenController>();
                                     chicken.ObjectType = spawnObjectType;
 
                                     chicken.Init(templateID);
@@ -66,88 +63,43 @@ namespace STELLAREST_2D
                         }
                 }
 
-                case Define.ObjectType.Projectile:
-                {
+                // --------------------------------------------------------------------------------------------------
+                // ***** Projectile is must be skill. But, skill is not sometimes projectil. It's just a skill. *****
+                // --------------------------------------------------------------------------------------------------
+                case Define.ObjectType.Skill:
+                    {
                         GameObject go = Managers.Resource.Instantiate(Managers.Data.SkillsDict[templateID].PrimaryLabel, pooling: isPooling);
                         go.transform.position = spawnPos;
-                        ProjectileController pc = go.GetOrAddComponent<ProjectileController>();
-                        pc.ObjectType = spawnObjectType;
 
-                        Projectiles.Add(pc);
-                        return pc as T;
-                }
+                        SkillBase skill = go.GetComponent<SkillBase>();
+                        skill.ObjectType = spawnObjectType;
+
+                        Skills.Add(skill);
+                        return skill as T;
+                    }
+
+                // case Define.ObjectType.Projectile:
+                // {
+                //         GameObject go = Managers.Resource.Instantiate(Managers.Data.SkillsDict[templateID].PrimaryLabel, pooling: isPooling);
+                //         go.transform.position = spawnPos;
+
+                //         ProjectileController pc = go.GetOrAddComponent<ProjectileController>();
+                //         pc.ObjectType = spawnObjectType;
+
+                //         // pc.Init(templateID);
+                //         Projectiles.Add(pc);
+
+                //         return pc as T;
+                // }
             }
 
             return null;
         }
 
-        // public T Spawn<T>(Vector3 position, int templateID = -1) where T : BaseController
-        // {
-        //     System.Type type = typeof(T);
-        //     if (typeof(T).IsSubclassOf(typeof(CreatureController)))
-        //     {
-        //         if (type == typeof(PlayerController))
-        //         {
-        //             GameObject go = Managers.Resource.Instantiate(Managers.Data.CreaturesDict[templateID].PrimaryLabel, pooling: false);
-        //             PlayerController pc = go.GetOrAddComponent<PlayerController>();
-        //             Player = pc;
-        //             pc.SetInitialInfo(templateID);
-
-        //             Managers.Effect.Init();
-        //             Managers.Effect.AddCreatureMaterials(pc);
-        //             Managers.Sprite.InitPlayerSprites(pc);
-
-        //             return pc as T;
-        //         }
-
-        //         if (type == typeof(Chicken))
-        //         {
-        //             GameObject go = Managers.Resource.Instantiate(Managers.Data.CreaturesDict[templateID].PrimaryLabel, pooling: true);
-        //             go.transform.position = position;
-        //             Vector3 spawnEffectPos = new Vector3(go.transform.position.x, go.transform.position.y + 3.8f, go.transform.position.z);
-        //             Managers.Effect.ShowSpawnEffect(Define.Labels.Prefabs.SPAWN_EFFECT, spawnEffectPos);
-
-        //             Chicken mc = go.GetOrAddComponent<Chicken>();
-        //             mc.SetInitialInfo(templateID);
-        //             mc.Init();
-        //             Monsters.Add(mc);
-
-        //             Managers.Effect.AddCreatureMaterials(mc);
-        //             Managers.Effect.SetDefaultMaterials(mc);
-
-        //             // mc.CoEffectFade();
-        //             // mc.CoEffectFadeIn(2f);
-        //             mc.CoStartReadyToAction();
-
-        //             return mc as T;
-        //         }
-        //     }
-        //     else if (type == typeof(GemController))
-        //     {
-        //         GameObject go = Managers.Resource.Instantiate(Define.Labels.Prefabs.GEM, pooling: true);
-        //         go.transform.position = position;
-
-        //         GemController gc = go.GetOrAddComponent<GemController>();
-
-        //         GridController.Add(go);
-        //         Gems.Add(gc);
-
-        //         return gc as T;
-        //     }
-        //     else if (type == typeof(ProjectileController))
-        //     {
-        //         GameObject go = Managers.Resource.Instantiate(Managers.Data.RepeatSkillsDict[templateID].PrimaryLabel, pooling: true);
-        //         go.transform.position = position;
-        //         ProjectileController pc = go.GetOrAddComponent<ProjectileController>();
-                
-        //         pc.Init();
-        //         Projectiles.Add(pc);
-
-        //         return pc as T;
-        //     }
-
-        //     return null;
-        // }
+        public void LaunchSkill(CreatureController owner, Data.SkillData data)
+        {
+            
+        }
 
         public void Despawn<T>(T obj) where T : BaseController
         {
@@ -172,6 +124,11 @@ namespace STELLAREST_2D
                 Gems.Remove(obj as GemController);
                 Managers.Resource.Destroy(obj.gameObject);
                 GridController.Remove(obj.gameObject);
+            }
+            else if (type == typeof(SkillBase))
+            {
+                Skills.Remove(obj as SkillBase);
+                Managers.Resource.Destroy(obj.gameObject);
             }
             else if (type == typeof(ProjectileController))
             {

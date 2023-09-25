@@ -1,125 +1,125 @@
 using System.Collections;
-using System.Runtime.InteropServices;
+using STELLAREST_2D.Data;
 using UnityEngine;
-using UnityEngine.Experimental.Rendering;
+using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 
 namespace STELLAREST_2D
 {
+    public class ProjectileLaunchInfoEventArgs : System.EventArgs
+    {
+        public ProjectileLaunchInfoEventArgs(Define.LookAtDirection lootAtDir, Vector3 shootDir, Vector3 localScale, Vector3 indicatorAngle,
+                    float movementSpeed, float rotationSpeed, float lifeTime, float colliderPreDisableLifeRatio, float continuousAngle, float continuousSpeedRatio,
+                    float continuousFlipX, float continuousFlipY, float interpolateTargetScaleX, float interpolateTargetScaleY, bool isOnlyVisible)
+        {
+            this.LookAtDir = lootAtDir;
+            this.ShootDir = shootDir;
+            this.LocalScale = localScale;
+            this.IndicatorAngle = indicatorAngle;
+            this.MovementSpeed = movementSpeed;
+            this.RotationSpeed = rotationSpeed;
+            this.LifeTime = lifeTime;
+            this.ColliderPreDisableLifeRatio = colliderPreDisableLifeRatio;
+
+            this.ContinuousAngle = continuousAngle;
+            this.ContinuousSpeedRatio = continuousSpeedRatio;
+            this.ContinuousFlipX = continuousFlipX;
+            this.ContinuousFlipY = continuousFlipY;
+            this.InterpolateTargetScaleX = interpolateTargetScaleX;
+            this.InterpolateTargetScaleY = interpolateTargetScaleY;
+            this.IsOnlyVisible = isOnlyVisible;
+        }
+
+        #region Properties
+        public Define.LookAtDirection LookAtDir { get; private set; } = Define.LookAtDirection.Right;
+        public Vector3 ShootDir { get; private set; } = Vector3.zero;
+        public Vector3 LocalScale { get; private set; } = Vector3.zero;
+        public Vector3 IndicatorAngle { get; private set; } = Vector3.zero;
+        public float MovementSpeed { get; private set; } = 0f;
+        public float RotationSpeed { get; private set; } = 0f;
+        public float LifeTime { get; private set; } = 0f;
+        public float ColliderPreDisableLifeRatio { get; private set; } = 0f;
+
+        public float ContinuousAngle { get; private set; } = 0f;
+        public float ContinuousSpeedRatio { get; private set; } = 0f;
+        public float ContinuousFlipX { get; private set; } = 0f;
+        public float ContinuousFlipY { get; private set; } = 0f;
+        public float InterpolateTargetScaleX { get; private set; } = 0f;
+        public float InterpolateTargetScaleY { get; private set; } = 0f;
+        public bool IsOnlyVisible { get; private set; } = false;
+        #endregion
+    }
+
     public class ProjectileController : SkillBase
     {
-        private SkillBase _targetSkill = null;
-
-        public void SetInitialCloneInfo(SkillBase skillOrigin)
-        {
-            // if (IsFirstPooling == false)
-            //     return;
-            IsFirstPooling = false;
-
-            string className = string.Empty;
-            //ObjectType = objectType;
-            // if (this.ObjectType == Define.ObjectType.RepeatProjectile)
-            // {
-            //     RepeatSkill = skillOrigin.RepeatSkill; // +++ ORIGIN SKILL DATA +++
-            //     className = Define.NAME_SPACE_MAIN + "." + RepeatSkill.Data.RepeatSkillType.ToString();
-            // }
-            // else if(this.ObjectType == Define.ObjectType.SequenceProjectile) { /* DO SOMETHING */ }
-
-
-            Owner = skillOrigin.Owner;
-            if (skillOrigin.Owner?.IsPlayer() == true)
-            {
-                Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.PlayerAttack);
-            }
-            else if (skillOrigin.Owner?.IsMonster() == true) { /* DO SOMETHING */ }
-
-            if (_rigid == null)
-                _rigid = GetComponent<Rigidbody2D>();
-
-            if (_collider == null)
-                _collider = GetComponent<Collider2D>();
-
-            if (className.Contains("MeleeSwing"))
-            {
-                _targetSkill = GetComponent<MeleeSwing>();
-                //_targetSkill.GetComponent<MeleeSwing>().InitRepeatSkill(skillOrigin.RepeatSkill);
-            }
-
-            //Utils.LogStrong("Success::SetInitialCloneInfo");
-        }
-
-        private Rigidbody2D _rigid = null;
-        //public SkillBase CurrentSkill { get; private set; }
-        private Collider2D _collider = null;
-        private void EnableCollider(bool enable) => _collider.enabled = enable;
-
-        private Vector3 _shootDir = Vector3.zero;
-        private float _speed = 0f;
         private Define.LookAtDirection _initialLookAtDir = Define.LookAtDirection.Right;
-        private bool _isOffParticle = false;
-        private bool _isOnlyVisible = false;
+        private Vector3 _shootDir = Vector3.zero;
+        private Vector3 _indicatorAngle = Vector3.zero;
+        private float _movementSpeed = 0f;
+        private float _rotationSpeed = 0f;
+        private float _lifeTime = 0f;
+        private float _continuousAngle = 0f;
+        private float _continuousSpeedRatio = 0f;
+        private float _continuousFlipX = 0f;
+        private float _continuousFlipY = 0f;
+        private float _colliderPreDisableRatio = 0f;
         private float _colliderPreDisableLifeDelta = 0f;
-        private bool _isOnInterpolateScale = false;
         private Vector3 _interpolateStartScale = Vector3.zero;
         private Vector3 _interpolateTargetScale = Vector3.zero;
+        private bool _isOnReadyInterpolateScale = false;
+        private bool _isOnlyVisible = false;
+        private bool _isOffParticle = false;
+        private bool _isOnLaunch = false;
 
-        public void SetProjectileInfo(Vector3 shootDir, Define.LookAtDirection lootAtDir, Vector3 localScale, Vector3 indicatorAngle,
-                                    float continuousAngle, float continuousSpeedRatio, float continuousFlipX, float continuousFlipY,
-                                    float interPolateTargetScaleX, float interpolateTargetScaleY, bool isOnlyVisible)
+        public void OnProjectileLaunchInfoHandler(object sender, ProjectileLaunchInfoEventArgs e)
         {
-            _shootDir = shootDir;
-            _initialLookAtDir = lootAtDir;
-            transform.localScale = localScale;
-
-            if (interPolateTargetScaleX > localScale.x || interpolateTargetScaleY > localScale.y)
+            this._initialLookAtDir = e.LookAtDir;
+            this._shootDir = e.ShootDir;
+            transform.localScale = e.LocalScale;
+            this._indicatorAngle = e.IndicatorAngle;
+            this._movementSpeed = e.MovementSpeed;
+            this._rotationSpeed = e.RotationSpeed;
+            this._lifeTime = e.LifeTime;
+            this._colliderPreDisableRatio = e.ColliderPreDisableLifeRatio;
+            this._continuousAngle = e.ContinuousAngle;
+            this._continuousSpeedRatio = e.ContinuousSpeedRatio;
+            this._continuousFlipX = e.ContinuousFlipX;
+            this._continuousFlipY = e.ContinuousFlipY;
+            if (e.InterpolateTargetScaleX > e.LocalScale.x || e.InterpolateTargetScaleY > e.LocalScale.y)
             {
-                _interpolateStartScale = localScale;
-                _interpolateTargetScale = new Vector3(interPolateTargetScaleX, interpolateTargetScaleY, 1f);
-                _isOnInterpolateScale = true;
+                this._interpolateStartScale = e.LocalScale;
+                this._interpolateTargetScale = new Vector3(e.InterpolateTargetScaleX, e.InterpolateTargetScaleY, 1);
+                this._isOnReadyInterpolateScale = true;
             }
             else
-                _isOnInterpolateScale = false;
+                this._isOnReadyInterpolateScale = false;
 
-
-            //StartDestroy(RepeatSkill.Data.Duration);
-
-            _isOnlyVisible = isOnlyVisible;
-            EnableCollider(isOnlyVisible ? false : true);
-
-            // switch (RepeatSkill.Data.RepeatSkillType)
-            // {
-            //     case Define.TemplateIDs.CreatureStatus.RepeatSkill.PaladinMeleeSwing:
-            //         {
-            //             _isOffParticle = false;
-            //             _targetSkill.SetParticleInfo(indicatorAngle, lootAtDir, continuousAngle, continuousFlipX, continuousFlipY);
-            //             StartCoroutine(CoMeleeSwing(continuousSpeedRatio));
-            //         }
-            //         break;
-            // }
+            this._isOnlyVisible = e.IsOnlyVisible;
         }
 
-        private readonly float Sensitivity = 0.6f;
-        private void CheckOffParticle()
+        public void Launch()
         {
-            if (_initialLookAtDir != Managers.Game.Player.LookAtDir)
-                _isOffParticle = true;
-            if (Managers.Game.Player.IsMoving == false)
-                _isOffParticle = true;
-            if ((Managers.Game.Player.ShootDir - _shootDir).sqrMagnitude > Sensitivity * Sensitivity)
-                _isOffParticle = true;
-            // if (Vector3.Distance(Managers.Game.Player.ShootDir, _shootDir) > _sensitivity)
-            //     _offParticle = true;
-        }
+            StartDestroy(_lifeTime);
+            HitCollider.enabled = (_isOnlyVisible) ? false : true;
 
-        private void PreDisableCollider(float lifeTime)
-        {
-            if (_isOnlyVisible)
-                return;
-
-            _colliderPreDisableLifeDelta += Time.deltaTime;
-            if (_colliderPreDisableLifeDelta > lifeTime)
+            SkillTemplate templateOrigin = this.Data.OriginalTemplate;
+            switch (templateOrigin)
             {
-                EnableCollider(false);
-                _colliderPreDisableLifeDelta = 0f;
+                case SkillTemplate.ThrowingStar:
+                    StartCoroutine(CoThrowingStar());
+                    break;
+            }
+        }
+
+        private IEnumerator CoThrowingStar()
+        {
+            float selfRot = 0f;
+            while (true)
+            {
+                selfRot += _rotationSpeed * Time.deltaTime;
+                transform.rotation = Quaternion.Euler(0, 0, selfRot);
+                float movementSpeed = Owner.CreatureStat.MoveSpeed + this._movementSpeed;
+                transform.position += _shootDir * movementSpeed * Time.deltaTime;
+                yield return null;
             }
         }
 
@@ -129,11 +129,125 @@ namespace STELLAREST_2D
             if (mc.IsValid() == false)
                 return;
 
-            if (Managers.Collision.CheckCollisionTarget(Define.CollisionLayers.MonsterBody, other.gameObject.layer))
-                mc.OnDamaged(Owner, _targetSkill);
+            // if (Managers.Collision.CheckCollisionTarget(Define.CollisionLayers.MonsterBody, other.gameObject.layer))
+            //     mc.OnDamaged(Owner, _targetSkill);
+        }
+
+        private void OnDestroy()
+        {
+            if (this.OnProjectileLaunchInfo != null)
+                this.OnProjectileLaunchInfo -= OnProjectileLaunchInfoHandler;
         }
     }
+
+    // -------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------
 }
+  // public void SetProjectileInfo(Vector3 shootDir, Define.LookAtDirection lootAtDir, Vector3 localScale, Vector3 indicatorAngle,
+        //                             float continuousAngle, float continuousSpeedRatio, float continuousFlipX, float continuousFlipY,
+        //                             float interPolateTargetScaleX, float interpolateTargetScaleY, bool isOnlyVisible)
+        // {
+        //     _shootDir = shootDir;
+        //     _initialLookAtDir = lootAtDir;
+        //     transform.localScale = localScale;
+
+        //     if (interPolateTargetScaleX > localScale.x || interpolateTargetScaleY > localScale.y)
+        //     {
+        //         _interpolateStartScale = localScale;
+        //         _interpolateTargetScale = new Vector3(interPolateTargetScaleX, interpolateTargetScaleY, 1f);
+        //         _isOnInterpolateScale = true;
+        //     }
+        //     else
+        //         _isOnInterpolateScale = false;
+
+        //     //StartDestroy(RepeatSkill.Data.Duration);
+
+        //     _isOnlyVisible = isOnlyVisible;
+        //     EnableCollider(isOnlyVisible ? false : true);
+
+        //     // switch (RepeatSkill.Data.RepeatSkillType)
+        //     // {
+        //     //     case Define.TemplateIDs.CreatureStatus.RepeatSkill.PaladinMeleeSwing:
+        //     //         {
+        //     //             _isOffParticle = false;
+        //     //             _targetSkill.SetParticleInfo(indicatorAngle, lootAtDir, continuousAngle, continuousFlipX, continuousFlipY);
+        //     //             StartCoroutine(CoMeleeSwing(continuousSpeedRatio));
+        //     //         }
+        //     //         break;
+        //     // }
+        // }
+
+// private SkillBase _targetSkill = null;
+        // public void SetInitialCloneInfo(SkillBase skillOrigin)
+        // {
+        //     // if (IsFirstPooling == false)
+        //     //     return;
+        //     IsFirstPooling = false;
+
+        //     string className = string.Empty;
+        //     //ObjectType = objectType;
+        //     // if (this.ObjectType == Define.ObjectType.RepeatProjectile)
+        //     // {
+        //     //     RepeatSkill = skillOrigin.RepeatSkill; // +++ ORIGIN SKILL DATA +++
+        //     //     className = Define.NAME_SPACE_MAIN + "." + RepeatSkill.Data.RepeatSkillType.ToString();
+        //     // }
+        //     // else if(this.ObjectType == Define.ObjectType.SequenceProjectile) { /* DO SOMETHING */ }
+
+
+        //     Owner = skillOrigin.Owner;
+        //     if (skillOrigin.Owner?.IsPlayer() == true)
+        //     {
+        //         Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.PlayerAttack);
+        //     }
+        //     else if (skillOrigin.Owner?.IsMonster() == true) { /* DO SOMETHING */ }
+
+        //     // if (_rigid == null)
+        //     //     _rigid = GetComponent<Rigidbody2D>();
+
+        //     if (_collider == null)
+        //         _collider = GetComponent<Collider2D>();
+
+        //     if (className.Contains("MeleeSwing"))
+        //     {
+        //         _targetSkill = GetComponent<MeleeSwing>();
+        //         //_targetSkill.GetComponent<MeleeSwing>().InitRepeatSkill(skillOrigin.RepeatSkill);
+        //     }
+
+        //     //Utils.LogStrong("Success::SetInitialCloneInfo");
+        // }
+
+        // private Rigidbody2D _rigid = null;
+        //public SkillBase CurrentSkill { get; private set; }
+        //private Collider2D _collider = null;
+        //private void EnableCollider(bool enable) => _collider.enabled = enable;
+
+        // private readonly float Sensitivity = 0.6f;
+        // private void CheckOffParticle()
+        // {
+        //     if (_initialLookAtDir != Managers.Game.Player.LookAtDir)
+        //         _isOffParticle = true;
+        //     if (Managers.Game.Player.IsMoving == false)
+        //         _isOffParticle = true;
+        //     if ((Managers.Game.Player.ShootDir - _shootDir).sqrMagnitude > Sensitivity * Sensitivity)
+        //         _isOffParticle = true;
+        //     // if (Vector3.Distance(Managers.Game.Player.ShootDir, _shootDir) > _sensitivity)
+        //     //     _offParticle = true;
+        // }
+
+        // private float _deltaForColliderPreDisable;
+        // private void PreDisableCollider(float lifeTime)
+        // {
+        //     if (_isOnlyVisible)
+        //         return;
+
+        //     _deltaForColliderPreDisable += Time.deltaTime;
+        //     if (_deltaForColliderPreDisable > lifeTime)
+        //     {
+        //         EnableCollider(false);
+        //         _deltaForColliderPreDisable = 0f;
+        //     }
+        // }
+
 // ================================================================================================================
 // private IEnumerator CoMeleeSwing(float continuousSpeedRatio)
 // {

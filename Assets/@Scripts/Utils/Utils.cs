@@ -98,6 +98,15 @@ namespace STELLAREST_2D
             => Debug.Log($"<color=white>{message.ToString()}</color>");
 
         [Conditional("UNITY_EDITOR")]
+        public static void Log(object calledByMethodOnly, object message = null)
+        {
+            if (message == null)
+                message = $"{calledByMethodOnly}";
+            else
+                Utils.Log($"By : {calledByMethodOnly}, {message}");
+        }
+
+        [Conditional("UNITY_EDITOR")]
         public static void Log(object called, object byMethod, object target, object message, bool clearPrevLogs = false)
         {
             if (clearPrevLogs)
