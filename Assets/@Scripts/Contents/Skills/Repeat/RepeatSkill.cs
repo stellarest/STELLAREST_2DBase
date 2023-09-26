@@ -41,6 +41,15 @@ namespace STELLAREST_2D
             StartCoroutine(CoCloneSkill());
         }
 
+        public void OnCloneExclusiveRepeatSkillHandler()
+        {
+            if (IsStopped)
+                return;
+
+            Owner.AttackStartPoint = transform.position;
+            StartCoroutine(this.CoCloneSkill());
+        }
+
         protected virtual IEnumerator CoCloneSkill()
         {
             int continuousCount = this.Data.ContinuousCount;
@@ -118,19 +127,16 @@ namespace STELLAREST_2D
         public override void Deactivate(bool isPoolingClear = false)
         {
             if (IsStopped)
-            {
-                Utils.Log(nameof(RepeatSkill), nameof(Deactivate), Data.Name, "is already stopped.");
                 return;
-            }
 
-            base.Deactivate();
             if (_coSkillActivate != null)
             {
                 StopCoroutine(_coSkillActivate);
                 _coSkillActivate = null;
             }
 
-            IsStopped = true;
+            base.Deactivate(isPoolingClear);
+            //IsStopped = true;
         }
     }
 }

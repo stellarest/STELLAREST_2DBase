@@ -1,3 +1,4 @@
+using System.Buffers;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,11 +36,13 @@ namespace STELLAREST_2D
 
         public void SetActiveLog(bool isOn) => IsActive = isOn;
 
-        public void DeactivePrevMember()
+        public SkillBase DeactiveForce()
         {
             this.SkillOrigin.IsLast = false;
             this.IsActive = false;
             this.IsLast = false;
+
+            return this.SkillOrigin;
         }
 
         [field: SerializeField] public SkillBase SkillOrigin { get; private set; } = null;
@@ -89,11 +92,42 @@ namespace STELLAREST_2D
                 {
                     // FIRST SKILL
                     if (i == 0)
-                        return Members[0].Unlock();
+                    {
+                        SkillBase unlockSkill = Members[0].Unlock();
+                        if (unlockSkill.Data.IsExclusive)
+                        {
+                            if (unlockSkill.Data.SkillType == Define.SkillType.Repeat)
+                            {
+                                unlockSkill.Owner.AnimCallback.OnCloneExclusiveRepeatSkill += unlockSkill.GetComponent<RepeatSkill>().OnCloneExclusiveRepeatSkillHandler;
+                                Utils.Log($"Add Event : {unlockSkill.Data.Name}");
+                            }
+                        }
+
+                        return unlockSkill;
+                    }
                     else // REST OF SKILLS
                     {
-                        Members[i - 1].DeactivePrevMember();
-                        return Members[i].Unlock();
+                        SkillBase deactiveSkill = Members[i - 1].DeactiveForce();
+                        if (deactiveSkill.Data.IsExclusive)
+                        {
+                            if (deactiveSkill.Data.SkillType == Define.SkillType.Repeat)
+                            {
+                                deactiveSkill.Owner.AnimCallback.OnCloneExclusiveRepeatSkill -= deactiveSkill.GetComponent<RepeatSkill>().OnCloneExclusiveRepeatSkillHandler;
+                                Utils.Log($"Release Event : {deactiveSkill.Data.Name}");
+                            }
+                        }
+
+                        SkillBase unlockSkill = Members[i].Unlock();
+                        if (unlockSkill.Data.IsExclusive)
+                        {
+                            if (unlockSkill.Data.SkillType == Define.SkillType.Repeat)
+                            {
+                                unlockSkill.Owner.AnimCallback.OnCloneExclusiveRepeatSkill += unlockSkill.GetComponent<RepeatSkill>().OnCloneExclusiveRepeatSkillHandler;
+                                Utils.Log($"Add Event : {unlockSkill.Data.Name}");
+                            }
+                        }
+
+                        return unlockSkill;
                     }
                 }
                 else if (i == MemberCount - 1)
@@ -142,7 +176,6 @@ namespace STELLAREST_2D
 
                 if (Members[i].IsLearned && Members[i].IsLearned)
                 {
-                    Utils.Log("?");
                     Members[i].SetActiveLog(false);
                     Members[i].SkillOrigin.Deactivate();
                 }
@@ -179,13 +212,13 @@ namespace STELLAREST_2D
     public class SkillBook : MonoBehaviour
     {
         public CreatureController Owner { get; set; }
-        public SkillTemplate ExclusiveSkill { get; private set; } = SkillTemplate.None;
+        public SkillTemplate FirstExclusiveSkill { get; private set; } = SkillTemplate.None;
 
         [System.Serializable] public class SkillGroupDictionary : SerializableGroupDictionary<int, SkillGroup> { }
         [field: SerializeField] public SkillGroupDictionary SkillGroupsDict { get; private set; } = new SkillGroupDictionary();
 
-        public void InitExclusiveSkill()
-            => ExclusiveSkill = (SkillTemplate)SkillGroupsDict.First().Key;
+        public void SetFirstExclusiveSkill()
+            => FirstExclusiveSkill = (SkillTemplate)SkillGroupsDict.First().Key;
 
         public void LevelUp(SkillTemplate templateOrigin)
         {
@@ -210,8 +243,6 @@ namespace STELLAREST_2D
 
         public void Deactivate(SkillTemplate templateOrigin)
         {
-            Utils.Log("5252");
-
             if (SkillGroupsDict.TryGetValue((int)templateOrigin, out SkillGroup group) == false)
                 Utils.LogCritical(nameof(SkillBook), nameof(Acquire), $"Check TemplateID : {templateOrigin}");
 
@@ -260,16 +291,64 @@ namespace STELLAREST_2D
         {
             foreach (KeyValuePair<int, SkillGroup> pair in SkillGroupsDict)
             {
+                for (int i = 0; i < pair.Value.MemberCount; ++i)
+                {
+                    SkillBase skillOrigin = pair.Value.Members[i].SkillOrigin;
+                    if (skillOrigin.Data.IsExclusive)
+                    {
+                        if (skillOrigin.Data.SkillType == Define.SkillType.Repeat)
+                        {
+                            if (skillOrigin.Owner.AnimCallback.OnCloneExclusiveRepeatSkill != null)
+                            {
+                                skillOrigin.Owner.AnimCallback.OnCloneExclusiveRepeatSkill -= skillOrigin.GetComponent<RepeatSkill>().OnCloneExclusiveRepeatSkillHandler;
+                                Utils.Log($"{skillOrigin.Data.Name}, Release Events");
+                            }
+                        }
+                    }
+                }
             }
         }
+    }
+}
 
-        public void OnExclusiveSkillEnabledHandler(SkillTemplate templateOrigin)
-        {
-            return;
-            //StartCoroutine(CoLaunchSkill(this.GetSkillMember(templateOrigin)));
-        }
+// -------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------
+// public SkillBase Activate(SkillTemplate templateOrigin)
+// {
+//     if (SkillGroupsDict.TryGetValue((int)templateOrigin, out SkillGroup group) == false)
+//         Utils.LogCritical(nameof(SkillBook), nameof(Acquire), $"Check TemplateID : {templateOrigin}");
 
-        // public void LaunchSkill(SkillTemplate templateOrigin)
+//     SkillBase skill = group.GetSkillMember();
+//     if (skill == null)
+//     {
+//         Utils.LogStrong(nameof(SkillBook), nameof(Activate), "Failed to activate skill.");
+//         return null;
+//     }
+//     else
+//         skill.Activate();
+
+//     return skill;
+// }
+
+
+// public SkillBase Deactivate(SkillTemplate templateOrigin)
+// {
+//     if (SkillGroupsDict.TryGetValue((int)templateOrigin, out SkillGroup group) == false)
+//         Utils.LogCritical(nameof(SkillBook), nameof(Acquire), $"Check TemplateID : {templateOrigin}");
+
+//     SkillBase skill = group.GetSkillMember();
+//     if (skill == null)
+//     {
+//         Utils.LogStrong(nameof(SkillBook), nameof(Deactivate), "Failed to activate skill.");
+//         return null;
+//     }
+//     else
+//         skill.Deactivate();
+
+//     return skill;
+// }
+
+// public void LaunchSkill(SkillTemplate templateOrigin)
         // {
         //     if (SkillGroupsDict.TryGetValue((int)templateOrigin, out SkillGroup group) == false)
         //         Utils.LogCritical(nameof(SkillBook), nameof(Acquire), $"Check TemplateID : {templateOrigin}");
@@ -286,123 +365,85 @@ namespace STELLAREST_2D
         // UpdateCurrentOwnerState (Ready to shot projectile)
 
         // Melee Swing, Ranged Shot Instead
-        private IEnumerator CoLaunchSkill(SkillBase skillOrigin)
-        {
-            // Vector3 shootDir = Owner.ShootDir;
-            // Define.LookAtDirection lootAtDir = Owner.LookAtDir;
-            // Vector3 indicatorAngle = Owner.Indicator.eulerAngles;
-            // Vector3 spawnPos = Vector3.zero;
-
-            // ProjectileController pc = Managers.Object.Spawn<ProjectileController>(spawnPos, skillOrigin.Data.TemplateID, 
-            //     Define.ObjectType.Projectile, true);
-
-            yield return null;
-
-            // -------------------------------------------------------------------------------------
-            // -------------------------------------------------------------------------------------
-            // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-            // TODO : CreatureController에 ShootDir, LootAtDir, Indicator를 모두 넣는다.
-            // Owner를 통해서 받아온다 (이러면 몬스터인지 플레이어인지 구분하지 않아도 된다.)
-            // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-            // if (Owner?.IsPlayer() == true)
-            // {
-            //     // Managers.Game.Player.AttackEndPoint = transform.position; // ---> CHECK,,,
-            //     Vector3 shootDir = Managers.Game.Player.ShootDir;
-            //     Define.LookAtDirection lootAtDir = Managers.Game.Player.LookAtDir;
-            //     Vector3 indicatorAngle = Managers.Game.Player.Indicator.eulerAngles;
-
-            //     Vector3 spawnPos = Vector3.zero;
-            //     SkillData data = skillOrigin.Data;
-
-            //     if (data.IsOnFireSocket)
-            //         spawnPos = Managers.Game.Player.FireSocketPosition;
-            //     else
-            //         spawnPos = Managers.Game.Player.transform.position;
-
-            //     // +++ Local Position Add : TEST DO SOMETHING
-            //     Vector3 localScale = Managers.Game.Player.LocalScale;
-            //     localScale *= 0.8f;
-
-            //     // +++ FIRST SET +++
-            //     int skillCount = data.ContinuousCount;
-            //     float[] continuousAngles = new float[skillCount];
-            //     float[] continuousSpeedRatios = new float[skillCount];
-            //     float[] continuousFlipXs = new float[skillCount];
-            //     float[] continuousFlipYs = new float[skillCount];
-            //     float[] interPolateTargetScaleXs = new float[skillCount];
-            //     float[] interPolateTargetScaleYs = new float[skillCount];
-            //     bool[] isOnlyVisibles = new bool[skillCount];
-            //     for (int i = 0; i < skillCount; ++i)
-            //     {
-            //         continuousSpeedRatios[i] = data.ContinuousSpeedRatios[i];
-            //         continuousFlipXs[i] = data.ContinuousFlipXs[i];
-            //         continuousFlipYs[i] = data.ContinuousFlipYs[i];
-            //         isOnlyVisibles[i] = data.IsOnlyVisibles[i];
-            //         if (Managers.Game.Player.IsFacingRight == false)
-            //         {
-            //             continuousAngles[i] = data.ContinuousAngles[i] * -1;
-            //             interPolateTargetScaleXs[i] = data.ScaleInterpolations[i].x * -1;
-            //             interPolateTargetScaleYs[i] = data.ScaleInterpolations[i].y;
-            //         }
-            //         else
-            //         {
-            //             continuousAngles[i] = data.ContinuousAngles[i];
-            //             interPolateTargetScaleXs[i] = data.ScaleInterpolations[i].x;
-            //             interPolateTargetScaleYs[i] = data.ScaleInterpolations[i].y;
-            //         }
-            //     }
-
-            //     //this.Owner.SetAttackStartPoint();                    
-            //     // +++ SECOND SHOOT +++
-            //     for (int i = 0; i < skillCount; ++i)
-            //     {
-            //         ProjectileController pc = Managers.Object.Spawn<ProjectileController>(spawnPos, data.TemplateID, Define.ObjectType.Projectile, true);
-            //         if (pc.IsFirstPooling)
-            //             pc.SetInitialCloneInfo(skillOrigin);
-
-            //         pc.SetProjectileInfo(shootDir: shootDir, lootAtDir: lootAtDir, localScale: localScale, indicatorAngle: indicatorAngle,
-            //                              continuousAngle: continuousAngles[i], continuousSpeedRatio: continuousSpeedRatios[i], continuousFlipX: continuousFlipXs[i], continuousFlipY: continuousFlipYs[i],
-            //                              interPolateTargetScaleX: interPolateTargetScaleXs[i], interpolateTargetScaleY: interPolateTargetScaleYs[i], isOnlyVisible: isOnlyVisibles[i]);
-
-            //         yield return new WaitForSeconds(data.ContinuousSpacing);
-            //     }
-            // }
-        }
-    }
-}
-
-
-        // public SkillBase Activate(SkillTemplate templateOrigin)
+        // private IEnumerator CoLaunchSkill(SkillBase skillOrigin)
         // {
-        //     if (SkillGroupsDict.TryGetValue((int)templateOrigin, out SkillGroup group) == false)
-        //         Utils.LogCritical(nameof(SkillBook), nameof(Acquire), $"Check TemplateID : {templateOrigin}");
+        //     // Vector3 shootDir = Owner.ShootDir;
+        //     // Define.LookAtDirection lootAtDir = Owner.LookAtDir;
+        //     // Vector3 indicatorAngle = Owner.Indicator.eulerAngles;
+        //     // Vector3 spawnPos = Vector3.zero;
 
-        //     SkillBase skill = group.GetSkillMember();
-        //     if (skill == null)
-        //     {
-        //         Utils.LogStrong(nameof(SkillBook), nameof(Activate), "Failed to activate skill.");
-        //         return null;
-        //     }
-        //     else
-        //         skill.Activate();
+        //     // ProjectileController pc = Managers.Object.Spawn<ProjectileController>(spawnPos, skillOrigin.Data.TemplateID, 
+        //     //     Define.ObjectType.Projectile, true);
 
-        //     return skill;
-        // }
+        //     yield return null;
 
+        //     // -------------------------------------------------------------------------------------
+        //     // -------------------------------------------------------------------------------------
+        //     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        //     // TODO : CreatureController에 ShootDir, LootAtDir, Indicator를 모두 넣는다.
+        //     // Owner를 통해서 받아온다 (이러면 몬스터인지 플레이어인지 구분하지 않아도 된다.)
+        //     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        //     // if (Owner?.IsPlayer() == true)
+        //     // {
+        //     //     // Managers.Game.Player.AttackEndPoint = transform.position; // ---> CHECK,,,
+        //     //     Vector3 shootDir = Managers.Game.Player.ShootDir;
+        //     //     Define.LookAtDirection lootAtDir = Managers.Game.Player.LookAtDir;
+        //     //     Vector3 indicatorAngle = Managers.Game.Player.Indicator.eulerAngles;
 
-        // public SkillBase Deactivate(SkillTemplate templateOrigin)
-        // {
-        //     if (SkillGroupsDict.TryGetValue((int)templateOrigin, out SkillGroup group) == false)
-        //         Utils.LogCritical(nameof(SkillBook), nameof(Acquire), $"Check TemplateID : {templateOrigin}");
+        //     //     Vector3 spawnPos = Vector3.zero;
+        //     //     SkillData data = skillOrigin.Data;
 
-        //     SkillBase skill = group.GetSkillMember();
-        //     if (skill == null)
-        //     {
-        //         Utils.LogStrong(nameof(SkillBook), nameof(Deactivate), "Failed to activate skill.");
-        //         return null;
-        //     }
-        //     else
-        //         skill.Deactivate();
+        //     //     if (data.IsOnFireSocket)
+        //     //         spawnPos = Managers.Game.Player.FireSocketPosition;
+        //     //     else
+        //     //         spawnPos = Managers.Game.Player.transform.position;
 
-        //     return skill;
+        //     //     // +++ Local Position Add : TEST DO SOMETHING
+        //     //     Vector3 localScale = Managers.Game.Player.LocalScale;
+        //     //     localScale *= 0.8f;
+
+        //     //     // +++ FIRST SET +++
+        //     //     int skillCount = data.ContinuousCount;
+        //     //     float[] continuousAngles = new float[skillCount];
+        //     //     float[] continuousSpeedRatios = new float[skillCount];
+        //     //     float[] continuousFlipXs = new float[skillCount];
+        //     //     float[] continuousFlipYs = new float[skillCount];
+        //     //     float[] interPolateTargetScaleXs = new float[skillCount];
+        //     //     float[] interPolateTargetScaleYs = new float[skillCount];
+        //     //     bool[] isOnlyVisibles = new bool[skillCount];
+        //     //     for (int i = 0; i < skillCount; ++i)
+        //     //     {
+        //     //         continuousSpeedRatios[i] = data.ContinuousSpeedRatios[i];
+        //     //         continuousFlipXs[i] = data.ContinuousFlipXs[i];
+        //     //         continuousFlipYs[i] = data.ContinuousFlipYs[i];
+        //     //         isOnlyVisibles[i] = data.IsOnlyVisibles[i];
+        //     //         if (Managers.Game.Player.IsFacingRight == false)
+        //     //         {
+        //     //             continuousAngles[i] = data.ContinuousAngles[i] * -1;
+        //     //             interPolateTargetScaleXs[i] = data.ScaleInterpolations[i].x * -1;
+        //     //             interPolateTargetScaleYs[i] = data.ScaleInterpolations[i].y;
+        //     //         }
+        //     //         else
+        //     //         {
+        //     //             continuousAngles[i] = data.ContinuousAngles[i];
+        //     //             interPolateTargetScaleXs[i] = data.ScaleInterpolations[i].x;
+        //     //             interPolateTargetScaleYs[i] = data.ScaleInterpolations[i].y;
+        //     //         }
+        //     //     }
+
+        //     //     //this.Owner.SetAttackStartPoint();                    
+        //     //     // +++ SECOND SHOOT +++
+        //     //     for (int i = 0; i < skillCount; ++i)
+        //     //     {
+        //     //         ProjectileController pc = Managers.Object.Spawn<ProjectileController>(spawnPos, data.TemplateID, Define.ObjectType.Projectile, true);
+        //     //         if (pc.IsFirstPooling)
+        //     //             pc.SetInitialCloneInfo(skillOrigin);
+
+        //     //         pc.SetProjectileInfo(shootDir: shootDir, lootAtDir: lootAtDir, localScale: localScale, indicatorAngle: indicatorAngle,
+        //     //                              continuousAngle: continuousAngles[i], continuousSpeedRatio: continuousSpeedRatios[i], continuousFlipX: continuousFlipXs[i], continuousFlipY: continuousFlipYs[i],
+        //     //                              interPolateTargetScaleX: interPolateTargetScaleXs[i], interpolateTargetScaleY: interPolateTargetScaleYs[i], isOnlyVisible: isOnlyVisibles[i]);
+
+        //     //         yield return new WaitForSeconds(data.ContinuousSpacing);
+        //     //     }
+        //     // }
         // }

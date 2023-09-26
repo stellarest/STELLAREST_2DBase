@@ -12,11 +12,13 @@ namespace STELLAREST_2D
     [System.Serializable]
     public class SkillBase : BaseController
     {
+        public System.Action<Vector3, Define.LookAtDirection, float, float, float> OnSetParticleInfo = null;
         public System.EventHandler<ProjectileLaunchInfoEventArgs> OnProjectileLaunchInfo = null;
         public CreatureController Owner { get; protected set; } = null;
         public Data.SkillData Data { get; protected set; } = null;
         public ProjectileController PC { get; protected set; } = null;
         public Collider2D HitCollider { get; protected set; } = null;
+        public Rigidbody2D RigidBody { get; protected set; } = null;
 
         public virtual void InitOrigin(CreatureController owner, Data.SkillData data)
         {
@@ -29,32 +31,29 @@ namespace STELLAREST_2D
 
         public virtual void InitClone(CreatureController ownerFromOrigin, Data.SkillData dataFromOrigin)
         {
-            if (this.IsFirstPooling)
+            this.Owner = ownerFromOrigin;
+            this.Data = dataFromOrigin;
+            SetSortingGroup();
+
+            if (this.Data.IsProjectile)
             {
-                this.Owner = ownerFromOrigin;
-                this.Data = dataFromOrigin;
-
-                if (this.Data.IsProjectile)
-                {
-                    this.PC = GetComponent<ProjectileController>();
-                    this.PC.HitCollider = GetComponent<Collider2D>();
-                    this.PC.Owner = ownerFromOrigin;
-                    this.PC.Data = dataFromOrigin;
-                    this.OnProjectileLaunchInfo += this.PC.OnProjectileLaunchInfoHandler;
-                }
-
-                if (ownerFromOrigin?.IsPlayer() == true)
-                    Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.PlayerAttack);
-                else
-                    Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.MonsterAttack);
-
-                IsFirstPooling = false;
+                this.PC = GetComponent<ProjectileController>();
+                this.PC.HitCollider = GetComponent<Collider2D>();
+                this.PC.RigidBody = GetComponent<Rigidbody2D>();
+                this.PC.Owner = ownerFromOrigin;
+                this.PC.Data = dataFromOrigin;
+                this.OnProjectileLaunchInfo += this.PC.OnProjectileLaunchInfoHandler;
             }
+
+            if (ownerFromOrigin?.IsPlayer() == true)
+                Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.PlayerAttack);
+            else
+                Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.MonsterAttack);
         }
 
-        // -----------------------------------------------------------------------------
-        // +++ Projectile is must be skill. But, skill is not sometimes projectile +++
-        // -----------------------------------------------------------------------------
+        // --------------------------------------------------------------------------------------------------
+        // ***** Projectile is must be skill. But, skill is not sometimes projectil. It's just a skill. *****
+        // --------------------------------------------------------------------------------------------------
         private bool _isLearned = false;
         public bool IsLearned
         {
@@ -77,13 +76,10 @@ namespace STELLAREST_2D
                         return;
                     }
 
-                    this.Deactivate();
-                    Utils.Log(nameof(SkillBase), nameof(IsLast), Data.Name, "is off now.");
+                    this.Deactivate(true);
                 }
             }
         }
-
-        public virtual IEnumerator CoLaunchProjectile() { yield return null; }
 
         public bool IsStopped { get; protected set; } = false;
 
@@ -110,9 +106,8 @@ namespace STELLAREST_2D
         {
             IsStopped = true;
             gameObject.SetActive(false);
-
             if(isPoolingClear)
-                Managers.Pool.ClearPool(this.gameObject);
+                Managers.Pool.ClearPool<SkillBase>(this.gameObject);
         } 
 
         public bool IsCritical { get; set; } = false;

@@ -8,15 +8,12 @@ namespace STELLAREST_2D
     public class AnimationCallback : MonoBehaviour
     {
         private CreatureController _owner = null;
-        public event System.Action<SkillTemplate> OnExclusiveSkillEnabled = null;
+        public System.Action OnCloneExclusiveRepeatSkill = null;
 
         public void Init(CreatureController owner) => this._owner = owner;
+        public void OnCloneExclusiveRepeatSkillHandler() => OnCloneExclusiveRepeatSkill?.Invoke();
 
-        public void OnExclusiveSkillEnabledHandler() 
-            => OnExclusiveSkillEnabled?.Invoke(_owner.SkillBook.ExclusiveSkill);
-            
         public void ShowDustEffect() => Managers.Effect.ShowPlayerDust();
-
         public void BattleFaceExpression()
         {
             // switch (_owner.CreatureStat.TemplateID)

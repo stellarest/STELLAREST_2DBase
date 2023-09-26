@@ -9,27 +9,67 @@ namespace STELLAREST_2D
     public class MeleeSwing : RepeatSkill
     {
         private ParticleSystem[] _particles = null;
-        private ParticleSystemRenderer[] _particleRenderers = null;
+        private ParticleSystemRenderer[] _particleSystemRenderers = null;
 
-        // +++++
-        // Projectile must be skill.
-        // 프로젝타일은 스킬에서 딸려나갈 수 있는 것.
-        // But, Skill is not projectile sometimes. Init pos is here.
-        // public override void Init(CreatureController owner, SkillData data)
-        // {
-        //     base.Init(owner, data);
-        //     if (this.IsFirstPooling)
-        //     {
-        //         _particles = GetComponents<ParticleSystem>();
-        //         _particleRenderers = GetComponents<ParticleSystemRenderer>();
-        //         SetSortingGroup();
-        //         Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.PlayerAttack);
-        //         IsFirstPooling = false;
-        //     }
-        // }
+        public override void InitOrigin(CreatureController owner, SkillData data)
+        {
+            base.InitOrigin(owner, data);
+            foreach (var particle in GetComponentsInChildren<ParticleSystem>())
+            {
+                var emission = particle.emission;
+                emission.enabled = false;
+            }
 
-        protected override void SetSortingGroup() 
+            GetComponent<Rigidbody2D>().simulated = false;
+            GetComponent<Collider2D>().enabled = false;
+            GetComponent<SortingGroup>().enabled = false;
+        }
+
+        public override void InitClone(CreatureController ownerFromOrigin, SkillData dataFromOrigin)
+        {
+            if (this.IsFirstPooling)
+            {
+                base.InitClone(ownerFromOrigin, dataFromOrigin);
+                _particles = GetComponents<ParticleSystem>();
+                _particleSystemRenderers = GetComponents<ParticleSystemRenderer>();
+                this.PC.OnSetParticleInfo += this.OnSetSwingParticleInfoHandler;
+                this.IsFirstPooling = false;
+            }
+        }
+
+        protected override void SetSortingGroup()
                 => GetComponent<SortingGroup>().sortingOrder = (int)Define.SortingOrder.Skill;
+
+        protected override void DoSkillJob()
+        {
+            Owner.CreatureState = Define.CreatureState.Attack;
+        }
+
+        protected override IEnumerator CoCloneSkill() => base.CoCloneSkill();
+
+        public void OnSetSwingParticleInfoHandler(Vector3 indicatorAngle, Define.LookAtDirection lookAtDir, float continuousAngle, float continuousFlipX, float continuousFlipY)
+        {
+            for (int i = 0; i < _particles.Length; ++i)
+            {
+                Vector3 angle = indicatorAngle;
+                angle.z += continuousAngle;
+                transform.rotation = Quaternion.Euler(angle);
+
+                var main = _particles[i].main;
+                main.startRotation = Mathf.Deg2Rad * angle.z * -1;
+                main.flipRotation = (int)lookAtDir;
+                _particleSystemRenderers[i].flip = new Vector3(continuousFlipX, continuousFlipY);
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (this.PC != null && this.PC.OnSetParticleInfo != null)
+            {
+                this.PC.OnSetParticleInfo -= OnSetSwingParticleInfoHandler;
+                //this.PC.Owner.AnimCallback.OnCloneExclusiveSkill -= OnCloneExclusiveSkillHandler;
+            }
+        }
 
         // public override void SetParticleInfo(Vector3 startAngle, Define.LookAtDirection lookAtDir, 
         //                                     float continuousAngle, float continuousFlipX, float continuousFlipY)
@@ -48,8 +88,8 @@ namespace STELLAREST_2D
         //     }
         // }
 
-        protected override void DoSkillJob() 
-            => Owner.CreatureState = Define.CreatureState.Attack; // Event Handler로 대체
+        // protected override void DoSkillJob() 
+        //     => Owner.CreatureState = Define.CreatureState.Attack; // Event Handler로 대체
 
         // public override void OnPreSpawned()
         // {

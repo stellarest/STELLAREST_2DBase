@@ -98,7 +98,6 @@ namespace STELLAREST_2D
 
         public void LaunchSkill(CreatureController owner, Data.SkillData data)
         {
-            
         }
 
         public void Despawn<T>(T obj) where T : BaseController

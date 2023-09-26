@@ -17,12 +17,16 @@ namespace STELLAREST_2D
             base.InitOrigin(owner, data);
             GetComponent<SpriteRenderer>().enabled = false;
             GetComponent<Collider2D>().enabled = false;
+            GetComponent<Rigidbody2D>().simulated = false;
         }
 
         public override void InitClone(CreatureController owner, SkillData data)
         {
-            base.InitClone(owner, data);
-            SetSortingGroup();
+            if (this.IsFirstPooling)
+            {
+                base.InitClone(owner, data);
+                this.IsFirstPooling = false;
+            }
         }
 
         protected override void SetSortingGroup()

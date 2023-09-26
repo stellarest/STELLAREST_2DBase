@@ -112,7 +112,7 @@ namespace STELLAREST_2D
             if (clearPrevLogs)
                 ClearLog();
 
-            Utils.Log("----------------------------------------");
+            Utils.Log(" ↓ [         LOG         ] ↓");
             Utils.Log($"Called : {called}");
             Utils.Log($"By : {byMethod}");
             if (target != null)
@@ -123,7 +123,7 @@ namespace STELLAREST_2D
             }
             else
                 Utils.Log(message);
-            Utils.Log("----------------------------------------");
+            Utils.Log(" ↑ [         LOG         ] ↑");
         }
 
         [Conditional("UNITY_EDITOR")]
@@ -131,7 +131,16 @@ namespace STELLAREST_2D
         {
             Utils.Log("[\n");
             Utils.Log(message);
-            Utils.Log("\n                   ] : Paused by Utils.LogBreak");
+            Utils.Log("\n                   ] : Paused");
+            Debug.Break();
+        }
+
+                [Conditional("UNITY_EDITOR")]
+        public static void LogBreak(object calledByMethodOnly, object message)
+        {
+            Utils.Log("[\n");
+            Utils.Log(message);
+            Utils.Log($"\n                   ] : Paused by {calledByMethodOnly}");
             Debug.Break();
         }
 

@@ -64,6 +64,7 @@ namespace STELLAREST_2D
                 }
             }
 
+            // Add Group Leader
             if (_numberGroups.ContainsKey(key) == false)
             {
                 List<int> groups = new List<int>();

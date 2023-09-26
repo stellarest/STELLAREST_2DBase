@@ -25,7 +25,7 @@ namespace STELLAREST_2D
             this.Armor = creatureData.Armor;
             this.Dodge = creatureData.Dodge;
 
-            this.MoveSpeed = creatureData.MoveSpeed;
+            this.MovementSpeed = creatureData.MovementSpeed;
             this.CollectRange = creatureData.CollectRange;
 
             this.Luck = creatureData.Luck;
@@ -34,7 +34,7 @@ namespace STELLAREST_2D
 
         public CreatureStat(CreatureController owner, int templateID, string name, string description, float maxHp, 
                         float damage, float defaultSkillDamage, float critical, float attackSpeed, float coolDown, 
-                        float armor, float dodge, float moveSpeed, float collectRange,float luck, float totalExp)
+                        float armor, float dodge, float movementSpeed, float collectRange,float luck, float totalExp)
         {
             this.Owner = owner;
 
@@ -54,7 +54,7 @@ namespace STELLAREST_2D
             this.Armor = armor;
             this.Dodge = dodge;
 
-            this.MoveSpeed = moveSpeed;
+            this.MovementSpeed = movementSpeed;
             this.CollectRange = collectRange;
 
             this.Luck = luck;
@@ -94,7 +94,7 @@ namespace STELLAREST_2D
         [field: SerializeField] public float Armor { get; private set; }
         [field: SerializeField] public float Dodge { get; private set; }
 
-        [field: SerializeField] public float MoveSpeed { get; private set; }
+        [field: SerializeField] public float MovementSpeed { get; private set; }
         [field: SerializeField] public float CollectRange { get; private set; }
         [field: SerializeField] public float Luck { get; private set; } // -> Large Gem 드롭확률 증가, 희귀한 패시브 스킬(스탯) 등장 확률 증가
         [field: SerializeField] public float TotalExp { get; private set; }
@@ -118,14 +118,14 @@ namespace STELLAREST_2D
             this.Armor = currentStat.Armor + (currentStat.Armor * value.ArmorUp);
             this.Dodge = currentStat.Dodge + (currentStat.Dodge * value.DodgeUp);
 
-            this.MoveSpeed = currentStat.MoveSpeed + (currentStat.MoveSpeed * value.MoveSpeedUp);
+            this.MovementSpeed = currentStat.MovementSpeed + (currentStat.MovementSpeed * value.MovementSpeedUp);
             this.CollectRange = currentStat.CollectRange + (currentStat.CollectRange * value.CollectRangeUp);
             this.Luck = currentStat.Luck + (currentStat.Luck * value.LuckUp);
             this.TotalExp = currentStat.TotalExp;
 
             return new CreatureStat(owner: owner, templateID: currentStat.TemplateID, name: currentStat.Name, description: currentStat.Description, 
                     maxHp: MaxHp, damage: Damage, defaultSkillDamage: DefaultSkillDamage, critical: Critical, attackSpeed: AttackSpeed, coolDown: CoolDown, 
-                    armor: Armor, dodge: Dodge, moveSpeed: MoveSpeed, collectRange: CollectRange, luck: Luck, totalExp: TotalExp);
+                    armor: Armor, dodge: Dodge, movementSpeed: MovementSpeed, collectRange: CollectRange, luck: Luck, totalExp: TotalExp);
         }
     }
 }

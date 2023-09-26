@@ -22,7 +22,7 @@ namespace STELLAREST_2D.Data
         public float CoolDown;
         public float Armor;
         public float Dodge;
-        public float MoveSpeed;
+        public float MovementSpeed;
         public float CollectRange;
         public float Luck;
         public float TotalExp;
@@ -66,7 +66,7 @@ namespace STELLAREST_2D.Data
         public float CoolDownUp;
         public float ArmorUp;
         public float DodgeUp;
-        public float MoveSpeedUp;
+        public float MovementSpeedUp;
         public float CollectRangeUp;
         public float LuckUp;
     }

@@ -70,8 +70,8 @@ namespace STELLAREST_2D
 
         private void AddCallbacks()
         {
-            Managers.Game.OnMoveDirChanged += OnMoveDirChangedHandler;
-            AnimCallback.OnExclusiveSkillEnabled += SkillBook.OnExclusiveSkillEnabledHandler;
+            if (Managers.Game != null)
+                Managers.Game.OnMoveDirChanged += OnMoveDirChangedHandler;
         }
 
         private void RemoveCallbacks()
@@ -79,55 +79,64 @@ namespace STELLAREST_2D
             if (Managers.Game != null)
                 Managers.Game.OnMoveDirChanged -= OnMoveDirChangedHandler;
 
-            if (this.IsValid())
-                AnimCallback.OnExclusiveSkillEnabled -= SkillBook.OnExclusiveSkillEnabledHandler;
+            // if (this.IsValid())
+            //     AnimCallback.OnAttackAnimSkillEnable -= SkillBook.Activate;
         }
+
 
         private void OnMoveDirChangedHandler(Vector3 moveDir)
         {
             this.MoveDir = moveDir;
             if (moveDir == Vector3.zero)
-            {
                 CreatureState = Define.CreatureState.Idle;
-            }
             else
             {
                 CreatureState = Define.CreatureState.Run;
                 if (Managers.Game.IsGameStart == false)
                 {
                     PlayerAnimController.Ready();
-                    //PlayerAnimController.Attack(); // --> Activate Mastery Skill
+                    SkillBook.LevelUp(SkillBook.FirstExclusiveSkill);
+                    SkillBook.Activate(SkillBook.FirstExclusiveSkill);
                     Managers.Game.GAME_START();
                 }
             }
         }
 
+#if UNITY_EDITOR
+        private bool flag1 = false;
+        private void Flag1()
+        {
+            flag1 = !flag1;
+            if (flag1)
+                SkillBook.Activate(SkillBook.FirstExclusiveSkill);
+            else
+                SkillBook.Deactivate(SkillBook.FirstExclusiveSkill);
+        }
+
+        private bool flag2 = false;
+        private void Flag2()
+        {
+            flag2 = !flag2;
+            if (flag2)
+                SkillBook.Activate(SkillTemplate.ThrowingStar);
+            else
+                SkillBook.Deactivate(SkillTemplate.ThrowingStar);
+        }
         private void Update()
         {
-#if UNITY_EDITOR
             DEV_CLEAR_LOG();
-#endif
             if (Input.GetKeyDown(KeyCode.Alpha1))
-                SkillBook.LevelUp(SkillTemplate.ThrowingStar);
+                SkillBook.LevelUp(SkillTemplate.PaladinMastery);
+            if (Input.GetKeyDown(KeyCode.Q))
+                Flag1();
 
             if (Input.GetKeyDown(KeyCode.Alpha2))
-                SkillBook.Activate(SkillTemplate.ThrowingStar);
-
-            if (Input.GetKeyDown(KeyCode.Alpha3))
-            {
-                SkillBook.Deactivate(SkillTemplate.ThrowingStar);
-            }
-
-            // if (Input.GetKeyDown(KeyCode.Alpha2))
-            //     PlayerAnimController.Release();
-
+                SkillBook.LevelUp(SkillTemplate.ThrowingStar);
+            if (Input.GetKeyDown(KeyCode.W))
+                Flag2();
+#endif
             MoveByJoystick(); // ERROR
             CollectEnv();
-
-            if (Input.GetKeyDown(KeyCode.Q))
-            {
-                SkillBook.LevelUp(SkillTemplate.PaladinMastery);
-            }
         }
 
         public override void UpdateAnimation()
@@ -146,185 +155,6 @@ namespace STELLAREST_2D
                     PlayerAnimController.Attack();
                     break;
             }
-
-            // -------------------------------------------------------------------------------------
-            // -------------------------------------------------------------------------------------
-
-            // switch (CreatureState)
-            // {
-            //     case Define.CreatureState.Idle:
-            //         {
-            //             PlayerAnim.Idle();
-            //         }
-            //         break;
-
-            //     case Define.CreatureState.Walk:
-            //         {
-            //             PlayerAnim.Walk();
-            //         }
-            //         break;
-
-            //     case Define.CreatureState.Run:
-            //         {
-            //             PlayerAnim.Run();
-            //         }
-            //         break;
-
-            //     case Define.CreatureState.Attack:
-            //         {
-            //             AttackStartPoint = transform.position;
-            //             PlayerAnim.Slash1H();
-
-            //             // 애초에 Weapon Type을 받아와서 재생하는게 더 깔끔할수도 있음.
-            //             // 근데 이것도 ㄱㅊ
-            //             // switch (CreatureData.TemplateID)
-            //             // {
-            //             //     case (int)Define.TemplateIDs.Creatures.Player.Gary_Paladin:
-            //             //         {
-            //             //             PAC.Slash1H();
-            //             //         }
-            //             //         break;
-            //             //     case (int)Define.TemplateIDs.Creatures.Player.Gary_Knight:
-            //             //         {
-            //             //             PAC.Slash2H();
-            //             //         }
-            //             //         break;
-            //             //     case (int)Define.TemplateIDs.Creatures.Player.Gary_PhantomKnight:
-            //             //         {
-            //             //             PAC.Slash1H();
-            //             //         }
-            //             //         break;
-
-            //             //     case (int)Define.TemplateIDs.Creatures.Player.Reina_ArrowMaster:
-            //             //         {
-            //             //             // SkillData skillData = SkillBook.GetCurrentPlayerDefaultSkill.SkillData;
-            //             //             // if (skillData.InGameGrade >= Define.InGameGrade.Epic)
-            //             //             //     PAC.AttackAnimSpeed(ATTACK_SPEED_TEST);
-            //             //             PAC.SimpleBowShot();
-            //             //         }
-            //             //         break;
-            //             //     case (int)Define.TemplateIDs.Creatures.Player.Reina_ElementalArcher:
-            //             //         {
-            //             //             PAC.SimpleBowShot();
-            //             //         }
-            //             //         break;
-            //             //     case (int)Define.TemplateIDs.Creatures.Player.Reina_ForestWarden:
-            //             //         {
-            //             //             RepeatSkillData skillData = SkillBook.GetCurrentPlayerDefaultSkill.SkillData;
-            //             //             if (skillData.InGameGrade >= Define.InGameGrade.Epic)
-            //             //                 PAC.AttackAnimSpeed(1.3f);
-            //             //             PAC.SimpleBowShot();
-            //             //         }
-            //             //         break;
-
-            //             //     case (int)Define.TemplateIDs.Creatures.Player.Kenneth_Assassin:
-            //             //         {
-            //             //             RepeatSkillData skillData = SkillBook.GetCurrentPlayerDefaultSkill.SkillData;
-
-            //             //             // Bonus Stat으로 바꾸기.
-            //             //             //float animSpeed = skillData.AnimationSpeed;
-            //             //             //PAC.AttackAnimSpeed(animSpeed);
-            //             //             if (skillData.InGameGrade < Define.InGameGrade.Legendary)
-            //             //                 PAC.Jab1H();
-            //             //             else
-            //             //                 PAC.JabPaired();
-            //             //         }
-            //             //         break;
-            //             //     case (int)Define.TemplateIDs.Creatures.Player.Kenneth_Thief:
-            //             //         {
-            //             //             RepeatSkillData skillData = SkillBook.GetCurrentPlayerDefaultSkill.SkillData;
-            //             //             if (skillData.InGameGrade > Define.InGameGrade.Epic)
-            //             //                 PAC.SlashDouble();
-            //             //             else
-            //             //                 PAC.SlashPaired();
-            //             //         }
-            //             //         break;
-
-            //             //     case (int)Define.TemplateIDs.Creatures.Player.Lionel_Warrior:
-            //             //         {
-            //             //             PAC.Jab2H();
-            //             //         }
-            //             //         break;
-            //             //     case (int)Define.TemplateIDs.Creatures.Player.Lionel_Berserker:
-            //             //         {
-            //             //             PAC.SlashPaired();
-            //             //         }
-            //             //         break;
-
-            //             //     case (int)Define.TemplateIDs.Creatures.Player.Stigma_SkeletonKing:
-            //             //         {
-            //             //             PAC.Slash2H();
-            //             //         }
-            //             //         break;
-            //             //     case (int)Define.TemplateIDs.Creatures.Player.Stigma_Pirate:
-            //             //         {
-            //             //             RepeatSkillData skillData = SkillBook.GetCurrentPlayerDefaultSkill.SkillData;
-            //             //             if (skillData.InGameGrade < Define.InGameGrade.Legendary)
-            //             //                 PAC.Jab1HLeft();
-            //             //             else
-            //             //                 PAC.SlashPaired();
-            //             //         }
-            //             //         break;
-
-            //             //     case (int)Define.TemplateIDs.Creatures.Player.Eleanor_Queen:
-            //             //         {
-            //             //             PAC.Slash1H();
-            //             //         }
-            //             //         break;
-            //             // }
-
-            //             //StartAttackPos = transform.position;
-            //         }
-            //         break;
-
-            //     case Define.CreatureState.Death:
-            //         {
-            //             //Utils.LogStrong("### INVINCIBLA PLAYER NOW ###");
-            //         }
-            //         break;
-            // }
-        }
-
-        private void LateUpdate()
-        {
-            // if (Managers.Game.IsGameStart)
-            // {
-            //     switch (CreatureStat.TemplateID)
-            //     {
-            //         case (int)Define.TemplateIDs.Creatures.Player.Reina_ArrowMaster:
-            //         case (int)Define.TemplateIDs.Creatures.Player.Reina_ElementalArcher:
-            //         case (int)Define.TemplateIDs.Creatures.Player.Reina_ForestWarden:
-            //             {
-            //                 float modifiedAngle = (Indicator.eulerAngles.z + _armBowFixedAngle);
-            //                 if (LocalScale.x < 0)
-            //                     modifiedAngle = 360f - modifiedAngle;
-
-            //                 //ArmL.transform.localRotation = Quaternion.Euler(0, 0, modifiedAngle);
-            //                 BodyParts.ArmLeft.localRotation = Quaternion.Euler(0, 0, modifiedAngle);
-            //             }
-            //             break;
-
-
-            //         case (int)Define.TemplateIDs.Creatures.Player.Christian_Hunter:
-            //         case (int)Define.TemplateIDs.Creatures.Player.Christian_Desperado:
-            //         case (int)Define.TemplateIDs.Creatures.Player.Christian_Destroyer:
-            //             {
-            //                 float modifiedAngle = (Indicator.eulerAngles.z + _armRifleFixedAngle);
-            //                 if (LocalScale.x < 0)
-            //                 {
-            //                     modifiedAngle = 360f - modifiedAngle - 65f;
-            //                     //ArmR.transform.localRotation = Quaternion.Euler(0, 0, Mathf.Clamp(modifiedAngle, 15f, 91f));
-            //                     BodyParts.ArmRight.localRotation = Quaternion.Euler(0, 0, Mathf.Clamp(modifiedAngle, 15f, 91f));
-            //                 }
-            //                 else
-            //                 {
-            //                     //ArmR.transform.localRotation = Quaternion.Euler(0, 0, Mathf.Clamp(modifiedAngle, 378f, 450f));
-            //                     BodyParts.ArmRight.localRotation = Quaternion.Euler(0, 0, Mathf.Clamp(modifiedAngle, 378f, 450f));
-            //                 }
-            //             }
-            //             break;
-            //     }
-            // }
         }
 
         public Define.ExpressionType Testxpression = Define.ExpressionType.Default;
@@ -334,7 +164,7 @@ namespace STELLAREST_2D
         }
         private void MoveByJoystick()
         {
-            Vector3 dir = MoveDir.normalized * CreatureStat.MoveSpeed * Time.deltaTime;
+            Vector3 dir = MoveDir.normalized * CreatureStat.MovementSpeed * Time.deltaTime;
             transform.position += dir;
             if (IsMoving)
             {
@@ -387,12 +217,6 @@ namespace STELLAREST_2D
             //Debug.Log($"Find Gem : {findGems.Count} / Total Gem : {allSpawnedGems.Count}");
         }
 
-        public bool IsInLimitMaxPosX => Mathf.Abs(transform.position.x - Managers.Stage.RightTop.x) < Mathf.Epsilon ||
-                                Mathf.Abs(transform.position.x - Managers.Stage.LeftBottom.x) < Mathf.Epsilon;
-
-        public bool IsInLimitMaxPosY => Mathf.Abs(transform.position.y - Managers.Stage.RightTop.y) < Mathf.Epsilon ||
-                                        Mathf.Abs(transform.position.y - Managers.Stage.LeftBottom.y) < Mathf.Epsilon;
-
         protected override void SetSortingGroup()
             => GetComponent<SortingGroup>().sortingOrder = (int)Define.SortingOrder.Player;
 
@@ -404,38 +228,6 @@ namespace STELLAREST_2D
 
         private void OnDestroy()
             => RemoveCallbacks();
-
-
-        // private void InGameLimitPos(Vector3 position)
-        // {
-        //     // Min
-        //     if (position.x <= Managers.Stage.LeftBottom.x)
-        //         transform.position = new Vector2(Managers.Stage.LeftBottom.x, transform.position.y);
-        //     if (position.y <= Managers.Stage.LeftBottom.y)
-        //         transform.position = new Vector2(transform.position.x, Managers.Stage.LeftBottom.y);
-
-        //     // Max
-        //     if (position.x >= Managers.Stage.RightTop.x)
-        //         transform.position = new Vector2(Managers.Stage.RightTop.x, transform.position.y);
-        //     if (position.y >= Managers.Stage.RightTop.y)
-        //         transform.position = new Vector2(transform.position.x, Managers.Stage.RightTop.y);
-        // }
-
-        // public bool IsInLimitPos()
-        // {
-        //     if (Mathf.Abs(transform.position.x - Managers.Stage.LeftBottom.x) < Mathf.Epsilon ||
-        //         Mathf.Abs(transform.position.y - Managers.Stage.LeftBottom.y) < Mathf.Epsilon ||
-        //         Mathf.Abs(transform.position.x - Managers.Stage.RightTop.x) < Mathf.Epsilon ||
-        //         Mathf.Abs(transform.position.y - Managers.Stage.RightTop.y) < Mathf.Epsilon)
-        //         return true;
-        //     else
-        //         return false;
-        // }
-
-        // private IEnumerator CoIsIdle()
-        // {
-        //     while (Anima)
-        // }
 
         public bool AllStopAction()
         {
@@ -462,44 +254,253 @@ namespace STELLAREST_2D
                 Utils.ClearLog();
         }
 #endif
-
-        // private IEnumerator CoChangePlayerAppearance(SkillBase newSkill)
-        // {
-        //     SkillBook.StopSkills(); // 이걸로하면 나중에 Sequence Skill이 Active가 안될텐뎅
-        //     // StopPlayerDefaultSkill로 바꿔야함.
-        //     PlayerAnim.Ready(false);
-
-        //     // +++ TEMP +++
-        //     // if (IsChristian(CreatureStat.TemplateID) == false)
-        //     // {
-        //     //     while (PlayerAnim.AnimController.GetCurrentAnimatorStateInfo(0).IsName("IdleMelee") == false)
-        //     //     {
-        //     //         // 이 while 문은 공격 중일때 들어오는 부분인데, 현재 아직 공격중인 크리스티앙 애니메이션이 없음.
-        //     //         yield return null;
-        //     //     }
-        //     // }
-
-        //     // +++ ENABLE ASSASSIN DOUBLE WEAPON +++
-        //     // if (IsAssassin(newSkill.SkillData.OriginTemplateID) && newSkill.SkillData.InGameGrade == Define.InGameGrade.Legendary)
-        //     //     LeftHandMeleeWeapon.GetComponent<SpriteRenderer>().enabled = true;
-
-        //     // // +++ FIND OTHER HAND REINA BOW +++
-        //     // if (IsReina(CreatureData.TemplateID) || IsChristian(CreatureData.TemplateID))
-        //     //     Managers.Sprite.UpgradePlayerAppearance(this, newSkill.SkillData.InGameGrade, true);
-        //     // else
-        //     //     Managers.Sprite.UpgradePlayerAppearance(this, newSkill.SkillData.InGameGrade, false);
-
-        //     // // +++ ADJUST THIEF HAIR MASK +++
-        //     // if (IsThief(newSkill.SkillData.OriginTemplateID) && newSkill.SkillData.InGameGrade > Define.InGameGrade.Rare)
-        //     //     Hair.GetComponent<SpriteMask>().isCustomRangeActive = false;
-
-        //     Managers.Sprite.PlayerExpressionController.UpdateDefaultFace(this);
-
-        //     PlayerAnim.Ready(true);
-        //     newSkill.Activate();
-        // }
     }
 }
+
+// -------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------
+// private void LateUpdate()
+// {
+//     // if (Managers.Game.IsGameStart)
+//     // {
+//     //     switch (CreatureStat.TemplateID)
+//     //     {
+//     //         case (int)Define.TemplateIDs.Creatures.Player.Reina_ArrowMaster:
+//     //         case (int)Define.TemplateIDs.Creatures.Player.Reina_ElementalArcher:
+//     //         case (int)Define.TemplateIDs.Creatures.Player.Reina_ForestWarden:
+//     //             {
+//     //                 float modifiedAngle = (Indicator.eulerAngles.z + _armBowFixedAngle);
+//     //                 if (LocalScale.x < 0)
+//     //                     modifiedAngle = 360f - modifiedAngle;
+
+//     //                 //ArmL.transform.localRotation = Quaternion.Euler(0, 0, modifiedAngle);
+//     //                 BodyParts.ArmLeft.localRotation = Quaternion.Euler(0, 0, modifiedAngle);
+//     //             }
+//     //             break;
+
+
+//     //         case (int)Define.TemplateIDs.Creatures.Player.Christian_Hunter:
+//     //         case (int)Define.TemplateIDs.Creatures.Player.Christian_Desperado:
+//     //         case (int)Define.TemplateIDs.Creatures.Player.Christian_Destroyer:
+//     //             {
+//     //                 float modifiedAngle = (Indicator.eulerAngles.z + _armRifleFixedAngle);
+//     //                 if (LocalScale.x < 0)
+//     //                 {
+//     //                     modifiedAngle = 360f - modifiedAngle - 65f;
+//     //                     //ArmR.transform.localRotation = Quaternion.Euler(0, 0, Mathf.Clamp(modifiedAngle, 15f, 91f));
+//     //                     BodyParts.ArmRight.localRotation = Quaternion.Euler(0, 0, Mathf.Clamp(modifiedAngle, 15f, 91f));
+//     //                 }
+//     //                 else
+//     //                 {
+//     //                     //ArmR.transform.localRotation = Quaternion.Euler(0, 0, Mathf.Clamp(modifiedAngle, 378f, 450f));
+//     //                     BodyParts.ArmRight.localRotation = Quaternion.Euler(0, 0, Mathf.Clamp(modifiedAngle, 378f, 450f));
+//     //                 }
+//     //             }
+//     //             break;
+//     //     }
+//     // }
+// }
+
+// private void InGameLimitPos(Vector3 position)
+// {
+//     // Min
+//     if (position.x <= Managers.Stage.LeftBottom.x)
+//         transform.position = new Vector2(Managers.Stage.LeftBottom.x, transform.position.y);
+//     if (position.y <= Managers.Stage.LeftBottom.y)
+//         transform.position = new Vector2(transform.position.x, Managers.Stage.LeftBottom.y);
+
+//     // Max
+//     if (position.x >= Managers.Stage.RightTop.x)
+//         transform.position = new Vector2(Managers.Stage.RightTop.x, transform.position.y);
+//     if (position.y >= Managers.Stage.RightTop.y)
+//         transform.position = new Vector2(transform.position.x, Managers.Stage.RightTop.y);
+// }
+
+// public bool IsInLimitPos()
+// {
+//     if (Mathf.Abs(transform.position.x - Managers.Stage.LeftBottom.x) < Mathf.Epsilon ||
+//         Mathf.Abs(transform.position.y - Managers.Stage.LeftBottom.y) < Mathf.Epsilon ||
+//         Mathf.Abs(transform.position.x - Managers.Stage.RightTop.x) < Mathf.Epsilon ||
+//         Mathf.Abs(transform.position.y - Managers.Stage.RightTop.y) < Mathf.Epsilon)
+//         return true;
+//     else
+//         return false;
+// }
+
+// private IEnumerator CoIsIdle()
+// {
+//     while (Anima)
+// }
+
+// private IEnumerator CoChangePlayerAppearance(SkillBase newSkill)
+// {
+//     SkillBook.StopSkills(); // 이걸로하면 나중에 Sequence Skill이 Active가 안될텐뎅
+//     // StopPlayerDefaultSkill로 바꿔야함.
+//     PlayerAnim.Ready(false);
+
+//     // +++ TEMP +++
+//     // if (IsChristian(CreatureStat.TemplateID) == false)
+//     // {
+//     //     while (PlayerAnim.AnimController.GetCurrentAnimatorStateInfo(0).IsName("IdleMelee") == false)
+//     //     {
+//     //         // 이 while 문은 공격 중일때 들어오는 부분인데, 현재 아직 공격중인 크리스티앙 애니메이션이 없음.
+//     //         yield return null;
+//     //     }
+//     // }
+
+//     // +++ ENABLE ASSASSIN DOUBLE WEAPON +++
+//     // if (IsAssassin(newSkill.SkillData.OriginTemplateID) && newSkill.SkillData.InGameGrade == Define.InGameGrade.Legendary)
+//     //     LeftHandMeleeWeapon.GetComponent<SpriteRenderer>().enabled = true;
+
+//     // // +++ FIND OTHER HAND REINA BOW +++
+//     // if (IsReina(CreatureData.TemplateID) || IsChristian(CreatureData.TemplateID))
+//     //     Managers.Sprite.UpgradePlayerAppearance(this, newSkill.SkillData.InGameGrade, true);
+//     // else
+//     //     Managers.Sprite.UpgradePlayerAppearance(this, newSkill.SkillData.InGameGrade, false);
+
+//     // // +++ ADJUST THIEF HAIR MASK +++
+//     // if (IsThief(newSkill.SkillData.OriginTemplateID) && newSkill.SkillData.InGameGrade > Define.InGameGrade.Rare)
+//     //     Hair.GetComponent<SpriteMask>().isCustomRangeActive = false;
+
+//     Managers.Sprite.PlayerExpressionController.UpdateDefaultFace(this);
+
+//     PlayerAnim.Ready(true);
+//     newSkill.Activate();
+// }
+
+// switch (CreatureState)
+// {
+//     case Define.CreatureState.Idle:
+//         {
+//             PlayerAnim.Idle();
+//         }
+//         break;
+
+//     case Define.CreatureState.Walk:
+//         {
+//             PlayerAnim.Walk();
+//         }
+//         break;
+
+//     case Define.CreatureState.Run:
+//         {
+//             PlayerAnim.Run();
+//         }
+//         break;
+
+//     case Define.CreatureState.Attack:
+//         {
+//             AttackStartPoint = transform.position;
+//             PlayerAnim.Slash1H();
+
+//             // 애초에 Weapon Type을 받아와서 재생하는게 더 깔끔할수도 있음.
+//             // 근데 이것도 ㄱㅊ
+//             // switch (CreatureData.TemplateID)
+//             // {
+//             //     case (int)Define.TemplateIDs.Creatures.Player.Gary_Paladin:
+//             //         {
+//             //             PAC.Slash1H();
+//             //         }
+//             //         break;
+//             //     case (int)Define.TemplateIDs.Creatures.Player.Gary_Knight:
+//             //         {
+//             //             PAC.Slash2H();
+//             //         }
+//             //         break;
+//             //     case (int)Define.TemplateIDs.Creatures.Player.Gary_PhantomKnight:
+//             //         {
+//             //             PAC.Slash1H();
+//             //         }
+//             //         break;
+
+//             //     case (int)Define.TemplateIDs.Creatures.Player.Reina_ArrowMaster:
+//             //         {
+//             //             // SkillData skillData = SkillBook.GetCurrentPlayerDefaultSkill.SkillData;
+//             //             // if (skillData.InGameGrade >= Define.InGameGrade.Epic)
+//             //             //     PAC.AttackAnimSpeed(ATTACK_SPEED_TEST);
+//             //             PAC.SimpleBowShot();
+//             //         }
+//             //         break;
+//             //     case (int)Define.TemplateIDs.Creatures.Player.Reina_ElementalArcher:
+//             //         {
+//             //             PAC.SimpleBowShot();
+//             //         }
+//             //         break;
+//             //     case (int)Define.TemplateIDs.Creatures.Player.Reina_ForestWarden:
+//             //         {
+//             //             RepeatSkillData skillData = SkillBook.GetCurrentPlayerDefaultSkill.SkillData;
+//             //             if (skillData.InGameGrade >= Define.InGameGrade.Epic)
+//             //                 PAC.AttackAnimSpeed(1.3f);
+//             //             PAC.SimpleBowShot();
+//             //         }
+//             //         break;
+
+//             //     case (int)Define.TemplateIDs.Creatures.Player.Kenneth_Assassin:
+//             //         {
+//             //             RepeatSkillData skillData = SkillBook.GetCurrentPlayerDefaultSkill.SkillData;
+
+//             //             // Bonus Stat으로 바꾸기.
+//             //             //float animSpeed = skillData.AnimationSpeed;
+//             //             //PAC.AttackAnimSpeed(animSpeed);
+//             //             if (skillData.InGameGrade < Define.InGameGrade.Legendary)
+//             //                 PAC.Jab1H();
+//             //             else
+//             //                 PAC.JabPaired();
+//             //         }
+//             //         break;
+//             //     case (int)Define.TemplateIDs.Creatures.Player.Kenneth_Thief:
+//             //         {
+//             //             RepeatSkillData skillData = SkillBook.GetCurrentPlayerDefaultSkill.SkillData;
+//             //             if (skillData.InGameGrade > Define.InGameGrade.Epic)
+//             //                 PAC.SlashDouble();
+//             //             else
+//             //                 PAC.SlashPaired();
+//             //         }
+//             //         break;
+
+//             //     case (int)Define.TemplateIDs.Creatures.Player.Lionel_Warrior:
+//             //         {
+//             //             PAC.Jab2H();
+//             //         }
+//             //         break;
+//             //     case (int)Define.TemplateIDs.Creatures.Player.Lionel_Berserker:
+//             //         {
+//             //             PAC.SlashPaired();
+//             //         }
+//             //         break;
+
+//             //     case (int)Define.TemplateIDs.Creatures.Player.Stigma_SkeletonKing:
+//             //         {
+//             //             PAC.Slash2H();
+//             //         }
+//             //         break;
+//             //     case (int)Define.TemplateIDs.Creatures.Player.Stigma_Pirate:
+//             //         {
+//             //             RepeatSkillData skillData = SkillBook.GetCurrentPlayerDefaultSkill.SkillData;
+//             //             if (skillData.InGameGrade < Define.InGameGrade.Legendary)
+//             //                 PAC.Jab1HLeft();
+//             //             else
+//             //                 PAC.SlashPaired();
+//             //         }
+//             //         break;
+
+//             //     case (int)Define.TemplateIDs.Creatures.Player.Eleanor_Queen:
+//             //         {
+//             //             PAC.Slash1H();
+//             //         }
+//             //         break;
+//             // }
+
+//             //StartAttackPos = transform.position;
+//         }
+//         break;
+
+//     case Define.CreatureState.Death:
+//         {
+//             //Utils.LogStrong("### INVINCIBLA PLAYER NOW ###");
+//         }
+//         break;
+// }
 
 /*
             캐릭터 별로, 하는것이 좋을 것 같음.
@@ -720,34 +721,34 @@ namespace STELLAREST_2D
 //     Managers.Stage.SetInLimitPos(this);
 // }
 
-   //SkillBook.Activate(SkillBook.DefaultRepeatSkillType);
-                //RendererController.Reset();
+//SkillBook.Activate(SkillBook.DefaultRepeatSkillType);
+//RendererController.Reset();
 
-                // SpriteRenderer[] SPRs = RendererController.GetSpriteRenderers(this, Grade);
-                // foreach (var spr in SPRs)
-                // {
-                //     Utils.Log("ROOT : " + spr.transform.root.name);
-                //     Debug.Log(spr.gameObject.name);
-                // }
-                // Utils.Log("=========================");
+// SpriteRenderer[] SPRs = RendererController.GetSpriteRenderers(this, Grade);
+// foreach (var spr in SPRs)
+// {
+//     Utils.Log("ROOT : " + spr.transform.root.name);
+//     Debug.Log(spr.gameObject.name);
+// }
+// Utils.Log("=========================");
 
-                // Managers.Pool.ResetPools();
-                // 바뀌는거 확인했었음
+// Managers.Pool.ResetPools();
+// 바뀌는거 확인했었음
 
-                // // PALADIN NORMAL LENGTH : 81
-                // SpriteRenderer[] currentSPRs = RendererController.GetSpriteRenderers(this, Define.InGameGrade.Normal);
-                // // PALADIN RARE, EPIC, LEGENDARY : 80
-                // // 스프라이트 바꿀 때 부위 옵션주거나 맞춰야할듯
-                // SpriteRenderer[] nextSPRs =  RendererController.GetSpriteRenderers(this, Define.InGameGrade.Rare);
-                // int length = Mathf.Max(currentSPRs.Length, nextSPRs.Length);
-                // for (int i = 0; i < length; ++i)
-                // {
-                //     // Prevent out of idx
-                //     if (i < currentSPRs.Length && i < nextSPRs.Length)
-                //     {
-                //         currentSPRs[i].sprite = nextSPRs[i].sprite;
-                //         currentSPRs[i].color = nextSPRs[i].color;
-                //     }
-                //     else
-                //         Utils.LogStrong("OOPS !!");
-                // }
+// // PALADIN NORMAL LENGTH : 81
+// SpriteRenderer[] currentSPRs = RendererController.GetSpriteRenderers(this, Define.InGameGrade.Normal);
+// // PALADIN RARE, EPIC, LEGENDARY : 80
+// // 스프라이트 바꿀 때 부위 옵션주거나 맞춰야할듯
+// SpriteRenderer[] nextSPRs =  RendererController.GetSpriteRenderers(this, Define.InGameGrade.Rare);
+// int length = Mathf.Max(currentSPRs.Length, nextSPRs.Length);
+// for (int i = 0; i < length; ++i)
+// {
+//     // Prevent out of idx
+//     if (i < currentSPRs.Length && i < nextSPRs.Length)
+//     {
+//         currentSPRs[i].sprite = nextSPRs[i].sprite;
+//         currentSPRs[i].color = nextSPRs[i].color;
+//     }
+//     else
+//         Utils.LogStrong("OOPS !!");
+// }

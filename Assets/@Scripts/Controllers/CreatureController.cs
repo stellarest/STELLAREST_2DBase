@@ -124,7 +124,7 @@ namespace STELLAREST_2D
 
             LoadRepeatSkills(creatureData);
             // LoadSequenceSkills(creatureData);
-            this.SkillBook.InitExclusiveSkill();
+            this.SkillBook.SetFirstExclusiveSkill();
         }
 
         private void LoadRepeatSkills(Data.CreatureData creatureData)
@@ -222,6 +222,12 @@ namespace STELLAREST_2D
                     return false;
             }
         }
+
+        public bool IsInLimitMaxPosX => Mathf.Abs(transform.position.x - Managers.Stage.RightTop.x) < Mathf.Epsilon ||
+                        Mathf.Abs(transform.position.x - Managers.Stage.LeftBottom.x) < Mathf.Epsilon;
+
+        public bool IsInLimitMaxPosY => Mathf.Abs(transform.position.y - Managers.Stage.RightTop.y) < Mathf.Epsilon ||
+                                        Mathf.Abs(transform.position.y - Managers.Stage.LeftBottom.y) < Mathf.Epsilon;
     }
 }
 

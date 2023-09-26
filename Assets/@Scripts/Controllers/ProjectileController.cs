@@ -68,7 +68,6 @@ namespace STELLAREST_2D
         private bool _isOnReadyInterpolateScale = false;
         private bool _isOnlyVisible = false;
         private bool _isOffParticle = false;
-        private bool _isOnLaunch = false;
 
         public void OnProjectileLaunchInfoHandler(object sender, ProjectileLaunchInfoEventArgs e)
         {
@@ -94,6 +93,7 @@ namespace STELLAREST_2D
                 this._isOnReadyInterpolateScale = false;
 
             this._isOnlyVisible = e.IsOnlyVisible;
+            _isOffParticle = false;
         }
 
         public void Launch()
@@ -104,10 +104,53 @@ namespace STELLAREST_2D
             SkillTemplate templateOrigin = this.Data.OriginalTemplate;
             switch (templateOrigin)
             {
+                case SkillTemplate.PaladinMastery:
+                    OnSetParticleInfo?.Invoke(_indicatorAngle, _initialLookAtDir, _continuousAngle, _continuousFlipX, _continuousFlipY);
+                    StartCoroutine(CoMeleeSwing());
+                    break;
+
                 case SkillTemplate.ThrowingStar:
                     StartCoroutine(CoThrowingStar());
                     break;
             }
+        }
+
+        private IEnumerator CoMeleeSwing()
+        {
+            float movementSpeed = _movementSpeed * _continuousSpeedRatio;
+            while (true)
+            {
+                if (this.Owner.IsMoving && _isOffParticle == false && _movementSpeed != 0)
+                {
+                    if (this.Owner.IsInLimitMaxPosX && this.Owner.IsInLimitMaxPosY)
+                    {
+                        float minSpeed = this.Owner.GetMovementPower + movementSpeed;
+                        float maxSpeed = this.Owner.CreatureStat.MovementSpeed + movementSpeed;
+                        float movementPowerRatio = this.Owner.GetMovementPower / this.Owner.CreatureStat.MovementSpeed;
+                        _movementSpeed = Mathf.Lerp(minSpeed, maxSpeed, movementPowerRatio);
+                    }
+                    else
+                        _movementSpeed = this.Owner.CreatureStat.MovementSpeed + movementSpeed;
+                }
+                else
+                    _movementSpeed = movementSpeed;
+
+                CheckOffSwingParticle();
+                transform.position += _shootDir * _movementSpeed * Time.deltaTime;
+
+                yield return null;
+            }
+        }
+
+        private readonly float Sensitivity = 0.6f;
+        private void CheckOffSwingParticle()
+        {
+            if (_initialLookAtDir != Managers.Game.Player.LookAtDir)
+                _isOffParticle = true;
+            if (Managers.Game.Player.IsMoving == false)
+                _isOffParticle = true;
+            if ((Managers.Game.Player.ShootDir - _shootDir).sqrMagnitude > Sensitivity * Sensitivity)
+                _isOffParticle = true;
         }
 
         private IEnumerator CoThrowingStar()
@@ -117,7 +160,7 @@ namespace STELLAREST_2D
             {
                 selfRot += _rotationSpeed * Time.deltaTime;
                 transform.rotation = Quaternion.Euler(0, 0, selfRot);
-                float movementSpeed = Owner.CreatureStat.MoveSpeed + this._movementSpeed;
+                float movementSpeed = Owner.CreatureStat.MovementSpeed + this._movementSpeed;
                 transform.position += _shootDir * movementSpeed * Time.deltaTime;
                 yield return null;
             }
