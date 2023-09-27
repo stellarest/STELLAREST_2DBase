@@ -41,6 +41,23 @@ namespace STELLAREST_2D
             StartCoroutine(CoCloneSkill());
         }
 
+        public virtual void DoSkillJobManually(SkillBase caller, float delay) => StartCoroutine(Delay(caller, delay));
+        
+        protected virtual IEnumerator Delay(SkillBase caller, float delay)
+        {
+            if (delay > 0f)
+            {
+                yield return new WaitForSeconds(delay);
+                this.DoSkillJob();
+                Managers.Object.Despawn<SkillBase>(caller);
+            }
+            else
+            {
+                this.DoSkillJob();
+                Managers.Object.Despawn<SkillBase>(caller);
+            }
+        }
+
         public void OnCloneExclusiveRepeatSkillHandler()
         {
             if (IsStopped)
@@ -50,7 +67,7 @@ namespace STELLAREST_2D
             StartCoroutine(this.CoCloneSkill());
         }
 
-        protected virtual IEnumerator CoCloneSkill()
+        protected virtual IEnumerator CoCloneSkill() // FROM DoSkillJob
         {
             int continuousCount = this.Data.ContinuousCount;
             Define.LookAtDirection lootAtDir = Owner.LookAtDir;

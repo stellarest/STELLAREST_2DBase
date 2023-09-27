@@ -24,13 +24,17 @@ namespace STELLAREST_2D
         {
             if (this.IsFirstPooling)
             {
+                SR = GetComponent<SpriteRenderer>();
+                RigidBody = GetComponent<Rigidbody2D>();
+                HitCollider = GetComponent<Collider2D>();
+
                 base.InitClone(owner, data);
                 this.IsFirstPooling = false;
             }
         }
 
-        protected override void SetSortingGroup()
-            => GetComponent<SpriteRenderer>().sortingOrder = (int)Define.SortingOrder.Skill;
+        protected override void SetSortingGroup() 
+            => SR.sortingOrder = (int)Define.SortingOrder.Skill;
     }
 }
 

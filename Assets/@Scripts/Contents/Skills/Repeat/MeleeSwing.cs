@@ -29,9 +29,13 @@ namespace STELLAREST_2D
         {
             if (this.IsFirstPooling)
             {
-                base.InitClone(ownerFromOrigin, dataFromOrigin);
                 _particles = GetComponents<ParticleSystem>();
                 _particleSystemRenderers = GetComponents<ParticleSystemRenderer>();
+
+                RigidBody = GetComponent<Rigidbody2D>();
+                HitCollider = GetComponent<Collider2D>();
+
+                base.InitClone(ownerFromOrigin, dataFromOrigin);
                 this.PC.OnSetParticleInfo += this.OnSetSwingParticleInfoHandler;
                 this.IsFirstPooling = false;
             }

@@ -51,6 +51,10 @@ namespace STELLAREST_2D
         #endregion
     }
 
+
+    // --------------------------------------------------------------------------------------------------
+    // ***** Projectile is must be skill. But, skill is not sometimes projectil. It's just a skill. *****
+    // --------------------------------------------------------------------------------------------------
     public class ProjectileController : SkillBase
     {
         private Define.LookAtDirection _initialLookAtDir = Define.LookAtDirection.Right;
@@ -200,7 +204,7 @@ namespace STELLAREST_2D
         private IEnumerator CoBoomerangUltimate()
         {
             Transform child = transform.GetChild(0);
-            SpriteTrail.SpriteTrail trail = child.GetComponent<SpriteTrail.SpriteTrail>();
+            SpriteTrail.SpriteTrail trail = GetComponent<Boomerang>().Trail;
             trail.enabled = false;
             AnimationCurve curve = GetComponent<Boomerang>().Curve;
 
@@ -215,7 +219,7 @@ namespace STELLAREST_2D
             // +++ ROT AROUND BASE +++
             float rotAround_Delta = 0f;
             float rotAround_MinDistance = 1f;
-            float rotAround_MaxDistance = 5f;
+            float rotAround_MaxDistance = 8f;
             // +++ START ROT ENLARGE OR SHRINK && KEEP OPTIONS +++
             float rotAround_AdjustDistanceDesiredDuration = 1.15f;
 
@@ -231,7 +235,7 @@ namespace STELLAREST_2D
                         transform.rotation = Quaternion.Euler(0, 0, rotAngle);
 
                         movementSpeed -= decelerationIntensity * Time.deltaTime;
-                        decelerationIntensity += 0.1f;
+                        decelerationIntensity += 0.5f;
                         transform.position += _shootDir * movementSpeed * Time.deltaTime;
                         if (movementSpeed < 0f || Managers.Stage.IsOutOfPos(transform.position))
                             isGoingToShootDir = false;
@@ -246,9 +250,7 @@ namespace STELLAREST_2D
                         Vector3 toOwner = (this.Owner.transform.position - child.transform.position).normalized;
                         transform.position += toOwner * _movementSpeed * Time.deltaTime;
                         if ((this.Owner.transform.position - child.transform.position).sqrMagnitude < 1f)
-                        {
-                            Managers.Object.Despawn<SkillBase>(this);
-                        }
+                            break;
                     }
                 }
                 else
@@ -265,6 +267,13 @@ namespace STELLAREST_2D
 
                 yield return null;
             }
+
+            this.SR.enabled = false;
+            this.RigidBody.simulated = false;
+            this.HitCollider.enabled = false;
+
+            GetComponent<Boomerang>().DoSkillJobManually(this, 1f);
+            //Managers.Object.Despawn<SkillBase>(this);
         }
 
         private bool BoomerangUltimate_DoRotateAround(Transform child, AnimationCurve curve, ref bool rotAround_StartEnlargeDistance, 

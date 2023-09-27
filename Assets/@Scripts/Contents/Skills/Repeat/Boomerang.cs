@@ -2,6 +2,7 @@
 // using System.Collections.Generic;
 // using UnityEngine;
 
+using System.Collections;
 using Assets.FantasyMonsters.Scripts.Utils;
 using STELLAREST_2D.Data;
 using UnityEngine;
@@ -12,6 +13,7 @@ namespace STELLAREST_2D
     {
         [SerializeField] private AnimationCurve _curve = null;
         public AnimationCurve Curve => _curve;
+        public SpriteTrail.SpriteTrail Trail { get; private set; }
 
         public override void InitOrigin(CreatureController owner, SkillData data)
         {
@@ -35,104 +37,58 @@ namespace STELLAREST_2D
         {
             if (this.IsFirstPooling)
             {
-                base.InitClone(ownerFromOrigin, dataFromOrigin);
-                if (this.Data.Grade == this.Data.MaxGrade)
-                    transform.GetChild(0).GetComponent<SpriteTrail.SpriteTrail>().enabled = false;
-
-                this.IsFirstPooling = false;
-            }
-        }
-
-        protected override void SetSortingGroup()
-        {
-            if (GetComponent<SpriteRenderer>() != null)
-                GetComponent<SpriteRenderer>().sortingOrder = (int)Define.SortingOrder.Skill;
-            else
-            {
-                foreach( var SR in GetComponentsInChildren<SpriteRenderer>())
+                if (dataFromOrigin.Grade < dataFromOrigin.MaxGrade)
                 {
-                    if (SR != null)
-                    {
-                        SR.sortingOrder = (int)Define.SortingOrder.Skill;
-                        return;
-                    }
+                    SR = GetComponent<SpriteRenderer>();
+                    RigidBody = GetComponent<Rigidbody2D>();
+                    HitCollider = GetComponent<Collider2D>();
+                }
+                else if (dataFromOrigin.Grade == dataFromOrigin.MaxGrade)
+                {
+                    SR = transform.GetChild(0).GetComponent<SpriteRenderer>();
+                    RigidBody = transform.GetChild(0).GetComponent<Rigidbody2D>();
+                    HitCollider = transform.GetChild(0).GetComponent<Collider2D>();
+                    Trail = transform.GetChild(0).GetComponent<SpriteTrail.SpriteTrail>();
+                    Trail.enabled = false;
                 }
 
-                Utils.LogCritical(nameof(Boomerang), nameof(SetSortingGroup), "Failed to SetSortingGroup.");
+                base.InitClone(ownerFromOrigin, dataFromOrigin);
+                this.IsFirstPooling = false;
+            }
+            else if (this.Data.Grade == this.Data.MaxGrade)
+            {
+                this.SR.enabled = true;
+                this.RigidBody.simulated = true;
+                this.HitCollider.enabled = true;
             }
         }
+
+        // 여기 건드려야함.
+        protected override IEnumerator CoStartSkill()
+        {
+            if (this.Data.Grade < this.Data.MaxGrade)
+                yield return base.CoStartSkill();
+            else
+            {
+                base.DoSkillJob(); // ONCE
+                yield return null;
+            }
+        }
+
+        protected override IEnumerator Delay(SkillBase caller, float delay)
+        {
+            this.SR.enabled = false;
+            this.RigidBody.simulated = false;
+            this.HitCollider.enabled = false;
+
+            Utils.Log($"{this.Data.Name} !! In Delay !!");
+            yield return new WaitForSeconds(delay);
+            this.DoSkillJob();
+            Utils.Log($"{this.Data.Name} !! Start !!");
+            Managers.Object.Despawn<SkillBase>(caller);
+        }
+
+        protected override void SetSortingGroup() 
+            => SR.sortingOrder = (int)Define.SortingOrder.Skill;
     }
 }
-
-
-// namespace STELLAREST_2D
-// {
-//     public class Boomerang : RepeatSkill
-//     {
-//         public override void SetSkillInfo(CreatureController owner, int templateID)
-//         {
-//             base.SetSkillInfo(owner, templateID);
-//             SkillType = Define.TemplateIDs.SkillType.Boomerang;
-
-//             if (GetComponent<SpriteRenderer>() != null)
-//                 GetComponent<SpriteRenderer>().sortingOrder = (int)Define.SortingOrder.Skill;
-//             else
-//                 GetComponentInChildren<SpriteRenderer>().sortingOrder = (int)Define.SortingOrder.Skill;
-
-//             if (owner?.IsPlayer() == true)
-//             {
-//                 if (SkillData.InGameGrade != Define.InGameGrade.Legendary)
-//                     Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.PlayerAttack);
-//                 else
-//                 {
-//                     GameObject go = GetComponentInChildren<Collider2D>().gameObject;
-//                     Managers.Collision.InitCollisionLayer(go, Define.CollisionLayers.PlayerAttack);
-//                 }
-//             }
-//         }
-
-//         protected override void DoSkillJob()
-//         {
-//             StartCoroutine(GenerateBoomerang());
-//         }
-
-//         private IEnumerator GenerateBoomerang()
-//         {
-//             for (int i = 0; i < SkillData.ContinuousCount; ++i)
-//             {
-//                 ProjectileController pc = Managers.Object.Spawn<ProjectileController>(Owner.transform.position,
-//                         SkillData.TemplateID);
-                        
-//                 // pc.SetSkillInfo(Owner, this);
-//                 // TODO : 개선 필요
-//                 pc.GetComponent<Boomerang>().SetSkillInfo(Owner, SkillData.TemplateID);
-                
-//                 pc.SetProjectileInfo(this.Owner, this, Managers.Game.Player.ShootDir,
-//                     Owner.transform.position, pc.transform.localScale, Vector3.zero);
-
-//                 yield return new WaitForSeconds(SkillData.ContinuousSpacing);
-//             }
-//         }
-
-//         public override void OnPreSpawned()
-//         {
-//             base.OnPreSpawned();
-
-//             if (GetComponent<SpriteRenderer>() != null)
-//                 GetComponent<SpriteRenderer>().enabled = false;
-//             else
-//             {
-//                 GetComponentInChildren<SpriteRenderer>().enabled = false;
-//                 GetComponentInChildren<SpriteTrail.SpriteTrail>().enabled = false;
-//             }
-
-//             if (GetComponent<Collider2D>() != null)
-//                 GetComponent<Collider2D>().enabled = false;
-//             else
-//             {
-//                 GetComponentInChildren<Collider2D>().enabled = false;
-//                 GetComponentInChildren<SpriteTrail.SpriteTrail>().enabled = false;
-//             }
-//         }
-//     }
-// }

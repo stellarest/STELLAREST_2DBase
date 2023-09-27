@@ -15,6 +15,7 @@ namespace STELLAREST_2D
         public CreatureController Owner { get; protected set; } = null;
         public Data.SkillData Data { get; protected set; } = null;
         public ProjectileController PC { get; protected set; } = null;
+        public SpriteRenderer SR { get; protected set; } = null;
         public Rigidbody2D RigidBody { get; protected set; } = null;
         public Collider2D HitCollider { get; protected set; } = null;
 
@@ -31,21 +32,21 @@ namespace STELLAREST_2D
         {
             this.Owner = ownerFromOrigin;
             this.Data = dataFromOrigin;
-            SetSortingGroup();
-
             if (this.Data.IsProjectile)
             {
                 this.PC = GetComponent<ProjectileController>();
-                if (GetComponent<Rigidbody2D>() != null)
-                    this.PC.RigidBody = GetComponent<Rigidbody2D>();
-                else
-                    this.PC.RigidBody = GetComponentInChildren<Rigidbody2D>();
+                if (this.SR != null)
+                {
+                    this.PC.SR = this.SR;
+                    SetSortingGroup();
+                }
 
-                if (GetComponent<Collider2D>() != null)
-                    this.PC.HitCollider = GetComponent<Collider2D>();
-                else
-                    this.PC.HitCollider = GetComponentInChildren<Collider2D>();
+                if (this.RigidBody != null)
+                    this.PC.RigidBody = this.RigidBody;
 
+                 if (this.HitCollider != null)
+                    this.PC.HitCollider = this.HitCollider;
+                
                 this.PC.Owner = ownerFromOrigin;
                 this.PC.Data = dataFromOrigin;
                 this.OnProjectileLaunchInfo += this.PC.OnProjectileLaunchInfoHandler;
@@ -57,25 +58,6 @@ namespace STELLAREST_2D
                 Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.MonsterAttack);
         }
 
-        public virtual void InitClone(GameObject go, CreatureController ownerFromOrigin, Data.SkillData dataFromOrigin)
-        {
-            this.Owner = ownerFromOrigin;
-            this.Data = dataFromOrigin;
-
-            if (this.Data.IsProjectile)
-            {
-                this.PC = GetComponent<ProjectileController>();
-                this.PC.RigidBody = go.GetComponent<Rigidbody2D>();
-                this.PC.HitCollider = go.GetComponent<Collider2D>();
-                this.PC.Owner = ownerFromOrigin;
-                this.PC.Data = dataFromOrigin;
-                this.OnProjectileLaunchInfo += this.PC.OnProjectileLaunchInfoHandler;
-            }
-        }
-
-        // --------------------------------------------------------------------------------------------------
-        // ***** Projectile is must be skill. But, skill is not sometimes projectil. It's just a skill. *****
-        // --------------------------------------------------------------------------------------------------
         private bool _isLearned = false;
         public bool IsLearned
         {
