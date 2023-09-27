@@ -38,7 +38,7 @@ namespace STELLAREST_2D
                 transform.position = new Vector2(transform.position.x, RightTop.y);
         }
 
-        public bool IsOutOfPos(Vector2 position)
+        public bool IsOutOfPos(Vector3 position)
         {
             if (position.x < LeftBottom.x)
                 return true;

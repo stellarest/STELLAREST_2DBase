@@ -2,18 +2,64 @@
 // using System.Collections.Generic;
 // using UnityEngine;
 
+using Assets.FantasyMonsters.Scripts.Utils;
+using STELLAREST_2D.Data;
 using UnityEngine;
 
 namespace STELLAREST_2D
 {
     public class Boomerang : RepeatSkill
     {
-        // public override void SetParticleInfo(Vector3 startAngle, Define.LookAtDirection lookAtDir, float continuousAngle, float continuousFlipX, float continuousFlipY)
-        // {
-        // }
+        [SerializeField] private AnimationCurve _curve = null;
+        public AnimationCurve Curve => _curve;
 
-        protected override void DoSkillJob()
+        public override void InitOrigin(CreatureController owner, SkillData data)
         {
+            base.InitOrigin(owner, data);
+            if (this.Data.Grade < this.Data.MaxGrade)
+            {
+                GetComponent<SpriteRenderer>().enabled = false;
+                GetComponent<Rigidbody2D>().simulated = false;
+                GetComponent<Collider2D>().enabled = false;
+            }
+            else
+            {
+                transform.GetChild(0).GetComponent<SpriteRenderer>().enabled = false;
+                transform.GetChild(0).GetComponent<Rigidbody2D>().simulated = false;
+                transform.GetChild(0).GetComponent<Collider2D>().enabled = false;
+                transform.GetChild(0).GetComponent<SpriteTrail.SpriteTrail>().enabled = false;
+            }
+        }
+
+        public override void InitClone(CreatureController ownerFromOrigin, SkillData dataFromOrigin)
+        {
+            if (this.IsFirstPooling)
+            {
+                base.InitClone(ownerFromOrigin, dataFromOrigin);
+                if (this.Data.Grade == this.Data.MaxGrade)
+                    transform.GetChild(0).GetComponent<SpriteTrail.SpriteTrail>().enabled = false;
+
+                this.IsFirstPooling = false;
+            }
+        }
+
+        protected override void SetSortingGroup()
+        {
+            if (GetComponent<SpriteRenderer>() != null)
+                GetComponent<SpriteRenderer>().sortingOrder = (int)Define.SortingOrder.Skill;
+            else
+            {
+                foreach( var SR in GetComponentsInChildren<SpriteRenderer>())
+                {
+                    if (SR != null)
+                    {
+                        SR.sortingOrder = (int)Define.SortingOrder.Skill;
+                        return;
+                    }
+                }
+
+                Utils.LogCritical(nameof(Boomerang), nameof(SetSortingGroup), "Failed to SetSortingGroup.");
+            }
         }
     }
 }

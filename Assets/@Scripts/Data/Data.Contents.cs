@@ -129,7 +129,6 @@ namespace STELLAREST_2D.Data
         public Define.TemplateIDs.VFX.Muzzle VFX_Muzzle;
         public Define.TemplateIDs.VFX.Impact VFX_Impact;
         public Define.TemplateIDs.VFX.Environment VFX_Environment;
-        public List<int> UpgradeStatList;
         public Define.TemplateIDs.Status.Skill UnlockSkillTemplate;
         public float CoolTime;
     }

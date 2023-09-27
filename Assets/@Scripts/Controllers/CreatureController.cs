@@ -174,7 +174,7 @@ namespace STELLAREST_2D
             if (RendererController == null)
             {
                 RendererController = gameObject.GetOrAddComponent<RendererController>();
-                RendererController.InitRendererController(this, creatureData);
+                RendererController.InitRendererController(this);
                 SetSortingGroup();
             }
         }

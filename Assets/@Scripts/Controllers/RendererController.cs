@@ -105,7 +105,7 @@ namespace STELLAREST_2D
 
         // 외계인
         private Dictionary<CreatureController, Moderator> _moderatorDict = null;
-        public void InitRendererController(CreatureController owner, Data.CreatureData creatureData)
+        public void InitRendererController(CreatureController owner)
         {
             if (Owner != null)
                 return;
@@ -134,7 +134,7 @@ namespace STELLAREST_2D
                 string modelingLabel = skills[i].Data.ModelingLabel;
                 GameObject go = Managers.Resource.Load<GameObject>(modelingLabel);
                 if (go == null)
-                    Utils.LogCritical(nameof(RendererContainer), nameof(InitRendererController), $"Check Label : {modelingLabel}");
+                    Utils.LogCritical(nameof(RendererContainer), nameof(InitRendererController), $"Check Modeling Label : {modelingLabel}");
 
                 SpriteRenderer[] SPRs = go.GetComponentsInChildren<SpriteRenderer>(includeInactive: true);
                 BaseContainer[] containers = new BaseContainer[SPRs.Length];
@@ -154,13 +154,40 @@ namespace STELLAREST_2D
             InitOwnerContainer();
         }
 
-        public SpriteRenderer[] GetSpriteRenderers(Define.InGameGrade grade)
+        public void Upgrade(Define.InGameGrade next)
+        {
+            SpriteRenderer[] ownerSPRs = OwnerPreCachedSpriteRenderers;
+            for (int i = 0; i < ownerSPRs.Length; ++i)
+                ownerSPRs[i].sprite = null;
+
+            SpriteRenderer[] nextSPRs = SpriteRenderers(next);
+            int length = Mathf.Max(ownerSPRs.Length, nextSPRs.Length);
+            for (int i = 0; i < length; ++i)
+            {
+                if ((i < ownerSPRs.Length) && (i < nextSPRs.Length))
+                {
+                    if (nextSPRs[i].gameObject.name.Contains(ownerSPRs[i].name))
+                    {
+                        // nextSPRs[i].sprite가 갖고 있는것만 집어 넣어 넣으면 해결
+                        if (nextSPRs[i].sprite != null)
+                        {
+                            // CHECK : nextSPRs[i].gameObject.activeSelf : Sprite를 들고있는데 꺼져있을수도 있어서
+                            ownerSPRs[i].gameObject.SetActive(nextSPRs[i].gameObject.activeSelf);
+                            ownerSPRs[i].sprite = nextSPRs[i].sprite;
+                            ownerSPRs[i].color = nextSPRs[i].color;
+                        }
+                    }
+                }
+            }
+        }
+
+        private SpriteRenderer[] SpriteRenderers(Define.InGameGrade grade)
             => _moderatorDict.TryGetValue(this.Owner, out Moderator value) ? value.GetSpriteRenderers(grade) : null;
 
-        public BaseContainer[] GetBaseContainers(Define.InGameGrade grade)
+        private BaseContainer[] BaseContainers(Define.InGameGrade grade)
             => _moderatorDict.TryGetValue(this.Owner, out Moderator value) ? value.GetBaseContainers(grade) : null;
 
-        public SpriteRenderer[] GetValidSpriteRenderers()
+        private SpriteRenderer[] IsValidSpriteRenderers()
         {
             List<SpriteRenderer> lst = new List<SpriteRenderer>();
             SpriteRenderer[] SPRs = _ownerRendererContainer.SpriteRenderers;
@@ -189,34 +216,6 @@ namespace STELLAREST_2D
             }
         }
 
-        public void Upgrade(Define.InGameGrade next)
-        {
-            SpriteRenderer[] ownerSPRs = OwnerPreCachedSpriteRenderers;
-            for (int i = 0; i < ownerSPRs.Length; ++i)
-                ownerSPRs[i].sprite = null;
-
-            SpriteRenderer[] nextSPRs = GetSpriteRenderers(next);
-            int length = Mathf.Max(ownerSPRs.Length, nextSPRs.Length);
-
-            for (int i = 0; i < length; ++i)
-            {
-                if ((i < ownerSPRs.Length) && (i < nextSPRs.Length))
-                {
-                    if (nextSPRs[i].gameObject.name.Contains(ownerSPRs[i].name))
-                    {
-                        // nextSPRs[i].sprite가 갖고 있는것만 집어 넣어 넣으면 해결
-                        if (nextSPRs[i].sprite != null)
-                        {
-                            // CHECK : nextSPRs[i].gameObject.activeSelf : Sprite를 들고있는데 꺼져있을수도 있어서
-                            ownerSPRs[i].gameObject.SetActive(nextSPRs[i].gameObject.activeSelf);
-                            ownerSPRs[i].sprite = nextSPRs[i].sprite;
-                            ownerSPRs[i].color = nextSPRs[i].color;
-                        }
-                    }
-                }
-            }
-        }
-
         public void Reset()
         {
             if (this.Owner != null)
@@ -228,8 +227,6 @@ namespace STELLAREST_2D
                     SPRs[i].material = BCs[i].MatOrigin;
                     SPRs[i].color = BCs[i].ColorOrigin;
                 }
-
-                //Utils.LogStrong($"RendererController::Reset, {gameObject.name}");
             }
         }
 

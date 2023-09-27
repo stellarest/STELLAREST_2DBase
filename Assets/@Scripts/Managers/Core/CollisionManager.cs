@@ -12,8 +12,16 @@ namespace STELLAREST_2D
                 go.layer = (int)layer;
             else
             {
-                Debug.LogError("Failed Init Collision Layer !!");
-                Debug.Break();
+                foreach (var child in go.transform.GetComponentsInChildren<Collider2D>())
+                {
+                    if (child != null)
+                    {
+                        child.gameObject.layer = (int)layer;
+                        return;
+                    }
+                }
+
+                Utils.LogCritical(nameof(CollisionManager), nameof(InitCollisionLayer), "Failed to InitCollisionLayer.");
             }
         }
 

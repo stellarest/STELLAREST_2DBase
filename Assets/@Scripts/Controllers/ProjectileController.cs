@@ -1,6 +1,8 @@
 using System.Collections;
 using STELLAREST_2D.Data;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Timeline;
 using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 
 namespace STELLAREST_2D
@@ -98,19 +100,29 @@ namespace STELLAREST_2D
 
         public void Launch()
         {
-            StartDestroy(_lifeTime);
             HitCollider.enabled = (_isOnlyVisible) ? false : true;
-
             SkillTemplate templateOrigin = this.Data.OriginalTemplate;
             switch (templateOrigin)
             {
                 case SkillTemplate.PaladinMastery:
+                    StartDestroy(_lifeTime);
                     OnSetParticleInfo?.Invoke(_indicatorAngle, _initialLookAtDir, _continuousAngle, _continuousFlipX, _continuousFlipY);
                     StartCoroutine(CoMeleeSwing());
                     break;
 
                 case SkillTemplate.ThrowingStar:
+                    StartDestroy(_lifeTime);
                     StartCoroutine(CoThrowingStar());
+                    break;
+
+                case SkillTemplate.Boomerang:
+                    if (Data.Grade < Data.MaxGrade)
+                    {
+                        StartDestroy(_lifeTime);
+                        StartCoroutine(CoBoomerang());
+                    }
+                    else
+                        StartCoroutine(CoBoomerangUltimate());
                     break;
             }
         }
@@ -155,15 +167,143 @@ namespace STELLAREST_2D
 
         private IEnumerator CoThrowingStar()
         {
-            float selfRot = 0f;
+            float rotAngle = 0f;
             while (true)
             {
-                selfRot += _rotationSpeed * Time.deltaTime;
-                transform.rotation = Quaternion.Euler(0, 0, selfRot);
+                rotAngle += _rotationSpeed * Time.deltaTime;
+                rotAngle %= 360f;
+                transform.rotation = Quaternion.Euler(0, 0, rotAngle);
                 float movementSpeed = Owner.CreatureStat.MovementSpeed + this._movementSpeed;
                 transform.position += _shootDir * movementSpeed * Time.deltaTime;
                 yield return null;
             }
+        }
+
+        private IEnumerator CoBoomerang()
+        {
+            float rotAngle = 0f;
+            float movementSpeed = Owner.CreatureStat.MovementSpeed + _movementSpeed;
+            float decelerationIntensity = 50f; // 감속 속도를 조절하려면 필요에 따라 값을 변경
+            while (true)
+            {
+                rotAngle += _rotationSpeed * Time.deltaTime;
+                rotAngle %= 360f;
+                transform.rotation = Quaternion.Euler(0, 0, rotAngle);
+
+                movementSpeed -= decelerationIntensity * Time.deltaTime;
+                decelerationIntensity += 0.05f;
+                transform.position += _shootDir * movementSpeed * Time.deltaTime;
+                yield return null;
+            }
+        }
+
+        private IEnumerator CoBoomerangUltimate()
+        {
+            Transform child = transform.GetChild(0);
+            SpriteTrail.SpriteTrail trail = child.GetComponent<SpriteTrail.SpriteTrail>();
+            trail.enabled = false;
+            AnimationCurve curve = GetComponent<Boomerang>().Curve;
+
+            bool isToOwner = false;
+            bool isGoingToShootDir = true;
+            bool rotAround_StartEnlargeDistance = true;
+
+            float rotAngle = 0f;
+            float movementSpeed = Owner.CreatureStat.MovementSpeed + _movementSpeed;
+            float decelerationIntensity = 50f;
+
+            // +++ ROT AROUND BASE +++
+            float rotAround_Delta = 0f;
+            float rotAround_MinDistance = 1f;
+            float rotAround_MaxDistance = 5f;
+            // +++ START ROT ENLARGE OR SHRINK && KEEP OPTIONS +++
+            float rotAround_AdjustDistanceDesiredDuration = 1.15f;
+
+            while (true)
+            {
+                if (isGoingToShootDir)
+                {
+                    // +++ GO TO SHOOTDIR +++
+                    if (isToOwner == false)
+                    {
+                        rotAngle += _rotationSpeed * Time.deltaTime;
+                        rotAngle %= 360f;
+                        transform.rotation = Quaternion.Euler(0, 0, rotAngle);
+
+                        movementSpeed -= decelerationIntensity * Time.deltaTime;
+                        decelerationIntensity += 0.1f;
+                        transform.position += _shootDir * movementSpeed * Time.deltaTime;
+                        if (movementSpeed < 0f || Managers.Stage.IsOutOfPos(transform.position))
+                            isGoingToShootDir = false;
+                    }
+                    // +++ RETURN TO OWNER +++
+                    else
+                    {
+                        rotAngle += _rotationSpeed * Time.deltaTime;
+                        rotAngle %= 360f;
+                        transform.rotation = Quaternion.Euler(0, 0, rotAngle);
+
+                        Vector3 toOwner = (this.Owner.transform.position - child.transform.position).normalized;
+                        transform.position += toOwner * _movementSpeed * Time.deltaTime;
+                        if ((this.Owner.transform.position - child.transform.position).sqrMagnitude < 1f)
+                        {
+                            Managers.Object.Despawn<SkillBase>(this);
+                        }
+                    }
+                }
+                else
+                {
+                    // STOP AND START ROTATE AROUND
+                    trail.enabled = true;
+                    yield return new WaitUntil(() => BoomerangUltimate_DoRotateAround(child: child, curve: curve, rotAround_StartEnlargeDistance: ref rotAround_StartEnlargeDistance,
+                        rotAngle: ref rotAngle, rotAround_Delta: ref rotAround_Delta, rotAround_AdjustDistanceSameDesiredDuration: rotAround_AdjustDistanceDesiredDuration,
+                        rotAround_MinDistance: rotAround_MinDistance, rotAround_MaxDistance: rotAround_MaxDistance));
+                    trail.enabled = false;
+                    isToOwner = true;
+                    isGoingToShootDir = true;
+                }
+
+                yield return null;
+            }
+        }
+
+        private bool BoomerangUltimate_DoRotateAround(Transform child, AnimationCurve curve, ref bool rotAround_StartEnlargeDistance, 
+            ref float rotAngle, ref float rotAround_Delta, float rotAround_AdjustDistanceSameDesiredDuration, float rotAround_MinDistance, float rotAround_MaxDistance)
+        {
+            rotAngle += _rotationSpeed * Time.deltaTime;
+            rotAngle %= 360f;
+            transform.rotation = Quaternion.Euler(0, 0, rotAngle);
+
+            rotAround_Delta += Time.deltaTime;
+            // +++ TO ENLARGE DISTANCE +++
+            if (rotAround_StartEnlargeDistance)
+            {
+                // percent에 별다른 속도를 점점 Lerp로 가중시켜서 힘좀 줘도 될듯
+                float percent = rotAround_Delta / rotAround_AdjustDistanceSameDesiredDuration;
+                if (percent < 1f)
+                {
+                    child.localPosition = Vector3.right * Mathf.Lerp(rotAround_MinDistance, rotAround_MaxDistance, curve.Evaluate(percent));
+                }
+                else
+                {
+                    rotAround_StartEnlargeDistance = false;
+                    rotAround_Delta = 0f;
+                }
+            }
+            // +++ TO SHRINK DISTANCE +++
+            else
+            {
+                rotAround_Delta += Time.deltaTime;
+                float percent = rotAround_Delta / rotAround_AdjustDistanceSameDesiredDuration;
+                if (percent < 1f)
+                    child.localPosition = Vector3.right * Mathf.Lerp(rotAround_MaxDistance, rotAround_MinDistance, curve.Evaluate(percent));
+                else
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private void OnTriggerEnter2D(Collider2D other)
@@ -186,110 +326,110 @@ namespace STELLAREST_2D
     // -------------------------------------------------------------------------------------
     // -------------------------------------------------------------------------------------
 }
-  // public void SetProjectileInfo(Vector3 shootDir, Define.LookAtDirection lootAtDir, Vector3 localScale, Vector3 indicatorAngle,
-        //                             float continuousAngle, float continuousSpeedRatio, float continuousFlipX, float continuousFlipY,
-        //                             float interPolateTargetScaleX, float interpolateTargetScaleY, bool isOnlyVisible)
-        // {
-        //     _shootDir = shootDir;
-        //     _initialLookAtDir = lootAtDir;
-        //     transform.localScale = localScale;
+// public void SetProjectileInfo(Vector3 shootDir, Define.LookAtDirection lootAtDir, Vector3 localScale, Vector3 indicatorAngle,
+//                             float continuousAngle, float continuousSpeedRatio, float continuousFlipX, float continuousFlipY,
+//                             float interPolateTargetScaleX, float interpolateTargetScaleY, bool isOnlyVisible)
+// {
+//     _shootDir = shootDir;
+//     _initialLookAtDir = lootAtDir;
+//     transform.localScale = localScale;
 
-        //     if (interPolateTargetScaleX > localScale.x || interpolateTargetScaleY > localScale.y)
-        //     {
-        //         _interpolateStartScale = localScale;
-        //         _interpolateTargetScale = new Vector3(interPolateTargetScaleX, interpolateTargetScaleY, 1f);
-        //         _isOnInterpolateScale = true;
-        //     }
-        //     else
-        //         _isOnInterpolateScale = false;
+//     if (interPolateTargetScaleX > localScale.x || interpolateTargetScaleY > localScale.y)
+//     {
+//         _interpolateStartScale = localScale;
+//         _interpolateTargetScale = new Vector3(interPolateTargetScaleX, interpolateTargetScaleY, 1f);
+//         _isOnInterpolateScale = true;
+//     }
+//     else
+//         _isOnInterpolateScale = false;
 
-        //     //StartDestroy(RepeatSkill.Data.Duration);
+//     //StartDestroy(RepeatSkill.Data.Duration);
 
-        //     _isOnlyVisible = isOnlyVisible;
-        //     EnableCollider(isOnlyVisible ? false : true);
+//     _isOnlyVisible = isOnlyVisible;
+//     EnableCollider(isOnlyVisible ? false : true);
 
-        //     // switch (RepeatSkill.Data.RepeatSkillType)
-        //     // {
-        //     //     case Define.TemplateIDs.CreatureStatus.RepeatSkill.PaladinMeleeSwing:
-        //     //         {
-        //     //             _isOffParticle = false;
-        //     //             _targetSkill.SetParticleInfo(indicatorAngle, lootAtDir, continuousAngle, continuousFlipX, continuousFlipY);
-        //     //             StartCoroutine(CoMeleeSwing(continuousSpeedRatio));
-        //     //         }
-        //     //         break;
-        //     // }
-        // }
+//     // switch (RepeatSkill.Data.RepeatSkillType)
+//     // {
+//     //     case Define.TemplateIDs.CreatureStatus.RepeatSkill.PaladinMeleeSwing:
+//     //         {
+//     //             _isOffParticle = false;
+//     //             _targetSkill.SetParticleInfo(indicatorAngle, lootAtDir, continuousAngle, continuousFlipX, continuousFlipY);
+//     //             StartCoroutine(CoMeleeSwing(continuousSpeedRatio));
+//     //         }
+//     //         break;
+//     // }
+// }
 
 // private SkillBase _targetSkill = null;
-        // public void SetInitialCloneInfo(SkillBase skillOrigin)
-        // {
-        //     // if (IsFirstPooling == false)
-        //     //     return;
-        //     IsFirstPooling = false;
+// public void SetInitialCloneInfo(SkillBase skillOrigin)
+// {
+//     // if (IsFirstPooling == false)
+//     //     return;
+//     IsFirstPooling = false;
 
-        //     string className = string.Empty;
-        //     //ObjectType = objectType;
-        //     // if (this.ObjectType == Define.ObjectType.RepeatProjectile)
-        //     // {
-        //     //     RepeatSkill = skillOrigin.RepeatSkill; // +++ ORIGIN SKILL DATA +++
-        //     //     className = Define.NAME_SPACE_MAIN + "." + RepeatSkill.Data.RepeatSkillType.ToString();
-        //     // }
-        //     // else if(this.ObjectType == Define.ObjectType.SequenceProjectile) { /* DO SOMETHING */ }
+//     string className = string.Empty;
+//     //ObjectType = objectType;
+//     // if (this.ObjectType == Define.ObjectType.RepeatProjectile)
+//     // {
+//     //     RepeatSkill = skillOrigin.RepeatSkill; // +++ ORIGIN SKILL DATA +++
+//     //     className = Define.NAME_SPACE_MAIN + "." + RepeatSkill.Data.RepeatSkillType.ToString();
+//     // }
+//     // else if(this.ObjectType == Define.ObjectType.SequenceProjectile) { /* DO SOMETHING */ }
 
 
-        //     Owner = skillOrigin.Owner;
-        //     if (skillOrigin.Owner?.IsPlayer() == true)
-        //     {
-        //         Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.PlayerAttack);
-        //     }
-        //     else if (skillOrigin.Owner?.IsMonster() == true) { /* DO SOMETHING */ }
+//     Owner = skillOrigin.Owner;
+//     if (skillOrigin.Owner?.IsPlayer() == true)
+//     {
+//         Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.PlayerAttack);
+//     }
+//     else if (skillOrigin.Owner?.IsMonster() == true) { /* DO SOMETHING */ }
 
-        //     // if (_rigid == null)
-        //     //     _rigid = GetComponent<Rigidbody2D>();
+//     // if (_rigid == null)
+//     //     _rigid = GetComponent<Rigidbody2D>();
 
-        //     if (_collider == null)
-        //         _collider = GetComponent<Collider2D>();
+//     if (_collider == null)
+//         _collider = GetComponent<Collider2D>();
 
-        //     if (className.Contains("MeleeSwing"))
-        //     {
-        //         _targetSkill = GetComponent<MeleeSwing>();
-        //         //_targetSkill.GetComponent<MeleeSwing>().InitRepeatSkill(skillOrigin.RepeatSkill);
-        //     }
+//     if (className.Contains("MeleeSwing"))
+//     {
+//         _targetSkill = GetComponent<MeleeSwing>();
+//         //_targetSkill.GetComponent<MeleeSwing>().InitRepeatSkill(skillOrigin.RepeatSkill);
+//     }
 
-        //     //Utils.LogStrong("Success::SetInitialCloneInfo");
-        // }
+//     //Utils.LogStrong("Success::SetInitialCloneInfo");
+// }
 
-        // private Rigidbody2D _rigid = null;
-        //public SkillBase CurrentSkill { get; private set; }
-        //private Collider2D _collider = null;
-        //private void EnableCollider(bool enable) => _collider.enabled = enable;
+// private Rigidbody2D _rigid = null;
+//public SkillBase CurrentSkill { get; private set; }
+//private Collider2D _collider = null;
+//private void EnableCollider(bool enable) => _collider.enabled = enable;
 
-        // private readonly float Sensitivity = 0.6f;
-        // private void CheckOffParticle()
-        // {
-        //     if (_initialLookAtDir != Managers.Game.Player.LookAtDir)
-        //         _isOffParticle = true;
-        //     if (Managers.Game.Player.IsMoving == false)
-        //         _isOffParticle = true;
-        //     if ((Managers.Game.Player.ShootDir - _shootDir).sqrMagnitude > Sensitivity * Sensitivity)
-        //         _isOffParticle = true;
-        //     // if (Vector3.Distance(Managers.Game.Player.ShootDir, _shootDir) > _sensitivity)
-        //     //     _offParticle = true;
-        // }
+// private readonly float Sensitivity = 0.6f;
+// private void CheckOffParticle()
+// {
+//     if (_initialLookAtDir != Managers.Game.Player.LookAtDir)
+//         _isOffParticle = true;
+//     if (Managers.Game.Player.IsMoving == false)
+//         _isOffParticle = true;
+//     if ((Managers.Game.Player.ShootDir - _shootDir).sqrMagnitude > Sensitivity * Sensitivity)
+//         _isOffParticle = true;
+//     // if (Vector3.Distance(Managers.Game.Player.ShootDir, _shootDir) > _sensitivity)
+//     //     _offParticle = true;
+// }
 
-        // private float _deltaForColliderPreDisable;
-        // private void PreDisableCollider(float lifeTime)
-        // {
-        //     if (_isOnlyVisible)
-        //         return;
+// private float _deltaForColliderPreDisable;
+// private void PreDisableCollider(float lifeTime)
+// {
+//     if (_isOnlyVisible)
+//         return;
 
-        //     _deltaForColliderPreDisable += Time.deltaTime;
-        //     if (_deltaForColliderPreDisable > lifeTime)
-        //     {
-        //         EnableCollider(false);
-        //         _deltaForColliderPreDisable = 0f;
-        //     }
-        // }
+//     _deltaForColliderPreDisable += Time.deltaTime;
+//     if (_deltaForColliderPreDisable > lifeTime)
+//     {
+//         EnableCollider(false);
+//         _deltaForColliderPreDisable = 0f;
+//     }
+// }
 
 // ================================================================================================================
 // private IEnumerator CoMeleeSwing(float continuousSpeedRatio)

@@ -96,7 +96,9 @@ namespace STELLAREST_2D
         {
             if (_pools.TryGetValue(go.name, out Pool value) == false)
             {
-                Utils.Log("None of pools.");
+                Debug.Log("...None of pools...");
+                //Utils.Log("...None of pools.");
+                //Utils.ClearLog();
                 return;
             }
 

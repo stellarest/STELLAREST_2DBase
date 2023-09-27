@@ -1,14 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.HeroEditor.Common.Scripts.ExampleScripts;
-using Unity.VisualScripting;
 using UnityEngine;
 
 using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 
 namespace STELLAREST_2D
-{    
+{
     [System.Serializable]
     public class SkillBase : BaseController
     {
@@ -17,14 +15,14 @@ namespace STELLAREST_2D
         public CreatureController Owner { get; protected set; } = null;
         public Data.SkillData Data { get; protected set; } = null;
         public ProjectileController PC { get; protected set; } = null;
-        public Collider2D HitCollider { get; protected set; } = null;
         public Rigidbody2D RigidBody { get; protected set; } = null;
+        public Collider2D HitCollider { get; protected set; } = null;
 
         public virtual void InitOrigin(CreatureController owner, Data.SkillData data)
         {
             this.Owner = owner;
             this.Data = data;
-            
+
             this.IsLearned = false;
             this.IsLast = false;
         }
@@ -38,8 +36,16 @@ namespace STELLAREST_2D
             if (this.Data.IsProjectile)
             {
                 this.PC = GetComponent<ProjectileController>();
-                this.PC.HitCollider = GetComponent<Collider2D>();
-                this.PC.RigidBody = GetComponent<Rigidbody2D>();
+                if (GetComponent<Rigidbody2D>() != null)
+                    this.PC.RigidBody = GetComponent<Rigidbody2D>();
+                else
+                    this.PC.RigidBody = GetComponentInChildren<Rigidbody2D>();
+
+                if (GetComponent<Collider2D>() != null)
+                    this.PC.HitCollider = GetComponent<Collider2D>();
+                else
+                    this.PC.HitCollider = GetComponentInChildren<Collider2D>();
+
                 this.PC.Owner = ownerFromOrigin;
                 this.PC.Data = dataFromOrigin;
                 this.OnProjectileLaunchInfo += this.PC.OnProjectileLaunchInfoHandler;
@@ -49,6 +55,22 @@ namespace STELLAREST_2D
                 Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.PlayerAttack);
             else
                 Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.MonsterAttack);
+        }
+
+        public virtual void InitClone(GameObject go, CreatureController ownerFromOrigin, Data.SkillData dataFromOrigin)
+        {
+            this.Owner = ownerFromOrigin;
+            this.Data = dataFromOrigin;
+
+            if (this.Data.IsProjectile)
+            {
+                this.PC = GetComponent<ProjectileController>();
+                this.PC.RigidBody = go.GetComponent<Rigidbody2D>();
+                this.PC.HitCollider = go.GetComponent<Collider2D>();
+                this.PC.Owner = ownerFromOrigin;
+                this.PC.Data = dataFromOrigin;
+                this.OnProjectileLaunchInfo += this.PC.OnProjectileLaunchInfoHandler;
+            }
         }
 
         // --------------------------------------------------------------------------------------------------
@@ -101,14 +123,14 @@ namespace STELLAREST_2D
             IsStopped = false;
             gameObject.SetActive(true);
         }
-        
+
         public virtual void Deactivate(bool isPoolingClear = false)
         {
             IsStopped = true;
             gameObject.SetActive(false);
-            if(isPoolingClear)
+            if (isPoolingClear)
                 Managers.Pool.ClearPool<SkillBase>(this.gameObject);
-        } 
+        }
 
         public bool IsCritical { get; set; } = false;
 

@@ -78,9 +78,6 @@ namespace STELLAREST_2D
         {
             if (Managers.Game != null)
                 Managers.Game.OnMoveDirChanged -= OnMoveDirChangedHandler;
-
-            // if (this.IsValid())
-            //     AnimCallback.OnAttackAnimSkillEnable -= SkillBook.Activate;
         }
 
 
@@ -95,8 +92,8 @@ namespace STELLAREST_2D
                 if (Managers.Game.IsGameStart == false)
                 {
                     PlayerAnimController.Ready();
-                    SkillBook.LevelUp(SkillBook.FirstExclusiveSkill);
-                    SkillBook.Activate(SkillBook.FirstExclusiveSkill);
+                    // SkillBook.LevelUp(SkillBook.FirstExclusiveSkill);
+                    // SkillBook.Activate(SkillBook.FirstExclusiveSkill);
                     Managers.Game.GAME_START();
                 }
             }
@@ -122,6 +119,18 @@ namespace STELLAREST_2D
             else
                 SkillBook.Deactivate(SkillTemplate.ThrowingStar);
         }
+
+        private bool flag3 = false;
+        private void Flag3()
+        {
+            flag3 = !flag3;
+            if (flag3)
+                SkillBook.Activate(SkillTemplate.Boomerang);
+            else
+                SkillBook.Deactivate(SkillTemplate.Boomerang);
+        }
+
+        public Define.InGameGrade grade = Define.InGameGrade.Default;
         private void Update()
         {
             DEV_CLEAR_LOG();
@@ -134,6 +143,14 @@ namespace STELLAREST_2D
                 SkillBook.LevelUp(SkillTemplate.ThrowingStar);
             if (Input.GetKeyDown(KeyCode.W))
                 Flag2();
+
+            if (Input.GetKeyDown(KeyCode.Alpha3))
+                SkillBook.LevelUp(SkillTemplate.Boomerang);
+            if (Input.GetKeyDown(KeyCode.E))
+                Flag3();
+
+            if (Input.GetKeyDown(KeyCode.L))
+                this.RendererController.Upgrade(grade);
 #endif
             MoveByJoystick(); // ERROR
             CollectEnv();
@@ -228,23 +245,6 @@ namespace STELLAREST_2D
 
         private void OnDestroy()
             => RemoveCallbacks();
-
-        public bool AllStopAction()
-        {
-            //SkillBook.ActivateAll(Define.SkillType.Repeat, false);
-            return false;
-        }
-
-        private IEnumerator CoAllStopAction()
-        {
-            yield return null;
-        }
-
-        public void ChangePlayerAppearance(SkillBase newSkill)
-        {
-            //StartCoroutine(CoChangePlayerAppearance(newSkill));
-        }
-
 
 #if UNITY_EDITOR
         [ContextMenu("UNITY_EDITOR")]
