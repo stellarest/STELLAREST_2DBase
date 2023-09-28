@@ -4,6 +4,11 @@ namespace STELLAREST_2D
 {
     public class MonsterAnimationController : BaseAnimationController
     {
+        public override void Init(CreatureController owner)
+        {
+            base.Init(owner);
+        }
+
         private readonly int IDLE = Animator.StringToHash("Idle");
         private readonly int RUN = Animator.StringToHash("Run");
         private readonly int ATTACK = Animator.StringToHash("Attack");

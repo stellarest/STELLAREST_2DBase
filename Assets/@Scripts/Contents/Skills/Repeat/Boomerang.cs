@@ -1,9 +1,4 @@
-// using System.Collections;
-// using System.Collections.Generic;
-// using UnityEngine;
-
 using System.Collections;
-using Assets.FantasyMonsters.Scripts.Utils;
 using STELLAREST_2D.Data;
 using UnityEngine;
 
@@ -45,10 +40,13 @@ namespace STELLAREST_2D
                 }
                 else if (dataFromOrigin.Grade == dataFromOrigin.MaxGrade)
                 {
-                    SR = transform.GetChild(0).GetComponent<SpriteRenderer>();
-                    RigidBody = transform.GetChild(0).GetComponent<Rigidbody2D>();
-                    HitCollider = transform.GetChild(0).GetComponent<Collider2D>();
-                    Trail = transform.GetChild(0).GetComponent<SpriteTrail.SpriteTrail>();
+                    BoomerangChild child = transform.GetChild(0).GetComponent<BoomerangChild>();
+                    child.Init(ownerFromOrigin, dataFromOrigin);
+
+                    SR = child.GetComponent<SpriteRenderer>();
+                    RigidBody = child.GetComponent<Rigidbody2D>();
+                    HitCollider = child.GetComponent<Collider2D>();
+                    Trail = child.GetComponent<SpriteTrail.SpriteTrail>();
                     Trail.enabled = false;
                 }
 
@@ -63,7 +61,6 @@ namespace STELLAREST_2D
             }
         }
 
-        // 여기 건드려야함.
         protected override IEnumerator CoStartSkill()
         {
             if (this.Data.Grade < this.Data.MaxGrade)
@@ -81,14 +78,21 @@ namespace STELLAREST_2D
             this.RigidBody.simulated = false;
             this.HitCollider.enabled = false;
 
-            Utils.Log($"{this.Data.Name} !! In Delay !!");
             yield return new WaitForSeconds(delay);
             this.DoSkillJob();
-            Utils.Log($"{this.Data.Name} !! Start !!");
             Managers.Object.Despawn<SkillBase>(caller);
         }
 
         protected override void SetSortingGroup() 
             => SR.sortingOrder = (int)Define.SortingOrder.Skill;
+
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            CreatureController cc = other.GetComponent<CreatureController>();
+            if (cc.IsValid() == false)
+                return;
+
+            cc.OnDamaged(attacker: this.Owner, from: this);
+        }
     }
 }

@@ -1,17 +1,15 @@
-// using System.Collections;
-// using System.Collections.Generic;
-using System;
 using System.Collections;
+using System.Linq;
 using STELLAREST_2D.Data;
-using Unity.VisualScripting;
-using UnityEditor.AnimatedValues;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace STELLAREST_2D
 {
     public class ThrowingStar : RepeatSkill
     {
+        public int CurrentBounceCount { get; private set; } = 0;
+        public int MaxBounceCount { get; private set; } = 0;
+
         public override void InitOrigin(CreatureController owner, SkillData data)
         {
             base.InitOrigin(owner, data);
@@ -28,56 +26,53 @@ namespace STELLAREST_2D
                 RigidBody = GetComponent<Rigidbody2D>();
                 HitCollider = GetComponent<Collider2D>();
 
+                MaxBounceCount = data.BounceCount;
+
                 base.InitClone(owner, data);
                 this.IsFirstPooling = false;
             }
+
+            CurrentBounceCount = 0;
         }
 
         protected override void SetSortingGroup() 
             => SR.sortingOrder = (int)Define.SortingOrder.Skill;
+
+        public bool CanStillBounce => (CurrentBounceCount++ < MaxBounceCount);
+
+        // 그리고 왠지 바운스 로직을 프로젝타일로 옮겨야할것같기도하고
+        public Vector3 NextBounceDir { get; private set; } = Vector3.zero;
+
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            CreatureController cc = other.GetComponent<CreatureController>();
+            if (cc.IsValid() == false)
+                return;
+
+            if (cc?.IsPlayer() == false)
+            {
+                if (Managers.Collision.IsCorrectTarget(Define.CollisionLayers.MonsterBody, cc.gameObject.layer))
+                {
+                    cc.OnDamaged(attacker: this.Owner, from: this);
+                    cc.IsHitFrom_ThrowingStar = true;
+                    MonsterController nextMC = Managers.Object.GetClosestNextMonsterTarget(cc, Define.HitFromType.ThrowingStar);
+                    if (nextMC.IsValid())
+                        NextBounceDir = (nextMC.transform.position - this.transform.position).normalized;
+                    else
+                        NextBounceDir = Vector3.zero;
+                }
+            }
+            else if (Managers.Collision.IsCorrectTarget(Define.CollisionLayers.PlayerBody, cc.gameObject.layer))
+                cc.OnDamaged(attacker: this.Owner, from: this);
+        }
+
+        private void OnTriggerExit2D(Collider2D other)
+        {
+            CreatureController cc = other.GetComponent<CreatureController>();
+            if (cc.IsValid() == false)
+                return;
+
+            cc.ResetHitFrom(Define.HitFromType.ThrowingStar, 0.25f);
+        }
     }
 }
-
-// namespace STELLAREST_2D
-// {
-//     public class ThrowingStar : RepeatSkill
-//     {
-//         public override void SetSkillInfo(CreatureController owner, int templateID)
-//         {
-//             base.SetSkillInfo(owner, templateID);
-//             GetComponent<SpriteRenderer>().sortingOrder = (int)Define.SortingOrder.Skill;
-//             SkillType = Define.TemplateIDs.SkillType.ThrowingStar;
-
-//             if (owner?.IsPlayer() == true)
-//                 Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.PlayerAttack);
-//         }
-
-//         protected override void DoSkillJob()
-//         {
-//             StartCoroutine(GenerateThrowingStart());
-//         }
-
-//         private IEnumerator GenerateThrowingStart()
-//         {
-//             for (int i = 0; i < SkillData.ContinuousCount; ++i)
-//             {
-//                 ProjectileController pc = Managers.Object.Spawn<ProjectileController>(Owner.transform.position,
-//                                         SkillData.TemplateID);
-
-//                 pc.GetComponent<ThrowingStar>().SetSkillInfo(Owner, SkillData.TemplateID);
-//                 pc.SetProjectileInfo(this.Owner, this, Managers.Game.Player.ShootDir, 
-//                     Owner.transform.position, pc.transform.localScale, Vector3.zero);
-
-//                 yield return new WaitForSeconds(SkillData.ContinuousSpacing);
-//             }
-//         }
-
-//         public override void OnPreSpawned()
-//         {
-//             base.OnPreSpawned();
-//             GetComponent<SpriteRenderer>().enabled = false;
-//             GetComponent<Collider2D>().enabled = false;
-//         }
-//     }
-// }
-

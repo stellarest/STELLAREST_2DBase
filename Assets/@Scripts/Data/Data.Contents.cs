@@ -8,7 +8,7 @@ using UnityEngine;
 namespace STELLAREST_2D.Data
 {
     [Serializable]
-    public class CreatureData
+    public class InitialCreatureData
     {
         public int TemplateID;
         public string Name;
@@ -16,7 +16,6 @@ namespace STELLAREST_2D.Data
         public string PrimaryLabel;
         public float MaxHp;
         public float Damage;
-        public float DefaultSkillDamage;
         public float Critical;
         public float AttackSpeed;
         public float CoolDown;
@@ -32,19 +31,19 @@ namespace STELLAREST_2D.Data
     }
 
     [Serializable]
-    public class CreatureDataLoader : ILoader<int, CreatureData>
+    public class InitialCreatureDataLoader : ILoader<int, InitialCreatureData>
     {
-        public List<CreatureData> creatures = new List<CreatureData>();
-        public Dictionary<int, CreatureData> MakeDict()
+        public List<InitialCreatureData> initialCreatures = new List<InitialCreatureData>();
+        public Dictionary<int, InitialCreatureData> MakeDict()
         {
-            if (creatures.Count == 0)
+            if (initialCreatures.Count == 0)
             {
                 Debug.LogError("Failed to load CreatureData.json");
                 Debug.Break();
             }
 
-            Dictionary<int, CreatureData> dict = new Dictionary<int, CreatureData>();
-            foreach (var creature in creatures)
+            Dictionary<int, InitialCreatureData> dict = new Dictionary<int, InitialCreatureData>();
+            foreach (var creature in initialCreatures)
                 dict.Add(creature.TemplateID, creature);
 
             return dict;
@@ -60,7 +59,6 @@ namespace STELLAREST_2D.Data
         Define.InGameGrade InGameGrade;
         public float MaxHpUp;
         public float DamageUp; // 전체 데미지 증가량 (적게 증가함)
-        public float DefaultSkillDamageUp; // DefaultSkillDamage 데미지 증가량 (크게 증가함)
         public float CriticalUp;
         public float AttackSpeedUp;
         public float CoolDownUp;

@@ -118,7 +118,8 @@ namespace STELLAREST_2D
 
         public float GetDamage()
         {
-            return 0f;
+            float dmgResult = UnityEngine.Random.Range(this.Data.MinDamage, this.Data.MaxDamage);
+            return dmgResult;
         }
 
         protected Coroutine _coDestroy;

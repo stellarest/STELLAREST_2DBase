@@ -5,12 +5,14 @@ using UnityEngine;
 
 namespace STELLAREST_2D
 {
+    // 사실 이거까지 필요한지 모르겠,,, 없어도 되긴 할듯??
     public class ChickenController : MonsterController
     {
         public override void Init(int templateID)
         {
             base.Init(templateID);
             CreatureState = Define.CreatureState.Idle;
+
             // MonsterType = Define.MonsterType.Chicken;
             
             // ResetCCStates();
@@ -31,11 +33,6 @@ namespace STELLAREST_2D
             // //CreatureType = Define.CreatureType.Monster;
             // if (SkillBook.SequenceSkills.Count != 0)
             //     SkillBook.SequenceSkills[(int)Define.InGameGrade.Normal - 1].gameObject.SetActive(true);
-        }
-
-        public override void ResetMonster()
-        {
-            base.ResetMonster();
         }
 
         [ContextMenu("TEST_CC")]

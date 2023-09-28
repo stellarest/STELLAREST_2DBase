@@ -13,7 +13,7 @@ namespace STELLAREST_2D
         public void Init(CreatureController owner) => this._owner = owner;
         public void OnCloneExclusiveRepeatSkillHandler() => OnCloneExclusiveRepeatSkill?.Invoke();
 
-        public void ShowDustEffect() => Managers.Effect.ShowPlayerDust();
+        //public void ShowDustEffect() => Managers.Effect.ShowPlayerDust();
         public void BattleFaceExpression()
         {
             // switch (_owner.CreatureStat.TemplateID)

@@ -6,6 +6,13 @@ namespace STELLAREST_2D
 {
     public class CollisionManager
     {
+        public void SetCollisionLayers()
+        {
+            SetCollisionLayers(Define.CollisionLayers.PlayerAttack, Define.CollisionLayers.MonsterBody, true);
+            // Managers.Collision.SetCollisionLayers(Define.CollisionLayers.PlayerBody, Define.CollisionLayers.MonsterAttack, true);
+            // Managers.Collision.SetCollisionLayers(Define.CollisionLayers.MonsterBody, Define.CollisionLayers.MonsterBody, true);
+        }
+
         public void InitCollisionLayer(GameObject go, Define.CollisionLayers layer)
         {
             if (go.GetComponent<Collider2D>() != null)
@@ -25,7 +32,7 @@ namespace STELLAREST_2D
             }
         }
 
-        public void SetCollisionLayers(Define.CollisionLayers layer1, Define.CollisionLayers layer2, bool canCollision)
+        private void SetCollisionLayers(Define.CollisionLayers layer1, Define.CollisionLayers layer2, bool canCollision)
         {
             if (canCollision)
                 Physics2D.IgnoreLayerCollision((int)layer1, (int)layer2, false);
@@ -33,7 +40,7 @@ namespace STELLAREST_2D
                 Physics2D.IgnoreLayerCollision((int)layer1, (int)layer2, true);
         }
 
-        public bool CheckCollisionTarget(Define.CollisionLayers targetLayer, int otherLayer) 
+        public bool IsCorrectTarget(Define.CollisionLayers targetLayer, int otherLayer) 
                                                 => (1 << (int)targetLayer & 1 << otherLayer) != 0;
     }
 }

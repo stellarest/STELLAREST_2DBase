@@ -5,7 +5,7 @@ namespace STELLAREST_2D
     [System.Serializable] 
     public class CreatureStat
     {
-        public CreatureStat(CreatureController owner, Data.CreatureData creatureData)
+        public CreatureStat(CreatureController owner, Data.InitialCreatureData creatureData)
         {
             this.Owner = owner;
 
@@ -17,7 +17,6 @@ namespace STELLAREST_2D
             this.Hp = creatureData.MaxHp;
 
             this.Damage = creatureData.Damage;
-            this.DefaultSkillDamage = creatureData.DefaultSkillDamage;
             this.Critical = creatureData.Critical;
             this.AttackSpeed = creatureData.AttackSpeed;
             this.CoolDown = creatureData.CoolDown;
@@ -30,35 +29,6 @@ namespace STELLAREST_2D
 
             this.Luck = creatureData.Luck;
             this.TotalExp = creatureData.TotalExp;
-        }
-
-        public CreatureStat(CreatureController owner, int templateID, string name, string description, float maxHp, 
-                        float damage, float defaultSkillDamage, float critical, float attackSpeed, float coolDown, 
-                        float armor, float dodge, float movementSpeed, float collectRange,float luck, float totalExp)
-        {
-            this.Owner = owner;
-
-            this.TemplateID = templateID;
-            this.Name = name;
-            this.Description = description;
-
-            this.MaxHp = maxHp;
-            this.Hp = maxHp;
-
-            this.Damage = damage;
-            this.DefaultSkillDamage = defaultSkillDamage;
-            this.Critical = critical;
-            this.AttackSpeed = attackSpeed;
-            this.CoolDown = coolDown;
-
-            this.Armor = armor;
-            this.Dodge = dodge;
-
-            this.MovementSpeed = movementSpeed;
-            this.CollectRange = collectRange;
-
-            this.Luck = luck;
-            this.TotalExp = totalExp;
         }
 
         public CreatureController Owner { get; private set; } = null;
@@ -86,7 +56,6 @@ namespace STELLAREST_2D
         [field: SerializeField] public float Hp { get; set; }
 
         [field: SerializeField] public float Damage { get; private set; }
-        [field: SerializeField] public float DefaultSkillDamage { get; private set; }
         [field: SerializeField] public float Critical { get; private set; }
         [field: SerializeField] public float AttackSpeed { get; private set; }
         [field: SerializeField] public float CoolDown { get; private set; }
@@ -102,15 +71,10 @@ namespace STELLAREST_2D
         public CreatureStat UpgradeStat(CreatureController owner, CreatureStat currentStat, int templateID)
         {
             if (Managers.Data.StatsDict.TryGetValue(templateID, out Data.CreatureStatData value) == false)
-            {
-                Debug.LogError("Failed to load Bonus Stat Data !!");
-                Debug.Break();
-                return null;
-            }
+                Utils.LogCritical(nameof(CreatureStat), nameof(UpgradeStat), $"Failed to load stat data : {templateID}");
 
             this.MaxHp = currentStat.MaxHp + (currentStat.MaxHp * value.MaxHpUp);
             this.Damage = currentStat.Damage + (currentStat.Damage * value.DamageUp);
-            this.DefaultSkillDamage = currentStat.DefaultSkillDamage + (currentStat.DefaultSkillDamage * value.DefaultSkillDamageUp);
             this.Critical = currentStat.Critical + (currentStat.Critical * value.CriticalUp);
             this.AttackSpeed = currentStat.AttackSpeed + (currentStat.AttackSpeed * value.AttackSpeedUp);
             this.CoolDown = currentStat.CoolDown - (currentStat.CoolDown * value.CoolDownUp);
@@ -124,8 +88,36 @@ namespace STELLAREST_2D
             this.TotalExp = currentStat.TotalExp;
 
             return new CreatureStat(owner: owner, templateID: currentStat.TemplateID, name: currentStat.Name, description: currentStat.Description, 
-                    maxHp: MaxHp, damage: Damage, defaultSkillDamage: DefaultSkillDamage, critical: Critical, attackSpeed: AttackSpeed, coolDown: CoolDown, 
-                    armor: Armor, dodge: Dodge, movementSpeed: MovementSpeed, collectRange: CollectRange, luck: Luck, totalExp: TotalExp);
+                    maxHp: MaxHp, damage: Damage, critical: Critical, attackSpeed: AttackSpeed, coolDown: CoolDown, armor: Armor, dodge: Dodge, 
+                    movementSpeed: MovementSpeed, collectRange: CollectRange, luck: Luck, totalExp: TotalExp);
+        }
+
+        public CreatureStat(CreatureController owner, int templateID, string name, string description, float maxHp,
+                        float damage, float critical, float attackSpeed, float coolDown, float armor, float dodge, 
+                        float movementSpeed, float collectRange, float luck, float totalExp)
+        {
+            this.Owner = owner;
+
+            this.TemplateID = templateID;
+            this.Name = name;
+            this.Description = description;
+
+            this.MaxHp = maxHp;
+            this.Hp = maxHp;
+
+            this.Damage = damage;
+            this.Critical = critical;
+            this.AttackSpeed = attackSpeed;
+            this.CoolDown = coolDown;
+
+            this.Armor = armor;
+            this.Dodge = dodge;
+
+            this.MovementSpeed = movementSpeed;
+            this.CollectRange = collectRange;
+
+            this.Luck = luck;
+            this.TotalExp = totalExp;
         }
     }
 }

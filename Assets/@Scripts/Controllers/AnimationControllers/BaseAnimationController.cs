@@ -13,7 +13,7 @@ namespace STELLAREST_2D
         public virtual void Init(CreatureController owner)
         {
             Owner = owner;
-            AnimController = GetComponentInChildren<Animator>();
+            AnimController = GetComponent<Animator>();
         }
     }
 }

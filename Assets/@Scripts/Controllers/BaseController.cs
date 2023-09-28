@@ -3,11 +3,11 @@ using UnityEngine;
 
 namespace STELLAREST_2D
 {
-    public interface IHitStatus
-    {
-        public bool IsThrowingStarHit { get; set; }
-        public bool IsLazerBoltHit { get; set; }
-    }
+    // public interface IHitStatus
+    // {
+    //     public bool IsThrowingStarHit { get; set; }
+    //     public bool IsLazerBoltHit { get; set; }
+    // }
 
     public class BaseController : MonoBehaviour
     {
@@ -16,8 +16,8 @@ namespace STELLAREST_2D
 
         public virtual void Init(int templateID) { }
         protected virtual void SetSortingGroup() { }
-        public void CoTrailEffect(BaseController followTarget) 
-                    => StartCoroutine(Managers.Effect.CoTrailEffect(gameObject, followTarget));
+        // public void CoTrailEffect(BaseController followTarget) 
+        //             => StartCoroutine(Managers.Effect.CoTrailEffect(gameObject, followTarget));
         public void EffectHit()
         {
         }

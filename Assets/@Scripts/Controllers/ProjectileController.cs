@@ -141,12 +141,12 @@ namespace STELLAREST_2D
                     if (this.Owner.IsInLimitMaxPosX && this.Owner.IsInLimitMaxPosY)
                     {
                         float minSpeed = this.Owner.GetMovementPower + movementSpeed;
-                        float maxSpeed = this.Owner.CreatureStat.MovementSpeed + movementSpeed;
-                        float movementPowerRatio = this.Owner.GetMovementPower / this.Owner.CreatureStat.MovementSpeed;
+                        float maxSpeed = this.Owner.Stat.MovementSpeed + movementSpeed;
+                        float movementPowerRatio = this.Owner.GetMovementPower / this.Owner.Stat.MovementSpeed;
                         _movementSpeed = Mathf.Lerp(minSpeed, maxSpeed, movementPowerRatio);
                     }
                     else
-                        _movementSpeed = this.Owner.CreatureStat.MovementSpeed + movementSpeed;
+                        _movementSpeed = this.Owner.Stat.MovementSpeed + movementSpeed;
                 }
                 else
                     _movementSpeed = movementSpeed;
@@ -171,13 +171,15 @@ namespace STELLAREST_2D
 
         private IEnumerator CoThrowingStar()
         {
+            ThrowingStar skill = GetComponent<ThrowingStar>();
+
             float rotAngle = 0f;
             while (true)
             {
                 rotAngle += _rotationSpeed * Time.deltaTime;
                 rotAngle %= 360f;
                 transform.rotation = Quaternion.Euler(0, 0, rotAngle);
-                float movementSpeed = Owner.CreatureStat.MovementSpeed + this._movementSpeed;
+                float movementSpeed = Owner.Stat.MovementSpeed + this._movementSpeed;
                 transform.position += _shootDir * movementSpeed * Time.deltaTime;
                 yield return null;
             }
@@ -186,7 +188,7 @@ namespace STELLAREST_2D
         private IEnumerator CoBoomerang()
         {
             float rotAngle = 0f;
-            float movementSpeed = Owner.CreatureStat.MovementSpeed + _movementSpeed;
+            float movementSpeed = Owner.Stat.MovementSpeed + _movementSpeed;
             float decelerationIntensity = 50f; // 감속 속도를 조절하려면 필요에 따라 값을 변경
             while (true)
             {
@@ -213,7 +215,7 @@ namespace STELLAREST_2D
             bool rotAround_StartEnlargeDistance = true;
 
             float rotAngle = 0f;
-            float movementSpeed = Owner.CreatureStat.MovementSpeed + _movementSpeed;
+            float movementSpeed = Owner.Stat.MovementSpeed + _movementSpeed;
             float decelerationIntensity = 50f;
 
             // +++ ROT AROUND BASE +++
@@ -276,7 +278,7 @@ namespace STELLAREST_2D
             //Managers.Object.Despawn<SkillBase>(this);
         }
 
-        private bool BoomerangUltimate_DoRotateAround(Transform child, AnimationCurve curve, ref bool rotAround_StartEnlargeDistance, 
+        private bool BoomerangUltimate_DoRotateAround(Transform child, AnimationCurve curve, ref bool rotAround_StartEnlargeDistance,
             ref float rotAngle, ref float rotAround_Delta, float rotAround_AdjustDistanceSameDesiredDuration, float rotAround_MinDistance, float rotAround_MaxDistance)
         {
             rotAngle += _rotationSpeed * Time.deltaTime;
@@ -315,14 +317,55 @@ namespace STELLAREST_2D
             return false;
         }
 
+        // 데미지가 아닌, 프로젝타일 로직과 관련된 것만 적는다.
         private void OnTriggerEnter2D(Collider2D other)
         {
-            MonsterController mc = other.GetComponent<MonsterController>();
-            if (mc.IsValid() == false)
+            CreatureController cc = other.GetComponent<CreatureController>();
+            if (cc.IsValid() == false)
                 return;
+
+            switch (this.Data.OriginalTemplate)
+            {
+                case SkillTemplate.ThrowingStar:
+                    ThrowingStar_CheckNextBounceTarget(cc);
+                    break;
+
+                case SkillTemplate.Boomerang:
+                    // 부메랑 할게있나?
+                    // 데미지폰트나 띄워보자
+                    break;
+            }
 
             // if (Managers.Collision.CheckCollisionTarget(Define.CollisionLayers.MonsterBody, other.gameObject.layer))
             //     mc.OnDamaged(Owner, _targetSkill);
+        }
+
+        private void ThrowingStar_CheckNextBounceTarget(CreatureController cc)
+        {
+            ThrowingStar throwingStar = GetComponent<ThrowingStar>();
+            if (cc?.IsPlayer() == false)
+            {
+                if (Managers.Collision.IsCorrectTarget(Define.CollisionLayers.MonsterBody, cc.gameObject.layer))
+                {
+                    if (throwingStar.CanStillBounce)
+                    {
+                        Vector3 nextTargetDir = throwingStar.NextBounceDir;
+                        if (nextTargetDir != Vector3.zero)
+                            _shootDir = nextTargetDir;
+                    }
+                    else
+                    {
+                        if (this.IsValid())
+                            Managers.Object.Despawn(this);
+                    }
+                }
+            }
+            else
+            {
+                // 플레이어에게 데미지 줬으니까 그냥 디스폰시킴
+                if (this.IsValid())
+                    Managers.Object.Despawn(this);
+            }
         }
 
         private void OnDestroy()

@@ -5,6 +5,11 @@ namespace STELLAREST_2D
 {
     public class PlayerAnimationController : BaseAnimationController
     {
+        public override void Init(CreatureController owner)
+        {
+            base.Init(owner);
+        }
+
         private readonly int UPPER_STAND = Animator.StringToHash("Stand");
         private readonly int LOWER_RUN = Animator.StringToHash("Run");
 
@@ -14,8 +19,6 @@ namespace STELLAREST_2D
 
         public void Stand() => AnimController.Play(UPPER_STAND);
         public void Run() => AnimController.Play(LOWER_RUN);
-
-
 
 
         //public readonly int READY = Animator.StringToHash("Ready");
@@ -44,11 +47,6 @@ namespace STELLAREST_2D
         public readonly int UPPER_BODY_ANIM_SPEED = Animator.StringToHash("UpperBodyAnimSpeed");
         public readonly int LOWER_BODY_ANIM_SPEED = Animator.StringToHash("LowerBodyAnimSpeed");
 
-        public override void Init(CreatureController owner)
-        {
-            base.Init(owner);
-        }
-
         public void ResetAttackAnimSpeed() => AnimController.SetFloat(ATTACK_ANIM_SPEED, 1f);
         public void AttackAnimSpeed(float speed) => AnimController.SetFloat(ATTACK_ANIM_SPEED, speed);
 
@@ -59,10 +57,7 @@ namespace STELLAREST_2D
         public void SetLowerBodyAnimSpeed(float speed) => AnimController.SetFloat(LOWER_BODY_ANIM_SPEED, speed);
 
         // public virtual void Ready(bool isOn) {} // => AnimController.SetBool(READY, isOn);
-
-
         // public void Run() => AnimController.Play(RUN);
-
 
         public void ReadyBow() => AnimController.Play(READY_BOW);
         //public void Idle() => AnimController.Play(IDLE);

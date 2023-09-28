@@ -57,6 +57,7 @@ namespace STELLAREST_2D
             Screen.sleepTimeout = SleepTimeout.NeverSleep;
             
             Managers.Data.Init();
+            Managers.VFX.Init();
 
             // foreach (KeyValuePair<int, Data.BonusStatData> bonusStat in Managers.Data.BonusStatDict)
             // {
@@ -64,63 +65,25 @@ namespace STELLAREST_2D
             //     Debug.Log("Name : " + bonusStat.Value.Name);
             // }
             // Debug.Break();
-            
-            //Managers.UI.ShowFixedSceneUI<UI_GameScene>();
 
+            // Managers.UI.ShowFixedSceneUI<UI_GameScene>();
             // Managers.Game.OnKillCountChanged -= OnKillCountChangedHandler;
             // Managers.Game.OnKillCountChanged += OnKillCountChangedHandler;
-
             // Managers.Game.OnGemCountChanged -= OnGemCountChangedHandler;
             // Managers.Game.OnGemCountChanged += OnGemCountChangedHandler;
 
             // Spawn Test Map
-            //var testMap = Managers.Resource.Instantiate(Define.PrefabLabels.TEST_MAP);
+            // var testMap = Managers.Resource.Instantiate(Define.PrefabLabels.TEST_MAP);
             // var testMap = Managers.Resource.Instantiate(TempPrefabKeyLoader.TEST_MAP);
             // testMap.name = "@TestMap";
+
+            // Camera.main.GetComponent<CameraController>().Target = player.gameObject;
+            // GameObject.Find("CMcam").GetComponent<CameraController>().SetTarget(player.gameObject);
 
             // Spawn Player
             // +++ GARY +++
             var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Creatures.Player.Gary_Paladin, 
                                                                 Define.ObjectType.Player, isPooling: false);
-            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Creatures.Player.Gary_Knight, 
-            //                                                     Define.ObjectType.Player, isPooling: false);
-            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Gary_PhantomKnight);
-
-            // +++ REINA +++
-            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Reina_ArrowMaster);
-            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Reina_ElementalArcher);
-            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Reina_ForestWarden);
-
-            // +++ Kenneth +++
-            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Kenneth_Assassin);
-            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Kenneth_Thief);
-            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Kenneth_Ninja);
-
-            // +++ LIONEL +++
-            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Lionel_Warrior);
-            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Lionel_Barbarian);
-            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Lionel_Berserker);
-
-            // +++ CHRISTIAN +++
-            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Christian_Hunter);
-            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Christian_Desperado);
-            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Christian_Destroyer);
-
-            // +++ CHOLE +++
-            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Chloe_Archmage);
-            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Chloe_Trickster);
-            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Chloe_Frostweaver);
-
-            // +++ STIGMA +++
-            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Stigma_SkeletonKing);
-            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Stigma_Pirate);
-            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Stigma_Mutant);
-
-            // +++ ELEANOR +++
-            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Player.Eleanor_Queen);
-
-            // Camera.main.GetComponent<CameraController>().Target = player.gameObject;
-            // GameObject.Find("CMcam").GetComponent<CameraController>().SetTarget(player.gameObject);
 
             var CMcam = Camera.main.GetComponent<CinemachineBrain>().ActiveVirtualCamera.VirtualCameraGameObject;
             CMcam.GetComponent<CameraController>().SetTarget(player.gameObject);
@@ -130,14 +93,15 @@ namespace STELLAREST_2D
             joystick.name = "@Joystick"; // UI_Joystick라고 하기엔 좀 애매함
 
             // Create Spawning Pool
-            // _spawningPool = gameObject.AddComponent<SpawningPool>();
+            _spawningPool = gameObject.AddComponent<SpawningPool>();
             
-            // Init Collision Layer
-            Managers.Collision.SetCollisionLayers(Define.CollisionLayers.PlayerAttack, Define.CollisionLayers.MonsterBody, true);
-            // Managers.Collision.SetCollisionLayers(Define.CollisionLayers.PlayerBody, Define.CollisionLayers.MonsterAttack, true);
-            // Managers.Collision.SetCollisionLayers(Define.CollisionLayers.MonsterBody, Define.CollisionLayers.MonsterBody, true);
+            // Set Collision Layers
+            Managers.Collision.SetCollisionLayers();
 
-            // Camera Target
+            // Managers.Collision.SetCollisionLayers(Define.CollisionLayers.PlayerAttack, Define.CollisionLayers.MonsterBody, true);
+            // // Managers.Collision.SetCollisionLayers(Define.CollisionLayers.PlayerBody, Define.CollisionLayers.MonsterAttack, true);
+            // // Managers.Collision.SetCollisionLayers(Define.CollisionLayers.MonsterBody, Define.CollisionLayers.MonsterBody, true);
+
             // Test Gem Spawn
             // for (int i = 0; i < 30; ++i)
             // {

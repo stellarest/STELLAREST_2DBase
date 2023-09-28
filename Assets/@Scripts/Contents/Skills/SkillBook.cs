@@ -217,8 +217,9 @@ namespace STELLAREST_2D
         [System.Serializable] public class SkillGroupDictionary : SerializableGroupDictionary<int, SkillGroup> { }
         [field: SerializeField] public SkillGroupDictionary SkillGroupsDict { get; private set; } = new SkillGroupDictionary();
 
+        //=> FirstExclusiveSkill = (SkillTemplate)SkillGroupsDict.First().Key;
         public void SetFirstExclusiveSkill()
-            => FirstExclusiveSkill = (SkillTemplate)SkillGroupsDict.First().Key;
+            => FirstExclusiveSkill = (SkillGroupsDict.Count > 0) ? (SkillTemplate)SkillGroupsDict.First().Key : SkillTemplate.None;
 
         public void LevelUp(SkillTemplate templateOrigin)
         {
@@ -329,7 +330,6 @@ namespace STELLAREST_2D
 
 //     return skill;
 // }
-
 
 // public SkillBase Deactivate(SkillTemplate templateOrigin)
 // {

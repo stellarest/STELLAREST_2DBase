@@ -42,7 +42,7 @@ namespace STELLAREST_2D
         private Coroutine _coMoveToPlayer = null;
         public void GetGem()
         {
-            Managers.Effect.ShowGemGather(this);
+            //Managers.Effect.ShowGemGather(this);
             Managers.Object.GridController.Remove(gameObject);
             // IsVaild is isActiveAndEnabled
             if (this.IsValid() && _coMoveToPlayer == null)
@@ -84,7 +84,7 @@ namespace STELLAREST_2D
                 if (distance < 0.3f)
                 {
                     Managers.Game.Gem = (int)this.GemSize;
-                    Managers.Effect.ShowGemExplosion(this);
+                    //Managers.Effect.ShowGemExplosion(this);
                     Managers.Object.Despawn(this);
                     yield break;
                 }

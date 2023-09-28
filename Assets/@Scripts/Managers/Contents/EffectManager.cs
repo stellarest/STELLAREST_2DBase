@@ -68,12 +68,12 @@ namespace STELLAREST_2D
         // 먹는거 조심...
         public void Init()
         {
-            _matHitWhite = Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_HIT_WHITE);
-            _matHitRed = Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_HIT_RED);
-            _matFade = Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_FADE);
-            _matGlitch = Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_GLITCH);
-            _matHologram = Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_HOLOGRAM);
-            _matStrongTintWhite = Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_STRONG_TINT_WHITE);
+            // _matHitWhite = Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_HIT_WHITE);
+            // _matHitRed = Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_HIT_RED);
+            // _matFade = Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_FADE);
+            // _matGlitch = Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_GLITCH);
+            // _matHologram = Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_HOLOGRAM);
+            // _matStrongTintWhite = Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_STRONG_TINT_WHITE);
 
             // if (_upgradePlayerBuffEffect == null)
             //     _upgradePlayerBuffEffect = Utils.FindChild(Managers.Game.Player.gameObject, Define.Player.UPGRADE_PLAYER_BUFF);
@@ -425,7 +425,7 @@ namespace STELLAREST_2D
             }
             else
             {
-                if (cc.CreatureStat.TemplateID == (int)Define.TemplateIDs.Creatures.Monster.Chicken)
+                if (cc.Stat.TemplateID == (int)Define.TemplateIDs.Creatures.Monster.Chicken)
                     defaultSpawnPos -= Vector3.up;
 
                 if (isCritical)
@@ -483,7 +483,7 @@ namespace STELLAREST_2D
         public void ShowWindTrailEffect(BaseController followTarget)
         {
             GameObject go = Managers.Resource.Instantiate(Define.Labels.Prefabs.WIND_TRAIL_EFFECT, pooling: true);
-            go.GetComponent<BaseController>().CoTrailEffect(followTarget);
+            //go.GetComponent<BaseController>().CoTrailEffect(followTarget);
         }
 
         public void ShowImpactWindEffect(Vector3 position, Define.InGameGrade inGameGrade)
@@ -524,7 +524,7 @@ namespace STELLAREST_2D
         public void ShowFireTrailEffect(BaseController followTarget)
         {
             GameObject go = Managers.Resource.Instantiate(Define.Labels.Prefabs.FIRE_TRAIL_EFFECT, pooling: true);
-            go.GetComponent<BaseController>().CoTrailEffect(followTarget);
+            //go.GetComponent<BaseController>().CoTrailEffect(followTarget);
         }
 
         public void ShowImpactFireEffect(Vector3 position, Define.InGameGrade inGameGrade)
@@ -565,7 +565,7 @@ namespace STELLAREST_2D
         public void ShowIceTrailEffect(BaseController followTarget)
         {
             GameObject go = Managers.Resource.Instantiate(Define.Labels.Prefabs.ICE_TRAIL_EFFECT, pooling: true);
-            go.GetComponent<BaseController>().CoTrailEffect(followTarget);
+            //go.GetComponent<BaseController>().CoTrailEffect(followTarget);
         }
 
         public void ShowImpactIceEffect(Vector3 position, Define.InGameGrade inGameGrade)
@@ -606,7 +606,7 @@ namespace STELLAREST_2D
         public void ShowBubbleTrailEffect(BaseController followTarget)
         {
             GameObject go = Managers.Resource.Instantiate(Define.Labels.Prefabs.BUBBLE_TRAIL_EFFECT, pooling: true);
-            go.GetComponent<BaseController>().CoTrailEffect(followTarget);
+            //go.GetComponent<BaseController>().CoTrailEffect(followTarget);
         }
 
         public void ShowImpactBubbleEffect(Vector3 position)
@@ -619,7 +619,7 @@ namespace STELLAREST_2D
         public void ShowLightTrailEffect(BaseController followTarget)
         {
             GameObject go = Managers.Resource.Instantiate(Define.Labels.Prefabs.LIGHT_TRAIL_EFFECT, pooling: true);
-            go.GetComponent<BaseController>().CoTrailEffect(followTarget);
+            //go.GetComponent<BaseController>().CoTrailEffect(followTarget);
         }
 
         public void ShowImpactLightEffect(Vector3 position)

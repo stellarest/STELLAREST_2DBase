@@ -44,12 +44,15 @@ namespace STELLAREST_2D
 
         public override void Init(int templateID)
         {
-            base.Init(templateID);
-            if (PlayerAnimController == null)
+            if (this.IsFirstPooling)
             {
+                base.Init(templateID);
+                if (PlayerAnimController == null)
+                    PlayerAnimController = AnimController as PlayerAnimationController;
+
                 Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.PlayerBody);
-                PlayerAnimController = AnimController as PlayerAnimationController;
                 AddCallbacks();
+                this.IsFirstPooling = false;
             }
 
             CreatureState = Define.CreatureState.Idle;
@@ -130,7 +133,6 @@ namespace STELLAREST_2D
                 SkillBook.Deactivate(SkillTemplate.Boomerang);
         }
 
-        public Define.InGameGrade grade = Define.InGameGrade.Default;
         private void Update()
         {
             DEV_CLEAR_LOG();
@@ -149,8 +151,6 @@ namespace STELLAREST_2D
             if (Input.GetKeyDown(KeyCode.E))
                 Flag3();
 
-            if (Input.GetKeyDown(KeyCode.L))
-                this.RendererController.Upgrade(grade);
 #endif
             MoveByJoystick(); // ERROR
             CollectEnv();
@@ -181,7 +181,7 @@ namespace STELLAREST_2D
         }
         private void MoveByJoystick()
         {
-            Vector3 dir = MoveDir.normalized * CreatureStat.MovementSpeed * Time.deltaTime;
+            Vector3 dir = MoveDir.normalized * Stat.MovementSpeed * Time.deltaTime;
             transform.position += dir;
             if (IsMoving)
             {
@@ -210,7 +210,7 @@ namespace STELLAREST_2D
         private void CollectEnv()
         {
             // float sqrCollectDist = EnvCollectDist * EnvCollectDist;
-            float sqrCollectDist = CreatureStat.CollectRange * CreatureStat.CollectRange;
+            float sqrCollectDist = Stat.CollectRange * Stat.CollectRange;
 
             // var allSpawnedGems = Managers.Object.Gems.ToList();
             var findGems = Managers.Object.GridController.
@@ -237,8 +237,15 @@ namespace STELLAREST_2D
         protected override void SetSortingGroup()
             => GetComponent<SortingGroup>().sortingOrder = (int)Define.SortingOrder.Player;
 
-        public override void OnDamaged(BaseController attacker, SkillBase skill)
-            => base.OnDamaged(attacker, skill);
+        public override void OnDamaged(CreatureController attacker, SkillBase from)
+        {
+            base.OnDamaged(attacker, from);
+        }
+
+        protected override void OnDead()
+        {
+            //base.OnDead();
+        }
 
         public void Expression(Define.ExpressionType expression, float duration)
             => StartCoroutine(Managers.Sprite.PlayerExpressionController.CoExpression(expression, duration));

@@ -43,6 +43,8 @@ namespace STELLAREST_2D
         public enum ExpressionType { Default, Battle, Concentration, Angry, Kitty, Sick, Death, }
         public enum MonsterFace { Normal = 0, Angry = 1, Death = 2 }
 
+        public enum HitFromType { None = -1, ThrowingStar = 1, LazerBolt = 2, All = 9 }
+
         //public enum ImpactHits { None, Leaves, CriticalHit, }
 
         public static class TemplateIDs
@@ -185,6 +187,7 @@ namespace STELLAREST_2D
                 public enum Impact
                 {
                     None = -1,
+                    Hit = 400100,
                     Leaves = 400101,
                     Critical = 400102,
                 }
@@ -304,7 +307,7 @@ namespace STELLAREST_2D
 
             public static class Data
             {
-                public const string CREATURE = "CreatureData.json";
+                public const string INITIAL_CREATURE_DATA = "InitialCreatureData.json";
                 public const string CREATURE_STAT = "CreatureStatData.json";
                 public const string SKILL = "SkillData.json";
                 // public const string SEQUENCE_SKILL = "SequenceSkillData.json";

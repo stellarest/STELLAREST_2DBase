@@ -1,10 +1,16 @@
 using System.Collections;
-using Unity.VisualScripting;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace STELLAREST_2D
 {
-    public class CreatureController : BaseController
+    public interface IHitFrom
+    {
+        public bool IsHitFrom_ThrowingStar { get; set; }
+        public bool IsHitFrom_LazerBolt { get; set; }
+    }
+
+    public class CreatureController : BaseController, IHitFrom
     {
         // +++ BASE CHILD OBJECTS +++
         public Transform Indicator { get; protected set; } = null;
@@ -13,6 +19,7 @@ namespace STELLAREST_2D
         public Vector3 FireSocketPosition => FireSocket.transform.position;
         public Vector3 ShootDir => (FireSocketPosition - IndicatorPosition).normalized;
         public Transform AnimTransform { get; protected set; } = null;
+        public SpriteRenderer[] SPRs { get; protected set; } = null;
         public Vector3 LocalScale
         {
             get => AnimTransform.transform.localScale;
@@ -27,9 +34,9 @@ namespace STELLAREST_2D
         public Collider2D HitCollider { get; protected set; } = null;
 
         // +++ STAT +++
-        [field: SerializeField] public CreatureStat CreatureStat { get; protected set; } = null;
+        [field: SerializeField] public CreatureStat Stat { get; protected set; } = null;
         public void UpdateCreatureStat(int templateID) 
-            => this.CreatureStat = CreatureStat.UpgradeStat(this, CreatureStat, templateID);
+            => this.Stat = Stat.UpgradeStat(this, Stat, templateID);
 
         // +++ SKILLS +++
         public SkillBook SkillBook { get; protected set; } = null;
@@ -51,25 +58,21 @@ namespace STELLAREST_2D
         public float GetMovementPower => (AttackEndPoint - AttackStartPoint).magnitude;
         
         public Define.LookAtDirection LookAtDir { get; protected set; } = Define.LookAtDirection.Right;
-        protected Vector3 _baseLocalScale = Vector3.zero;
+        protected Vector3 _baseRootLocalScale = Vector3.zero;
 
         // +++ MAIN METHODS +++
         public override void Init(int templateID)
         {
-            if (this.IsFirstPooling)
-            {
-                if (Managers.Data.CreaturesDict.TryGetValue(templateID, out Data.CreatureData creatureData) == false)
-                    Utils.LogCritical(nameof(CreatureController), nameof(Init), $"TemplateID : {templateID}");
+            if (Managers.Data.CreaturesDict.TryGetValue(templateID, out Data.InitialCreatureData creatureData) == false)
+                Utils.LogCritical(nameof(CreatureController), nameof(Init), $"TemplateID : {templateID}");
 
-                InitChildObject();
-                InitBaseComponents();
+            InitChildObject();
+            InitBaseComponents();
 
-                InitCreatureStat(creatureData);
-                InitCreatureSkill(creatureData);
-                InitCreatureRenderer(creatureData);
-                _baseLocalScale = transform.localScale;
-                this.IsFirstPooling = false;
-            }
+            InitCreatureStat(creatureData);
+            InitCreatureSkill(creatureData);
+            InitCreatureRenderer(creatureData);
+            _baseRootLocalScale = transform.localScale;
         }
 
         protected virtual void InitChildObject()
@@ -82,6 +85,8 @@ namespace STELLAREST_2D
 
             AnimTransform = Utils.FindChild<Transform>(this.gameObject, 
                 Define.ANIMATION_BODY, true);
+
+            SPRs = AnimTransform.GetComponentsInChildren<SpriteRenderer>(includeInactive: true);
         }
 
         protected virtual void InitBaseComponents()
@@ -111,10 +116,18 @@ namespace STELLAREST_2D
             }
         }
 
-        protected virtual void InitCreatureStat(Data.CreatureData creatureData) 
-            => CreatureStat = new CreatureStat(this, creatureData);
+        protected virtual void InitCreatureStat(Data.InitialCreatureData creatureData) 
+            => Stat = new CreatureStat(this, creatureData);
 
-        protected virtual void InitCreatureSkill(Data.CreatureData creatureData)
+        protected void InitCreatureStat(int templateID)
+        {
+            if (Managers.Data.CreaturesDict.TryGetValue(templateID, out Data.InitialCreatureData creatureData) == false)
+                Utils.LogCritical(nameof(CreatureController), nameof(Init), $"TemplateID : {templateID}");
+
+            this.Stat = new CreatureStat(this, creatureData);
+        }
+
+        protected virtual void InitCreatureSkill(Data.InitialCreatureData creatureData)
         {
             if (SkillBook == null)
             {
@@ -127,7 +140,7 @@ namespace STELLAREST_2D
             this.SkillBook.SetFirstExclusiveSkill();
         }
 
-        private void LoadRepeatSkills(Data.CreatureData creatureData)
+        private void LoadRepeatSkills(Data.InitialCreatureData creatureData)
         {
             GameObject goRepeatSkills = new GameObject { name = "@RepeatSkills "};
             goRepeatSkills.transform.SetParent(SkillBook.transform);
@@ -167,38 +180,48 @@ namespace STELLAREST_2D
             }
         }
 
-        private void LoadSequenceSkills(Data.CreatureData creatureData) { /* DO SOMETHING */ }
+        private void LoadSequenceSkills(Data.InitialCreatureData creatureData) { /* DO SOMETHING */ }
 
-        protected virtual void InitCreatureRenderer(Data.CreatureData creatureData)
+        protected virtual void InitCreatureRenderer(Data.InitialCreatureData creatureData)
         {
             if (RendererController == null)
             {
                 RendererController = gameObject.GetOrAddComponent<RendererController>();
-                RendererController.InitRendererController(this);
+                RendererController.InitRendererController(this, creatureData);
                 SetSortingGroup();
             }
         }
 
-        public virtual void OnDamaged(BaseController attacker, SkillBase skill)
+        public virtual void OnDamaged(CreatureController attacker, SkillBase from)
         {
-            // Debug.Log($"{gameObject.name} is damaged !! by {attacker.gameObject.name} / {skill.gameObject.name}");
-            // if (gameObject.IsValid() || this.IsValid())
-            //     StartCoroutine(HitEffect(attacker, skill));
             if (gameObject.IsValid() || this.IsValid())
             {
-                //StartCoroutine(CoOnDamaged(attacker, skill));
-                float damage = skill.GetDamage();
+                // TUPLE
+                (float dmgResult, bool isCritical) = Managers.Game.TakeDamage(this, attacker, from);
+                if (dmgResult == -1f && isCritical == false)
+                {
+                    // DODGE
+                    return;
+                }
+
+                this.Stat.Hp -= dmgResult;
+                Managers.VFX.Hit(this);
+                Managers.VFX.DamageFont(this, dmgResult, isCritical);
+                // Impact : 메모리 문제 발생할 것 같으면 크리티컬쪽에서 스폰
+                //Managers.VFX.Impact(from.Data.VFX_Impact, from.transform.position);
+                // 일단, ImpactPoint는 이와 같이 정정. 스킬 객체에서 터트릴지, target에서 터트릴지 옵션 줘야할듯.
+                // 밀리 스윙은 타겟, 프로젝타일은 자기 자신의 객체
+                Managers.VFX.Impact(from.Data.VFX_Impact, this.transform.position);
+
+                if (this.Stat.Hp <= 0)
+                {
+                    this.Stat.Hp = 0f;
+                    this.OnDead();
+                }
             }
         }
 
-        private IEnumerator CoOnDamaged(BaseController attacker, SkillBase skill)
-        {
-            // 어쨋든 데미지를 받아오면
-            float damage = skill.GetDamage();
-            // 여기서 히트 이펙트를 생성함
-            //Managers.Effect.Hit(skill, this);
-            yield return null;
-        }
+        protected virtual void OnVFX_Hit() { }
 
         protected virtual void OnDead() { }
 
@@ -220,6 +243,38 @@ namespace STELLAREST_2D
 
                 default:
                     return false;
+            }
+        }
+
+        public bool IsHitFrom_ThrowingStar { get; set; } = false;
+        public bool IsHitFrom_LazerBolt { get; set; } = false;
+
+        // FOR RESPAWN OR ANOTHER
+        public void ResetAllHitFrom()
+        {
+            this.IsHitFrom_ThrowingStar = false;
+            this.IsHitFrom_LazerBolt = false;
+        }
+
+        public void ResetHitFrom(Define.HitFromType hitFromtype, float delay)
+        {
+            if (this.IsValid())
+                StartCoroutine(CoResetHitFrom(hitFromtype, delay));
+        }
+
+        private IEnumerator CoResetHitFrom(Define.HitFromType hitFromType, float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            switch (hitFromType)
+            {
+                case Define.HitFromType.ThrowingStar:
+                    this.IsHitFrom_ThrowingStar = false;
+                    Utils.Log($"{this.gameObject.name}, Reset ThrowingStar.");
+                    break;
+
+                case Define.HitFromType.LazerBolt:
+                    this.IsHitFrom_LazerBolt = false;
+                    break;
             }
         }
 

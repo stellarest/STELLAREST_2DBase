@@ -49,7 +49,7 @@ namespace STELLAREST_2D
             //     return;
 
             CreatureController cc = creature.GetComponent<CreatureController>();
-            GameObject stunEffect = Managers.Effect.ShowStunEffect();
+            //GameObject stunEffect = Managers.Effect.ShowStunEffect();
             //stunEffect.transform.localScale = ApplyCCEffectScale(cc, Define.TemplateIDs.CCType.Stun);
             // cc.CoCCStun(cc, stunEffect, duration); // StartCoroutine만 cc에서 해주는것이다
         }

@@ -32,11 +32,29 @@ namespace STELLAREST_2D
         }
 
         public PlayerController Player { get => Managers.Object?.Player; }
-        public int Gold { get; set; }
-        
-        public float TakeDamagee()
+
+        private const float MIN_CRITICAL_RATIO = 1.5f;
+        private const float MAX_CRITICAL_RATIO = 2f;
+        public (float dmgResult, bool isCritical) TakeDamage(CreatureController target, CreatureController attacker, SkillBase from)
         {
-            return 0f;
+            // DODGE CHANCE OF TARGET
+            if (UnityEngine.Random.Range(0f, 1f) <= target.Stat.Dodge)
+                return (-1f, false);
+            
+            // DAMAGE FROM ATTACKER
+            float armor = target.Stat.Armor;
+            bool isCritical = false;
+            float dmgSkill = UnityEngine.Random.Range(from.Data.MinDamage, from.Data.MaxDamage);
+            float dmgResult = dmgSkill + (dmgSkill * attacker.Stat.Damage);
+            if (UnityEngine.Random.Range(0f, 1f) <= attacker.Stat.Critical)
+            {
+                isCritical = true;
+                float criticalRatio = UnityEngine.Random.Range(MIN_CRITICAL_RATIO, MAX_CRITICAL_RATIO);
+                dmgResult = dmgResult + (dmgResult * criticalRatio);
+            }
+
+            dmgResult = dmgResult - (dmgResult * armor);
+            return (dmgResult, isCritical);
         }
 
         private int _gem = 0;

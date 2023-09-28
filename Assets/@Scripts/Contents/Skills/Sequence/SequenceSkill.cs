@@ -20,12 +20,11 @@ namespace STELLAREST_2D
             {
                 pc = Owner.GetComponent<PlayerController>();
                 //pac = pc.PlayerAnim;
-
             }
             else
             {
                 mc = Owner.GetComponent<MonsterController>();
-                mac = mc.MAC;
+                //mac = mc.MAC;
             }
         }
 

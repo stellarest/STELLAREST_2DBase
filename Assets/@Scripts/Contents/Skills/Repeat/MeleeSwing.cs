@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using STELLAREST_2D.Data;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -33,7 +32,10 @@ namespace STELLAREST_2D
                 _particleSystemRenderers = GetComponents<ParticleSystemRenderer>();
 
                 RigidBody = GetComponent<Rigidbody2D>();
+                RigidBody.simulated = true;
+
                 HitCollider = GetComponent<Collider2D>();
+                HitCollider.isTrigger = true;
 
                 base.InitClone(ownerFromOrigin, dataFromOrigin);
                 this.PC.OnSetParticleInfo += this.OnSetSwingParticleInfoHandler;
@@ -66,47 +68,22 @@ namespace STELLAREST_2D
             }
         }
 
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            CreatureController cc = other.GetComponent<CreatureController>();
+            if (cc.IsValid() == false)
+                return;
+
+            cc.OnDamaged(attacker: this.Owner, from: this);
+        }
+
         private void OnDestroy()
         {
             if (this.PC != null && this.PC.OnSetParticleInfo != null)
             {
                 this.PC.OnSetParticleInfo -= OnSetSwingParticleInfoHandler;
-                //this.PC.Owner.AnimCallback.OnCloneExclusiveSkill -= OnCloneExclusiveSkillHandler;
             }
         }
-
-        // public override void SetParticleInfo(Vector3 startAngle, Define.LookAtDirection lookAtDir, 
-        //                                     float continuousAngle, float continuousFlipX, float continuousFlipY)
-        // {
-        //     for (int i = 0; i < _particles.Length; ++i)
-        //     {
-        //         Vector3 tempAngle = startAngle;
-        //         tempAngle.z += continuousAngle;
-        //         //tempAngle.z += TestParticleAngle;
-        //         transform.rotation = Quaternion.Euler(tempAngle);
-
-        //         var main = _particles[i].main;
-        //         main.startRotation = Mathf.Deg2Rad * tempAngle.z * -1f;
-        //         main.flipRotation = (int)lookAtDir;
-        //         _particleRenderers[i].flip = new Vector3(continuousFlipX, continuousFlipY, 0);
-        //     }
-        // }
-
-        // protected override void DoSkillJob() 
-        //     => Owner.CreatureState = Define.CreatureState.Attack; // Event Handler로 대체
-
-        // public override void OnPreSpawned()
-        // {
-        //     base.OnPreSpawned();
-        //     foreach (var particle in GetComponentsInChildren<ParticleSystem>())
-        //     {
-        //         var emission = particle.emission;
-        //         emission.enabled = false;
-        //     }
-
-        //     foreach (var col in GetComponents<Collider2D>())
-        //         col.enabled = false;
-        // }
     }
 }
 

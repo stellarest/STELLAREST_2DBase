@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro.EditorUtilities;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering; // Sorting Group
 
@@ -52,6 +54,7 @@ namespace STELLAREST_2D
 
                                     ChickenController chicken = go.GetComponent<ChickenController>();
                                     chicken.ObjectType = spawnObjectType;
+                                    chicken.MonsterType = Define.MonsterType.Chicken;
 
                                     chicken.Init(templateID);
                                     Monsters.Add(chicken);
@@ -94,10 +97,6 @@ namespace STELLAREST_2D
             }
 
             return null;
-        }
-
-        public void LaunchSkill(CreatureController owner, Data.SkillData data)
-        {
         }
 
         public void Despawn<T>(T obj) where T : BaseController
@@ -148,64 +147,125 @@ namespace STELLAREST_2D
             }
         }
 
+        public MonsterController GetClosestNextMonsterTarget(CreatureController from, Define.HitFromType hitFromStatusFilter = Define.HitFromType.None)
+        {
+            List<MonsterController> toList = new List<MonsterController>();
+            foreach (var mon in Monsters)
+            {
+                if (mon.IsValid())
+                    toList.Add(mon);
+            }
+
+            Vector3 fromPos = from.transform.position;
+            MonsterController nextTarget = null;
+            float closestDistance = float.MaxValue;
+
+            for (int i = 0; i < toList.Count; ++i)
+            {
+                if (toList[i] == from)
+                    continue;
+
+                // 그 사이에 죽을수도 있다.
+                if (toList[i].IsValid() == false)
+                    continue;
+
+                if (hitFromStatusFilter != Define.HitFromType.None)
+                {
+                    if (hitFromStatusFilter == Define.HitFromType.ThrowingStar)
+                    {
+                        if (toList[i].IsHitFrom_ThrowingStar)
+                            continue;
+                    }
+                }
+
+                float fromNextDist = (toList[i].transform.position - fromPos).sqrMagnitude;
+                if (fromNextDist < closestDistance)
+                {
+                    closestDistance = fromNextDist;
+                    nextTarget = toList[i];
+                }
+            }
+
+            return nextTarget;
+        }
         // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
         // 해당 dist 안에 가장 몬스터가 밀집되어 있는 곳을 골라서 리턴해준다.
-        public GameObject GetClosestTarget<T>(GameObject from, float fromRange, GameObject priority, float priorityRange) where T : BaseController
-        {
-            System.Type type = typeof(T);
-            Vector3 fromPos = from.transform.position;
+        // public GameObject GetClosestTarget<T>(GameObject from, float fromRange, GameObject priority, float priorityRange) where T : BaseController
+        // {
+        //     System.Type type = typeof(T);
+        //     Vector3 fromPos = from.transform.position;
 
-            GameObject priorityTarget = null;
-            Vector3 priorityPos = Vector3.zero;
+        //     GameObject priorityTarget = null;
+        //     Vector3 priorityPos = Vector3.zero;
 
-            if (type == typeof(MonsterController))
-            {
-                List<MonsterController> toMonsters = this.Monsters.ToList();
-                GameObject fromTarget = toMonsters
-                                    .Where(m => m.IsValid() && m.IsCreatureDead() == false)
-                                    .Where(m => (m.transform.position - fromPos).sqrMagnitude < fromRange * fromRange)
-                                    .OrderBy(m => (m.transform.position - fromPos).sqrMagnitude)
-                                    .FirstOrDefault()?
-                                    .Body;
+        //     if (type == typeof(MonsterController))
+        //     {
+        //         List<MonsterController> toMonsters = this.Monsters.ToList();
+        //         // GameObject fromTarget = toMonsters
+        //         //                     .Where(m => m.IsValid() && m.IsCreatureDead() == false)
+        //         //                     .Where(m => (m.transform.position - fromPos).sqrMagnitude < fromRange * fromRange)
+        //         //                     .OrderBy(m => (m.transform.position - fromPos).sqrMagnitude)
+        //         //                     .FirstOrDefault()?
+        //         //                     .Body;
+        //         GameObject fromTarget = toMonsters
+        //                             .Where(m => m.IsValid())
+        //                             .Where(m => (m.transform.position - fromPos).sqrMagnitude < fromRange * fromRange)
+        //                             .OrderBy(m => (m.transform.position - fromPos).sqrMagnitude)
+        //                             .FirstOrDefault()?
+        //                             .gameObject;
 
 
-                if (priority != null)
-                {
-                    priorityPos = priority.transform.position;
-                    priorityTarget = toMonsters
-                                .Where(m => m.IsValid() && m.IsCreatureDead() == false)
-                                .Where(m => (m.transform.position - priorityPos).sqrMagnitude < priorityRange * priorityRange)
-                                .OrderBy(m => (m.transform.position - priorityPos).sqrMagnitude)
-                                .FirstOrDefault()?
-                                .Body;
-                }
+        //         if (priority != null)
+        //         {
+        //             priorityPos = priority.transform.position;
+        //             // priorityTarget = toMonsters
+        //             //             .Where(m => m.IsValid() && m.IsCreatureDead() == false)
+        //             //             .Where(m => (m.transform.position - priorityPos).sqrMagnitude < priorityRange * priorityRange)
+        //             //             .OrderBy(m => (m.transform.position - priorityPos).sqrMagnitude)
+        //             //             .FirstOrDefault()?
+        //             //             .Body;
 
-                return priorityTarget != null ? priorityTarget : fromTarget;
-            }
+        //             priorityTarget = toMonsters
+        //                          .Where(m => m.IsValid())
+        //                          .Where(m => (m.transform.position - priorityPos).sqrMagnitude < priorityRange * priorityRange)
+        //                          .OrderBy(m => (m.transform.position - priorityPos).sqrMagnitude)
+        //                          .FirstOrDefault()?
+        //                          .gameObject;
+        //         }
 
-            return null;
-        }
+        //         return priorityTarget != null ? priorityTarget : fromTarget;
+        //     }
 
-        public GameObject GetClosestTarget<T>(GameObject from, float range) where T : BaseController
-        {
-            System.Type type = typeof(T);
-            Vector3 fromPos = from.transform.position;
-            if (type == typeof(MonsterController))
-            {
-                List<MonsterController> toMonsters = this.Monsters.ToList();
-                GameObject target = toMonsters
-                                    .Where(m => m.IsValid() && m.IsCreatureDead() == false)
-                                    .Where(m => (m.transform.position - from.transform.position).sqrMagnitude < range * range)
-                                    .OrderBy(m => (m.transform.position - fromPos).sqrMagnitude)
-                                    .FirstOrDefault()?
-                                    .Body;
+        //     return null;
+        // }
 
-                return target;
-            }
+        // public GameObject GetClosestTarget<T>(GameObject from, float range) where T : BaseController
+        // {
+        //     System.Type type = typeof(T);
+        //     Vector3 fromPos = from.transform.position;
+        //     if (type == typeof(MonsterController))
+        //     {
+        //         List<MonsterController> toMonsters = this.Monsters.ToList();
+        //         // GameObject target = toMonsters
+        //         //                     .Where(m => m.IsValid() && m.IsCreatureDead() == false)
+        //         //                     .Where(m => (m.transform.position - from.transform.position).sqrMagnitude < range * range)
+        //         //                     .OrderBy(m => (m.transform.position - fromPos).sqrMagnitude)
+        //         //                     .FirstOrDefault()?
+        //         //                     .Body;
 
-            return null;
-        }
+        //         GameObject target = toMonsters
+        //                         .Where(m => m.IsValid())
+        //                         .Where(m => (m.transform.position - from.transform.position).sqrMagnitude < range * range)
+        //                         .OrderBy(m => (m.transform.position - fromPos).sqrMagnitude)
+        //                         .FirstOrDefault()?
+        //                         .gameObject;
+
+        //         return target;
+        //     }
+
+        //     return null;
+        // }
 
         // public Vector2 GetRandomTargetingPosition<T>(GameObject from, float fromMinDistance = 1f, float fromMaxDistance = 22f,
         //                    Define.TemplateIDs.CreatureStatus.RepeatSkill skillHitStatus = Define.TemplateIDs.CreatureStatus.RepeatSkill.None) where T : BaseController

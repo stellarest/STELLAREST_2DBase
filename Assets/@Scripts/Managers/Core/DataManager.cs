@@ -12,7 +12,7 @@ namespace STELLAREST_2D
 
     public class DataManager
     {
-        public Dictionary<int, Data.CreatureData> CreaturesDict { get; private set; } = new Dictionary<int, Data.CreatureData>();
+        public Dictionary<int, Data.InitialCreatureData> CreaturesDict { get; private set; } = new Dictionary<int, Data.InitialCreatureData>();
         public Dictionary<int, Data.CreatureStatData> StatsDict { get; private set; } = new Dictionary<int, Data.CreatureStatData>();
         public Dictionary<int, Data.SkillData> SkillsDict { get; private set; } = new Dictionary<int, Data.SkillData>();
         //public Dictionary<int, Data.SequenceSkillData> SequenceSkillsDict { get; private set; } = new Dictionary<int, Data.SequenceSkillData>();
@@ -20,8 +20,8 @@ namespace STELLAREST_2D
 
         public void Init()
         {
-            CreaturesDict = LoadJson<Data.CreatureDataLoader, int, Data.CreatureData>
-                            (Define.Labels.Data.CREATURE).MakeDict();
+            CreaturesDict = LoadJson<Data.InitialCreatureDataLoader, int, Data.InitialCreatureData>
+                            (Define.Labels.Data.INITIAL_CREATURE_DATA).MakeDict();
 
             StatsDict = LoadJson<Data.CreatureStatDataLoader, int, Data.CreatureStatData>
                             (Define.Labels.Data.CREATURE_STAT).MakeDict();
