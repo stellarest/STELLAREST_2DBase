@@ -153,6 +153,8 @@ namespace STELLAREST_2D
                     // Public Skills (+ Monster)
                     ThrowingStar = 200300,
                     Boomerang = 200303,
+                    LazerBolt = 200306,
+                    Spear = 200309,
 
                     // LazerBolt = 200304,
                     // Boomerang = 200308,

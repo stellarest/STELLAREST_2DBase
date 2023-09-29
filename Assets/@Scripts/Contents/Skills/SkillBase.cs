@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
@@ -38,7 +39,7 @@ namespace STELLAREST_2D
                 if (this.SR != null)
                 {
                     this.PC.SR = this.SR;
-                    SetSortingGroup();
+                    SetSortingOrder();
                 }
 
                 if (this.RigidBody != null)
@@ -52,10 +53,29 @@ namespace STELLAREST_2D
                 this.OnProjectileLaunchInfo += this.PC.OnProjectileLaunchInfoHandler;
             }
 
+            SetClonedRootTargetOnParticleStopped();
             if (ownerFromOrigin?.IsPlayer() == true)
                 Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.PlayerAttack);
             else
                 Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.MonsterAttack);
+        }
+
+        public virtual void SetClonedRootTargetOnParticleStopped() 
+        {
+            Transform root = transform.root;
+            foreach (var particle in root.GetComponentsInChildren<ParticleSystem>())
+            {
+                OnParticleStopped particleStopped = particle.GetComponent<OnParticleStopped>();
+                if (particleStopped != null && particleStopped.RootTarget == null)
+                {
+                    var main = particle.main;
+                    if (main.stopAction != ParticleSystemStopAction.Callback)
+                        main.stopAction = ParticleSystemStopAction.Callback;
+
+                    particleStopped.RootTarget = particle.transform.parent.gameObject;
+                    return;
+                }
+            }
         }
 
         private bool _isLearned = false;
@@ -86,13 +106,6 @@ namespace STELLAREST_2D
         }
 
         public bool IsStopped { get; protected set; } = false;
-
-        private float? _damageBuffRatio = null;
-        public float? DamageBuffRatio
-        {
-            get => _damageBuffRatio;
-            set => _damageBuffRatio = value;
-        }
 
         public virtual void Activate()
         {
@@ -149,3 +162,11 @@ namespace STELLAREST_2D
         }
     }
 }
+
+
+// private float? _damageBuffRatio = null;
+// public float? DamageBuffRatio
+// {
+//     get => _damageBuffRatio;
+//     set => _damageBuffRatio = value;
+// }

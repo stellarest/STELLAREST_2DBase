@@ -11,7 +11,8 @@ namespace STELLAREST_2D
     {
         public ProjectileLaunchInfoEventArgs(Define.LookAtDirection lootAtDir, Vector3 shootDir, Vector3 localScale, Vector3 indicatorAngle,
                     float movementSpeed, float rotationSpeed, float lifeTime, float colliderPreDisableLifeRatio, float continuousAngle, float continuousSpeedRatio,
-                    float continuousFlipX, float continuousFlipY, float interpolateTargetScaleX, float interpolateTargetScaleY, bool isOnlyVisible)
+                    float continuousFlipX, float continuousFlipY, float interpolateTargetScaleX, float interpolateTargetScaleY, bool isOnlyVisible,
+                    int maxBounceCount, int maxPenetrationCount)
         {
             this.LookAtDir = lootAtDir;
             this.ShootDir = shootDir;
@@ -29,6 +30,9 @@ namespace STELLAREST_2D
             this.InterpolateTargetScaleX = interpolateTargetScaleX;
             this.InterpolateTargetScaleY = interpolateTargetScaleY;
             this.IsOnlyVisible = isOnlyVisible;
+
+            this.MaxBounceCount = maxBounceCount;
+            this.MaxPenetrationCount = maxPenetrationCount;
         }
 
         #region Properties
@@ -48,6 +52,9 @@ namespace STELLAREST_2D
         public float InterpolateTargetScaleX { get; private set; } = 0f;
         public float InterpolateTargetScaleY { get; private set; } = 0f;
         public bool IsOnlyVisible { get; private set; } = false;
+
+        public int MaxBounceCount { get; private set; } = 0;
+        public int MaxPenetrationCount { get; private set; } = 0;
         #endregion
     }
 
@@ -74,6 +81,12 @@ namespace STELLAREST_2D
         private bool _isOnReadyInterpolateScale = false;
         private bool _isOnlyVisible = false;
         private bool _isOffParticle = false;
+        private int _bounceCount = 0;
+        private int _maxBounceCount = 0;
+        public bool CanStillBounce => (_bounceCount++ < _maxBounceCount);
+
+        private int _penetrationCount = 0;
+        private int _maxPenetrationCount = 0;
 
         public void OnProjectileLaunchInfoHandler(object sender, ProjectileLaunchInfoEventArgs e)
         {
@@ -100,6 +113,12 @@ namespace STELLAREST_2D
 
             this._isOnlyVisible = e.IsOnlyVisible;
             _isOffParticle = false;
+
+            _bounceCount = 0;
+            _maxBounceCount = e.MaxBounceCount;
+
+            _penetrationCount = 0;
+            _maxPenetrationCount = e.MaxPenetrationCount;
         }
 
         public void Launch()
@@ -327,45 +346,37 @@ namespace STELLAREST_2D
             switch (this.Data.OriginalTemplate)
             {
                 case SkillTemplate.ThrowingStar:
-                    ThrowingStar_CheckNextBounceTarget(cc);
+                    _shootDir = NextBounceTarget(cc, Define.HitFromType.ThrowingStar);
                     break;
 
                 case SkillTemplate.Boomerang:
-                    // 부메랑 할게있나?
-                    // 데미지폰트나 띄워보자
                     break;
             }
-
-            // if (Managers.Collision.CheckCollisionTarget(Define.CollisionLayers.MonsterBody, other.gameObject.layer))
-            //     mc.OnDamaged(Owner, _targetSkill);
         }
 
-        private void ThrowingStar_CheckNextBounceTarget(CreatureController cc)
+        private Vector3 NextBounceTarget(CreatureController cc, Define.HitFromType hitFromType = Define.HitFromType.None)
         {
-            ThrowingStar throwingStar = GetComponent<ThrowingStar>();
-            if (cc?.IsPlayer() == false)
+            if (CanStillBounce == false)
             {
-                if (Managers.Collision.IsCorrectTarget(Define.CollisionLayers.MonsterBody, cc.gameObject.layer))
-                {
-                    if (throwingStar.CanStillBounce)
-                    {
-                        Vector3 nextTargetDir = throwingStar.NextBounceDir;
-                        if (nextTargetDir != Vector3.zero)
-                            _shootDir = nextTargetDir;
-                    }
-                    else
-                    {
-                        if (this.IsValid())
-                            Managers.Object.Despawn(this);
-                    }
-                }
+                if (this.IsValid())
+                    Managers.Object.Despawn(this);
+                    
+                return _shootDir;
             }
-            else
+
+            Vector3 shootDir = Vector3.zero;
+            if (Managers.Collision.IsCorrectTarget(Define.CollisionLayers.MonsterBody, cc.gameObject.layer))
+                shootDir = Utils.GetClosestNextTargetDirection<MonsterController>(cc, hitFromType);
+            else if (Managers.Collision.IsCorrectTarget(Define.CollisionLayers.PlayerBody, cc.gameObject.layer))
             {
-                // 플레이어에게 데미지 줬으니까 그냥 디스폰시킴
                 if (this.IsValid())
                     Managers.Object.Despawn(this);
             }
+
+            if (shootDir == Vector3.zero)
+                shootDir = _shootDir;
+
+            return shootDir;
         }
 
         private void OnDestroy()
@@ -374,10 +385,10 @@ namespace STELLAREST_2D
                 this.OnProjectileLaunchInfo -= OnProjectileLaunchInfoHandler;
         }
     }
-
-    // -------------------------------------------------------------------------------------
-    // -------------------------------------------------------------------------------------
 }
+
+// -------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------
 // public void SetProjectileInfo(Vector3 shootDir, Define.LookAtDirection lootAtDir, Vector3 localScale, Vector3 indicatorAngle,
 //                             float continuousAngle, float continuousSpeedRatio, float continuousFlipX, float continuousFlipY,
 //                             float interPolateTargetScaleX, float interpolateTargetScaleY, bool isOnlyVisible)

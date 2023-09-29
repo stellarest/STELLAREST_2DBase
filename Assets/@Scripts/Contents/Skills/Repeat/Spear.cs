@@ -1,12 +1,17 @@
 // using System.Collections;
 // using TMPro;
 // using Unity.VisualScripting;
+using STELLAREST_2D.Data;
 using UnityEngine;
 
 namespace STELLAREST_2D
 {
     public class Spear : RepeatSkill
     {
+        public override void InitOrigin(CreatureController owner, SkillData data)
+        {
+            base.InitOrigin(owner, data);
+        }
 
         protected override void DoSkillJob()
         {

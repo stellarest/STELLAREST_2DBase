@@ -61,8 +61,19 @@ namespace STELLAREST_2D
             }
         }
 
-        public void Impact(ImpactTemplate templateOrigin, Vector3 impactPoint)
+        // 어뜨케할까?
+        public void Impact(ImpactTemplate templateOrigin, CreatureController target, SkillBase from)
         {
+            Vector3 impactPoint = Vector3.zero;
+            if (from.Data.IsImpactPointOnTarget)
+            {
+                float additionalPointX = UnityEngine.Random.Range(0f, 0.5f);
+                float additionalPointY = UnityEngine.Random.Range(0f, 1f);
+                impactPoint = target.transform.position + new Vector3(additionalPointX, additionalPointY, 0f);
+            }
+            else
+                impactPoint = from.transform.position;
+
             switch (templateOrigin)
             {
                 case ImpactTemplate.Hit:

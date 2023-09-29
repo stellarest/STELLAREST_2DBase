@@ -83,7 +83,7 @@ namespace STELLAREST_2D
             Managers.Object.Despawn<SkillBase>(caller);
         }
 
-        protected override void SetSortingGroup() 
+        protected override void SetSortingOrder() 
             => SR.sortingOrder = (int)Define.SortingOrder.Skill;
 
         private void OnTriggerEnter2D(Collider2D other)

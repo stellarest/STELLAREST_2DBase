@@ -104,6 +104,9 @@ namespace STELLAREST_2D
                 }
             }
 
+            int maxBounceCount = this.Data.MaxBounceCount;
+            int maxPenetrationCount = this.Data.MaxPenetrationCount;
+
             for (int i = 0; i < continuousCount; ++i)
             {
                 Vector3 spawnPos = (this.Data.IsOnFireSocket) ? this.Owner.FireSocketPosition : this.Owner.transform.position;
@@ -127,7 +130,9 @@ namespace STELLAREST_2D
                         continuousFlipY: continuousFlipYs[i],
                         interpolateTargetScaleX: interpolateTargetScaleXs[i],
                         interpolateTargetScaleY: interpolateTargetScaleYs[i],
-                        isOnlyVisible: isOnlyVisibles[i]
+                        isOnlyVisible: isOnlyVisibles[i],
+                        maxBounceCount: maxBounceCount,
+                        maxPenetrationCount: maxPenetrationCount
                     ));
 
                     clone.PC.Launch();

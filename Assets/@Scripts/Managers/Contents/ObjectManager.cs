@@ -12,13 +12,13 @@ namespace STELLAREST_2D
 {
     public class ObjectManager
     {
-        public PlayerController Player { get; private set; }
+        public PlayerController Player { get; private set; } = null;
         public HashSet<MonsterController> Monsters { get; } = new HashSet<MonsterController>();
         public HashSet<ProjectileController> Projectiles { get; } = new HashSet<ProjectileController>();
         public HashSet<SkillBase> Skills { get; } = new HashSet<SkillBase>();
         public HashSet<GemController> Gems { get; } = new HashSet<GemController>();
         // EnvCont는 나중에 추가하던지
-        public GridController GridController { get; private set; }
+        public GridController GridController { get; private set; } = null;
 
         public void Init()
         {
@@ -147,47 +147,6 @@ namespace STELLAREST_2D
             }
         }
 
-        public MonsterController GetClosestNextMonsterTarget(CreatureController from, Define.HitFromType hitFromStatusFilter = Define.HitFromType.None)
-        {
-            List<MonsterController> toList = new List<MonsterController>();
-            foreach (var mon in Monsters)
-            {
-                if (mon.IsValid())
-                    toList.Add(mon);
-            }
-
-            Vector3 fromPos = from.transform.position;
-            MonsterController nextTarget = null;
-            float closestDistance = float.MaxValue;
-
-            for (int i = 0; i < toList.Count; ++i)
-            {
-                if (toList[i] == from)
-                    continue;
-
-                // 그 사이에 죽을수도 있다.
-                if (toList[i].IsValid() == false)
-                    continue;
-
-                if (hitFromStatusFilter != Define.HitFromType.None)
-                {
-                    if (hitFromStatusFilter == Define.HitFromType.ThrowingStar)
-                    {
-                        if (toList[i].IsHitFrom_ThrowingStar)
-                            continue;
-                    }
-                }
-
-                float fromNextDist = (toList[i].transform.position - fromPos).sqrMagnitude;
-                if (fromNextDist < closestDistance)
-                {
-                    closestDistance = fromNextDist;
-                    nextTarget = toList[i];
-                }
-            }
-
-            return nextTarget;
-        }
         // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
         // 해당 dist 안에 가장 몬스터가 밀집되어 있는 곳을 골라서 리턴해준다.

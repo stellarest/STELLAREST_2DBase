@@ -121,11 +121,12 @@ namespace STELLAREST_2D.Data
         public Vector3[] ScaleInterpolations;
         public bool[] IsOnlyVisibles;
         public float ColliderPreDisableLifeRatio;
-        public int BounceCount;
-        public int PenetrationCount;
+        public int MaxBounceCount;
+        public int MaxPenetrationCount;
         public Define.TemplateIDs.Status.AfterEffect AfterEffectType;
         public Define.TemplateIDs.VFX.Muzzle VFX_Muzzle;
         public Define.TemplateIDs.VFX.Impact VFX_Impact;
+        public bool IsImpactPointOnTarget;
         public Define.TemplateIDs.VFX.Environment VFX_Environment;
         public Define.TemplateIDs.Status.Skill UnlockSkillTemplate;
         public float CoolTime;

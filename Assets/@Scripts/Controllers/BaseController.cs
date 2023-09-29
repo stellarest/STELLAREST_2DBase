@@ -15,7 +15,7 @@ namespace STELLAREST_2D
         public Define.ObjectType ObjectType { get; set; } = Define.ObjectType.None;
 
         public virtual void Init(int templateID) { }
-        protected virtual void SetSortingGroup() { }
+        protected virtual void SetSortingOrder() { }
         // public void CoTrailEffect(BaseController followTarget) 
         //             => StartCoroutine(Managers.Effect.CoTrailEffect(gameObject, followTarget));
         public void EffectHit()

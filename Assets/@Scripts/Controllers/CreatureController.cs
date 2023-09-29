@@ -188,36 +188,32 @@ namespace STELLAREST_2D
             {
                 RendererController = gameObject.GetOrAddComponent<RendererController>();
                 RendererController.InitRendererController(this, creatureData);
-                SetSortingGroup();
+                SetSortingOrder();
             }
         }
 
         public virtual void OnDamaged(CreatureController attacker, SkillBase from)
         {
-            if (gameObject.IsValid() || this.IsValid())
+            if (this.IsValid() == false)
+                return;
+
+            // TUPLE
+            (float dmgResult, bool isCritical) = Managers.Game.TakeDamage(this, attacker, from);
+            if (dmgResult == -1f && isCritical == false)
             {
-                // TUPLE
-                (float dmgResult, bool isCritical) = Managers.Game.TakeDamage(this, attacker, from);
-                if (dmgResult == -1f && isCritical == false)
-                {
-                    // DODGE
-                    return;
-                }
+                // DODGE
+                return;
+            }
 
-                this.Stat.Hp -= dmgResult;
-                Managers.VFX.Hit(this);
-                Managers.VFX.DamageFont(this, dmgResult, isCritical);
-                // Impact : 메모리 문제 발생할 것 같으면 크리티컬쪽에서 스폰
-                //Managers.VFX.Impact(from.Data.VFX_Impact, from.transform.position);
-                // 일단, ImpactPoint는 이와 같이 정정. 스킬 객체에서 터트릴지, target에서 터트릴지 옵션 줘야할듯.
-                // 밀리 스윙은 타겟, 프로젝타일은 자기 자신의 객체
-                Managers.VFX.Impact(from.Data.VFX_Impact, this.transform.position);
-
-                if (this.Stat.Hp <= 0)
-                {
-                    this.Stat.Hp = 0f;
-                    this.OnDead();
-                }
+            this.Stat.Hp -= dmgResult;
+            Managers.VFX.Hit(this);
+            Managers.VFX.DamageFont(this, dmgResult, isCritical);
+            // Impact : 메모리 문제 발생할 것 같으면 크리티컬쪽에서 스폰
+            Managers.VFX.Impact(from.Data.VFX_Impact, this, from);
+            if (this.Stat.Hp <= 0)
+            {
+                this.Stat.Hp = 0f;
+                this.OnDead();
             }
         }
 
@@ -231,10 +227,10 @@ namespace STELLAREST_2D
         {
             switch (this.ObjectType)
             {
-                case Define.ObjectType.Player:
-                case Define.ObjectType.Projectile:
-                case Define.ObjectType.Skill:
-                    return false;
+                // case Define.ObjectType.Player:
+                // case Define.ObjectType.Projectile:
+                // case Define.ObjectType.Skill:
+                //     return false;
 
                 case Define.ObjectType.Monster:
                 case Define.ObjectType.EliteMonster:
@@ -256,10 +252,28 @@ namespace STELLAREST_2D
             this.IsHitFrom_LazerBolt = false;
         }
 
-        public void ResetHitFrom(Define.HitFromType hitFromtype, float delay)
+        public void ResetHitFrom(Define.HitFromType hitFromType, float delay)
         {
-            if (this.IsValid())
-                StartCoroutine(CoResetHitFrom(hitFromtype, delay));
+            if (this.IsValid() == false)
+                return;
+
+            if (delay > 0f)
+                StartCoroutine(CoResetHitFrom(hitFromType, delay));
+            else
+            {
+                switch (hitFromType)
+                {
+                    case Define.HitFromType.ThrowingStar:
+                        this.IsHitFrom_ThrowingStar = false;
+                        Utils.Log($"{this.gameObject.name}, Reset HitFrom : ThrowingStar.");
+                        break;
+
+                    case Define.HitFromType.LazerBolt:
+                        this.IsHitFrom_LazerBolt = false;
+                        Utils.Log($"{this.gameObject.name}, Reset HitFrom : LazerBolt.");
+                        break;
+                }
+            }
         }
 
         private IEnumerator CoResetHitFrom(Define.HitFromType hitFromType, float delay)
@@ -269,11 +283,12 @@ namespace STELLAREST_2D
             {
                 case Define.HitFromType.ThrowingStar:
                     this.IsHitFrom_ThrowingStar = false;
-                    Utils.Log($"{this.gameObject.name}, Reset ThrowingStar.");
+                    Utils.Log($"{this.gameObject.name}, Reset HitFrom : ThrowingStar.");
                     break;
 
                 case Define.HitFromType.LazerBolt:
                     this.IsHitFrom_LazerBolt = false;
+                    Utils.Log($"{this.gameObject.name}, Reset HitFrom : LazerBolt.");
                     break;
             }
         }

@@ -43,7 +43,7 @@ namespace STELLAREST_2D
             }
         }
 
-        protected override void SetSortingGroup()
+        protected override void SetSortingOrder()
                 => GetComponent<SortingGroup>().sortingOrder = (int)Define.SortingOrder.Skill;
 
         protected override void DoSkillJob()

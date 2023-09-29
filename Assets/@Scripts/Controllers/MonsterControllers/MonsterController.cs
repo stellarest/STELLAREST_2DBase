@@ -123,7 +123,7 @@ namespace STELLAREST_2D
 
         public bool LockFlip { get; set; } = false;
 
-        protected override void SetSortingGroup()
+        protected override void SetSortingOrder()
                 => GetComponent<SortingGroup>().sortingOrder = (int)Define.SortingOrder.Monster;
 
         protected void Flip(float flipX)

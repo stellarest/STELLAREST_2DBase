@@ -8,6 +8,8 @@ using STELLAREST_2D.Data;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Xml.Schema;
 using Assets.HeroEditor.InventorySystem.Scripts.Data;
+using UnityEditor.ShaderGraph;
+using UnityEngine.UIElements;
 //using Unity.Mathematics;
 
 public class ShowOnlyAttribute : PropertyAttribute
@@ -66,7 +68,7 @@ namespace STELLAREST_2D
             return null;
         }
 
-        public static Vector2 GetRandomPosition(Vector2 fromPos, float fromMinDistance = 10.0f, float fromMaxDistance = 20.0f)
+        public static Vector3 GetRandomPosition(Vector3 fromPos, float fromMinDistance = 10.0f, float fromMaxDistance = 20.0f)
         {
             int maxAttempts = 100;
             int attempts = 0;
@@ -79,7 +81,7 @@ namespace STELLAREST_2D
                 float xDist = Mathf.Cos(angle) * distance;
                 float yDist = Mathf.Sin(angle) * distance;
 
-                Vector2 spawnPosition = fromPos + new Vector2(xDist, yDist);
+                Vector3 spawnPosition = fromPos + new Vector3(xDist, yDist, 0f);
                 if (spawnPosition.x > Managers.Stage.MinimumPosition.x && spawnPosition.x < Managers.Stage.MaximumPosition.x)
                 {
                     if (spawnPosition.y > Managers.Stage.MinimumPosition.y && spawnPosition.y < Managers.Stage.MaximumPosition.y)
@@ -91,6 +93,100 @@ namespace STELLAREST_2D
 
             return fromPos;
         }
+
+        public static Vector3 GetRandomTargetPosition<T>(Vector3 fromPos, float fromMinDistance, float fromMaxDistance,
+                                                Define.HitFromType hitFromType = Define.HitFromType.None) where T : BaseController
+        {
+            Vector3 randomTargetPos = Vector3.zero;
+            System.Type type = typeof(T);
+            if (type == typeof(MonsterController))
+            {
+                List<MonsterController> toList = new List<MonsterController>();
+                foreach (var mon in Managers.Object.Monsters)
+                {
+                    if (hitFromType != Define.HitFromType.None)
+                    {
+                        if (hitFromType == Define.HitFromType.LazerBolt)
+                        {
+                            if (mon.IsHitFrom_LazerBolt)
+                                continue;
+                        }
+                    }
+
+                    if (mon.IsValid())
+                        toList.Add(mon);
+                }
+
+                if (toList.Count > 0)
+                {
+                    List<MonsterController> filteredList = new List<MonsterController>();
+                    for (int i = 0; i < toList.Count; ++i)
+                    {
+                        // 이 사이에 몬스터가 죽을수도 있다
+                        if (toList[i].IsValid() == false)
+                            continue;
+
+                        float fromDist = (toList[i].transform.position - fromPos).sqrMagnitude;
+                        if (fromDist > (fromMinDistance * fromMinDistance) && fromDist < (fromMaxDistance * fromMaxDistance))
+                            filteredList.Add(toList[i]);
+                    }
+
+                    if (filteredList.Count > 0)
+                    {
+                        int randomIdx = UnityEngine.Random.Range(0, filteredList.Count);
+                        randomTargetPos = filteredList[randomIdx].transform.position;
+                    }
+                }
+            }
+
+            return randomTargetPos;
+        }
+
+        public static Vector3 GetClosestNextTargetDirection<T>(CreatureController from, Define.HitFromType hitFromType = Define.HitFromType.None) where T : BaseController
+        {
+            Vector3 nextDir = Vector3.zero;
+            System.Type type = typeof(T);
+            if (type == typeof(MonsterController))
+            {
+                List<MonsterController> toList = new List<MonsterController>();
+                foreach (var mon in Managers.Object.Monsters)
+                {
+                    if (mon.IsValid())
+                        toList.Add(mon);
+                }
+
+                Vector3 fromPos = from.transform.position;
+                float closestDist = float.MaxValue;
+                for (int i = 0; i < toList.Count; ++i)
+                {
+                    if (toList[i] == from)
+                        continue;
+
+                    if (toList[i].IsValid() == false)
+                        continue;
+
+                    if (hitFromType != Define.HitFromType.None)
+                    {
+                        if (hitFromType == Define.HitFromType.ThrowingStar)
+                        {
+                            if (toList[i].IsHitFrom_ThrowingStar)
+                                continue;
+                        }
+                    }
+
+                    float nextDist = (toList[i].transform.position - fromPos).sqrMagnitude;
+                    if (nextDist < closestDist * closestDist)
+                    {
+                        closestDist = nextDist;
+                        nextDir = (toList[i].transform.position - fromPos);
+                    }
+                }
+            }
+
+            return nextDir.normalized;
+        }
+
+        
 
 #if UNITY_EDITOR
         [Conditional("UNITY_EDITOR")]

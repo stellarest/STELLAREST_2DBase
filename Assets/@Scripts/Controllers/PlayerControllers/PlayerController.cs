@@ -53,6 +53,11 @@ namespace STELLAREST_2D
                 Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.PlayerBody);
                 AddCallbacks();
                 this.IsFirstPooling = false;
+
+#if UNITY_EDITOR
+                DebugDrawLines drawLines = gameObject.AddComponent<DebugDrawLines>();
+                drawLines.DebugTarget = this.gameObject;
+#endif
             }
 
             CreatureState = Define.CreatureState.Idle;
@@ -133,6 +138,16 @@ namespace STELLAREST_2D
                 SkillBook.Deactivate(SkillTemplate.Boomerang);
         }
 
+        private bool flag4 = false;
+        private void Flag4()
+        {
+            flag4 = !flag4;
+            if (flag4)
+                SkillBook.Activate(SkillTemplate.LazerBolt);
+            else
+                SkillBook.Deactivate(SkillTemplate.LazerBolt);
+        }
+
         private void Update()
         {
             DEV_CLEAR_LOG();
@@ -150,6 +165,11 @@ namespace STELLAREST_2D
                 SkillBook.LevelUp(SkillTemplate.Boomerang);
             if (Input.GetKeyDown(KeyCode.E))
                 Flag3();
+
+            if (Input.GetKeyDown(KeyCode.Alpha4))
+                SkillBook.LevelUp(SkillTemplate.LazerBolt);
+            if (Input.GetKeyDown(KeyCode.R))
+                Flag4();
 
 #endif
             MoveByJoystick(); // ERROR
@@ -234,7 +254,7 @@ namespace STELLAREST_2D
             //Debug.Log($"Find Gem : {findGems.Count} / Total Gem : {allSpawnedGems.Count}");
         }
 
-        protected override void SetSortingGroup()
+        protected override void SetSortingOrder()
             => GetComponent<SortingGroup>().sortingOrder = (int)Define.SortingOrder.Player;
 
         public override void OnDamaged(CreatureController attacker, SkillBase from)

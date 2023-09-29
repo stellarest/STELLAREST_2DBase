@@ -92,6 +92,14 @@ namespace STELLAREST_2D
             _pools.Clear();
         }
 
+        public Transform GetRoot(string key)
+        {
+            if (_pools.TryGetValue(key, out Pool value) == false)
+                return null;
+
+            return value.Root;
+        }
+
         public void ClearPool<T>(GameObject go) where T : BaseController
         {
             if (_pools.TryGetValue(go.name, out Pool value) == false)
