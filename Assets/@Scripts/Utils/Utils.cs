@@ -142,20 +142,45 @@ namespace STELLAREST_2D
             return randomTargetPos;
         }
 
-        public static Vector3 GetClosestNextTargetDirection<T>(CreatureController from, Define.HitFromType hitFromType = Define.HitFromType.None) where T : BaseController
+        public static GameObject GetClosestTargetFromAndRange<T>(GameObject from, float range)
+        {
+            GameObject target = null;
+            System.Type type = typeof(T);
+            if (type == typeof(MonsterController))
+            {
+                List<MonsterController> toList = MakeMonsterToList();
+                Vector3 fromPos = from.transform.position;
+                float closestDist = float.MaxValue;
+                for (int i = 0; i < toList.Count; ++i)
+                {
+                    if (toList[i] == from)
+                        continue;
+
+                    if (toList[i].IsValid() == false)
+                        continue;
+
+                    float distFrom = (toList[i].transform.position - fromPos).sqrMagnitude;
+                    if (distFrom < range * range && distFrom < closestDist)
+                    {
+                        closestDist = distFrom;
+                        target = toList[i].gameObject;
+                        //target = toList[i].AnimTransform.gameObject;
+                    }
+                }
+            }
+
+            return target;
+        }
+
+        public static Vector3 GetClosestFromTargetDirection<T>(CreatureController from, Define.HitFromType hitFromType = Define.HitFromType.None) where T : BaseController
         {
             Vector3 nextDir = Vector3.zero;
             System.Type type = typeof(T);
             if (type == typeof(MonsterController))
             {
-                List<MonsterController> toList = new List<MonsterController>();
-                foreach (var mon in Managers.Object.Monsters)
-                {
-                    if (mon.IsValid())
-                        toList.Add(mon);
-                }
-
-                Vector3 fromPos = from.transform.position;
+                // 뭔가 이상하구만
+                List<MonsterController> toList = MakeMonsterToList();
+                Vector3 fromPos = from.Center.position;
                 float closestDist = float.MaxValue;
                 for (int i = 0; i < toList.Count; ++i)
                 {
@@ -174,11 +199,11 @@ namespace STELLAREST_2D
                         }
                     }
 
-                    float nextDist = (toList[i].transform.position - fromPos).sqrMagnitude;
-                    if (nextDist < closestDist * closestDist)
+                    float nextDist = (toList[i].Center.position - fromPos).sqrMagnitude;
+                    if (nextDist < closestDist)
                     {
                         closestDist = nextDist;
-                        nextDir = (toList[i].transform.position - fromPos);
+                        nextDir = (toList[i].Center.position - fromPos);
                     }
                 }
             }
@@ -186,7 +211,17 @@ namespace STELLAREST_2D
             return nextDir.normalized;
         }
 
-        
+        private static List<MonsterController> MakeMonsterToList()
+        {
+            List<MonsterController> toList = new List<MonsterController>();
+            foreach (var mon in Managers.Object.Monsters)
+            {
+                if (mon.IsValid())
+                    toList.Add(mon);
+            }
+
+            return toList;
+        }
 
 #if UNITY_EDITOR
         [Conditional("UNITY_EDITOR")]
