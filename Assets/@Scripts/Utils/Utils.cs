@@ -17,7 +17,7 @@ public class ShowOnlyAttribute : PropertyAttribute
 }
 
 namespace STELLAREST_2D
-{    
+{
     public class Utils
     {
         public static T GetOrAddComponent<T>(GameObject go) where T : UnityEngine.Component
@@ -101,28 +101,12 @@ namespace STELLAREST_2D
             System.Type type = typeof(T);
             if (type == typeof(MonsterController))
             {
-                List<MonsterController> toList = new List<MonsterController>();
-                foreach (var mon in Managers.Object.Monsters)
-                {
-                    if (hitFromType != Define.HitFromType.None)
-                    {
-                        if (hitFromType == Define.HitFromType.LazerBolt)
-                        {
-                            if (mon.IsHitFrom_LazerBolt)
-                                continue;
-                        }
-                    }
-
-                    if (mon.IsValid())
-                        toList.Add(mon);
-                }
-
+                List<MonsterController> toList = MakeToList_Monsters(hitFromType);
                 if (toList.Count > 0)
                 {
                     List<MonsterController> filteredList = new List<MonsterController>();
                     for (int i = 0; i < toList.Count; ++i)
                     {
-                        // 이 사이에 몬스터가 죽을수도 있다
                         if (toList[i].IsValid() == false)
                             continue;
 
@@ -142,13 +126,13 @@ namespace STELLAREST_2D
             return randomTargetPos;
         }
 
-        public static GameObject GetClosestTargetFromAndRange<T>(GameObject from, float range)
+        public static CreatureController GetClosestCreatureTargetFromAndRange<T>(GameObject from, CreatureController owner, float searchMaxRange)
         {
-            GameObject target = null;
+            CreatureController target = null;
             System.Type type = typeof(T);
-            if (type == typeof(MonsterController))
+            if (owner?.IsPlayer() == true)
             {
-                List<MonsterController> toList = MakeMonsterToList();
+                List<MonsterController> toList = MakeToList_Monsters();
                 Vector3 fromPos = from.transform.position;
                 float closestDist = float.MaxValue;
                 for (int i = 0; i < toList.Count; ++i)
@@ -159,7 +143,39 @@ namespace STELLAREST_2D
                     if (toList[i].IsValid() == false)
                         continue;
 
-                    float distFrom = (toList[i].transform.position - fromPos).sqrMagnitude;
+                    float distFrom = (toList[i].Center.position - fromPos).sqrMagnitude;
+                    if (distFrom < searchMaxRange * searchMaxRange)
+                    {
+                        if (distFrom < closestDist)
+                        {
+                            closestDist = distFrom;
+                            target = toList[i];
+                        }
+                    }
+                }
+            }
+
+            return target;
+        }
+
+        public static GameObject GetClosestTargetFromAndRange_TEMP<T>(GameObject from, float range)
+        {
+            GameObject target = null;
+            System.Type type = typeof(T);
+            if (type == typeof(MonsterController))
+            {
+                List<MonsterController> toList = MakeToList_Monsters();
+                Vector3 fromPos = from.transform.position;
+                float closestDist = float.MaxValue;
+                for (int i = 0; i < toList.Count; ++i)
+                {
+                    if (toList[i] == from)
+                        continue;
+
+                    if (toList[i].IsValid() == false)
+                        continue;
+
+                    float distFrom = (toList[i].Center.position - fromPos).sqrMagnitude;
                     if (distFrom < range * range && distFrom < closestDist)
                     {
                         closestDist = distFrom;
@@ -178,8 +194,7 @@ namespace STELLAREST_2D
             System.Type type = typeof(T);
             if (type == typeof(MonsterController))
             {
-                // 뭔가 이상하구만
-                List<MonsterController> toList = MakeMonsterToList();
+                List<MonsterController> toList = MakeToList_Monsters(hitFromType);
                 Vector3 fromPos = from.Center.position;
                 float closestDist = float.MaxValue;
                 for (int i = 0; i < toList.Count; ++i)
@@ -189,15 +204,6 @@ namespace STELLAREST_2D
 
                     if (toList[i].IsValid() == false)
                         continue;
-
-                    if (hitFromType != Define.HitFromType.None)
-                    {
-                        if (hitFromType == Define.HitFromType.ThrowingStar)
-                        {
-                            if (toList[i].IsHitFrom_ThrowingStar)
-                                continue;
-                        }
-                    }
 
                     float nextDist = (toList[i].Center.position - fromPos).sqrMagnitude;
                     if (nextDist < closestDist)
@@ -211,11 +217,27 @@ namespace STELLAREST_2D
             return nextDir.normalized;
         }
 
-        private static List<MonsterController> MakeMonsterToList()
+        private static List<MonsterController> MakeToList_Monsters(Define.HitFromType hitFromType = Define.HitFromType.None)
         {
             List<MonsterController> toList = new List<MonsterController>();
             foreach (var mon in Managers.Object.Monsters)
             {
+                if (hitFromType != Define.HitFromType.None)
+                {
+                    switch (hitFromType)
+                    {
+                        case Define.HitFromType.ThrowingStar:
+                            if (mon.IsHitFrom_ThrowingStar)
+                                continue;
+                            break;
+
+                        case Define.HitFromType.LazerBolt:
+                            if (mon.IsHitFrom_LazerBolt)
+                                continue;
+                            break;
+                    }
+                }
+
                 if (mon.IsValid())
                     toList.Add(mon);
             }
@@ -225,7 +247,7 @@ namespace STELLAREST_2D
 
 #if UNITY_EDITOR
         [Conditional("UNITY_EDITOR")]
-        public static void Log(object message) 
+        public static void Log(object message)
             => Debug.Log($"<color=white>{message.ToString()}</color>");
 
         [Conditional("UNITY_EDITOR")]
@@ -266,7 +288,7 @@ namespace STELLAREST_2D
             Debug.Break();
         }
 
-                [Conditional("UNITY_EDITOR")]
+        [Conditional("UNITY_EDITOR")]
         public static void LogBreak(object calledByMethodOnly, object message)
         {
             Utils.Log("[\n");

@@ -35,12 +35,6 @@ namespace STELLAREST_2D
             //     SkillBook.SequenceSkills[(int)Define.InGameGrade.Normal - 1].gameObject.SetActive(true);
         }
 
-        [ContextMenu("TEST_CC")]
-        private void TEST_CC()
-        {
-            //Managers.CC.ApplyCC(this, Define.CCStatus.Stun, 5f);
-        }
-
         protected override void OnDead()
         {
             //base.OnDead();

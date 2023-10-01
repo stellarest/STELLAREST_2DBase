@@ -1,23 +1,597 @@
-// using System.Collections;
-// using TMPro;
-// using Unity.VisualScripting;
+using System.Collections;
+using System.Linq;
 using STELLAREST_2D.Data;
 using UnityEngine;
 
 namespace STELLAREST_2D
 {
+    // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    // +++ Spear Skill Origin is actually like a commander for controlling spears[LEFT, RIGHT] +++
+    // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     public class Spear : RepeatSkill
     {
+        private enum SpearDirection { Left, Right, Max }
+        #region Utilities
+        private int LEFT => (int)SpearDirection.Left;
+        private Spear LEFT_SPEAR => _spears[LEFT];
+        private Vector3 LEFT_DEFAULT => this.Owner.transform.position + new Vector3(X_AXIS_INTERVAL_POSITION_FROM_OWNER * -1, Y_AXIS_INTERVAL_POSITION_FROM_OWNER, 0f);
+        private Vector3 LEFT_IDLE_TOP => this.LEFT_DEFAULT + new Vector3(0f, IDLE_TOP_DOWN_POSITION_INTENSITY, 0f);
+        private Vector3 LEFT_IDLE_BOTTOM => this.LEFT_DEFAULT + new Vector3(0f, IDLE_TOP_DOWN_POSITION_INTENSITY * -1, 0f); // Actually Default Pos (Bot To Top)
+
+        private int RIGHT => (int)SpearDirection.Right;
+        private Spear RIGHT_SPEAR => _spears[RIGHT];
+        private Vector3 RIGHT_DEFAULT => this.Owner.transform.position + new Vector3(X_AXIS_INTERVAL_POSITION_FROM_OWNER, Y_AXIS_INTERVAL_POSITION_FROM_OWNER, 0);
+        private Vector3 RIGHT_IDLE_TOP => this.RIGHT_DEFAULT + new Vector3(0f, IDLE_TOP_DOWN_POSITION_INTENSITY, 0f);
+        private Vector3 RIGHT_IDLE_BOTTOM => this.RIGHT_DEFAULT + new Vector3(0f, IDLE_TOP_DOWN_POSITION_INTENSITY * -1, 0f);  // Actually Default Pos (Bot To Top)
+        #endregion
+
+        #region Fields && CONSTANT
+        private Spear[] _spears = null;
+        private int _dir = -1;
+        public SpriteTrail.SpriteTrail _trail = null;
+
+        // Ease Out
+        // - Anim Loop
+        // - Stab
+        [SerializeField] private AnimationCurve _curveEaseOut = null;
+
+        // Linear
+        // - Rot
+        // - Back
+        [SerializeField] private AnimationCurve _curveLinear = null;
+        private GameObject _head = null;
+
+        private CreatureController _target = null;
+        private Vector3 _lockedPos = Vector3.zero;
+        private Vector3 _lerpStartPos = Vector3.zero;
+        private Vector3 _lerpEndPos = Vector3.zero;
+        private Quaternion _lerpStartRot = Quaternion.identity;
+        private Quaternion _lerpEndRot = Quaternion.identity;
+
+        private bool _idleDirFlag = false;
+        private bool _lockTarget = false;
+        private bool IsLockTarget(Spear spear) => spear._lockTarget;
+        private void LockTarget(Spear spear)
+        {
+            // SET TARGET
+            spear._lockTarget = true;
+            //spear._target = searchTarget;
+
+            // _lockPos 잡혔을때만,,
+            spear._lockedPos = spear.transform.position; // 엉,,,?
+            spear._readyToBack = true;
+
+            // SET STAB ROTS ONLY
+            spear._lerpStartRot = spear.transform.rotation;
+
+            //Vector3 toTargetDir = (spear._target.Center.position - spear.transform.position);
+            Vector3 toTargetDir = (spear._target.Center.position - spear._head.transform.position);
+            float degrees = Mathf.Atan2(toTargetDir.y, toTargetDir.x) * Mathf.Rad2Deg;
+
+            spear._lerpEndRot = Quaternion.Euler(0, 0, degrees - 90f);
+        }
+
+        private bool _readyToBack = false;
+        private bool _lockTargetToRot = false;
+        private bool IsLockTargetToRot(Spear spear) => spear._lockTargetToRot;
+
+        private void ResetIdle(Spear spear)
+        {
+            spear._target = null;
+            spear._idleDirFlag = false;
+            spear._lockTarget = false;
+            //spear._readyToBack = false; // nono // Init에서는 false 초기화를 해야할듯?
+            spear._lockTargetToRot = false;
+            ResetDelta(spear);
+        }
+
+        private float _delta = 0f;
+        private void ResetDelta(Spear spear)
+        {
+            if (spear._dir == (int)SpearDirection.Left)
+                LEFT_SPEAR._delta = 0f;
+            else
+                RIGHT_SPEAR._delta = 0f;
+        }
+        #endregion
+
         public override void InitOrigin(CreatureController owner, SkillData data)
         {
             base.InitOrigin(owner, data);
+            RigidBody = GetComponent<Rigidbody2D>();
+            RigidBody.simulated = false;
+
+            HitCollider = GetComponent<Collider2D>();
+            HitCollider.enabled = false;
+
+            SR = GetComponentInChildren<SpriteRenderer>();
+            SR.enabled = false;
+            if (data.Grade == data.MaxGrade)
+            {
+                _trail = GetComponentInChildren<SpriteTrail.SpriteTrail>();
+                _trail.enabled = false;
+            }
+        }
+
+        public override void Activate()
+        {
+            gameObject.SetActive(true);
+            _spears = new Spear[(int)SpearDirection.Max];
+            for (int i = 0; i < (int)SpearDirection.Max; ++i)
+                CreateSpears(i);
+
+            this.DoSkillJob();
         }
 
         protected override void DoSkillJob()
         {
+            RIGHT_SPEAR.gameObject.SetActive(false); // TEST - OFF
+
+            this.StartCoroutine(CoDoSpear(LEFT_SPEAR));
+            //this.StartCoroutine(CoDoSpear(RIGHT_SPEAR));
+        }
+
+        private IEnumerator CoDoSpear(Spear spear)
+        {
+            if (spear._dir == LEFT)
+            {
+                while (true)
+                {
+                    yield return null;
+                    yield return new WaitUntil(() => Init(LEFT_SPEAR));
+                    yield return new WaitUntil(() => Idle(LEFT_SPEAR));
+                    yield return new WaitUntil(() => Stab(LEFT_SPEAR));
+                    yield return new WaitUntil(() => Wait(LEFT_SPEAR));
+                    yield return new WaitUntil(() => Back(LEFT_SPEAR));
+                    yield return new WaitUntil(() => CanContinue(RIGHT_SPEAR));
+                    yield return null;
+                }
+            }
+            else
+            {
+                while (true)
+                {
+                    yield return null;
+                    yield return new WaitUntil(() => Init(RIGHT_SPEAR));
+                    yield return new WaitUntil(() => Idle(RIGHT_SPEAR));
+                    yield return new WaitUntil(() => Stab(RIGHT_SPEAR));
+                    yield return new WaitUntil(() => Wait(RIGHT_SPEAR));
+                    yield return new WaitUntil(() => Back(RIGHT_SPEAR));
+                    yield return new WaitUntil(() => CanContinue(RIGHT_SPEAR));
+                    yield return null;
+                }
+            }
+        }
+
+        private bool Init(Spear spear)
+        {
+            Utils.Log(nameof(Init));
+
+            ResetIdle(spear); // TEMP
+            spear._readyToBack = false; // INIT에서는 해야할 것 같음.
+            // INIT이랑 Reset이랑 따로 뺴야 할듯. 함수 자체를.
+
+            return true;
+        }
+
+        #region TEMPORARY CONSTANT OPTIONS - IDLE
+        private const float X_AXIS_INTERVAL_POSITION_FROM_OWNER = 4.5f;
+        private const float Y_AXIS_INTERVAL_POSITION_FROM_OWNER = 0.25f;
+        private const float IDLE_TOP_DOWN_POSITION_INTENSITY = 0.5f;
+        private const float ROTATION_SPEED = 30f;
+        private const float DESIRED_TIME_RETURN_TO_OWNER = 0.5f;
+        private const float DESIRED_TIME_IDLE_DIR_SWITCH = 2f;
+        private const float DESIRED_TIME_FORCE_ROTATE_TO_TARGET = 0.15f;
+        private const float SEARCH_TARGET_RANGE = 6f; // sqrMag : 25f
+        private const float TARGET_IN_STAB_RANGE = 3f; // 9f
+        #endregion
+
+        #region TEMPORARY CONSTANT OPTIONS - STAB
+        private const float DESIRED_STAB_REACH_TO_TARGET_TIME = 0.25f;
+        #endregion
+
+        private bool Idle(Spear spear)
+        {
+            if (IsLockTarget(spear) == false)
+            {
+                spear._target = Utils.GetClosestCreatureTargetFromAndRange<CreatureController>(spear._head, spear.Owner, SEARCH_TARGET_RANGE);
+                if (spear._target == null)
+                    DoIdleMovement(spear);
+                else if (spear._target.IsValid())
+                {
+                    LockTarget(spear);
+                    ResetDelta(spear);
+                }
+            }
+            else
+            {
+                if (spear._target.IsValid() == false)
+                {
+                    ResetIdle(spear);
+                    return false;
+                }
+
+                // +++ FORCE ROTATE TO TARGET +++
+                if (IsLockTargetToRot(spear) == false)
+                    DoForceRotateToTarget(spear);
+
+                else if (IsLockTargetToRot(spear))
+                {
+                    // +++ NEXT STEP +++
+                    if (IsTargetInRange(spear, TARGET_IN_STAB_RANGE))
+                    {
+                        spear._lerpStartPos = spear.transform.position;
+                        spear._lerpEndPos = spear._target.Center.position;
+
+                        spear.RigidBody.simulated = true;
+                        spear.HitCollider.enabled = true;
+
+                        ResetDelta(spear);
+                        return true;
+                    }
+                    else if (IsTargetInRange(spear, SEARCH_TARGET_RANGE))
+                    {
+                        DoRotateToTarget(spear);
+                    }
+
+                    else if (IsTargetInRange(spear, SEARCH_TARGET_RANGE) == false)
+                    {
+                        Debug.Log("<color=yellow> Out Of Range. </color>");
+                        ResetIdle(spear);
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        private bool Stab(Spear spear)
+        {
+            spear._delta += Time.deltaTime;
+            float percent = spear._delta / DESIRED_STAB_REACH_TO_TARGET_TIME;
+            spear.transform.position = Vector3.Lerp(spear._lerpStartPos, spear._lerpEndPos, _curveEaseOut.Evaluate(percent));
+            if (percent > 1f)
+            {
+                spear._lerpStartPos = spear.transform.position;
+                //spear._lerpEndPos = this.Owner.Center.transform.position;
+                ResetDelta(spear);
+
+                spear.RigidBody.simulated = false;
+                spear.HitCollider.enabled = false;
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool Wait(Spear spear) // WAIT FOR COOLTIME
+        {
+            spear._delta += Time.deltaTime;
+            float percent = spear._delta / spear.Data.CoolTime;
+            if (percent > 1f)
+            {
+                ResetDelta(spear);
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool Back(Spear spear)
+        {
+            spear._delta += Time.deltaTime;
+            float percent = spear._delta / DESIRED_TIME_RETURN_TO_OWNER;
+
+            if (spear._dir == LEFT)
+                spear.transform.position = Vector3.Lerp(spear._lerpStartPos, LEFT_IDLE_BOTTOM, _curveLinear.Evaluate(percent));
+            else
+            {
+            }
+
+            Vector3 toOwnerDir = (this.Owner.Center.transform.position - spear.transform.position).normalized;
+            float degrees = Mathf.Atan2(toOwnerDir.y, toOwnerDir.x) * Mathf.Rad2Deg;
+            spear.transform.rotation = Quaternion.Slerp(spear.transform.rotation, Quaternion.Euler(0, 0, degrees - 90f), Time.deltaTime * ROTATION_SPEED);
+            if (percent > 1f)
+            {
+                ResetDelta(spear);
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool CanContinue(Spear spear)
+        {
+            // TODO : CHECK OWNER IS DEAD OR IN CC STATE OR SOMETHING ELSE,,
+            Utils.Log(nameof(CanContinue));
+            return true;
+        }
+
+        private bool IsTargetInRange(Spear spear, float range)
+        {
+            if (spear._target.IsValid() == false)
+            {
+                ResetIdle(spear);
+                return false;
+            }
+
+            // TARGET은 spear의 HEAD로 찾아오는데, 이 메서드는 몸뚱아리로 찾는중.
+            float toTargetDistance = (spear._target.Center.transform.position - spear._head.transform.position).sqrMagnitude;
+            if (toTargetDistance < range * range)
+                return true;
+
+            return false;
+        }
+
+        private void DoIdleMovement(Spear spear)
+        {
+            switch (spear._dir)
+            {
+                // 여기다가 멀어졌을 때 돌아가는거 하면 한방에 해결되는데?
+                case (int)SpearDirection.Left:
+                    {
+                        if (spear._readyToBack)
+                        {
+                            spear._delta += Time.deltaTime;
+                            float percent = spear._delta / DESIRED_TIME_RETURN_TO_OWNER;
+                            spear.transform.position = Vector3.Lerp(spear._lockedPos, LEFT_IDLE_BOTTOM, _curveLinear.Evaluate(percent));
+                            if (percent > 1f)
+                            {
+                                spear._idleDirFlag = false;
+                                spear._readyToBack = false;
+                                ResetDelta(spear);
+                            }
+
+                            Vector3 toOwnerDir = (this.Owner.Center.transform.position - spear.transform.position).normalized;
+                            float degrees = Mathf.Atan2(toOwnerDir.y, toOwnerDir.x) * Mathf.Rad2Deg;
+                            spear.transform.rotation = Quaternion.Slerp(spear.transform.rotation, Quaternion.Euler(0, 0, degrees - 90f), Time.deltaTime * ROTATION_SPEED);
+                        }
+                        else
+                        {
+                            if (spear._idleDirFlag == false)
+                            {
+                                if (LerpIdleAnimationLoop(spear, LEFT_IDLE_BOTTOM, LEFT_IDLE_TOP))
+                                {
+                                    spear._idleDirFlag = (!spear._idleDirFlag);
+                                }
+                            }
+                            else
+                            {
+                                if (LerpIdleAnimationLoop(spear, LEFT_IDLE_TOP, LEFT_IDLE_BOTTOM))
+                                {
+                                    spear._idleDirFlag = (!spear._idleDirFlag);
+                                }
+                            }
+
+                            float degrees = Mathf.Atan2(this.Owner.ShootDir.y, this.Owner.ShootDir.x) * Mathf.Rad2Deg;
+                            spear.transform.rotation = Quaternion.Slerp(spear.transform.rotation,
+                                        Quaternion.Euler(0, 0, degrees - 90f), Time.deltaTime * ROTATION_SPEED);
+                        }
+                    }
+                    break;
+
+                case (int)SpearDirection.Right:
+                    {
+                        if (spear._idleDirFlag == false)
+                        {
+                            if (LerpIdleAnimationLoop(spear, RIGHT_IDLE_BOTTOM, RIGHT_IDLE_TOP))
+                            {
+                                spear._idleDirFlag = (!spear._idleDirFlag);
+                            }
+                        }
+                        else
+                        {
+                            if (LerpIdleAnimationLoop(spear, RIGHT_IDLE_TOP, RIGHT_IDLE_BOTTOM))
+                            {
+                                spear._idleDirFlag = (!spear._idleDirFlag);
+                            }
+                        }
+
+                        float degrees = Mathf.Atan2(this.Owner.ShootDir.y, this.Owner.ShootDir.x) * Mathf.Rad2Deg;
+                        spear.transform.rotation = Quaternion.Slerp(spear.transform.rotation,
+                                    Quaternion.Euler(0, 0, degrees - 90f), Time.deltaTime * ROTATION_SPEED);
+                    }
+                    break;
+            }
+        }
+
+        private bool LerpIdleAnimationLoop(Spear spear, Vector3 startPos, Vector3 endPos)
+        {
+            spear._delta += Time.deltaTime;
+            float percent = spear._delta / DESIRED_TIME_IDLE_DIR_SWITCH;
+            spear.transform.position = Vector3.Lerp(startPos, endPos, this._curveEaseOut.Evaluate(percent));
+            if (percent > 1f)
+            {
+                this.ResetDelta(spear);
+                return true;
+            }
+
+            return false;
+        }
+
+        private void DoForceRotateToTarget(Spear spear)
+        {
+            spear._delta += Time.deltaTime;
+            float percent = spear._delta / DESIRED_TIME_FORCE_ROTATE_TO_TARGET;
+            spear.transform.rotation = Quaternion.Slerp(spear._lerpStartRot, spear._lerpEndRot, _curveLinear.Evaluate(percent));
+            if (percent > 1f)
+            {
+                spear._lockTargetToRot = true;
+                ResetDelta(spear);
+            }
+        }
+
+        private void DoRotateToTarget(Spear spear)
+        {
+            //Vector3 toTargetDir = (spear._target.Center.position - spear.transform.position).normalized;
+            Vector3 toTargetDir = (spear._target.Center.position - spear._head.transform.position).normalized;
+            float degrees = Mathf.Atan2(toTargetDir.y, toTargetDir.x) * Mathf.Rad2Deg;
+            spear.transform.rotation = Quaternion.Slerp(spear.transform.rotation, Quaternion.Euler(0, 0, degrees - 90f), Time.deltaTime * ROTATION_SPEED);
+        }
+
+        // -------------------------------------------------------------------------------------
+        // -------------------------------------------------------------------------------------
+        private void CreateSpears(int dir)
+        {
+            GameObject go = Managers.Resource.Instantiate(key: this.Data.PrimaryLabel, parent: null, pooling: false);
+            if (dir == (int)SpearDirection.Left)
+            {
+                go.name = $"{this.Data.Name}_Left";
+                go.transform.position = LEFT_IDLE_BOTTOM; // 무조건 BOTTOM부터. (_idleDirFlag == false)
+            }
+            else
+            {
+                go.name = $"{this.Data.Name}_Right";
+                go.transform.position = RIGHT_IDLE_BOTTOM;
+            }
+
+            Spear spear = go.GetComponent<Spear>();
+            if (dir == (int)SpearDirection.Left)
+                spear._dir = (int)SpearDirection.Left;
+            else
+                spear._dir = (int)SpearDirection.Right;
+
+            spear.Owner = this.Owner;
+            spear.Data = this.Data;
+
+            spear.RigidBody = go.GetComponent<Rigidbody2D>();
+            //spear.RigidBody.simulated = true;
+            spear.RigidBody.simulated = false;
+            spear._head = go.transform.GetChild(1).gameObject;
+
+            spear.HitCollider = go.GetComponent<Collider2D>();
+            spear.HitCollider.enabled = false;
+
+            spear.SR = go.GetComponentInChildren<SpriteRenderer>();
+            spear.SR.enabled = true;
+            if (this.Data.Grade == this.Data.MaxGrade)
+            {
+                spear._trail = go.GetComponentInChildren<SpriteTrail.SpriteTrail>();
+                spear._trail.enabled = false;
+            }
+
+            if (this.Owner?.IsPlayer() == true)
+                Managers.Collision.InitCollisionLayer(spear.gameObject, Define.CollisionLayers.PlayerAttack);
+            else
+                Managers.Collision.InitCollisionLayer(spear.gameObject, Define.CollisionLayers.MonsterAttack);
+
+            _spears[dir] = spear;
+            _spears[dir].SetSortingOrder();
+        }
+
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            CreatureController cc = other.GetComponent<CreatureController>();
+            if (cc.IsValid() == false)
+                return;
+
+            cc.OnDamaged(attacker: this.Owner, from: this);
         }
     }
 }
+
+// -------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------
+//          private bool IsReadyToStab(Spear spear)
+// {
+//     // percent에 맞춘 회전한 이후에도 실시간으로 타겟을 향한 회전을 지속해야하므로
+//     // updateRotTarget을 실시간으로 받아 놓는다.
+//     Vector3 toTargetDir = (spear._target.Center.position - spear.transform.position).normalized;
+//     float degrees = Mathf.Atan2(toTargetDir.y, toTargetDir.x) * Mathf.Rad2Deg;
+//     // 이미 방향전환 자체는 완료가 된 상태이다. 하지만 발사되기 전 까진 Rot Target을 향해 방향을 틀어야한다.
+//     Quaternion updateRotTarget = Quaternion.Euler(0, 0, degrees - 90f);
+
+//     // 만약에 타겟이 멀어졌다가 다시 가까워지면 걍 한번에 휙 돌아버림.
+//     // RotDelta를 리셋하지 않았기 때문. 그래서 이걸 나중에 처리해줘야하고
+//     // 또한, 나중에 몬스터가 InValid 상태가 아닐때도 처리해줘야함
+//     spear._delta += Time.deltaTime;
+//     float percent = spear._delta / DESIRED_TIME_FORCE_ROTATE_TO_TARGET;
+//     if (percent < 1f)
+//         spear.transform.rotation = Quaternion.Slerp(spear._startStabRot, spear._endStabRot, this._stabCurve.Evaluate(percent));
+//     if (percent > 1f)
+//     {
+//         spear.transform.rotation = Quaternion.Slerp(spear.transform.rotation, updateRotTarget, Time.deltaTime * ROTATION_SPEED);
+//         float distToTarget = (spear._target.Center.position - spear.transform.position).sqrMagnitude;
+//         // if (distToTarget < TARGET_IN_RANGE * TARGET_IN_RANGE)
+//         // {
+//         //     spear.HitCollider.enabled = true;
+//         //     this.ResetDelta(spear);
+//         //     return true;
+//         // }
+//     }
+
+//     return false;
+// }
+
+// private IEnumerator CoIdle(GameObject go, int dir)
+//         {
+//             while (true)
+//             {
+//                 // LEFT SPEAR
+//                 if (dir == LEFT)
+//                 {
+//                     // MOVEMENT
+//                     _deltasForIdle[LEFT] += Time.deltaTime;
+//                     float percent = _deltasForIdle[LEFT] / DESIRED_IDLE_DIR_SWITCH_TIME;
+
+//                     if (_idleDirTargetSwitchers[LEFT] == false) // BOTTOM -> TOP
+//                     {
+//                         _goSpears[LEFT].transform.position = Vector3.Lerp(LEFT_IDLE_BOTTOM, LEFT_IDLE_TOP, _idleCurve.Evaluate(percent));
+//                         if (percent > 1f)
+//                         {
+//                             _deltasForIdle[LEFT] = 0f;
+//                             _idleDirTargetSwitchers[LEFT] = !_idleDirTargetSwitchers[LEFT];
+//                         }
+//                     }
+//                     else // TOP -> BOTTOM
+//                     {
+//                         _goSpears[LEFT].transform.position = Vector3.Lerp(LEFT_IDLE_TOP, LEFT_IDLE_BOTTOM, _idleCurve.Evaluate(percent));
+//                         if (percent > 1f)
+//                         {
+//                             _deltasForIdle[LEFT] = 0f;
+//                             _idleDirTargetSwitchers[LEFT] = !_idleDirTargetSwitchers[LEFT];
+//                         }
+//                     }
+
+//                     // ROTATE
+//                     float degrees = Mathf.Atan2(this.Owner.ShootDir.y, this.Owner.ShootDir.x) * Mathf.Rad2Deg;
+//                     _goSpears[LEFT].transform.rotation = Quaternion.Slerp(_goSpears[LEFT].transform.rotation, Quaternion.Euler(0, 0, degrees - 90f), Time.deltaTime * ROTATION_SPEED);
+//                 }
+//                 // RIGHT SPEAR
+//                 else
+//                 {
+//                     // MOVEMENT
+//                     _deltasForIdle[RIGHT] += Time.deltaTime;
+//                     float percent = _deltasForIdle[RIGHT] / DESIRED_IDLE_DIR_SWITCH_TIME;
+
+//                     if (_idleDirTargetSwitchers[RIGHT] == false) // BOTTOM -> TOP
+//                     {
+//                         _goSpears[RIGHT].transform.position = Vector3.Lerp(RIGHT_IDLE_BOTTOM, RIGHT_IDLE_TOP, _idleCurve.Evaluate(percent));
+//                         if (percent > 1f)
+//                         {
+//                             _deltasForIdle[RIGHT] = 0f;
+//                             _idleDirTargetSwitchers[RIGHT] = !_idleDirTargetSwitchers[RIGHT];
+//                         }
+//                     }
+//                     else // TOP -> BOTTOM
+//                     {
+//                         _goSpears[RIGHT].transform.position = Vector3.Lerp(RIGHT_IDLE_TOP, RIGHT_IDLE_BOTTOM, _idleCurve.Evaluate(percent));
+//                         if (percent > 1f)
+//                         {
+//                             _deltasForIdle[RIGHT] = 0f;
+//                             _idleDirTargetSwitchers[RIGHT] = !_idleDirTargetSwitchers[RIGHT];
+//                         }
+//                     }
+
+//                     // ROTATE
+//                     float degrees = Mathf.Atan2(this.Owner.ShootDir.y, this.Owner.ShootDir.x) * Mathf.Rad2Deg;
+//                     _goSpears[RIGHT].transform.rotation = Quaternion.Slerp(_goSpears[RIGHT].transform.rotation, Quaternion.Euler(0, 0, degrees - 90f), Time.deltaTime * ROTATION_SPEED);
+//                 }
+
+//                 yield return null;
+//             }
+//         }
+
 
 // namespace STELLAREST_2D
 // {
@@ -556,4 +1130,3 @@ namespace STELLAREST_2D
 //         }
 //     }
 // }
-

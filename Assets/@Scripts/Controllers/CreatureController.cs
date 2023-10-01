@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace STELLAREST_2D
 {
-    public interface IHitFrom
+    public interface IHitFrom // CC도 추가하면 괜찮을듯
     {
         public bool IsHitFrom_ThrowingStar { get; set; }
         public bool IsHitFrom_LazerBolt { get; set; }
@@ -19,6 +19,7 @@ namespace STELLAREST_2D
         public Vector3 FireSocketPosition => FireSocket.transform.position;
         public Vector3 ShootDir => (FireSocketPosition - IndicatorPosition).normalized;
         public Transform AnimTransform { get; protected set; } = null;
+        public Transform Center { get; protected set; } = null;
         public SpriteRenderer[] SPRs { get; protected set; } = null;
         public Vector3 LocalScale
         {
@@ -73,6 +74,10 @@ namespace STELLAREST_2D
             InitCreatureSkill(creatureData);
             InitCreatureRenderer(creatureData);
             _baseRootLocalScale = transform.localScale;
+
+            // CENTER 안잡으면 게임 못함
+            if (Center == null)
+                Utils.LogCritical(nameof(CreatureController), nameof(Init), "You have to set \"Center\" in child before starting game.");
         }
 
         protected virtual void InitChildObject()

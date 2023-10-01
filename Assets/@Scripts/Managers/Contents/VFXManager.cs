@@ -69,7 +69,7 @@ namespace STELLAREST_2D
             {
                 float additionalPointX = UnityEngine.Random.Range(0f, 0.5f);
                 float additionalPointY = UnityEngine.Random.Range(0f, 1f);
-                impactPoint = target.transform.position + new Vector3(additionalPointX, additionalPointY, 0f);
+                impactPoint = target.Center.position + new Vector3(additionalPointX, additionalPointY, 0f);
             }
             else
                 impactPoint = from.transform.position;

@@ -32,6 +32,12 @@ namespace STELLAREST_2D
             StartCoroutine(CoStartAction());
         }
 
+        protected override void InitChildObject()
+        {
+            base.InitChildObject();
+            Center = Utils.FindChild<Transform>(AnimTransform.gameObject, "Body", true);
+        }
+
         private IEnumerator CoStartAction()
         {
             float delta = 0f;
@@ -132,7 +138,7 @@ namespace STELLAREST_2D
         public override void OnDamaged(CreatureController attacker, SkillBase from)
         {
             base.OnDamaged(attacker, from);
-            Utils.Log($"Hit, from : {from.Data.Name}");
+            //Utils.Log($"Hit, from : {from.Data.Name}");
         }
 
         protected override void OnDead()

@@ -74,6 +74,8 @@ namespace STELLAREST_2D
             Transform legR = Utils.FindChild<Transform>(gameObject, "Leg[R]", true);
             BodyParts = new PlayerBody(hair: hair, armLeft: armL, armRight: armR, leftHandMeleeWeapon: leftHandMeleeWeapon,
                                     legLeft: legL, legRight: legR);
+
+            Center = Utils.FindChild<Transform>(AnimTransform.gameObject, "Pelvis", true);
         }
 
         private void AddCallbacks()
@@ -148,6 +150,16 @@ namespace STELLAREST_2D
                 SkillBook.Deactivate(SkillTemplate.LazerBolt);
         }
 
+        private bool flag5 = false;
+        private void Flag5()
+        {
+            flag5 = !flag5;
+            if (flag5)
+                SkillBook.Activate(SkillTemplate.Spear);
+            else
+                SkillBook.Deactivate(SkillTemplate.Spear);
+        }
+
         private void Update()
         {
             DEV_CLEAR_LOG();
@@ -170,6 +182,14 @@ namespace STELLAREST_2D
                 SkillBook.LevelUp(SkillTemplate.LazerBolt);
             if (Input.GetKeyDown(KeyCode.R))
                 Flag4();
+
+            if (Input.GetKeyDown(KeyCode.Alpha5))
+                SkillBook.LevelUp(SkillTemplate.Spear);
+            if (Input.GetKeyDown(KeyCode.T))
+                Flag5();
+
+            if (Input.GetKeyDown(KeyCode.U))
+                Utils.Log("MON COUNT : " + Managers.Object.Monsters.Count);
 
 #endif
             MoveByJoystick(); // ERROR

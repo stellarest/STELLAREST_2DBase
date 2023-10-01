@@ -39,7 +39,6 @@ namespace STELLAREST_2D
             StartCoroutine(CoGenerateLazerBolt());
         }
 
-        // 스피드왕 계인
         private const float FROM_MIN_RANGE = 1f;
         private const float FROM_MAX_RANGE = 30;
         private IEnumerator CoGenerateLazerBolt()
@@ -55,7 +54,7 @@ namespace STELLAREST_2D
                         spawnObjectType: Define.ObjectType.Skill, isPooling: true);
 
                 clone.InitClone(this.Owner, this.Data);
-                clone.transform.position = Utils.GetRandomTargetPosition<MonsterController>(this.Owner.transform.position,
+                clone.transform.position = Utils.GetRandomTargetPosition<MonsterController>(this.Owner.Center.position,
                                                 FROM_MIN_RANGE, FROM_MAX_RANGE, Define.HitFromType.LazerBolt);
 
                 yield return new WaitForSeconds(this.Data.ContinuousSpacing);

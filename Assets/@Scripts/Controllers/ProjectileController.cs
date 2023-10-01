@@ -356,6 +356,7 @@ namespace STELLAREST_2D
 
         private Vector3 NextBounceTarget(CreatureController cc, Define.HitFromType hitFromType = Define.HitFromType.None)
         {
+            // TODO : 개선 필요
             if (CanStillBounce == false)
             {
                 if (this.IsValid())
@@ -366,7 +367,7 @@ namespace STELLAREST_2D
 
             Vector3 shootDir = Vector3.zero;
             if (Managers.Collision.IsCorrectTarget(Define.CollisionLayers.MonsterBody, cc.gameObject.layer))
-                shootDir = Utils.GetClosestNextTargetDirection<MonsterController>(cc, hitFromType);
+                shootDir = Utils.GetClosestFromTargetDirection<MonsterController>(cc, hitFromType);
             else if (Managers.Collision.IsCorrectTarget(Define.CollisionLayers.PlayerBody, cc.gameObject.layer))
             {
                 if (this.IsValid())

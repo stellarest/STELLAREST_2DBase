@@ -47,7 +47,7 @@ namespace STELLAREST_2D
             if (cc.IsValid() == false)
                 return;
 
-            cc.ResetHitFrom(Define.HitFromType.ThrowingStar, 0.25f);
+            cc.ResetHitFrom(Define.HitFromType.ThrowingStar, 10.25f);
         }
     }
 }

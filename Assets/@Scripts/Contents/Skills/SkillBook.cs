@@ -15,6 +15,7 @@ namespace STELLAREST_2D
     {
         public SkillMember(SkillBase skillOrigin)
         {
+            // INIT ORIGIN -> DEACTIVE
             skillOrigin.Deactivate();
             this.SkillOrigin = skillOrigin;
             this.Name = skillOrigin.Data.Name;
