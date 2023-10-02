@@ -7,6 +7,8 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering; // Sorting Group
 
+using EnvTemplate = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
+
 // using DamageNumbersPro;
 namespace STELLAREST_2D
 {
@@ -58,6 +60,7 @@ namespace STELLAREST_2D
 
                                     chicken.Init(templateID);
                                     Monsters.Add(chicken);
+                                    Managers.VFX.Environment(EnvTemplate.Spawn, chicken);
 
                                     return chicken as T;
                                 }

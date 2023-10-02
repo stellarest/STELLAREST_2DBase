@@ -5,6 +5,8 @@ using DamageNumbersPro;
 using UnityEngine;
 
 using ImpactTemplate = STELLAREST_2D.Define.TemplateIDs.VFX.Impact;
+using EnvTemplate = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
+using Unity.VisualScripting;
 
 namespace STELLAREST_2D
 {
@@ -37,26 +39,26 @@ namespace STELLAREST_2D
             if (cc.IsValid() == false)
                 return;
 
-            Vector3 spawnPos = GetSpawnPos(cc);
+            Vector3 spawnPos = GetSpawnPosForDamageFont(cc);
             if (cc.IsMonster())
             {
                 if (isCritical)
                 {
-                    Managers.Resource.Load<GameObject>(Define.Labels.Prefabs.DMG_TEXT_TO_MONSTER_CRITICAL)
+                    Managers.Resource.Load<GameObject>(Define.Labels.Prefabs.VFX_ENV_DMG_TEXT_TO_MONSTER_CRITICAL)
                                      .GetComponent<DamageNumber>().Spawn(spawnPos);
 
-                    Managers.Resource.Load<GameObject>(Define.Labels.Prefabs.DMG_NUMBER_TO_MONSTER_CRITICAL)
+                    Managers.Resource.Load<GameObject>(Define.Labels.Prefabs.VFX_ENV_DMG_NUMBER_TO_MONSTER_CRITICAL)
                                      .GetComponent<DamageNumber>().Spawn(spawnPos, damage);
                 }
                 else
                 {
-                    Managers.Resource.Load<GameObject>(Define.Labels.Prefabs.DMG_NUMBER_TO_MONSTER)
+                    Managers.Resource.Load<GameObject>(Define.Labels.Prefabs.VFX_ENV_DMG_NUMBER_TO_MONSTER)
                                      .GetComponent<DamageNumber>().Spawn(spawnPos, damage);
                 }
             }
             else
             {
-                Managers.Resource.Load<GameObject>(Define.Labels.Prefabs.DMG_NUMBER_TO_PLAYER)
+                Managers.Resource.Load<GameObject>(Define.Labels.Prefabs.VFX_ENV_DMG_NUMBER_TO_PLAYER)
                                  .GetComponent<DamageNumber>().Spawn(spawnPos, damage);
             }
         }
@@ -85,10 +87,22 @@ namespace STELLAREST_2D
             }
         }
 
-        private const float DMG_SPAWN_HEIGHT = 2.5f;
-        private Vector3 GetSpawnPos(CreatureController cc)
+        public void Environment(EnvTemplate templateOrigin, CreatureController target)
         {
-            Vector3 spawnPos = cc.transform.position + (Vector3.up * DMG_SPAWN_HEIGHT);
+            Vector3 spawnPos = GetSpawnPosForEnvironment(templateOrigin, target);
+            switch (templateOrigin)
+            {
+                case EnvTemplate.Spawn:
+                    GameObject go = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_ENV_SPAWN, null, true);
+                    go.transform.position = spawnPos;
+                    break;
+            }
+        }
+
+        private const float DEFAULT_DMG_SPAWN_HEIGHT = 2.5f;
+        private Vector3 GetSpawnPosForDamageFont(CreatureController cc)
+        {
+            Vector3 spawnPos = cc.transform.position + (Vector3.up * DEFAULT_DMG_SPAWN_HEIGHT);
             if (cc?.IsPlayer() == false)
             {
                 MonsterController mc = cc.GetComponent<MonsterController>();
@@ -100,6 +114,29 @@ namespace STELLAREST_2D
             }
 
             return spawnPos;
+        }
+
+        // TODO
+        private const float DEFAULT_SPAWN_HEIGHT = 2.5f;
+        private const float ADDITIONAL_SPAWH_WIDTH_FOR_CHICKEN = 0.1f;
+        private const float ADDITIONAL_SPAWH_HEIGHT_FOR_CHICKEN = 1.2f;
+        private Vector3 GetSpawnPosForEnvironment(EnvTemplate templateOrigin, CreatureController cc)
+        {
+            MonsterController mc = cc.GetComponent<MonsterController>();
+            if (mc != null)
+            {
+                Vector3 spawnedPos = mc.transform.position + (Vector3.up * DEFAULT_SPAWN_HEIGHT);
+                switch (mc.MonsterType)
+                {
+                    case Define.MonsterType.Chicken:
+                        return new Vector3(spawnedPos.x + ADDITIONAL_SPAWH_WIDTH_FOR_CHICKEN, spawnedPos.y + ADDITIONAL_SPAWH_HEIGHT_FOR_CHICKEN, 1f);
+
+                    default:
+                        return spawnedPos;
+                }
+            }
+
+            return Vector3.zero;
         }
     }
 }

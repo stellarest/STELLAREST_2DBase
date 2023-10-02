@@ -199,7 +199,8 @@ namespace STELLAREST_2D
                     None = -1,
                     Stun = 500100,
                     KnockBack = 500101,
-                    MaxCount = 3,
+                    Spawn = 500102,
+                    Max = 999,
                 }
             }
 
@@ -217,14 +218,15 @@ namespace STELLAREST_2D
                 public const string JOYSTICK = "UI_Joystick.prefab";
                 public const string EXP_GEM = "EXPGem.prefab";
 
-                public const string DMG_NUMBER_TO_MONSTER = "DmgNumber_ToMonster.prefab";
-                public const string DMG_NUMBER_TO_MONSTER_CRITICAL = "DmgNumber_ToMonsterCritical.prefab";
-                public const string DMG_NUMBER_TO_PLAYER = "DmgNumber_ToPlayer.prefab";
-                public const string DMG_NUMBER_TO_SHIELD = "DmgNumber_ToShield.prefab";
+                public const string VFX_ENV_DMG_NUMBER_TO_MONSTER = "VFX_Env_DmgNumber_ToMonster.prefab";
+                public const string VFX_ENV_DMG_NUMBER_TO_MONSTER_CRITICAL = "VFX_Env_DmgNumber_ToMonsterCritical.prefab";
+                public const string VFX_ENV_DMG_TEXT_TO_MONSTER_CRITICAL = "VFX_Env_DmgText_ToMonsterCritical.prefab";
 
-                public const string DMG_TEXT_TO_MONSTER_CRITICAL = "DmgText_ToMonsterCritical.prefab"; // 크리티컬 text는 몬스터에게만 적용
-                public const string DMG_TEXT_TO_PLAYER_DODGE = "DmgText_ToPlayerDodge.prefab"; // 플레이어에게만 적용
-                public const string SPAWN_EFFECT = "SpawnEffect.prefab";
+                public const string VFX_ENV_DMG_NUMBER_TO_PLAYER = "VFX_Env_DmgNumber_ToPlayer.prefab";
+                public const string VFX_ENV_DMG_TEXT_TO_PLAYER_DODGE = "VFX_Env_DmgText_ToPlayerDodge";
+                public const string VFX_ENV_DMG_NUMBER_TO_SHIELD = "VFX_Env_DmgNumber_ToShield.prefab";
+                public const string VFX_ENV_SPAWN = "VFX_Env_Spawn.prefab";
+
                 public const string STUN_EFFECT = "StunEffect.prefab";
                 public const string CURSED_TEXT_EFFECT = "CursedTextEffect.prefab";
                 public const string ARROW_SHOT_MUZZLE_EFFECT = "ArrowShotMuzzleEffect.prefab";

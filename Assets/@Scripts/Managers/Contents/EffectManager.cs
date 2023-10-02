@@ -421,7 +421,7 @@ namespace STELLAREST_2D
             if (cc?.IsMonster() == false)
             {
                 Managers.Resource.Load<GameObject>
-                        (Define.Labels.Prefabs.DMG_NUMBER_TO_PLAYER).GetComponent<DamageNumber>().Spawn(defaultSpawnPos, damage);
+                        (Define.Labels.Prefabs.VFX_ENV_DMG_NUMBER_TO_PLAYER).GetComponent<DamageNumber>().Spawn(defaultSpawnPos, damage);
             }
             else
             {
@@ -431,15 +431,15 @@ namespace STELLAREST_2D
                 if (isCritical)
                 {
                     Managers.Resource.Load<GameObject>
-                        (Define.Labels.Prefabs.DMG_NUMBER_TO_MONSTER_CRITICAL).GetComponent<DamageNumber>().Spawn(defaultSpawnPos, damage);
+                        (Define.Labels.Prefabs.VFX_ENV_DMG_NUMBER_TO_MONSTER_CRITICAL).GetComponent<DamageNumber>().Spawn(defaultSpawnPos, damage);
 
                     Managers.Resource.Load<GameObject>
-                        (Define.Labels.Prefabs.DMG_TEXT_TO_MONSTER_CRITICAL).GetComponent<DamageNumber>().Spawn(defaultSpawnPos);
+                        (Define.Labels.Prefabs.VFX_ENV_DMG_TEXT_TO_MONSTER_CRITICAL).GetComponent<DamageNumber>().Spawn(defaultSpawnPos);
                 }
                 else
                 {
                     Managers.Resource.Load<GameObject>
-                        (Define.Labels.Prefabs.DMG_NUMBER_TO_MONSTER).GetComponent<DamageNumber>().Spawn(defaultSpawnPos, damage);
+                        (Define.Labels.Prefabs.VFX_ENV_DMG_NUMBER_TO_MONSTER).GetComponent<DamageNumber>().Spawn(defaultSpawnPos, damage);
                 }
             }
         }
@@ -451,7 +451,7 @@ namespace STELLAREST_2D
 
             Vector3 defaultSpawnPos = cc.transform.position + (Vector3.up * 2.5f);
             Managers.Resource.Load<GameObject>
-                (Define.Labels.Prefabs.DMG_NUMBER_TO_SHIELD).GetComponent<DamageNumber>().Spawn(defaultSpawnPos, damage);
+                (Define.Labels.Prefabs.VFX_ENV_DMG_NUMBER_TO_SHIELD).GetComponent<DamageNumber>().Spawn(defaultSpawnPos, damage);
         }
 
         public void ShowDodgeText(CreatureController cc)
@@ -462,7 +462,7 @@ namespace STELLAREST_2D
             Vector3 defaultSpawnPos = cc.transform.position + (Vector3.up * 3f);
 
             Managers.Resource.Load<GameObject>
-                 (Define.Labels.Prefabs.DMG_TEXT_TO_PLAYER_DODGE).GetComponent<DamageNumber>().Spawn(defaultSpawnPos);
+                 (Define.Labels.Prefabs.VFX_ENV_DMG_TEXT_TO_PLAYER_DODGE).GetComponent<DamageNumber>().Spawn(defaultSpawnPos);
         }
 
         public void ShowCursedText(CreatureController cc)

@@ -127,7 +127,7 @@ namespace STELLAREST_2D.Data
         public Define.TemplateIDs.VFX.Muzzle VFX_Muzzle;
         public Define.TemplateIDs.VFX.Impact VFX_Impact;
         public bool IsImpactPointOnTarget;
-        public Define.TemplateIDs.VFX.Environment VFX_Environment;
+        // public Define.TemplateIDs.VFX.Environment VFX_Environment; // VFX_Env는 데이터에서 일단 제외
         public Define.TemplateIDs.Status.Skill UnlockSkillTemplate;
         public float CoolTime;
     }
