@@ -47,6 +47,7 @@ namespace STELLAREST_2D
                     RigidBody = child.GetComponent<Rigidbody2D>();
                     HitCollider = child.GetComponent<Collider2D>();
                     Trail = child.GetComponent<SpriteTrail.SpriteTrail>();
+                    Trail.m_OrderInSortingLayer = (int)Define.SortingOrder.Skill;
                     Trail.enabled = false;
                 }
 

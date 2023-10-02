@@ -71,7 +71,6 @@ namespace STELLAREST_2D
 
             // Target Dir을 spear._head가 아닌, spear.transform으로 하니까 잘됨
             Vector3 toTargetDir = (spear._target.Center.position - spear.transform.position);
-            //Vector3 toTargetDir = (spear._target.Center.position - spear._head.transform.position).normalized;
             float degrees = Mathf.Atan2(toTargetDir.y, toTargetDir.x) * Mathf.Rad2Deg;
             spear._lerpEndRot = Quaternion.Euler(0, 0, degrees - 90f);
         }
@@ -157,7 +156,6 @@ namespace STELLAREST_2D
 
         protected override void DoSkillJob()
         {
-            // RIGHT_SPEAR.gameObject.SetActive(false); // TEST - OFF
             this.StartCoroutine(CoDoSpear(LEFT_SPEAR));
             this.StartCoroutine(CoDoSpear(RIGHT_SPEAR));
         }
@@ -210,11 +208,8 @@ namespace STELLAREST_2D
 
         private bool Init(Spear spear)
         {
-            Utils.Log(nameof(Init));
-
             ResetIdle(spear); // TEMP
             spear._readyToBack = false; // INIT에서는 해야할 것 같음.
-            // INIT이랑 Reset이랑 따로 뺴야 할듯. 함수 자체를.
             return true;
         }
 
@@ -284,7 +279,7 @@ namespace STELLAREST_2D
 
                     else if (IsTargetInRange(spear, SEARCH_TARGET_RANGE) == false)
                     {
-                        Debug.Log("<color=yellow> Out Of Range. </color>");
+                        Debug.Log("<color=yellow> === Out Of Range === </color>");
                         ResetIdle(spear);
                     }
                 }
@@ -293,8 +288,6 @@ namespace STELLAREST_2D
             return false;
         }
 
-        // Target이 가까이 있을 때 다시 Owner에게 돌아가는 방향이 쬐에끔 어색함.
-        // 그니까, 방향이 어색함. 리턴할 때 자기 몸을 돌릴때 각도, 방향.
         private bool Stab(Spear spear)
         {
             spear._delta += Time.deltaTime;
@@ -303,7 +296,7 @@ namespace STELLAREST_2D
             if (percent > 1f)
             {
                 spear._lerpStartPos = spear.transform.position;
-                //spear._lerpEndPos = this.Owner.Center.transform.position;
+                //spear._lerpEndPos = this.Owner.Center.transform.position; // nono
                 ResetDelta(spear);
 
                 spear.RigidBody.simulated = false;
@@ -341,12 +334,11 @@ namespace STELLAREST_2D
             if (spear._dir == LEFT)
                 spear.transform.position = Vector3.Lerp(spear._lerpStartPos, LEFT_IDLE_BOTTOM, _curveLinear.Evaluate(percent));
             else
-            {
                 spear.transform.position = Vector3.Lerp(spear._lerpStartPos, RIGHT_IDLE_BOTTOM, _curveLinear.Evaluate(percent));
-            }
 
             Vector3 toOwnerDir = (this.Owner.Center.transform.position - spear.transform.position).normalized;
             float degrees = Mathf.Atan2(toOwnerDir.y, toOwnerDir.x) * Mathf.Rad2Deg;
+            // TODO : 아래 개선?
             spear.transform.rotation = Quaternion.Slerp(spear.transform.rotation, Quaternion.Euler(0, 0, degrees - 90f), Time.deltaTime * ROTATION_SPEED);
             if (percent > 1f)
             {
@@ -538,7 +530,6 @@ namespace STELLAREST_2D
             spear.Data = this.Data;
 
             spear.RigidBody = go.GetComponent<Rigidbody2D>();
-            //spear.RigidBody.simulated = true;
             spear.RigidBody.simulated = false;
             spear._head = go.transform.GetChild(1).gameObject;
 
@@ -560,6 +551,17 @@ namespace STELLAREST_2D
 
             _spears[dir] = spear;
             _spears[dir].SetSortingOrder();
+        }
+
+        protected override void SetSortingOrder()
+        {
+            if (this.Data.Grade < this.Data.MaxGrade)
+                this.SR.sortingOrder = (int)Define.SortingOrder.Skill;
+            else
+            {
+                this.SR.sortingOrder = (int)Define.SortingOrder.Skill;
+                this._trail.m_OrderInSortingLayer = (int)Define.SortingOrder.Skill;
+            } 
         }
 
         private void OnTriggerEnter2D(Collider2D other)
