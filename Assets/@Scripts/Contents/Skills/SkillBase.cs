@@ -86,7 +86,7 @@ namespace STELLAREST_2D
         }
 
         private bool _isLast = false;
-        public bool IsLast
+        public virtual bool IsLast
         {
             get => _isLast;
             set
