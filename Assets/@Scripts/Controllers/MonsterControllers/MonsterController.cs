@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -50,6 +52,7 @@ namespace STELLAREST_2D
                 if (percent > 1f)
                 {
                     _action = true;
+                    this.CreatureState = Define.CreatureState.Run;
                     yield break;
                 }
 
@@ -57,20 +60,33 @@ namespace STELLAREST_2D
             }
         }
 
+        // TEMP
+        public void Stop()
+        {
+            this.CreatureState = Define.CreatureState.Idle;
+            StartCoroutine(CoStartAction());
+        }
+        // TEMP
+
         private void FixedUpdate()
         {
             PlayerController target = Managers.Game.Player;
             if (target.IsValid() == false)
                 return;
 
+            Vector3 toTarget = (target.transform.position - transform.position);
             if (this.LockFlip == false)
-            {
-                Vector3 toTarget = (target.transform.position - transform.position);
                 Flip(toTarget.x > 0 ? -1 : 1);
-            }
 
             if (this._action == false)
                 return;
+
+            // if (this.IsRun)
+            // {
+            //     Vector3 followTarget = this.transform.position + toTarget.normalized * Stat.MovementSpeed * Time.deltaTime;
+            //     //transform.position += toTarget.normalized * Stat.MovementSpeed * Time.deltaTime;
+            //     this.RigidBody.MovePosition(followTarget);
+            // }
         }
 
         public override void UpdateAnimation()
@@ -80,19 +96,14 @@ namespace STELLAREST_2D
                 case Define.CreatureState.Idle:
                     MonsterAnimController.Idle();
                     break;
+
+                case Define.CreatureState.Run:
+                    MonsterAnimController.Run();
+                    break;
             }
         }
 
-        private float LoadActionTime()
-        {
-            switch (MonsterType)
-            {
-                case Define.MonsterType.Chicken:
-                    return UnityEngine.Random.Range(2f, 3f);
-            }
-
-            return 0f;
-        }
+        protected virtual float LoadActionTime() => -1f;
 
         //private Coroutine _coReadyToAction;
         public void CoStartReadyToAction(bool isSpawned = true)

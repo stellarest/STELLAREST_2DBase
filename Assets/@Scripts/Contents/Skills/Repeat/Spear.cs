@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Linq;
 using STELLAREST_2D.Data;
 using UnityEngine;
 
@@ -25,31 +24,39 @@ namespace STELLAREST_2D
         private Vector3 RIGHT_IDLE_BOTTOM => this.RIGHT_DEFAULT + new Vector3(0f, IDLE_TOP_DOWN_POSITION_INTENSITY * -1, 0f);  // Actually Default Pos (Bot To Top)
         #endregion
 
-        #region Fields && CONSTANT
+        #region Fields && Field's Method && Constant Options
         private Spear[] _spears = null;
         private int _dir = -1;
+        private float _distanceToTarget = 0f;
         private SpriteTrail.SpriteTrail _trail = null;
 
-        // Ease Out
-        // - Anim Loop
-        // - Stab
+        // CURVE - EASE OUT : Idle Anim Loop, Stab
         [SerializeField] private AnimationCurve _curveEaseOut = null;
-
-        // Linear
-        // - Rot
-        // - Back
+        // CURVE - LINEAR : Rot, Back
         [SerializeField] private AnimationCurve _curveLinear = null;
+
+        private enum CurveType { Idle, Stab, Rotation, Back }
+        private AnimationCurve Curve(CurveType type)
+        {
+            switch (type)
+            {
+                case CurveType.Idle:
+                case CurveType.Stab:
+                    return _curveEaseOut;
+            }
+
+            return _curveLinear;
+        }
+
         private GameObject _head = null;
 
         private CreatureController _target = null;
+        private bool IsTargetDead(Spear spear) => spear._target.IsValid() == false;
+
         private Vector3 _lockedPos = Vector3.zero;
         private Vector3 _lerpStartPos = Vector3.zero;
         private Vector3 _lerpEndPos = Vector3.zero;
-
-// // ULTIMATE TEST///////////////////////////////////////////////////////////////////////////
-//         private Vector3 _lerpEndPos2 = Vector3.zero;
-//         private Vector3 _lerpEndPos3 = Vector3.zero;
-// ///////////////////////////////////////////////////////////////////////////////////////////
+        private Vector3 _lerpDoStabSavingPos = Vector3.zero; // FOR ULTIMATE
 
         private Quaternion _lerpStartRot = Quaternion.identity;
         private Quaternion _lerpEndRot = Quaternion.identity;
@@ -63,7 +70,7 @@ namespace STELLAREST_2D
             spear._lockTarget = true;
 
             // _lockPos 잡혔을때만,,
-            spear._lockedPos = spear.transform.position; // 엉,,,?
+            spear._lockedPos = spear.transform.position;
             spear._readyToBack = true;
 
             // SET STAB ROTS ONLY
@@ -84,7 +91,7 @@ namespace STELLAREST_2D
             spear._target = null;
             spear._idleDirFlag = false;
             spear._lockTarget = false;
-            //spear._readyToBack = false; // nono // Init에서는 false 초기화를 해야할듯?. ㄹㅇ 침착함하나로 해결함.
+            //spear._readyToBack = false; // nono // Init에서는 false 초기화를 해야할듯
             spear._lockTargetToRot = false;
             ResetDelta(spear);
         }
@@ -97,15 +104,21 @@ namespace STELLAREST_2D
             else
                 RIGHT_SPEAR._delta = 0f;
         }
+
+        private const float X_AXIS_INTERVAL_POSITION_FROM_OWNER = 4.5f;
+        private const float Y_AXIS_INTERVAL_POSITION_FROM_OWNER = 0.25f;
+        private const float IDLE_TOP_DOWN_POSITION_INTENSITY = 0.5f;
+        private const float ROTATION_SPEED = 30f;
+        private const float SEARCH_TARGET_RANGE = 6f; // sqrMag : 36f
+
+        private const float DESIRED_TIME_IDLE_DIR_SWITCH = 2f;
+        private const float DESIRED_TIME_FORCE_ROTATE_TO_TARGET = 0.15f;
+        private const float DESIRED_TIME_STAB_TO_REACH_TARGET = 0.15f;
+        private const float DESIRED_TIME_RETURN_TO_OWNER = DESIRED_TIME_STAB_TO_REACH_TARGET * 2;
+        private const float DESIRED_TIME_AFTER_STAB_WAIT = 0.5f;
         #endregion
 
         #region Overrides
-        // public override bool IsLast 
-        // { 
-        //     get => base.IsLast; 
-        //     set => base.IsLast = value;
-        // }
-
         public override void InitOrigin(CreatureController owner, SkillData data)
         {
             base.InitOrigin(owner, data);
@@ -143,7 +156,6 @@ namespace STELLAREST_2D
             if (this._spears == null)
                 return;
 
-            //base.Deactivate(isPoolingClear);
             for (int i = 0; i < (int)SpearDirection.Max; ++i)
             {
                 if (_spears[i].IsValid())
@@ -156,8 +168,10 @@ namespace STELLAREST_2D
 
         protected override void DoSkillJob()
         {
+            RIGHT_SPEAR.gameObject.SetActive(false);
+
             this.StartCoroutine(CoDoSpear(LEFT_SPEAR));
-            this.StartCoroutine(CoDoSpear(RIGHT_SPEAR));
+            //this.StartCoroutine(CoDoSpear(RIGHT_SPEAR));
         }
         #endregion
 
@@ -165,16 +179,38 @@ namespace STELLAREST_2D
         {
             if (spear._dir == LEFT)
             {
-                while (true)
+                if (this.Data.Grade < this.Data.MaxGrade)
                 {
-                    yield return null;
-                    yield return new WaitUntil(() => Init(LEFT_SPEAR));
-                    yield return new WaitUntil(() => Idle(LEFT_SPEAR));
-                    yield return new WaitUntil(() => Stab(LEFT_SPEAR));
-                    yield return new WaitUntil(() => Wait(LEFT_SPEAR));
-                    yield return new WaitUntil(() => Back(LEFT_SPEAR));
-                    yield return new WaitUntil(() => CanContinue(RIGHT_SPEAR));
-                    yield return null;
+                    while (true)
+                    {
+                        yield return null;
+                        yield return new WaitUntil(() => Init(LEFT_SPEAR));
+                        yield return new WaitUntil(() => Idle(LEFT_SPEAR));
+                        yield return new WaitUntil(() => Stab(LEFT_SPEAR));
+                        yield return new WaitUntil(() => Wait(LEFT_SPEAR));
+                        yield return new WaitUntil(() => Back(LEFT_SPEAR));
+                        yield return new WaitUntil(() => CanContinue(RIGHT_SPEAR));
+                        yield return null;
+                    }
+                }
+                else // TEMP - ULTIMATE SPEAR
+                {
+                    // ULTIMATE TEST
+                    while (true)
+                    {
+                        yield return null;
+                        yield return new WaitUntil(() => Init(LEFT_SPEAR));
+                        yield return new WaitUntil(() => Idle(LEFT_SPEAR));
+
+                        yield return new WaitUntil(() => StabUltimate(LEFT_SPEAR));
+                        yield return new WaitUntil(() => BackUltimate(LEFT_SPEAR, 0));
+                        yield return new WaitUntil(() => ForceNextRotUltimate(LEFT_SPEAR));
+                        yield return new WaitUntil(() => StabUltimate(LEFT_SPEAR));
+                        yield return new WaitUntil(() => BackUltimate(LEFT_SPEAR, 1));
+                        yield return new WaitUntil(() => ForceNextRotUltimate(LEFT_SPEAR));
+                        yield return new WaitUntil(() => StabUltimate(LEFT_SPEAR));
+                        yield return new WaitUntil(() => Back(LEFT_SPEAR));
+                    }
                 }
             }
             else
@@ -192,19 +228,6 @@ namespace STELLAREST_2D
                 }
             }
         }
-
-        #region TEMPORARY CONSTANT OPTIONS
-        private const float X_AXIS_INTERVAL_POSITION_FROM_OWNER = 4.5f;
-        private const float Y_AXIS_INTERVAL_POSITION_FROM_OWNER = 0.25f;
-        private const float IDLE_TOP_DOWN_POSITION_INTENSITY = 0.5f;
-        private const float ROTATION_SPEED = 30f;
-        private const float DESIRED_TIME_RETURN_TO_OWNER = DESIRED_STAB_REACH_TO_TARGET_TIME * 2;
-        private const float DESIRED_TIME_IDLE_DIR_SWITCH = 2f;
-        private const float DESIRED_TIME_FORCE_ROTATE_TO_TARGET = 0.15f;
-        private const float SEARCH_TARGET_RANGE = 6f; // sqrMag : 25f
-        private const float TARGET_IN_STAB_RANGE = 3f; // 9f
-        private const float DESIRED_STAB_REACH_TO_TARGET_TIME = 0.15f;
-        #endregion
 
         private bool Init(Spear spear)
         {
@@ -228,7 +251,7 @@ namespace STELLAREST_2D
             }
             else
             {
-                if (spear._target.IsValid() == false)
+                if (IsTargetDead(spear))
                 {
                     ResetIdle(spear);
                     return false;
@@ -241,47 +264,16 @@ namespace STELLAREST_2D
                 else if (IsLockTargetToRot(spear))
                 {
                     // +++ NEXT STEP +++
-                    if (IsTargetInRange(spear, TARGET_IN_STAB_RANGE))
+                    if (IsOverCoolDown(spear))
                     {
-                        //spear._lerpStartPos = spear.transform.position;
-                        // _head로 해야 잘 나올텐데??? _head로 해야함
-                        // spear._lerpStartPos = spear._head.transform.position;
-                        // spear._lerpEndPos = spear._target.Center.position;
-                        // ============= TEST : 확인 완료 =============
-                        // 방향 확인 완료
-                        // Vector3 testDir = Quaternion.Euler(0, 0, 30) * spear._head.transform.up;
-                        // spear._lerpEndPos = testDir.normalized * 5f;
-
-                        // Debug.DrawRay(spear._lerpStartPos, testDir.normalized * 5f, Color.magenta, -1f);
-                        // Utils.LogBreak("BREAK");
-
-                        // Vector3 testDir2 = Quaternion.Euler(0, 0, -30) * spear._head.transform.up;
-                        // Debug.DrawRay(spear._lerpStartPos, testDir2.normalized * 5f, Color.blue, -1f);
-                        // Utils.LogBreak("BREAK2");
-
-                        // spear.RigidBody.simulated = true;
-                        // spear.HitCollider.enabled = true;
-                        // // ============= ULTIMATE TEST // =============
-                        // if (spear.Data.Grade == spear.Data.MaxGrade)
-                        // {
-                        //     if (spear._trail != null)
-                        //         spear._trail.enabled = true;
-                        // }
-
                         DoStab(spear);
                         ResetDelta(spear);
                         return true;
                     }
                     else if (IsTargetInRange(spear, SEARCH_TARGET_RANGE))
-                    {
                         DoRotateToTarget(spear);
-                    }
-
                     else if (IsTargetInRange(spear, SEARCH_TARGET_RANGE) == false)
-                    {
-                        Debug.Log("<color=yellow> === Out Of Range === </color>");
                         ResetIdle(spear);
-                    }
                 }
             }
 
@@ -291,8 +283,8 @@ namespace STELLAREST_2D
         private bool Stab(Spear spear)
         {
             spear._delta += Time.deltaTime;
-            float percent = spear._delta / DESIRED_STAB_REACH_TO_TARGET_TIME;
-            spear.transform.position = Vector3.Lerp(spear._lerpStartPos, spear._lerpEndPos, _curveEaseOut.Evaluate(percent));
+            float percent = spear._delta / DESIRED_TIME_STAB_TO_REACH_TARGET;
+            spear.transform.position = Vector3.Lerp(spear._lerpStartPos, spear._lerpEndPos, this.Curve(CurveType.Stab).Evaluate(percent));
             if (percent > 1f)
             {
                 spear._lerpStartPos = spear.transform.position;
@@ -307,16 +299,102 @@ namespace STELLAREST_2D
             return false;
         }
 
-        private bool Wait(Spear spear) // WAIT FOR COOLTIME
+        private bool StabUltimate(Spear spear)
         {
             spear._delta += Time.deltaTime;
-            float percent = spear._delta / spear.Data.CoolTime;
+            float percent = spear._delta / (DESIRED_TIME_STAB_TO_REACH_TARGET);
+            spear.transform.position = Vector3.Lerp(spear._lerpStartPos, spear._lerpEndPos, this.Curve(CurveType.Stab).Evaluate(percent));
+            if (percent > 1f)
+            {
+                spear._lerpStartPos = spear.transform.position;
+                ResetDelta(spear);
+
+                spear.RigidBody.simulated = false;
+                spear.HitCollider.enabled = false;
+                spear._trail.enabled = false;
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool BackUltimate(Spear spear, int i)
+        {
+            spear._delta += Time.deltaTime;
+            float percent = spear._delta / (DESIRED_TIME_RETURN_TO_OWNER * 0.5f);
+            if (spear._dir == LEFT)
+                spear.transform.position = Vector3.Lerp(spear._lerpStartPos, spear._lerpDoStabSavingPos, this.Curve(CurveType.Back).Evaluate(percent));
+
+            if (percent > 1f)
+            {
+                spear.RigidBody.simulated = true;
+                spear.HitCollider.enabled = true;
+
+                // SET ROT
+                spear._lerpStartRot = spear.transform.rotation;
+                Vector3 toNextDir = Vector3.zero;
+                if (i == 0)
+                {
+                    toNextDir = (Quaternion.Euler(0, 0, 30f) * spear.transform.up).normalized;
+                    float degrees = Mathf.Atan2(toNextDir.y, toNextDir.x) * Mathf.Rad2Deg;
+                    spear._lerpEndRot = Quaternion.Euler(0, 0, degrees - 90f);
+                    // SET POS
+                    spear._lerpStartPos = spear.transform.position;
+                    spear._lerpEndPos = spear.transform.position + (toNextDir.normalized * spear._distanceToTarget);
+                }
+                else if (i == 1)
+                {
+                    toNextDir = (Quaternion.Euler(0, 0, -60f) * spear.transform.up).normalized;
+                    float degrees = Mathf.Atan2(toNextDir.y, toNextDir.x) * Mathf.Rad2Deg;
+                    spear._lerpEndRot = Quaternion.Euler(0, 0, degrees - 90f);
+                    // SET POS
+                    spear._lerpStartPos = spear.transform.position;
+                    spear._lerpEndPos = spear.transform.position + (toNextDir.normalized * spear._distanceToTarget);
+                }
+                else if (i == 2)
+                {
+
+                }
+
+                // SET POS
+                // spear._lerpStartPos = spear.transform.position;
+                // spear._lerpEndPos = toNextDir * 2f;
+                // Debug.DrawLine(spear._lerpStartPos, spear._lerpEndPos, Color.magenta, -1f);
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool ForceNextRotUltimate(Spear spear)
+        {
+            spear._delta += Time.deltaTime;
+            float percent = spear._delta / (DESIRED_TIME_FORCE_ROTATE_TO_TARGET * 0.5f);
+            spear.transform.rotation = Quaternion.Slerp(spear._lerpStartRot, spear._lerpEndRot, this.Curve(CurveType.Rotation).Evaluate(percent));
+            if (percent > 1f)
+            {
+                //Debug.DrawLine(spear._lerpStartPos, spear._lerpEndPos, Color.magenta, -1f);
+                spear._trail.enabled = true;
+                ResetDelta(spear);
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool Wait(Spear spear)
+        {
+            spear._delta += Time.deltaTime;
+            float percent = spear._delta / DESIRED_TIME_AFTER_STAB_WAIT;
             if (percent > 1f)
             {
                 if (spear.Data.Grade == spear.Data.MaxGrade)
                 {
                     if (spear._trail != null)
                         spear._trail.enabled = false;
+
+                    spear.RigidBody.simulated = false;
+                    spear.HitCollider.enabled = false;
                 }
 
                 ResetDelta(spear);
@@ -332,9 +410,9 @@ namespace STELLAREST_2D
             float percent = spear._delta / DESIRED_TIME_RETURN_TO_OWNER;
 
             if (spear._dir == LEFT)
-                spear.transform.position = Vector3.Lerp(spear._lerpStartPos, LEFT_IDLE_BOTTOM, _curveLinear.Evaluate(percent));
+                spear.transform.position = Vector3.Lerp(spear._lerpStartPos, LEFT_IDLE_BOTTOM, this.Curve(CurveType.Back).Evaluate(percent));
             else
-                spear.transform.position = Vector3.Lerp(spear._lerpStartPos, RIGHT_IDLE_BOTTOM, _curveLinear.Evaluate(percent));
+                spear.transform.position = Vector3.Lerp(spear._lerpStartPos, RIGHT_IDLE_BOTTOM, this.Curve(CurveType.Back).Evaluate(percent));
 
             Vector3 toOwnerDir = (this.Owner.Center.transform.position - spear.transform.position).normalized;
             float degrees = Mathf.Atan2(toOwnerDir.y, toOwnerDir.x) * Mathf.Rad2Deg;
@@ -351,7 +429,8 @@ namespace STELLAREST_2D
 
         private bool CanContinue(Spear spear)
         {
-            // TODO : CHECK OWNER IS DEAD OR IN CC STATE OR SOMETHING ELSE,,
+            // 와 진짜 댕졸림
+            // TODO : Check if owner is dead, in CC state, or something else
             Utils.Log(nameof(CanContinue));
             return true;
         }
@@ -371,6 +450,19 @@ namespace STELLAREST_2D
             return false;
         }
 
+        private bool IsOverCoolDown(Spear spear)
+        {
+            spear._delta += Time.deltaTime;
+            float percent = spear._delta / spear.Data.CoolTime;
+            if (percent > 1f)
+            {
+                ResetDelta(spear);
+                return true;
+            }
+
+            return false;
+        }
+
         private void DoIdleMovement(Spear spear)
         {
             switch (spear._dir)
@@ -381,7 +473,7 @@ namespace STELLAREST_2D
                         {
                             spear._delta += Time.deltaTime;
                             float percent = spear._delta / DESIRED_TIME_RETURN_TO_OWNER;
-                            spear.transform.position = Vector3.Lerp(spear._lockedPos, LEFT_IDLE_BOTTOM, _curveLinear.Evaluate(percent));
+                            spear.transform.position = Vector3.Lerp(spear._lockedPos, LEFT_IDLE_BOTTOM, this.Curve(CurveType.Back).Evaluate(percent));
                             if (percent > 1f)
                             {
                                 spear._idleDirFlag = false;
@@ -423,7 +515,7 @@ namespace STELLAREST_2D
                         {
                             spear._delta += Time.deltaTime;
                             float percent = spear._delta / DESIRED_TIME_RETURN_TO_OWNER;
-                            spear.transform.position = Vector3.Lerp(spear._lockedPos, RIGHT_IDLE_BOTTOM, _curveLinear.Evaluate(percent));
+                            spear.transform.position = Vector3.Lerp(spear._lockedPos, RIGHT_IDLE_BOTTOM, this.Curve(CurveType.Back).Evaluate(percent));
                             if (percent > 1f)
                             {
                                 spear._idleDirFlag = false;
@@ -465,7 +557,7 @@ namespace STELLAREST_2D
         {
             spear._delta += Time.deltaTime;
             float percent = spear._delta / DESIRED_TIME_IDLE_DIR_SWITCH;
-            spear.transform.position = Vector3.Lerp(startPos, endPos, this._curveEaseOut.Evaluate(percent));
+            spear.transform.position = Vector3.Lerp(startPos, endPos, this.Curve(CurveType.Idle).Evaluate(percent));
             if (percent > 1f)
             {
                 this.ResetDelta(spear);
@@ -477,9 +569,10 @@ namespace STELLAREST_2D
 
         private void DoForceRotateToTarget(Spear spear)
         {
+            // FIND OTHER CLOSEST TARGET // 
             spear._delta += Time.deltaTime;
             float percent = spear._delta / DESIRED_TIME_FORCE_ROTATE_TO_TARGET;
-            spear.transform.rotation = Quaternion.Slerp(spear._lerpStartRot, spear._lerpEndRot, _curveLinear.Evaluate(percent));
+            spear.transform.rotation = Quaternion.Slerp(spear._lerpStartRot, spear._lerpEndRot, this.Curve(CurveType.Rotation).Evaluate(percent));
             if (percent > 1f)
             {
                 spear._lockTargetToRot = true;
@@ -489,8 +582,15 @@ namespace STELLAREST_2D
 
         private void DoStab(Spear spear)
         {
-            spear._lerpStartPos = spear._head.transform.position;
+            spear._lerpStartPos = spear._head.transform.position; // HEAD로 해야되는거 확인함
             spear._lerpEndPos = spear._target.Center.position;
+            if (spear.Data.Grade == spear.Data.MaxGrade)
+            {
+                spear._lerpDoStabSavingPos = spear._head.transform.position;
+                spear._distanceToTarget = (spear._target.Center.position - spear._head.transform.position).magnitude;
+                if (spear._trail != null)
+                    spear._trail.enabled = true;
+            }
 
             spear.RigidBody.simulated = true;
             spear.HitCollider.enabled = true;
@@ -501,7 +601,9 @@ namespace STELLAREST_2D
             //Vector3 toTargetDir = (spear._target.Center.position - spear.transform.position).normalized;
             Vector3 toTargetDir = (spear._target.Center.position - spear._head.transform.position).normalized;
             float degrees = Mathf.Atan2(toTargetDir.y, toTargetDir.x) * Mathf.Rad2Deg;
-            spear.transform.rotation = Quaternion.Slerp(spear.transform.rotation, Quaternion.Euler(0, 0, degrees - 90f), Time.deltaTime * ROTATION_SPEED);
+            float toTargetDist = (spear._target.Center.position - spear._head.transform.position).sqrMagnitude;
+            if (toTargetDist > 1.5f)
+                spear.transform.rotation = Quaternion.Slerp(spear.transform.rotation, Quaternion.Euler(0, 0, degrees - 90f), Time.deltaTime * ROTATION_SPEED);
         }
 
         // -------------------------------------------------------------------------------------
@@ -561,7 +663,7 @@ namespace STELLAREST_2D
             {
                 this.SR.sortingOrder = (int)Define.SortingOrder.Skill;
                 this._trail.m_OrderInSortingLayer = (int)Define.SortingOrder.Skill;
-            } 
+            }
         }
 
         private void OnTriggerEnter2D(Collider2D other)
@@ -571,6 +673,9 @@ namespace STELLAREST_2D
                 return;
 
             cc.OnDamaged(attacker: this.Owner, from: this);
+
+            // TEMP
+            cc.GetComponent<MonsterController>().Stop();
         }
     }
 }

@@ -83,9 +83,7 @@ namespace STELLAREST_2D
         private Dictionary<CreatureController, Moderator> _moderatorDict = null;
         public bool IsChangingMaterial { get; private set; } = false;
         private Define.InGameGrade _currentKeyGrade = Define.InGameGrade.Default;
-
-        // 행방불명 외계인
-        // 김염소씨의 결석
+        
         public void InitRendererController(CreatureController owner, InitialCreatureData initialCreatureData)
         {
             if (this.Owner != null || this._moderatorDict != null)

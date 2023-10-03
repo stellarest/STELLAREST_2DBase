@@ -200,6 +200,7 @@ namespace STELLAREST_2D
                     Stun = 500100,
                     KnockBack = 500101,
                     Spawn = 500102,
+                    DamageFont = 500103,
                     Max = 999,
                 }
             }

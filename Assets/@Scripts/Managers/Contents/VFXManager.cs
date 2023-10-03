@@ -7,6 +7,7 @@ using UnityEngine;
 using ImpactTemplate = STELLAREST_2D.Define.TemplateIDs.VFX.Impact;
 using EnvTemplate = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
 using Unity.VisualScripting;
+using System;
 
 namespace STELLAREST_2D
 {
@@ -39,8 +40,16 @@ namespace STELLAREST_2D
             if (cc.IsValid() == false)
                 return;
 
-            Vector3 spawnPos = GetSpawnPosForDamageFont(cc);
-            if (cc.IsMonster())
+            Vector3 spawnPos = (cc?.IsPlayer() == false && cc.GetComponent<MonsterController>() != null)
+                                ? cc.GetComponent<MonsterController>().LoadVFXEnvSpawnPos(EnvTemplate.DamageFont)
+                                : Vector3.zero;
+
+#if UNITY_EDITOR
+            if (spawnPos == Vector3.zero)
+                Utils.LogCritical(nameof(VFXManager), nameof(Environment), "Failed to load VFX Env Spawn Pos.");
+#endif
+
+            if (cc.IsMonster()) // 이거 할필요 없을것같은데. 어차피 크리티컬은 몬스터만 받음
             {
                 if (isCritical)
                 {
@@ -63,7 +72,6 @@ namespace STELLAREST_2D
             }
         }
 
-        // 어뜨케할까?
         public void Impact(ImpactTemplate templateOrigin, CreatureController target, SkillBase from)
         {
             Vector3 impactPoint = Vector3.zero;
@@ -89,7 +97,16 @@ namespace STELLAREST_2D
 
         public void Environment(EnvTemplate templateOrigin, CreatureController target)
         {
-            Vector3 spawnPos = GetSpawnPosForEnvironment(templateOrigin, target);
+            Vector3 spawnPos = Vector3.zero;
+            spawnPos = (target?.IsPlayer() == false && target.GetComponent<MonsterController>() != null) 
+                        ? target.GetComponent<MonsterController>().LoadVFXEnvSpawnPos(templateOrigin) 
+                        : Vector3.zero;
+
+#if UNITY_EDITOR
+            if (spawnPos == Vector3.zero)
+                Utils.LogCritical(nameof(VFXManager), nameof(Environment), "Failed to load VFX Env Spawn Pos.");
+#endif
+
             switch (templateOrigin)
             {
                 case EnvTemplate.Spawn:
@@ -99,44 +116,21 @@ namespace STELLAREST_2D
             }
         }
 
-        private const float DEFAULT_DMG_SPAWN_HEIGHT = 2.5f;
-        private Vector3 GetSpawnPosForDamageFont(CreatureController cc)
-        {
-            Vector3 spawnPos = cc.transform.position + (Vector3.up * DEFAULT_DMG_SPAWN_HEIGHT);
-            if (cc?.IsPlayer() == false)
-            {
-                MonsterController mc = cc.GetComponent<MonsterController>();
-                switch (mc.MonsterType)
-                {
-                    case Define.MonsterType.Chicken:
-                        return (spawnPos -= Vector3.up);
-                }
-            }
+        // private const float DEFAULT_DMG_SPAWN_HEIGHT = 2.5f;
+        // private Vector3 GetSpawnPosForDamageFont(CreatureController cc)
+        // {
+        //     Vector3 spawnPos = cc.transform.position + (Vector3.up * DEFAULT_DMG_SPAWN_HEIGHT);
+        //     if (cc?.IsPlayer() == false)
+        //     {
+        //         MonsterController mc = cc.GetComponent<MonsterController>();
+        //         switch (mc.MonsterType)
+        //         {
+        //             case Define.MonsterType.Chicken:
+        //                 return (spawnPos -= Vector3.up);
+        //         }
+        //     }
 
-            return spawnPos;
-        }
-
-        // TODO
-        private const float DEFAULT_SPAWN_HEIGHT = 2.5f;
-        private const float ADDITIONAL_SPAWH_WIDTH_FOR_CHICKEN = 0.1f;
-        private const float ADDITIONAL_SPAWH_HEIGHT_FOR_CHICKEN = 1.2f;
-        private Vector3 GetSpawnPosForEnvironment(EnvTemplate templateOrigin, CreatureController cc)
-        {
-            MonsterController mc = cc.GetComponent<MonsterController>();
-            if (mc != null)
-            {
-                Vector3 spawnedPos = mc.transform.position + (Vector3.up * DEFAULT_SPAWN_HEIGHT);
-                switch (mc.MonsterType)
-                {
-                    case Define.MonsterType.Chicken:
-                        return new Vector3(spawnedPos.x + ADDITIONAL_SPAWH_WIDTH_FOR_CHICKEN, spawnedPos.y + ADDITIONAL_SPAWH_HEIGHT_FOR_CHICKEN, 1f);
-
-                    default:
-                        return spawnedPos;
-                }
-            }
-
-            return Vector3.zero;
-        }
+        //     return spawnPos;
+        // }
     }
 }

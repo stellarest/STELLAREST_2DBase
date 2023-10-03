@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+using EnvTemplate = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
+
 namespace STELLAREST_2D
 {
     public interface IHitFrom // CC도 추가하면 괜찮을듯
@@ -215,6 +217,8 @@ namespace STELLAREST_2D
             Managers.VFX.DamageFont(this, dmgResult, isCritical);
             // Impact : 메모리 문제 발생할 것 같으면 크리티컬쪽에서 스폰
             Managers.VFX.Impact(from.Data.VFX_Impact, this, from);
+
+            // STOP.
             if (this.Stat.Hp <= 0)
             {
                 this.Stat.Hp = 0f;
@@ -298,11 +302,20 @@ namespace STELLAREST_2D
             }
         }
 
+        // UTILITIES
         public bool IsInLimitMaxPosX => Mathf.Abs(transform.position.x - Managers.Stage.RightTop.x) < Mathf.Epsilon ||
                         Mathf.Abs(transform.position.x - Managers.Stage.LeftBottom.x) < Mathf.Epsilon;
 
         public bool IsInLimitMaxPosY => Mathf.Abs(transform.position.y - Managers.Stage.RightTop.y) < Mathf.Epsilon ||
                                         Mathf.Abs(transform.position.y - Managers.Stage.LeftBottom.y) < Mathf.Epsilon;
+
+
+        public virtual float ADDITIONAL_SPAWN_WIDTH { get; protected set; } = 0f;
+        public virtual float ADDITIONAL_SPAWN_HEIGHT { get; protected set; } = 0f;
+
+        public virtual Vector3 LoadVFXEnvSpawnPos(EnvTemplate templateOrigin) => Vector3.zero;
+
+        public bool IsRun => this.CreatureState == Define.CreatureState.Run;
     }
 }
 
