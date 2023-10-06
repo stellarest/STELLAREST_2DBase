@@ -83,7 +83,7 @@ namespace STELLAREST_2D
             // Spawn Player
             // +++ GARY +++
             var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Creatures.Player.Gary_Paladin, 
-                                                                Define.ObjectType.Player, isPooling: false);
+                        Define.ObjectType.Player, isPooling: false);
 
             var CMcam = Camera.main.GetComponent<CinemachineBrain>().ActiveVirtualCamera.VirtualCameraGameObject;
             CMcam.GetComponent<CameraController>().SetTarget(player.gameObject);

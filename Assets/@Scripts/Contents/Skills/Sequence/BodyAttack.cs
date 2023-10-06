@@ -1,17 +1,123 @@
-// using System;
-// using System.Collections;
-// using System.Collections.Generic;
-// using UnityEngine;
-
 using System;
-using DG.Tweening;
+using System.Collections;
+using System.Runtime.CompilerServices;
+using STELLAREST_2D.Data;
 using UnityEngine;
 
 namespace STELLAREST_2D
 {
     public class BodyAttack : SequenceSkill
     {
+        #region Temp Constant Options
+        private const float DESIRED_TIME_TO_REACH = 0.15f;
+        private const float DESIRED_TIME_TO_RETURN = 0.25f;
+        private const float DESIRED_TIME_TO_END_WAIT = 0.75f;
+        #endregion
+        private Vector3 _startPoint = Vector3.zero;
+        private Vector3 _targetPoint = Vector3.zero;
+        private float _delta = 0f;
+
+        public override void InitOrigin(CreatureController owner, SkillData data)
+        {
+            base.InitOrigin(owner, data);
+            InitBodycolliderInfo();
+        }
+
         public override void DoSkill(Action callback = null)
+        {
+            Utils.LogBreak("ACTIVATE : BODYATTACK.");
+            //StartCoroutine(CoDoBodyAttack(callback));
+        }
+
+        private IEnumerator CoDoBodyAttack(Action callback = null)
+        {
+            while (true)
+            {
+                yield return null;
+
+                if (this.Owner.MainTarget == null)
+                    yield break;
+
+                // NEED TO CALL FACE TO TARGET
+                Ready();
+                yield return new WaitUntil(() => ReachToTarget());
+                yield return new WaitUntil(() => Return());
+                yield return new WaitUntil(() => EndWait());
+                yield return null;
+
+                callback?.Invoke();
+            }
+        }
+
+        private void Ready()
+        {
+            HitCollider.enabled = true;
+            _startPoint = this.Owner.transform.position;
+            _targetPoint = this.Owner.MainTarget.transform.position;
+        }
+
+        private bool ReachToTarget()
+        {
+            _delta = Time.deltaTime;
+            float percent = _delta / DESIRED_TIME_TO_REACH;
+            this.Owner.transform.position = Vector3.Lerp(_startPoint, _targetPoint, percent);
+            if (percent > 1f)
+            {
+                _delta = 0f;
+                HitCollider.enabled = false;
+
+                _targetPoint = _startPoint;
+                _startPoint = this.Owner.transform.position;
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool Return()
+        {
+            _delta += Time.deltaTime;
+            float percent = _delta / DESIRED_TIME_TO_RETURN;
+            this.Owner.transform.position = Vector3.Lerp(_startPoint, _targetPoint, percent);
+            if (percent > 1f)
+            {
+                _delta = 0f;
+                this.Owner.CreatureState = Define.CreatureState.Idle;
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool EndWait()
+        {
+            _delta += Time.deltaTime;
+            float percent = _delta / DESIRED_TIME_TO_END_WAIT;
+            if (percent > 1f)
+            {
+                _delta = 0f;
+                return true;
+            }
+
+            return false;
+        }
+
+        private void InitBodycolliderInfo()
+        {
+            CircleCollider2D ownerHitBody = this.Owner.GetComponent<Collider2D>() as CircleCollider2D;
+            HitCollider = GetComponent<Collider2D>();
+            CircleCollider2D circle = HitCollider as CircleCollider2D;
+            circle.offset = new Vector2(ownerHitBody.offset.x, ownerHitBody.offset.y);
+            circle.radius = ownerHitBody.radius;
+            HitCollider.enabled = false;
+
+            if (this.Owner?.IsPlayer() == false)
+                Managers.Collision.InitCollisionLayer(this.gameObject, Define.CollisionLayers.MonsterAttack);
+            else
+                Managers.Collision.InitCollisionLayer(this.gameObject, Define.CollisionLayers.PlayerAttack);
+        }
+
+        private void OnTriggerEnter2D(Collider2D other)
         {
         }
     }
@@ -29,7 +135,7 @@ namespace STELLAREST_2D
 //         {
 //             base.SetSkillInfo(owner, templateID);
 //             transform.localPosition = Vector3.zero;
-//             transform.localScale = Vector3.one;
+//             transform.localScale = Vector3.one; // ???
 
 //             _attackCol = GetComponent<CircleCollider2D>();
 //             _attackCol.enabled = false;

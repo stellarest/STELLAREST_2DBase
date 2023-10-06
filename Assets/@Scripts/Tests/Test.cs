@@ -1,9 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using STELLAREST_2D;
 using Unity.VisualScripting;
 using Assets.HeroEditor.Common.Scripts.CharacterScripts.Firearms;
+
 
 namespace STELLAREST_2D.Test
 {
@@ -23,6 +25,21 @@ namespace STELLAREST_2D.Test
 
     public class Test : MonoBehaviour
     {
+        [ContextMenu("DoAction_Test")]
+        private void DoAction_Test()
+        {
+            DoAction2(DoAction1);
+        }
+
+        private void DoAction1(int a)
+        {
+            Utils.Log("INT A : " + a);
+        }
+
+        private void DoAction2(Action<int> callback)
+        {
+            callback?.Invoke(42);
+        }
 
         public ParticleSystem[] ShieldOns = null;
         public ParticleSystem[] ShieldOffs = null;

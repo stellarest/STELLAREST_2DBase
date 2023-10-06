@@ -10,35 +10,36 @@ using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 
 namespace STELLAREST_2D
 {
+    public class PlayerBody
+    {
+        public PlayerBody(Transform hair, Transform armLeft, Transform armRight, Transform leftHandMeleeWeapon,
+                        Transform legLeft, Transform legRight)
+        {
+            this.Hair = hair;
+            this.ArmLeft = armLeft;
+            this.ArmRight = armRight;
+            this.LeftHandMeleeWeapon = leftHandMeleeWeapon;
+            this.LegLeft = legLeft;
+            this.LegRight = legRight;
+
+            if (Hair == null || ArmLeft == null || ArmRight == null || LeftHandMeleeWeapon == null ||
+                LegLeft == null || LegRight == null)
+                Utils.LogCritical(nameof(PlayerController), nameof(PlayerBody));
+        }
+
+        public Transform Hair { get; private set; } = null;
+        public Transform ArmLeft { get; private set; } = null;
+        public Transform ArmRight { get; private set; } = null;
+        public Transform LeftHandMeleeWeapon { get; private set; } = null;
+        public Transform LegLeft { get; private set; } = null;
+        public Transform LegRight { get; private set; } = null;
+    }
+
     public class PlayerController : CreatureController
     {
         private readonly float ENV_COLLECTION_FIXED_DIST = 5f; // +++ NO DATE SHEET +++
         private float _armBowFixedAngle = 110f; // REINA에서 뺴야함
         private float _armRifleFixedAngle = 146f; // CHRISTIAN에서 빼야함
-        public class PlayerBody
-        {
-            public PlayerBody(Transform hair, Transform armLeft, Transform armRight, Transform leftHandMeleeWeapon,
-                            Transform legLeft, Transform legRight)
-            {
-                this.Hair = hair;
-                this.ArmLeft = armLeft;
-                this.ArmRight = armRight;
-                this.LeftHandMeleeWeapon = leftHandMeleeWeapon;
-                this.LegLeft = legLeft;
-                this.LegRight = legRight;
-
-                if (Hair == null || ArmLeft == null || ArmRight == null || LeftHandMeleeWeapon == null ||
-                    LegLeft == null || LegRight == null)
-                    Utils.LogCritical(nameof(PlayerController), nameof(PlayerBody));
-            }
-
-            public Transform Hair { get; private set; } = null;
-            public Transform ArmLeft { get; private set; } = null;
-            public Transform ArmRight { get; private set; } = null;
-            public Transform LeftHandMeleeWeapon { get; private set; } = null;
-            public Transform LegLeft { get; private set; } = null;
-            public Transform LegRight { get; private set; } = null;
-        }
         public PlayerBody BodyParts { get; protected set; } = null;
         public PlayerAnimationController PlayerAnimController { get; private set; } = null;
 
@@ -190,9 +191,8 @@ namespace STELLAREST_2D
 
             if (Input.GetKeyDown(KeyCode.U))
                 Utils.Log("MON COUNT : " + Managers.Object.Monsters.Count);
-
 #endif
-            MoveByJoystick(); // ERROR
+            MoveByJoystick();
             CollectEnv();
         }
 

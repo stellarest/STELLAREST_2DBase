@@ -127,14 +127,6 @@ namespace STELLAREST_2D
                 Managers.Pool.ClearPool<SkillBase>(this.gameObject);
         }
 
-        public bool IsCritical { get; set; } = false;
-
-        public float GetDamage()
-        {
-            float dmgResult = UnityEngine.Random.Range(this.Data.MinDamage, this.Data.MaxDamage);
-            return dmgResult;
-        }
-
         protected Coroutine _coDestroy;
         public void StartDestroy(float delaySeconds)
         {

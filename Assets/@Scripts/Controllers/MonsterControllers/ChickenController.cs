@@ -15,25 +15,6 @@ namespace STELLAREST_2D
             CreatureState = Define.CreatureState.Idle;
         }
 
-        /*
-                    private const float DEFAULT_DMG_SPAWN_HEIGHT = 2.5f;
-        private Vector3 GetSpawnPosForDamageFont(CreatureController cc)
-        {
-            Vector3 spawnPos = cc.transform.position + (Vector3.up * DEFAULT_DMG_SPAWN_HEIGHT);
-            if (cc?.IsPlayer() == false)
-            {
-                MonsterController mc = cc.GetComponent<MonsterController>();
-                switch (mc.MonsterType)
-                {
-                    case Define.MonsterType.Chicken:
-                        return (spawnPos -= Vector3.up);
-                }
-            }
-
-            return spawnPos;
-        }
-        */
-
         public override Vector3 LoadVFXEnvSpawnPos(EnvTemplate templateOrigin)
         {
             switch (templateOrigin)
@@ -51,24 +32,18 @@ namespace STELLAREST_2D
 
         protected override float LoadActionTime() => UnityEngine.Random.Range(2f, 3f);
         protected override void OnDead() { }
-
-        // public override float ADDITIONAL_SPAWN_WIDTH => 0.1f;
-        // public override float ADDITIONAL_SPAWN_HEIGHT => 1.2f;
-        // public override Vector3 LoadSpawnPos() => _defaultSpawnPos;
     }
 }
 
 // -------------------------------------------------------------------------------------
 // -------------------------------------------------------------------------------------
 // MonsterType = Define.MonsterType.Chicken;
-
 // ResetCCStates();
 // if (GoCCEffect != null)
 // {
 //     Managers.Resource.Destroy(GoCCEffect);
 //     GoCCEffect = null;
 // }
-
 // Managers.Sprite.SetMonsterFace(this, Define.MonsterFace.Normal);
 // RigidBody.simulated = true;
 // RigidBody.velocity = Vector2.zero;

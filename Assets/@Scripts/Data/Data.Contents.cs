@@ -100,7 +100,7 @@ namespace STELLAREST_2D.Data
         public string Description;
         public string PrimaryLabel;
         public string ModelingLabel;
-        public bool IsExclusive;
+        public bool HasEventHandler;
         public bool IsProjectile;
         public bool IsOnFireSocket;
         public Define.InGameGrade Grade;

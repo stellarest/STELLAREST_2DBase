@@ -28,7 +28,6 @@ namespace STELLAREST_2D
         public const int STAGE_MAX_WAVE_COUNT = 20;
         public const int ABILITY_MAX_POINT = 8;
      
-
         public enum WaveType { None, Elite, MiddleBoss, Boss }
         public enum SortingOrder { Map = 100, Player = 200, Item = 209, Monster = 210, Skill = 230, EnvEffect = 260 }
         public enum StageType { Normal, MiddleBoss, Boss, }
@@ -44,7 +43,6 @@ namespace STELLAREST_2D
         public enum MonsterFace { Normal = 0, Angry = 1, Death = 2 }
 
         public enum HitFromType { None = -1, ThrowingStar = 1, LazerBolt = 2, All = 9 }
-
         //public enum ImpactHits { None, Leaves, CriticalHit, }
 
         public static class TemplateIDs
@@ -151,17 +149,18 @@ namespace STELLAREST_2D
                     // QueenMeleeSwing = 200284,
 
                     // Public Skills (+ Monster)
+                    TestOnlyOne = 200400,
+
                     ThrowingStar = 200300,
                     Boomerang = 200303,
                     LazerBolt = 200306,
                     Spear = 200309,
-
                     // LazerBolt = 200304,
                     // Boomerang = 200308,
                     // Spear = 200312,
                     // BombTrap = 200316,
 
-                    // BodyAttack = 201100,
+                    BodyAttack = 201100,
                     // HeavensJudgment,
                     // GuardiansShield,
                     // Concentration,

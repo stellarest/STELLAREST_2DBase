@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using STELLAREST_2D.Data;
 using UnityEngine;
 
 using EnvTemplate = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
@@ -30,7 +31,7 @@ namespace STELLAREST_2D
         }
         public bool IsFacingRight => (LocalScale.x != LocalScale.x * -1f) ? true : false;
 
-       // +++ BASE COMPONENTS +++
+        // +++ BASE COMPONENTS +++
         public AnimationCallback AnimCallback { get; protected set; } = null;
         public BaseAnimationController AnimController { get; protected set; } = null;
         public Rigidbody2D RigidBody { get; protected set; } = null;
@@ -38,15 +39,15 @@ namespace STELLAREST_2D
 
         // +++ STAT +++
         [field: SerializeField] public CreatureStat Stat { get; protected set; } = null;
-        public void UpdateCreatureStat(int templateID) 
+        public void UpdateCreatureStat(int templateID)
             => this.Stat = Stat.UpgradeStat(this, Stat, templateID);
 
         // +++ SKILLS +++
         public SkillBook SkillBook { get; protected set; } = null;
-        
+
         // +++ RENDERERS +++
         public RendererController RendererController { get; protected set; } = null;
-        
+
         // +++ FIELD, PROPERTY, METHODS +++
         [SerializeField] private Define.CreatureState _cretureState = Define.CreatureState.Idle;
         public Define.CreatureState CreatureState { get => _cretureState; set { _cretureState = value; UpdateAnimation(); } }
@@ -59,9 +60,11 @@ namespace STELLAREST_2D
         public Vector3 AttackStartPoint { get; set; } = Vector3.zero;
         public Vector3 AttackEndPoint { get; set; } = Vector3.zero;
         public float GetMovementPower => (AttackEndPoint - AttackStartPoint).magnitude;
-        
+
         public Define.LookAtDirection LookAtDir { get; protected set; } = Define.LookAtDirection.Right;
         protected Vector3 _baseRootLocalScale = Vector3.zero;
+        public PlayerController MainTarget { get; protected set; } = null;
+
 
         // +++ MAIN METHODS +++
         public override void Init(int templateID)
@@ -90,7 +93,7 @@ namespace STELLAREST_2D
             FireSocket = Utils.FindChild<Transform>(this.gameObject,
                 Define.FIRE_SOCKET, true);
 
-            AnimTransform = Utils.FindChild<Transform>(this.gameObject, 
+            AnimTransform = Utils.FindChild<Transform>(this.gameObject,
                 Define.ANIMATION_BODY, true);
 
             SPRs = AnimTransform.GetComponentsInChildren<SpriteRenderer>(includeInactive: true);
@@ -123,7 +126,7 @@ namespace STELLAREST_2D
             }
         }
 
-        protected virtual void InitCreatureStat(Data.InitialCreatureData creatureData) 
+        protected virtual void InitCreatureStat(Data.InitialCreatureData creatureData)
             => Stat = new CreatureStat(this, creatureData);
 
         protected void InitCreatureStat(int templateID)
@@ -143,51 +146,63 @@ namespace STELLAREST_2D
             }
 
             LoadRepeatSkills(creatureData);
-            // LoadSequenceSkills(creatureData);
+            LoadSequenceSkills(creatureData);
             this.SkillBook.SetFirstExclusiveSkill();
         }
 
         private void LoadRepeatSkills(Data.InitialCreatureData creatureData)
         {
-            GameObject goRepeatSkills = new GameObject { name = "@RepeatSkills "};
+            GameObject goRepeatSkills = new GameObject { name = "@RepeatSkills " };
             goRepeatSkills.transform.SetParent(SkillBook.transform);
-
+            goRepeatSkills.transform.localPosition = Vector3.zero;
+            goRepeatSkills.transform.localScale = Vector3.one;
             foreach (Define.TemplateIDs.Status.Skill templateOrigin in creatureData.RepeatSkillList)
             {
-                int templateID = (int)templateOrigin; // 200200
-                if (Managers.Data.SkillsDict.TryGetValue(templateID, out Data.SkillData value) == false)
+                int templateID = (int)templateOrigin;
+                if (Managers.Data.SkillsDict.TryGetValue(templateID, out Data.SkillData dataOrigin) == false)
                     Utils.LogCritical(nameof(CreatureController), nameof(LoadRepeatSkills), $"TemplateID : {templateID}");
 
-                if (value.Grade == value.MaxGrade)
+                for (int i = templateID; i < templateID + (int)dataOrigin.MaxGrade; ++i)
                 {
-                    GameObject go = Managers.Resource.Instantiate(value.PrimaryLabel);
-                    //go.name = $"{go.name}_[{value.TemplateID}]";
+                    SkillData data = Managers.Data.SkillsDict[i];
+                    GameObject go = Managers.Resource.Instantiate(data.PrimaryLabel);
                     go.transform.SetParent(goRepeatSkills.transform);
+                    go.transform.localPosition = Vector3.zero;
+                    go.transform.localScale = Vector3.one;
 
                     RepeatSkill repeatSkill = go.GetComponent<RepeatSkill>();
-                    repeatSkill.InitOrigin(this, value);
-                    SkillBook.SkillGroupsDict.AddGroup(templateID, new SkillGroup(repeatSkill));
-                }
-                else
-                {
-                    for (int i = templateID; i < templateID + (int)value.MaxGrade; ++i)
-                    {
-                        if (Managers.Data.SkillsDict.TryGetValue(i, out Data.SkillData data) == false)
-                            Utils.LogCritical(nameof(CreatureController), nameof(LoadRepeatSkills), $"TemplateID : {templateID}");
-
-                        GameObject go = Managers.Resource.Instantiate(data.PrimaryLabel);
-                        //go.name = $"{go.name}_[{data.TemplateID}]";
-                        go.transform.SetParent(goRepeatSkills.transform);
-
-                        RepeatSkill repeatSkill = go.GetComponent<RepeatSkill>();
-                        repeatSkill.InitOrigin(this, data);
-                        SkillBook.SkillGroupsDict.AddGroup(i, new SkillGroup(repeatSkill));
-                    }
+                    repeatSkill.InitOrigin(this, data);
+                    SkillBook.SkillGroupsDict.AddGroup(i, new SkillGroup(repeatSkill));
                 }
             }
         }
 
-        private void LoadSequenceSkills(Data.InitialCreatureData creatureData) { /* DO SOMETHING */ }
+        private void LoadSequenceSkills(Data.InitialCreatureData creatureData)
+        {
+            GameObject goSequenceSkills = new GameObject { name = "@SequenceSkills" };
+            goSequenceSkills.transform.SetParent(SkillBook.transform);
+            goSequenceSkills.transform.localPosition = Vector3.zero;
+            goSequenceSkills.transform.localScale = Vector3.one;
+            foreach (Define.TemplateIDs.Status.Skill templateOrigin in creatureData.SequenceSkillList)
+            {
+                int templateID = (int)templateOrigin;
+                if (Managers.Data.SkillsDict.TryGetValue(templateID, out SkillData dataOrigin) == false)
+                    Utils.LogCritical(nameof(CreatureController), nameof(LoadRepeatSkills), $"TemplateID : {templateID}");
+
+                for (int i = templateID; i < templateID + (int)dataOrigin.MaxGrade; ++i)
+                {
+                    SkillData data = Managers.Data.SkillsDict[i];
+                    GameObject go = Managers.Resource.Instantiate(data.PrimaryLabel);
+                    go.transform.SetParent(goSequenceSkills.transform);
+                    go.transform.localPosition = Vector3.zero;
+                    go.transform.localScale = Vector3.one;
+
+                    SequenceSkill sequenceSkill = go.GetComponent<SequenceSkill>();
+                    sequenceSkill.InitOrigin(this, data);
+                    SkillBook.SkillGroupsDict.AddGroup(templateID, new SkillGroup(sequenceSkill));
+                }
+            }
+        }
 
         protected virtual void InitCreatureRenderer(Data.InitialCreatureData creatureData)
         {
@@ -449,38 +464,83 @@ namespace STELLAREST_2D
 //         yield break;
 // }
 
-  // public void UpgradeBonusBuff(SkillBase skill, int templateID)
-        // {
-        //     Data.BuffSkillData buffSkillData = Managers.Data.BuffSkillsDict[templateID];
-        //     string label = buffSkillData.PrimaryLabel;
-        //     GameObject go = Managers.Resource.Instantiate(label, pooling: false);
-        //     BuffBase buff = go.GetComponent<BuffBase>();
-        //     buff.StartBuff(this, skill, buffSkillData);
-        //     this.Buff = buff;
-        // }
+// public void UpgradeBonusBuff(SkillBase skill, int templateID)
+// {
+//     Data.BuffSkillData buffSkillData = Managers.Data.BuffSkillsDict[templateID];
+//     string label = buffSkillData.PrimaryLabel;
+//     GameObject go = Managers.Resource.Instantiate(label, pooling: false);
+//     BuffBase buff = go.GetComponent<BuffBase>();
+//     buff.StartBuff(this, skill, buffSkillData);
+//     this.Buff = buff;
+// }
 
-        // public bool this[Define.TemplateIDs.CCType cc]
-        // {
-        //     get => _ccStates[(int)cc];
-        //     set
-        //     {
-        //         // 일단 몬스터만 적용한거라.
-        //         _ccStates[(int)cc] = value;
-        //         if (_ccStates[(int)Define.TemplateIDs.CCType.Stun])
-        //         {
-        //             CreatureState = Define.CreatureState.Idle;
-        //             BodyCollider.isTrigger = true;
-        //             SkillBook.StopSkills();
-        //         }
-        //         else if (_ccStates[(int)Define.TemplateIDs.CCType.Stun] == false)
-        //             SkillBook.Stopped = false;
-        //         // 이후, 그밖에 ccState가 중복되었을 때 처리...
+// public bool this[Define.TemplateIDs.CCType cc]
+// {
+//     get => _ccStates[(int)cc];
+//     set
+//     {
+//         // 일단 몬스터만 적용한거라.
+//         _ccStates[(int)cc] = value;
+//         if (_ccStates[(int)Define.TemplateIDs.CCType.Stun])
+//         {
+//             CreatureState = Define.CreatureState.Idle;
+//             BodyCollider.isTrigger = true;
+//             SkillBook.StopSkills();
+//         }
+//         else if (_ccStates[(int)Define.TemplateIDs.CCType.Stun] == false)
+//             SkillBook.Stopped = false;
+//         // 이후, 그밖에 ccState가 중복되었을 때 처리...
 
-        //         if (_ccStates[(int)Define.TemplateIDs.CCType.KnockBack])
-        //         {
-        //         }
-        //         else if (_ccStates[(int)Define.TemplateIDs.CCType.KnockBack] == false)
-        //         {
-        //         }
-        //     }ßß
-        // }
+//         if (_ccStates[(int)Define.TemplateIDs.CCType.KnockBack])
+//         {
+//         }
+//         else if (_ccStates[(int)Define.TemplateIDs.CCType.KnockBack] == false)
+//         {
+//         }
+//     }ßß
+// }
+
+// ------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------
+// int templateID = (int)templateOrigin; // 200200
+// if (Managers.Data.SkillsDict.TryGetValue(templateID, out Data.SkillData value) == false)
+//     Utils.LogCritical(nameof(CreatureController), nameof(LoadRepeatSkills), $"TemplateID : {templateID}");
+
+// if (value.Grade == value.MaxGrade)
+// {
+//     GameObject go = Managers.Resource.Instantiate(value.PrimaryLabel);
+//     //go.name = $"{go.name}_[{value.TemplateID}]";
+//     go.transform.SetParent(goRepeatSkills.transform);
+
+//     RepeatSkill repeatSkill = go.GetComponent<RepeatSkill>();
+//     repeatSkill.InitOrigin(this, value);
+//     SkillBook.SkillGroupsDict.AddGroup(templateID, new SkillGroup(repeatSkill));
+// }
+// else
+// {
+//     for (int i = templateID; i < templateID + (int)value.MaxGrade; ++i)
+//     {
+//         if (Managers.Data.SkillsDict.TryGetValue(i, out Data.SkillData data) == false)
+//             Utils.LogCritical(nameof(CreatureController), nameof(LoadRepeatSkills), $"TemplateID : {templateID}");
+
+//         GameObject go = Managers.Resource.Instantiate(data.PrimaryLabel);
+//         //go.name = $"{go.name}_[{data.TemplateID}]";
+//         go.transform.SetParent(goRepeatSkills.transform);
+
+//         RepeatSkill repeatSkill = go.GetComponent<RepeatSkill>();
+//         repeatSkill.InitOrigin(this, data);
+//         SkillBook.SkillGroupsDict.AddGroup(i, new SkillGroup(repeatSkill));
+//     }
+// }
+
+// if (value.Grade == value.MaxGrade)
+// {
+//     GameObject go = Managers.Resource.Instantiate(value.PrimaryLabel);
+//     go.transform.SetParent(goSequenceSkills.transform);
+//     go.transform.localPosition = Vector3.zero;
+//     go.transform.localScale = Vector3.one;
+
+//     SequenceSkill sequenceSkill = go.GetComponent<SequenceSkill>();
+//     sequenceSkill.InitOrigin(this, value);
+//     SkillBook.SkillGroupsDict.AddGroup(templateID, new SkillGroup(sequenceSkill));
+// }

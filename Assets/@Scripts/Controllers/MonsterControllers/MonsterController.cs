@@ -1,9 +1,10 @@
 using System;
 using System.Collections;
-using Unity.VisualScripting;
-using UnityEditor;
+using STELLAREST_2D.UI;
 using UnityEngine;
 using UnityEngine.Rendering;
+
+using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 
 namespace STELLAREST_2D
 {
@@ -53,6 +54,7 @@ namespace STELLAREST_2D
                 {
                     _action = true;
                     this.CreatureState = Define.CreatureState.Run;
+                    this.SkillBook.LevelUp(SkillTemplate.BodyAttack); // TEMP
                     yield break;
                 }
 
@@ -68,25 +70,40 @@ namespace STELLAREST_2D
         }
         // TEMP
 
+        // +++++ RUN STATE (UPDATE) +++++
         private void FixedUpdate()
         {
-            PlayerController target = Managers.Game.Player;
-            if (target.IsValid() == false)
-                return;
-
-            Vector3 toTarget = (target.transform.position - transform.position);
-            if (this.LockFlip == false)
-                Flip(toTarget.x > 0 ? -1 : 1);
-
-            if (this._action == false)
-                return;
-
-            // if (this.IsRun)
+            // MainTarget = Managers.Game.Player;
+            // if (MainTarget.IsValid() == false && MainTarget != null)
             // {
-            //     Vector3 followTarget = this.transform.position + toTarget.normalized * Stat.MovementSpeed * Time.deltaTime;
-            //     //transform.position += toTarget.normalized * Stat.MovementSpeed * Time.deltaTime;
-            //     this.RigidBody.MovePosition(followTarget);
+            //     MainTarget = null;
+            //     return;
             // }
+
+            // Vector3 toTargetDir = (MainTarget.transform.position - transform.position);
+            // if (this.LockFlip == false)
+            //     Flip(toTargetDir.x > 0 ? -1 : 1);
+
+            // if (this._action == false)
+            //     return;
+
+            // if (this.CreatureState != Define.CreatureState.Run)
+            //     return;
+            // else
+            //     MoveToTarget(toTargetDir);
+        }
+
+        private void MoveToTarget(Vector3 target)
+        {
+            Vector3 moveToTarget = this.transform.position + (target.normalized * Stat.MovementSpeed * Time.deltaTime);
+            this.RigidBody.MovePosition(moveToTarget);
+
+            //Utils.Log($"SQR DIST : {(target - this.transform.position).sqrMagnitude}");
+            // TEMP
+            if ((target - this.transform.position).sqrMagnitude < 40)
+            {
+                SkillBook.Activate(SkillTemplate.BodyAttack);
+            }
         }
 
         public override void UpdateAnimation()

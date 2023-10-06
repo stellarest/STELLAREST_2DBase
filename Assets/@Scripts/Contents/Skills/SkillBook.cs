@@ -95,7 +95,7 @@ namespace STELLAREST_2D
                     if (i == 0)
                     {
                         SkillBase unlockSkill = Members[0].Unlock();
-                        if (unlockSkill.Data.IsExclusive)
+                        if (unlockSkill.Data.HasEventHandler)
                         {
                             if (unlockSkill.Data.SkillType == Define.SkillType.Repeat)
                             {
@@ -109,7 +109,7 @@ namespace STELLAREST_2D
                     else // REST OF SKILLS
                     {
                         SkillBase deactiveSkill = Members[i - 1].DeactiveForce();
-                        if (deactiveSkill.Data.IsExclusive)
+                        if (deactiveSkill.Data.HasEventHandler)
                         {
                             if (deactiveSkill.Data.SkillType == Define.SkillType.Repeat)
                             {
@@ -119,7 +119,7 @@ namespace STELLAREST_2D
                         }
 
                         SkillBase unlockSkill = Members[i].Unlock();
-                        if (unlockSkill.Data.IsExclusive)
+                        if (unlockSkill.Data.HasEventHandler)
                         {
                             if (unlockSkill.Data.SkillType == Define.SkillType.Repeat)
                             {
@@ -154,7 +154,7 @@ namespace STELLAREST_2D
                 if (Members[i].IsLast == false)
                     continue;
 
-                if (Members[i].IsLearned && Members[i].IsLearned)
+                if (Members[i].IsLearned && Members[i].IsLast)
                 {
                     Members[i].SetActiveLog(true);
                     Members[i].SkillOrigin.Activate();
@@ -207,8 +207,6 @@ namespace STELLAREST_2D
         [field: SerializeField] public List<SkillMember> Members { get; private set; } = null;
     }
 
-    // 일종의 소형 스킬 매니저. QuestBook도 이런식으로 파주면 관리하기 편해짐
-    // 이런거 만드는건 "진짜 자유롭게" 만들라고함
     [System.Serializable]
     public class SkillBook : MonoBehaviour
     {
@@ -218,13 +216,13 @@ namespace STELLAREST_2D
         [System.Serializable] public class SkillGroupDictionary : SerializableGroupDictionary<int, SkillGroup> { }
         [field: SerializeField] public SkillGroupDictionary SkillGroupsDict { get; private set; } = new SkillGroupDictionary();
 
-        //=> FirstExclusiveSkill = (SkillTemplate)SkillGroupsDict.First().Key;
         public void SetFirstExclusiveSkill()
             => FirstExclusiveSkill = (SkillGroupsDict.Count > 0) ? (SkillTemplate)SkillGroupsDict.First().Key : SkillTemplate.None;
 
         public void LevelUp(SkillTemplate templateOrigin)
         {
             SkillBase newSkill = Acquire(templateOrigin);
+            // DO SOMETHING AFTER WHEN YOU NEED
         }
 
         private SkillBase Acquire(SkillTemplate templateOrigin)
@@ -296,7 +294,7 @@ namespace STELLAREST_2D
                 for (int i = 0; i < pair.Value.MemberCount; ++i)
                 {
                     SkillBase skillOrigin = pair.Value.Members[i].SkillOrigin;
-                    if (skillOrigin.Data.IsExclusive)
+                    if (skillOrigin.Data.HasEventHandler)
                     {
                         if (skillOrigin.Data.SkillType == Define.SkillType.Repeat)
                         {
