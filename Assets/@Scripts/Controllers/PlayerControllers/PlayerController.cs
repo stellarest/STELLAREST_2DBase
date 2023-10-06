@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -191,6 +192,13 @@ namespace STELLAREST_2D
             if (Input.GetKeyDown(KeyCode.U))
                 Utils.Log("MON COUNT : " + Managers.Object.Monsters.Count);
 #endif
+
+            // if (Input.GetKeyDown(KeyCode.L))
+            // {
+            //     Utils.LogBreak(this.RendererController.PlayerEyesSPR != null);
+            //     Utils.LogBreak($"Name : {this.RendererController.PlayerEyesSPR.gameObject.name}" );
+            // }
+
             MoveByJoystick();
             CollectEnv();
         }
@@ -284,6 +292,9 @@ namespace STELLAREST_2D
 
                 case EnvTemplate.DamageFont:
                     return (transform.position + (Vector3.up * 2.5f));
+
+                case EnvTemplate.Dodge:
+                    return (transform.position + (Vector3.up * 2.95f));
 
                 default:
                     return base.LoadVFXEnvSpawnPos(templateOrigin);

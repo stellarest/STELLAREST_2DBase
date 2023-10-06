@@ -45,6 +45,8 @@ namespace STELLAREST_2D
         public enum HitFromType { None = -1, ThrowingStar = 1, LazerBolt = 2, All = 9 }
         //public enum ImpactHits { None, Leaves, CriticalHit, }
 
+        public enum MaterialType { None = -1, Hit = 1, Hologram = 2 }
+
         public static class TemplateIDs
         {
             public static class Creatures
@@ -200,6 +202,7 @@ namespace STELLAREST_2D
                     KnockBack = 500101,
                     Spawn = 500102,
                     DamageFont = 500103,
+                    Dodge = 500104,
                     Max = 999,
                 }
             }
@@ -223,7 +226,7 @@ namespace STELLAREST_2D
                 public const string VFX_ENV_DMG_TEXT_TO_MONSTER_CRITICAL = "VFX_Env_DmgText_ToMonsterCritical.prefab";
 
                 public const string VFX_ENV_DMG_NUMBER_TO_PLAYER = "VFX_Env_DmgNumber_ToPlayer.prefab";
-                public const string VFX_ENV_DMG_TEXT_TO_PLAYER_DODGE = "VFX_Env_DmgText_ToPlayerDodge";
+                public const string VFX_ENV_DMG_TEXT_TO_PLAYER_DODGE = "VFX_Env_DmgText_ToPlayerDodge.prefab";
                 public const string VFX_ENV_DMG_NUMBER_TO_SHIELD = "VFX_Env_DmgNumber_ToShield.prefab";
                 public const string VFX_ENV_SPAWN = "VFX_Env_Spawn.prefab";
 

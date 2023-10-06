@@ -84,6 +84,26 @@ namespace STELLAREST_2D
         private Dictionary<CreatureController, Moderator> _moderatorDict = null;
         public bool IsChangingMaterial { get; private set; } = false;
         private Define.InGameGrade _currentKeyGrade = Define.InGameGrade.Default;
+
+        // TODO : OwnerSPRs[i].gameObject.name.Contains("Eyes") : 이 부분 그냥 처음부터 초기화할 때 캐싱해둬야할 것 같음.
+        // Player Eyes Sprite Renderer 미리 캐싱해야함
+        private Sprite _playerEyesSprite = null;
+        public Sprite PlayerEyesSprite 
+        { 
+            get
+            {
+                if (this.IsPlayer == false)
+                {
+                    Utils.LogStrong(nameof(RendererController), nameof(PlayerEyesSprite), $"Monster tries to get acccess \"PlayerEyesSprite\"");
+                    return null;
+                }
+
+                return _playerEyesSprite;
+            }
+
+            private set => _playerEyesSprite = value;
+        }
+
         
         public void InitRendererController(CreatureController owner, InitialCreatureData initialCreatureData)
         {
@@ -103,6 +123,9 @@ namespace STELLAREST_2D
             BaseContainer[] BCs = new BaseContainer[SPRs.Length];
             for (int i = 0; i < SPRs.Length; ++i)
             {
+                if (this.IsPlayerEyes(SPRs[i]))
+                    this._playerEyesSprite = SPRs[i].sprite;
+
                 Material matOrigin = new Material(SPRs[i].sharedMaterial);
                 Color colorOrigin = SPRs[i].color;
                 BCs[i] = new BaseContainer(SPRs[i].name, matOrigin, colorOrigin);
@@ -144,44 +167,106 @@ namespace STELLAREST_2D
             _moderatorDict.Add(owner, moderator);
         }
 
-        public void ChangeMaterial(Material mat, float resetDelay)
+        // TEMP
+        public void ChangeMaterial(Define.MaterialType changeMatType, Material mat, float resetDelay)
         {
-            Sprite eyesOrigin = null;
+            switch (changeMatType)
+            {
+                case Define.MaterialType.None:
+                    IsChangingMaterial = false;
+                    break;
+
+                case Define.MaterialType.Hit:
+                    Hit(mat, resetDelay);
+                    break;
+
+                case Define.MaterialType.Hologram:
+                    DoHologram(mat, resetDelay);
+                    break;
+            }
+        }
+
+        private void DoHologram(Material mat, float resetDelay)
+        {
             if (this.IsChangingMaterial == false)
             {
-                IsChangingMaterial = true;
+                this.IsChangingMaterial = true;
                 for (int i = 0; i < OwnerSPRs.Length; ++i)
                 {
-                    // TEMP
-                    if (OwnerSPRs[i].gameObject.name.Contains("Eyes"))
-                    {
-                        eyesOrigin = OwnerSPRs[i].sprite;
+                    if (this.IsPlayerEyes(OwnerSPRs[i]))
                         OwnerSPRs[i].sprite = null;
-                    }
 
                     if (OwnerSPRs[i].sprite != null)
                         OwnerSPRs[i].material = mat;
                 }
 
-                StartCoroutine(ResetDelay(resetDelay, eyesOrigin));
+                StartCoroutine(CoHologram(resetDelay));
+                IsChangingMaterial = false;
             }
         }
 
-        private IEnumerator ResetDelay(float resetDelay, Sprite eyesSprite)
+        private IEnumerator CoHologram(float resetDelay)
+        {
+            float percent = 0f;
+            while (percent < 1f)
+            {
+                Managers.VFX.Mat_Hologram.SetFloat(Managers.VFX.SHADER_HOLOGRAM, percent);
+                percent += Time.deltaTime * 20f;
+                yield return null;
+            }
+
+            percent = 1f;
+            float elapsedTime = 0f;
+            while (percent > 0f)
+            {
+                Managers.VFX.Mat_Hologram.SetFloat(Managers.VFX.SHADER_HOLOGRAM, percent);
+                elapsedTime += Time.deltaTime;
+                percent = 1f - (elapsedTime * 20f);
+                yield return null;
+            }
+
+            BaseContainer[] BCs = this.BaseContainers(_currentKeyGrade);
+            for (int i = 0; i < OwnerSPRs.Length; ++i)
+            {
+                if (this.IsPlayerEyes(OwnerSPRs[i]))
+                    OwnerSPRs[i].sprite = PlayerEyesSprite;
+
+                OwnerSPRs[i].material = BCs[i].MatOrigin;
+            }
+        }
+
+        public void Hit(Material mat, float resetDelay)
+        {
+            if (this.IsChangingMaterial == false)
+            {
+                IsChangingMaterial = true;
+                for (int i = 0; i < OwnerSPRs.Length; ++i)
+                {
+                    if (this.IsPlayerEyes(OwnerSPRs[i]))
+                        OwnerSPRs[i].sprite = null;
+
+                    if (OwnerSPRs[i].sprite != null)
+                        OwnerSPRs[i].material = mat;
+                }
+
+                StartCoroutine(ResetDelay(resetDelay));
+            }
+        }
+
+        private IEnumerator ResetDelay(float resetDelay)
         {
             yield return new WaitForSeconds(resetDelay);
-            ResetMaterial(eyesSprite);
+            ResetMaterial();
             IsChangingMaterial = false;
         }
 
-        public void ResetMaterial(Sprite eyesOrigin)
+        public void ResetMaterial()
         {
             BaseContainer[] BCs = this.BaseContainers(_currentKeyGrade);
-
             for (int i = 0; i < OwnerSPRs.Length; ++i)
             {
-                if (OwnerSPRs[i].gameObject.name.Contains("Eyes"))
-                    OwnerSPRs[i].sprite = eyesOrigin;
+                if (this.IsPlayerEyes(OwnerSPRs[i]))
+                    OwnerSPRs[i].sprite = PlayerEyesSprite;
 
                 OwnerSPRs[i].material = BCs[i].MatOrigin;
             }
@@ -234,6 +319,9 @@ namespace STELLAREST_2D
 
         //     yield return null;
         // }
+
+        private bool IsPlayer => this.Owner?.IsPlayer() == true;
+        private bool IsPlayerEyes(SpriteRenderer spr) => IsPlayer && spr.gameObject.name.Contains("Eyes");
 
         private SpriteRenderer[] SpriteRenderers(Define.InGameGrade grade)
             => _moderatorDict.TryGetValue(this.Owner, out Moderator value) ? value.GetSpriteRenderers(grade) : null;

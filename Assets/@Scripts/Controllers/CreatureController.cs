@@ -227,6 +227,8 @@ namespace STELLAREST_2D
             if (dmgResult == -1f && isCritical == false)
             {
                 // DODGE
+                Managers.VFX.Hologram(this);
+                Managers.VFX.Environment(EnvTemplate.Dodge, this);
                 return;
             }
 

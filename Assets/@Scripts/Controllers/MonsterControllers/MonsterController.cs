@@ -98,7 +98,7 @@ namespace STELLAREST_2D
             Vector3 toTargetDir = (target.Center.transform.position - this.Center.transform.position);
             Vector3 toTargetMovement = this.transform.position + (toTargetDir.normalized * Stat.MovementSpeed * Time.deltaTime);
             this.RigidBody.MovePosition(toTargetMovement);
-            Utils.Log($"Target to dist : {toTargetDir.sqrMagnitude}");
+            // Utils.Log($"Target to dist : {toTargetDir.sqrMagnitude}");
             if (toTargetDir.sqrMagnitude < this.Stat.CollectRange * this.Stat.CollectRange) // 25f
             {
                 this.CreatureState = Define.CreatureState.Skill;

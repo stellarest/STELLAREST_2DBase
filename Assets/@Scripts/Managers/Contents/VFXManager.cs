@@ -15,11 +15,15 @@ namespace STELLAREST_2D
     {
         public Material MatHit_Monster { get; private set; } = null;
         public Material MatHit_Player { get; private set; } = null;
+        public Material Mat_Hologram { get; private set; } = null;
+
+        public int SHADER_HOLOGRAM = Shader.PropertyToID("_HologramFade");
 
         public void Init()
         {
             MatHit_Monster = Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_HIT_WHITE);
             MatHit_Player = Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_HIT_RED);
+            Mat_Hologram = Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_HOLOGRAM);
         }
 
         private const float HIT_RESET_DELAY = 0.1f;
@@ -29,9 +33,21 @@ namespace STELLAREST_2D
                 return;
 
             if (cc.IsMonster())
-                cc.RendererController.ChangeMaterial(MatHit_Monster, HIT_RESET_DELAY);
+                cc.RendererController.ChangeMaterial(Define.MaterialType.Hit, MatHit_Monster, HIT_RESET_DELAY);
             else
-                cc.RendererController.ChangeMaterial(MatHit_Player, HIT_RESET_DELAY);
+                cc.RendererController.ChangeMaterial(Define.MaterialType.Hit, MatHit_Player, HIT_RESET_DELAY);
+        }
+
+        public void Hologram(CreatureController cc)
+        {
+            if (cc.IsValid() == false)
+                return;
+
+            if (cc.IsMonster() == false)
+            {
+                cc.RendererController.ChangeMaterial(Define.MaterialType.Hologram, Mat_Hologram, HIT_RESET_DELAY);
+                // START COROUTINE
+            }
         }
 
         // Critical Ratio of all of monsters is zero.
@@ -87,20 +103,20 @@ namespace STELLAREST_2D
             switch (templateOrigin)
             {
                 case ImpactTemplate.Hit:
-                {
-                    GameObject go = Managers.Resource.Instantiate(Define.Labels.Prefabs.IMPACT_CRITICAL_HIT_EFFECT, null, true);
-                    go.transform.position = impactPoint;
-                }
-                break;
+                    {
+                        GameObject go = Managers.Resource.Instantiate(Define.Labels.Prefabs.IMPACT_CRITICAL_HIT_EFFECT, null, true);
+                        go.transform.position = impactPoint;
+                    }
+                    break;
             }
         }
 
         public void Environment(EnvTemplate templateOrigin, CreatureController target)
         {
             Vector3 spawnPos = Vector3.zero;
-            spawnPos = (target?.IsPlayer() == false && target.GetComponent<MonsterController>() != null) 
-                        ? target.GetComponent<MonsterController>().LoadVFXEnvSpawnPos(templateOrigin) 
-                        : Vector3.zero;
+            spawnPos = (target?.IsPlayer() == false && target.GetComponent<MonsterController>() != null)
+                        ? target.GetComponent<MonsterController>().LoadVFXEnvSpawnPos(templateOrigin)
+                        : target.GetComponent<PlayerController>().LoadVFXEnvSpawnPos(templateOrigin);
 
 #if UNITY_EDITOR
             if (spawnPos == Vector3.zero)
@@ -110,8 +126,19 @@ namespace STELLAREST_2D
             switch (templateOrigin)
             {
                 case EnvTemplate.Spawn:
-                    GameObject go = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_ENV_SPAWN, null, true);
-                    go.transform.position = spawnPos;
+                    {
+                        GameObject go = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_ENV_SPAWN, null, true);
+                        go.transform.position = spawnPos;
+                    }
+                    break;
+
+                case EnvTemplate.Dodge:
+                    {
+                        Managers.Resource.Load<GameObject>(Define.Labels.Prefabs.VFX_ENV_DMG_TEXT_TO_PLAYER_DODGE)
+                                         .GetComponent<DamageNumber>().Spawn(spawnPos);
+                        // GameObject go = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_ENV_DMG_TEXT_TO_PLAYER_DODGE, null, false);
+                        // go.transform.position = spawnPos;
+                    }
                     break;
             }
         }
