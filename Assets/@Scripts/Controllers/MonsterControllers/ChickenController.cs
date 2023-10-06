@@ -4,6 +4,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 using EnvTemplate = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
+using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 
 namespace STELLAREST_2D
 {
@@ -13,6 +14,22 @@ namespace STELLAREST_2D
         {
             base.Init(templateID);
             CreatureState = Define.CreatureState.Idle;
+        }
+
+        protected override void SetInitialState()
+        {
+            this.CreatureState = Define.CreatureState.Run;
+            this.SkillBook.LevelUp(SkillTemplate.BodyAttack); // TEMP
+        }
+
+        protected override void RunSkill()
+        {
+            if (this.SkillBook != null)
+            {
+                this.MonsterAnimController.Attack();
+                //this.SkillBook.Activate(SkillTemplate.BodyAttack);
+                this.SkillBook.ActivateSequence(SkillTemplate.BodyAttack);
+            }
         }
 
         public override Vector3 LoadVFXEnvSpawnPos(EnvTemplate templateOrigin)

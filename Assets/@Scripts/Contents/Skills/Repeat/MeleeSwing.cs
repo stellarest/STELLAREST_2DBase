@@ -48,7 +48,7 @@ namespace STELLAREST_2D
 
         protected override void DoSkillJob()
         {
-            Owner.CreatureState = Define.CreatureState.Attack;
+            Owner.CreatureState = Define.CreatureState.Skill;
         }
 
         protected override IEnumerator CoCloneSkill() => base.CoCloneSkill();

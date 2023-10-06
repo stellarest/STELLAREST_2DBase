@@ -147,7 +147,8 @@ namespace STELLAREST_2D
 
             LoadRepeatSkills(creatureData);
             LoadSequenceSkills(creatureData);
-            this.SkillBook.SetFirstExclusiveSkill();
+            this.SkillBook.LateInit();
+            //this.SkillBook.SetFirstExclusiveSkill();
         }
 
         private void LoadRepeatSkills(Data.InitialCreatureData creatureData)
@@ -213,6 +214,8 @@ namespace STELLAREST_2D
                 SetSortingOrder();
             }
         }
+
+        protected virtual void RunSkill() { }
 
         public virtual void OnDamaged(CreatureController attacker, SkillBase from)
         {
@@ -328,8 +331,7 @@ namespace STELLAREST_2D
         public virtual float ADDITIONAL_SPAWN_WIDTH { get; protected set; } = 0f;
         public virtual float ADDITIONAL_SPAWN_HEIGHT { get; protected set; } = 0f;
 
-        public virtual Vector3 LoadVFXEnvSpawnPos(EnvTemplate templateOrigin) => Vector3.zero;
-
+        public virtual Vector3 LoadVFXEnvSpawnPos(EnvTemplate templateOrigin) => this.Center.transform.position;
         public bool IsRun => this.CreatureState == Define.CreatureState.Run;
     }
 }

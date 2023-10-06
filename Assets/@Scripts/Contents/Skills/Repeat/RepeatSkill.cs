@@ -8,8 +8,6 @@ namespace STELLAREST_2D
 {
     public abstract class RepeatSkill : SkillBase
     {
-        private Coroutine _coSkillActivate = null;
-
         public override void Activate()
         {
             base.Activate();

@@ -1,11 +1,10 @@
 using System;
 using System.Collections;
-using System.ComponentModel;
 using System.Linq;
-using UnityEditor.Rendering.Universal;
 using UnityEngine;
 using UnityEngine.Rendering;
 
+using EnvTemplate = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
 using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 
 namespace STELLAREST_2D
@@ -116,9 +115,9 @@ namespace STELLAREST_2D
         {
             flag1 = !flag1;
             if (flag1)
-                SkillBook.Activate(SkillBook.FirstExclusiveSkill);
+                SkillBook.Activate(SkillBook.FirstSkill);
             else
-                SkillBook.Deactivate(SkillBook.FirstExclusiveSkill);
+                SkillBook.Deactivate(SkillBook.FirstSkill);
         }
 
         private bool flag2 = false;
@@ -208,8 +207,9 @@ namespace STELLAREST_2D
                     PlayerAnimController.Run();
                     break;
 
-                case Define.CreatureState.Attack:
-                    PlayerAnimController.Attack();
+                case Define.CreatureState.Skill:
+                    //PlayerAnimController.Attack();
+                    RunSkill();
                     break;
             }
         }
@@ -272,6 +272,22 @@ namespace STELLAREST_2D
                 }
             }
             //Debug.Log($"Find Gem : {findGems.Count} / Total Gem : {allSpawnedGems.Count}");
+        }
+
+
+        public override Vector3 LoadVFXEnvSpawnPos(EnvTemplate templateOrigin)
+        {
+            switch (templateOrigin)
+            {
+                case EnvTemplate.Spawn:
+                    return (transform.position + (Vector3.up * 2.5f));
+
+                case EnvTemplate.DamageFont:
+                    return (transform.position + (Vector3.up * 2.5f));
+
+                default:
+                    return base.LoadVFXEnvSpawnPos(templateOrigin);
+            }
         }
 
         protected override void SetSortingOrder()

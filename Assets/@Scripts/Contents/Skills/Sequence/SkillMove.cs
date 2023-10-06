@@ -14,7 +14,7 @@ namespace STELLAREST_2D
         {
         }
 
-        public override void DoSkill(Action callback = null)
+        public override void DoSkillJob(Action callback = null)
         {
             if (_corouine != null)
                 StopCoroutine(_corouine);

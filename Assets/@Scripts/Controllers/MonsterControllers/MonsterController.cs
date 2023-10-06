@@ -3,7 +3,6 @@ using System.Collections;
 using STELLAREST_2D.UI;
 using UnityEngine;
 using UnityEngine.Rendering;
-
 using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 
 namespace STELLAREST_2D
@@ -41,7 +40,7 @@ namespace STELLAREST_2D
             Center = Utils.FindChild<Transform>(AnimTransform.gameObject, "Body", true);
         }
 
-        private IEnumerator CoStartAction()
+        protected virtual IEnumerator CoStartAction()
         {
             float delta = 0f;
             float desiredTime = LoadActionTime();
@@ -53,14 +52,15 @@ namespace STELLAREST_2D
                 if (percent > 1f)
                 {
                     _action = true;
-                    this.CreatureState = Define.CreatureState.Run;
-                    this.SkillBook.LevelUp(SkillTemplate.BodyAttack); // TEMP
+                    SetInitialState();
                     yield break;
                 }
 
                 yield return null;
             }
         }
+
+        protected virtual void SetInitialState() { }
 
         // TEMP
         public void Stop()
@@ -73,36 +73,35 @@ namespace STELLAREST_2D
         // +++++ RUN STATE (UPDATE) +++++
         private void FixedUpdate()
         {
-            // MainTarget = Managers.Game.Player;
-            // if (MainTarget.IsValid() == false && MainTarget != null)
-            // {
-            //     MainTarget = null;
-            //     return;
-            // }
+            MainTarget = Managers.Game.Player;
+            if (MainTarget.IsValid() == false && MainTarget != null)
+            {
+                MainTarget = null;
+                return;
+            }
 
-            // Vector3 toTargetDir = (MainTarget.transform.position - transform.position);
-            // if (this.LockFlip == false)
-            //     Flip(toTargetDir.x > 0 ? -1 : 1);
+            Vector3 toTargetDir = (MainTarget.Center.transform.position - transform.position);
+            if (this.LockFlip == false)
+                Flip(toTargetDir.x > 0 ? -1 : 1);
 
-            // if (this._action == false)
-            //     return;
+            if (this._action == false)
+                return;
 
-            // if (this.CreatureState != Define.CreatureState.Run)
-            //     return;
-            // else
-            //     MoveToTarget(toTargetDir);
+            if (this.CreatureState != Define.CreatureState.Run)
+                return;
+            else
+                MoveToTarget(MainTarget);
         }
 
-        private void MoveToTarget(Vector3 target)
+        protected virtual void MoveToTarget(CreatureController target)
         {
-            Vector3 moveToTarget = this.transform.position + (target.normalized * Stat.MovementSpeed * Time.deltaTime);
-            this.RigidBody.MovePosition(moveToTarget);
-
-            //Utils.Log($"SQR DIST : {(target - this.transform.position).sqrMagnitude}");
-            // TEMP
-            if ((target - this.transform.position).sqrMagnitude < 40)
+            Vector3 toTargetDir = (target.Center.transform.position - this.Center.transform.position);
+            Vector3 toTargetMovement = this.transform.position + (toTargetDir.normalized * Stat.MovementSpeed * Time.deltaTime);
+            this.RigidBody.MovePosition(toTargetMovement);
+            Utils.Log($"Target to dist : {toTargetDir.sqrMagnitude}");
+            if (toTargetDir.sqrMagnitude < this.Stat.CollectRange * this.Stat.CollectRange) // 25f
             {
-                SkillBook.Activate(SkillTemplate.BodyAttack);
+                this.CreatureState = Define.CreatureState.Skill;
             }
         }
 
@@ -116,6 +115,10 @@ namespace STELLAREST_2D
 
                 case Define.CreatureState.Run:
                     MonsterAnimController.Run();
+                    break;
+
+                case Define.CreatureState.Skill:
+                    RunSkill();
                     break;
             }
         }

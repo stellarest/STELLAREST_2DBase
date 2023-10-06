@@ -18,7 +18,7 @@ namespace STELLAREST_2D
         public float DashSpeed { get; } = 10f;
         public string AnimationName { get; } = "Charge";
 
-        public override void DoSkill(Action callback = null)
+        public override void DoSkillJob(Action callback = null)
         {
             if (_coroutine != null)
                 StopCoroutine(_coroutine);

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using STELLAREST_2D.Data;
+using Unity.VisualScripting;
 using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEditor.Rendering;
 using UnityEngine;
@@ -139,37 +140,51 @@ namespace STELLAREST_2D
                     moderator.AddRendererContainers(keyGrade, BCs, SPRs);
                 }
             }
-            
+
             _moderatorDict.Add(owner, moderator);
         }
 
         public void ChangeMaterial(Material mat, float resetDelay)
         {
+            Sprite eyesOrigin = null;
             if (this.IsChangingMaterial == false)
             {
                 IsChangingMaterial = true;
                 for (int i = 0; i < OwnerSPRs.Length; ++i)
                 {
+                    // TEMP
+                    if (OwnerSPRs[i].gameObject.name.Contains("Eyes"))
+                    {
+                        eyesOrigin = OwnerSPRs[i].sprite;
+                        OwnerSPRs[i].sprite = null;
+                    }
+
                     if (OwnerSPRs[i].sprite != null)
                         OwnerSPRs[i].material = mat;
                 }
 
-                StartCoroutine(ResetDelay(resetDelay));
+                StartCoroutine(ResetDelay(resetDelay, eyesOrigin));
             }
         }
 
-        private IEnumerator ResetDelay(float resetDelay)
+        private IEnumerator ResetDelay(float resetDelay, Sprite eyesSprite)
         {
             yield return new WaitForSeconds(resetDelay);
-            ResetMaterial();
+            ResetMaterial(eyesSprite);
             IsChangingMaterial = false;
         }
 
-        public void ResetMaterial()
+        public void ResetMaterial(Sprite eyesOrigin)
         {
             BaseContainer[] BCs = this.BaseContainers(_currentKeyGrade);
+
             for (int i = 0; i < OwnerSPRs.Length; ++i)
+            {
+                if (OwnerSPRs[i].gameObject.name.Contains("Eyes"))
+                    OwnerSPRs[i].sprite = eyesOrigin;
+
                 OwnerSPRs[i].material = BCs[i].MatOrigin;
+            }
         }
 
         public void Upgrade(Define.InGameGrade keyGrade)

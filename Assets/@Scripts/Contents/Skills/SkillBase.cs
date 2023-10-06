@@ -92,7 +92,7 @@ namespace STELLAREST_2D
             set
             {
                 _isLast = value;
-                if (_isLast == false) // When Upgrade Skill
+                if (_isLast == false) // When Upgrade Skills,,
                 {
                     if (this.IsStopped)
                     {
@@ -106,6 +106,8 @@ namespace STELLAREST_2D
         }
 
         public bool IsStopped { get; protected set; } = false;
+
+        protected Coroutine _coSkillActivate = null;
 
         public virtual void Activate()
         {
@@ -127,7 +129,7 @@ namespace STELLAREST_2D
                 Managers.Pool.ClearPool<SkillBase>(this.gameObject);
         }
 
-        protected Coroutine _coDestroy;
+        protected Coroutine _coDestroy = null;
         public void StartDestroy(float delaySeconds)
         {
             StopDestroy();
@@ -154,11 +156,3 @@ namespace STELLAREST_2D
         }
     }
 }
-
-
-// private float? _damageBuffRatio = null;
-// public float? DamageBuffRatio
-// {
-//     get => _damageBuffRatio;
-//     set => _damageBuffRatio = value;
-// }

@@ -7,7 +7,7 @@ namespace STELLAREST_2D
 {
     public class HeavensJudgement : SequenceSkill
     {
-        public override void DoSkill(Action callback = null)
+        public override void DoSkillJob(Action callback = null)
         {
         }
     }

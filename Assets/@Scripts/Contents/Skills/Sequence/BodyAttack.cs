@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Runtime.CompilerServices;
 using STELLAREST_2D.Data;
 using UnityEngine;
 
@@ -11,11 +10,16 @@ namespace STELLAREST_2D
         #region Temp Constant Options
         private const float DESIRED_TIME_TO_REACH = 0.15f;
         private const float DESIRED_TIME_TO_RETURN = 0.25f;
-        private const float DESIRED_TIME_TO_END_WAIT = 0.75f;
+        private const float DESIRED_TIME_TO_END_WAIT = 0.75f; // origin : 0.5f
         #endregion
-        private Vector3 _startPoint = Vector3.zero;
-        private Vector3 _targetPoint = Vector3.zero;
+        private Vector3 _startReachPoint = Vector3.zero;
+        private Vector3 _endReachPoint = Vector3.zero;
+
+        private Vector3 _startReturnPoint = Vector3.zero;
+        private Vector3 _endReturnPoint = Vector3.zero;
         private float _delta = 0f;
+
+        [SerializeField] private AnimationCurve _curveEaseOut = null;
 
         public override void InitOrigin(CreatureController owner, SkillData data)
         {
@@ -23,51 +27,47 @@ namespace STELLAREST_2D
             InitBodycolliderInfo();
         }
 
-        public override void DoSkill(Action callback = null)
-        {
-            Utils.LogBreak("ACTIVATE : BODYATTACK.");
-            //StartCoroutine(CoDoBodyAttack(callback));
-        }
+        public override void DoSkillJob(Action callback = null) 
+            => StartCoroutine(CoDoBodyAttack(callback));
 
         private IEnumerator CoDoBodyAttack(Action callback = null)
         {
+            if (this.Owner.MainTarget == null)
+                yield break;
+
+            Ready();
             while (true)
             {
-                yield return null;
-
-                if (this.Owner.MainTarget == null)
-                    yield break;
-
                 // NEED TO CALL FACE TO TARGET
-                Ready();
                 yield return new WaitUntil(() => ReachToTarget());
+                this.Owner.CreatureState = Define.CreatureState.Idle;
                 yield return new WaitUntil(() => Return());
                 yield return new WaitUntil(() => EndWait());
-                yield return null;
-
-                callback?.Invoke();
+                this.Owner.CreatureState = Define.CreatureState.Run;
+                yield break;
+                //callback?.Invoke();
             }
         }
 
         private void Ready()
         {
-            HitCollider.enabled = true;
-            _startPoint = this.Owner.transform.position;
-            _targetPoint = this.Owner.MainTarget.transform.position;
+            this.HitCollider.enabled = true;
+            _startReachPoint = this.Owner.transform.position;
+            _endReachPoint = this.Owner.MainTarget.Center.transform.position;
         }
 
         private bool ReachToTarget()
         {
-            _delta = Time.deltaTime;
+            _delta += Time.deltaTime;
             float percent = _delta / DESIRED_TIME_TO_REACH;
-            this.Owner.transform.position = Vector3.Lerp(_startPoint, _targetPoint, percent);
+            Utils.Log($"ReachToTarget Percent : {percent}");
+            this.Owner.transform.position = Vector3.Lerp(_startReachPoint, _endReachPoint, percent);
             if (percent > 1f)
             {
+                this.HitCollider.enabled = false;
                 _delta = 0f;
-                HitCollider.enabled = false;
-
-                _targetPoint = _startPoint;
-                _startPoint = this.Owner.transform.position;
+                _startReturnPoint = this.Owner.Center.transform.position;
+                _endReturnPoint = _startReachPoint;
                 return true;
             }
 
@@ -78,11 +78,10 @@ namespace STELLAREST_2D
         {
             _delta += Time.deltaTime;
             float percent = _delta / DESIRED_TIME_TO_RETURN;
-            this.Owner.transform.position = Vector3.Lerp(_startPoint, _targetPoint, percent);
+            this.Owner.transform.position = Vector3.Lerp(_startReturnPoint, _endReturnPoint, _curveEaseOut.Evaluate(percent));
             if (percent > 1f)
             {
                 _delta = 0f;
-                this.Owner.CreatureState = Define.CreatureState.Idle;
                 return true;
             }
 
@@ -119,6 +118,11 @@ namespace STELLAREST_2D
 
         private void OnTriggerEnter2D(Collider2D other)
         {
+            CreatureController cc = other.GetComponent<CreatureController>();
+            if (cc?.IsValid() == false)
+                return;
+
+            cc?.OnDamaged(this.Owner, this);
         }
     }
 }

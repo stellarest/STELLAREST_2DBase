@@ -42,7 +42,7 @@ namespace STELLAREST_2D
 
             Vector3 spawnPos = (cc?.IsPlayer() == false && cc.GetComponent<MonsterController>() != null)
                                 ? cc.GetComponent<MonsterController>().LoadVFXEnvSpawnPos(EnvTemplate.DamageFont)
-                                : Vector3.zero;
+                                : cc.GetComponent<PlayerController>().LoadVFXEnvSpawnPos(EnvTemplate.DamageFont);
 
 #if UNITY_EDITOR
             if (spawnPos == Vector3.zero)
