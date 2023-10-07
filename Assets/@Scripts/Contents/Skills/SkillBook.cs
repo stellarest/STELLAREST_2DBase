@@ -226,7 +226,6 @@ namespace STELLAREST_2D
             this.SetFirstSkill();
             // Utils.Log($"Owner : {this.Owner.gameObject.name}");
             // Utils.Log($"Ex Skill Key : {SkillGroupsDict.First().Key}");
-
             foreach (var group in SkillGroupsDict)
             {
                 for (int i = 0; i < group.Value.MemberCount; ++i)

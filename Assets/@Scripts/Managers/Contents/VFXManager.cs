@@ -27,6 +27,8 @@ namespace STELLAREST_2D
         }
 
         private const float HIT_RESET_DELAY = 0.1f;
+        private const float DODGE_HOLOGRAM_RESET_DELAY = 0f;
+
         public void Hit(CreatureController cc)
         {
             if (cc.IsValid() == false)
@@ -44,10 +46,7 @@ namespace STELLAREST_2D
                 return;
 
             if (cc.IsMonster() == false)
-            {
-                cc.RendererController.ChangeMaterial(Define.MaterialType.Hologram, Mat_Hologram, HIT_RESET_DELAY);
-                // START COROUTINE
-            }
+                cc.RendererController.ChangeMaterial(Define.MaterialType.Hologram, Mat_Hologram, DODGE_HOLOGRAM_RESET_DELAY);
         }
 
         // Critical Ratio of all of monsters is zero.
