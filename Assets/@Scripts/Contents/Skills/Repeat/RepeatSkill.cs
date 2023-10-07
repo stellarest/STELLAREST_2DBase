@@ -52,7 +52,7 @@ namespace STELLAREST_2D
             }
         }
 
-        public void OnCloneExclusiveRepeatSkillHandler()
+        public void OnCloneRepeatSkillHandler()
         {
             if (IsStopped)
                 return;

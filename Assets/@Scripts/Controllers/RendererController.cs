@@ -2,13 +2,38 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using STELLAREST_2D.Data;
-using Unity.VisualScripting;
-using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEditor.Rendering;
 using UnityEngine;
 
 namespace STELLAREST_2D
 {
+    [System.Serializable]
+    public class FaceExpressionLoader
+    {
+        public Define.FaceExpressionType FaceExpressionType;
+        public string EyebrowsPrimaryKey;
+        public string EyebrowsColorCode;
+
+        public string EyesPrimaryKey;
+        public string EyesColorCode;
+
+        public string MouthPrimaryKey;
+        public string MouthColorCode;
+    }
+
+    public class FaceExpression
+    {
+        public Sprite Eyebrows;
+        public Color EyebrowsColor;
+
+        public Sprite Eyes;
+        public Color EyesColor;
+
+        public Sprite Mouth;
+        public Color MouthColor;
+    }
+
+
     // +++++ Base Container +++++
     public class BaseContainer
     {
@@ -118,6 +143,9 @@ namespace STELLAREST_2D
 
             private set => _playerEyesSPR = value;
         }
+
+        public Dictionary<Define.FaceExpressionType, FaceExpression> FaceExpressionDict { get; private set; } 
+                                                    = new Dictionary<Define.FaceExpressionType, FaceExpression>();
         
         public void InitRendererController(CreatureController owner, InitialCreatureData initialCreatureData)
         {
@@ -131,12 +159,70 @@ namespace STELLAREST_2D
             if (this.IsPlayer)
                 InitOwnerEyes();
 
+            /*
+                    public string EyesPrimaryKey;
+                    public string EyesColorCode;
+
+                    public string MouthPrimaryKey;
+                    public string MouthColorCode;
+            */
+
+            // Color color = ColorUtility.HexToColor("#FFFFFF");
+
+            FaceExpressionLoader[] loaders = new FaceExpressionLoader[initialCreatureData.FaceExpressionsLoader.Length];
+            for (int i = 0; i < initialCreatureData.FaceExpressionsLoader.Length; ++i)
+            {
+                FaceExpression faceExpression = new FaceExpression();
+                
+                // Eyebrows
+                faceExpression.Eyebrows = Managers.Resource.Load<Sprite>(initialCreatureData.FaceExpressionsLoader[i].EyebrowsPrimaryKey);
+                if (ColorUtility.TryParseHtmlString(initialCreatureData.FaceExpressionsLoader[i].EyebrowsColorCode, out Color eyeBrowsColor))
+                    faceExpression.EyebrowsColor = eyeBrowsColor;
+                else
+                    Utils.LogStrong(nameof(RendererController), nameof(InitRendererController), $"Failed to set eyebrowsColor.");
+
+
+                // Eyes
+                faceExpression.Eyes = Managers.Resource.Load<Sprite>(initialCreatureData.FaceExpressionsLoader[i].EyesPrimaryKey);
+                if (ColorUtility.TryParseHtmlString(initialCreatureData.FaceExpressionsLoader[i].EyesColorCode, out Color eyesColor))
+                    faceExpression.EyesColor = eyesColor;
+                else
+                    Utils.LogStrong(nameof(RendererController), nameof(InitRendererController), $"Failed to set eyesColor.");
+
+
+                // Mouth
+                faceExpression.Mouth = Managers.Resource.Load<Sprite>(initialCreatureData.FaceExpressionsLoader[i].MouthPrimaryKey);
+                if (ColorUtility.TryParseHtmlString(initialCreatureData.FaceExpressionsLoader[i].MouthColorCode, out Color mouthColor))
+                    faceExpression.MouthColor = mouthColor;
+                else
+                    Utils.LogStrong(nameof(RendererController), nameof(InitRendererController), $"Failed to set mouthColor.");
+
+                FaceExpressionDict.Add(initialCreatureData.FaceExpressionsLoader[i].FaceExpressionType, faceExpression);
+            }
+
+
+            // CHECK 
+            foreach (KeyValuePair<Define.FaceExpressionType, FaceExpression> pair in FaceExpressionDict)
+            {
+                Utils.Log($"Key : {pair.Key}");
+                
+                Utils.Log($"Eyebrows : {pair.Value.Eyebrows}");
+                Utils.Log($"EyebrowsColor : {pair.Value.EyebrowsColor}");
+
+                Utils.Log($"Eyes : {pair.Value.Eyes}");
+                Utils.Log($"EyesColor : {pair.Value.EyesColor}");
+
+                Utils.Log($"Mouth : {pair.Value.Mouth}");
+                Utils.Log($"MouthColor : {pair.Value.MouthColor}");
+            }
+
+            Utils.LogBreak("BREAK");
+
             _moderatorDict = new Dictionary<CreatureController, Moderator>();
             Moderator moderator = new Moderator();
 
             GameObject go = Managers.Resource.Load<GameObject>(initialCreatureData.PrimaryLabel);
             SpriteRenderer[] SPRs = go.GetComponentsInChildren<SpriteRenderer>(includeInactive: true);
-            
             BaseContainer[] BCs = new BaseContainer[SPRs.Length];
             for (int i = 0; i < SPRs.Length; ++i)
             {

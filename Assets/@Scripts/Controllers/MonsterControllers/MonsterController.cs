@@ -52,7 +52,7 @@ namespace STELLAREST_2D
                 if (percent > 1f)
                 {
                     _action = true;
-                    SetInitialState();
+                    InitialActionState();
                     yield break;
                 }
 
@@ -60,7 +60,7 @@ namespace STELLAREST_2D
             }
         }
 
-        protected virtual void SetInitialState() { }
+        protected virtual void InitialActionState() { } // LATE INIT?
 
         // TEMP
         public void Stop()
@@ -68,9 +68,7 @@ namespace STELLAREST_2D
             this.CreatureState = Define.CreatureState.Idle;
             StartCoroutine(CoStartAction());
         }
-        // TEMP
 
-        // +++++ RUN STATE (UPDATE) +++++
         private void FixedUpdate()
         {
             MainTarget = Managers.Game.Player;
@@ -98,8 +96,7 @@ namespace STELLAREST_2D
             Vector3 toTargetDir = (target.Center.transform.position - this.Center.transform.position);
             Vector3 toTargetMovement = this.transform.position + (toTargetDir.normalized * Stat.MovementSpeed * Time.deltaTime);
             this.RigidBody.MovePosition(toTargetMovement);
-            // Utils.Log($"Target to dist : {toTargetDir.sqrMagnitude}");
-            if (toTargetDir.sqrMagnitude < this.Stat.CollectRange * this.Stat.CollectRange) // 25f
+            if (toTargetDir.sqrMagnitude < this.Stat.CollectRange * this.Stat.CollectRange)
             {
                 this.CreatureState = Define.CreatureState.Skill;
             }

@@ -8,6 +8,7 @@ using ImpactTemplate = STELLAREST_2D.Define.TemplateIDs.VFX.Impact;
 using EnvTemplate = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
 using Unity.VisualScripting;
 using System;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace STELLAREST_2D
 {
@@ -27,26 +28,27 @@ namespace STELLAREST_2D
         }
 
         private const float HIT_RESET_DELAY = 0.1f;
-        private const float DODGE_HOLOGRAM_RESET_DELAY = 0f;
-
-        public void Hit(CreatureController cc)
+        private const float HOLOGRAM_RESET_DELAY = 0f;
+        public void Material(Define.MaterialType matType, CreatureController cc)
         {
-            if (cc.IsValid() == false)
+            if (cc?.IsValid() == false)
                 return;
 
-            if (cc.IsMonster())
-                cc.RendererController.ChangeMaterial(Define.MaterialType.Hit, MatHit_Monster, HIT_RESET_DELAY);
-            else
-                cc.RendererController.ChangeMaterial(Define.MaterialType.Hit, MatHit_Player, HIT_RESET_DELAY);
-        }
+            switch (matType)
+            {
+                case Define.MaterialType.Hit:
+                    {
+                        if (cc.IsMonster())
+                            cc.RendererController.ChangeMaterial(matType, MatHit_Monster, HIT_RESET_DELAY);
+                        else
+                            cc.RendererController.ChangeMaterial(matType, MatHit_Player, HIT_RESET_DELAY);
+                    }
+                    break;
 
-        public void Hologram(CreatureController cc)
-        {
-            if (cc.IsValid() == false)
-                return;
-
-            if (cc.IsMonster() == false)
-                cc.RendererController.ChangeMaterial(Define.MaterialType.Hologram, Mat_Hologram, DODGE_HOLOGRAM_RESET_DELAY);
+                case Define.MaterialType.Hologram:
+                    cc.RendererController.ChangeMaterial(matType, Mat_Hologram, HOLOGRAM_RESET_DELAY);
+                    break;
+            }
         }
 
         // Critical Ratio of all of monsters is zero.
@@ -64,9 +66,9 @@ namespace STELLAREST_2D
                 Utils.LogCritical(nameof(VFXManager), nameof(Environment), "Failed to load VFX Env Spawn Pos.");
 #endif
 
-            if (cc.IsMonster()) // 이거 할필요 없을것같은데. 어차피 크리티컬은 몬스터만 받음
+            if (cc.IsMonster()) // 현재 크티티컬은 몬스터만 받아서 필요 없을수도
             {
-                if (isCritical)
+                if (isCritical) 
                 {
                     Managers.Resource.Load<GameObject>(Define.Labels.Prefabs.VFX_ENV_DMG_TEXT_TO_MONSTER_CRITICAL)
                                      .GetComponent<DamageNumber>().Spawn(spawnPos);

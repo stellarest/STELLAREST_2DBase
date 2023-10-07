@@ -20,10 +20,8 @@ namespace STELLAREST_2D
         public void Stand() => AnimController.Play(UPPER_STAND);
         public void Run() => AnimController.Play(LOWER_RUN);
 
-
         //public readonly int READY = Animator.StringToHash("Ready");
         public readonly int READY_BOW = Animator.StringToHash("ReadyBow");
-
         //public readonly int IDLE = Animator.StringToHash("Stand");
         public readonly int WALK = Animator.StringToHash("Walk");
 

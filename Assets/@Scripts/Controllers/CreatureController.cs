@@ -65,7 +65,6 @@ namespace STELLAREST_2D
         protected Vector3 _baseRootLocalScale = Vector3.zero;
         public PlayerController MainTarget { get; protected set; } = null;
 
-
         // +++ MAIN METHODS +++
         public override void Init(int templateID)
         {
@@ -80,7 +79,6 @@ namespace STELLAREST_2D
             InitCreatureRenderer(creatureData);
             _baseRootLocalScale = transform.localScale;
 
-            // CENTER 안잡으면 게임 못함
             if (Center == null)
                 Utils.LogCritical(nameof(CreatureController), nameof(Init), "You have to set \"Center\" in child before starting game.");
         }
@@ -227,16 +225,15 @@ namespace STELLAREST_2D
             if (dmgResult == -1f && isCritical == false)
             {
                 // DODGE
-                Managers.VFX.Hologram(this);
+                Managers.VFX.Material(Define.MaterialType.Hologram, this);
                 Managers.VFX.Environment(EnvTemplate.Dodge, this);
                 return;
             }
 
             this.Stat.Hp -= dmgResult;
-            Managers.VFX.Hit(this);
+            Managers.VFX.Material(Define.MaterialType.Hit, this);
             Managers.VFX.DamageFont(this, dmgResult, isCritical);
-            // Impact : 메모리 문제 발생할 것 같으면 크리티컬쪽에서 스폰
-            Managers.VFX.Impact(from.Data.VFX_Impact, this, from);
+            Managers.VFX.Impact(from.Data.VFX_Impact, this, from); // --> 메모리 걱정되면 크리티컬 쪽에서 스폰
 
             // STOP.
             if (this.Stat.Hp <= 0)

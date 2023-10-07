@@ -21,19 +21,16 @@ namespace STELLAREST_2D
         public enum ObjectType { None = -1, Player = 1, Monster, EliteMonster, Boss, Skill, Projectile, }
         public enum MonsterType { None = -1, Chicken = 1, }
 
-
         public enum InGameGrade { Default = 1, Elite, Ultimate }
         public enum InGameMode { Forest, Volcano }
         public enum InGameDifficulty { Normal, Hard, Expert, Master, Extreme }
         public const int STAGE_MAX_WAVE_COUNT = 20;
         public const int ABILITY_MAX_POINT = 8;
-     
         public enum WaveType { None, Elite, MiddleBoss, Boss }
         public enum SortingOrder { Map = 100, Player = 200, Item = 209, Monster = 210, Skill = 230, EnvEffect = 260 }
         public enum StageType { Normal, MiddleBoss, Boss, }
         // public enum CCStatus { None, Stun, KnockBack, Poisoned, Frozen, Cursed, Confused, Silent, Max }
         public enum SkillType { None = -1, Repeat = 1, Sequence }
-
         public enum CreatureState { Idle = 0, Walk = 1, Run = 2, Skill = 3, Invincible = 4, Death = 9 }
         //public enum InGameGrade { Normal = 1, Elite = 2, Ultimate = 3 }
         public enum CollisionLayers { Default = 0, PlayerBody = 6, PlayerAttack = 7, MonsterBody = 8, MonsterAttack = 9 }
@@ -41,11 +38,11 @@ namespace STELLAREST_2D
         public enum LookAtDirection { Left = 1, Right = -1 }
         public enum ExpressionType { Default, Battle, Concentration, Angry, Kitty, Sick, Death, }
         public enum MonsterFace { Normal = 0, Angry = 1, Death = 2 }
-
         public enum HitFromType { None = -1, ThrowingStar = 1, LazerBolt = 2, All = 9 }
         //public enum ImpactHits { None, Leaves, CriticalHit, }
-
         public enum MaterialType { None = -1, Hit = 1, Hologram = 2 }
+
+        public enum FaceExpressionType { Default = 1, Battle, }
 
         public static class TemplateIDs
         {
