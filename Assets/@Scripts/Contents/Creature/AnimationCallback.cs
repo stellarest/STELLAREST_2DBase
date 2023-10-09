@@ -13,10 +13,8 @@ namespace STELLAREST_2D
         public void Init(CreatureController owner) => this._owner = owner;
         public void OnCloneRepeatSkillHandler() => OnCloneRepeatSkill?.Invoke();
 
-        public void OnFaceBattle()
-        {
-            //this._owner.RendererController
-        }
+        public void OnFaceBattleHandler() => this._owner.RendererController.OnFaceBattleHandler();
+        public void OnFaceDefaultHandler() => this._owner.RendererController.OnFaceDefaultHandler();
 
         //public void ShowDustEffect() => Managers.Effect.ShowPlayerDust();
         public void BattleFaceExpression()

@@ -146,8 +146,9 @@ namespace STELLAREST_2D
             LoadRepeatSkills(creatureData);
             LoadSequenceSkills(creatureData);
             this.SkillBook.LateInit();
-            //this.SkillBook.SetFirstExclusiveSkill();
         }
+
+        protected virtual void StartGame(int templateID) { }
 
         private void LoadRepeatSkills(Data.InitialCreatureData creatureData)
         {
@@ -231,21 +232,23 @@ namespace STELLAREST_2D
             }
 
             this.Stat.Hp -= dmgResult;
-            Managers.VFX.Material(Define.MaterialType.Hit, this);
             Managers.VFX.DamageFont(this, dmgResult, isCritical);
-            Managers.VFX.Impact(from.Data.VFX_Impact, this, from); // --> 메모리 걱정되면 크리티컬 쪽에서 스폰
+            Managers.VFX.Impact(from.Data.VFX_Impact, this, from); // --> 메모리 문제 발생시, 크리티컬 쪽에서 스폰
 
-            // STOP.
-            if (this.Stat.Hp <= 0)
-            {
-                this.Stat.Hp = 0f;
-                this.OnDead();
-            }
+            if (this.Stat.Hp <= 0 && this.IsDeadState == false)
+                this.CreatureState = Define.CreatureState.Dead;
+            else
+                Managers.VFX.Material(Define.MaterialType.Hit, this);
         }
 
         protected virtual void OnVFX_Hit() { }
-
-        protected virtual void OnDead() { }
+        protected virtual void OnDead()
+        { 
+            this.HitCollider.enabled = false;
+            this.RigidBody.simulated = false;
+            this.Stat.Hp = 0f;
+            this.SkillBook.DeactivateAll();
+        }
 
         // +++ UTILS +++
         public bool IsPlayer() => this.ObjectType == Define.ObjectType.Player;
@@ -253,11 +256,6 @@ namespace STELLAREST_2D
         {
             switch (this.ObjectType)
             {
-                // case Define.ObjectType.Player:
-                // case Define.ObjectType.Projectile:
-                // case Define.ObjectType.Skill:
-                //     return false;
-
                 case Define.ObjectType.Monster:
                 case Define.ObjectType.EliteMonster:
                 case Define.ObjectType.Boss:
@@ -330,8 +328,10 @@ namespace STELLAREST_2D
         public virtual float ADDITIONAL_SPAWN_WIDTH { get; protected set; } = 0f;
         public virtual float ADDITIONAL_SPAWN_HEIGHT { get; protected set; } = 0f;
 
+
         public virtual Vector3 LoadVFXEnvSpawnPos(EnvTemplate templateOrigin) => this.Center.transform.position;
         public bool IsRun => this.CreatureState == Define.CreatureState.Run;
+        public bool IsDeadState => (this.CreatureState == Define.CreatureState.Dead);
     }
 }
 

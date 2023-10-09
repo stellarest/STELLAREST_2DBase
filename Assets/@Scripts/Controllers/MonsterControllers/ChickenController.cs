@@ -13,13 +13,17 @@ namespace STELLAREST_2D
         public override void Init(int templateID)
         {
             base.Init(templateID);
-            CreatureState = Define.CreatureState.Idle;
         }
 
-        protected override void InitialActionState()
+        protected override void LateInit()
         {
+            SkillBook.LevelUp(SkillTemplate.BodyAttack);
+        }
+
+        protected override void StartAction()
+        {
+            this.Action = true;
             this.CreatureState = Define.CreatureState.Run;
-            this.SkillBook.LevelUp(SkillTemplate.BodyAttack);
         }
 
         protected override void RunSkill()
@@ -27,7 +31,6 @@ namespace STELLAREST_2D
             if (this.SkillBook != null)
             {
                 this.MonsterAnimController.Attack();
-                //this.SkillBook.ActivateSequence(SkillTemplate.BodyAttack);
                 this.SkillBook.Activate(SkillTemplate.BodyAttack);
             }
         }
@@ -48,7 +51,6 @@ namespace STELLAREST_2D
         }
 
         protected override float LoadActionTime() => UnityEngine.Random.Range(2f, 3f);
-        protected override void OnDead() { }
     }
 }
 

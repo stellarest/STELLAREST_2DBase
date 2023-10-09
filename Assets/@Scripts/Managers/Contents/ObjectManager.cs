@@ -54,6 +54,12 @@ namespace STELLAREST_2D
                                     GameObject go = Managers.Resource.Instantiate(Managers.Data.CreaturesDict[templateID].PrimaryLabel, pooling: isPooling);
                                     go.transform.position = spawnPos;
 
+                                    for (int i = 0; i < go.transform.childCount; ++i)
+                                    {
+                                        go.transform.GetChild(i).transform.localRotation = Quaternion.identity;
+                                        go.transform.GetChild(i).transform.rotation = Quaternion.identity;
+                                    }
+
                                     ChickenController chicken = go.GetComponent<ChickenController>();
                                     chicken.ObjectType = spawnObjectType;
                                     chicken.MonsterType = Define.MonsterType.Chicken;

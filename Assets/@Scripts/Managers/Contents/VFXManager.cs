@@ -17,18 +17,24 @@ namespace STELLAREST_2D
         public Material MatHit_Monster { get; private set; } = null;
         public Material MatHit_Player { get; private set; } = null;
         public Material Mat_Hologram { get; private set; } = null;
+        public Material Mat_Fade { get; private set; } = null;
 
-        public int SHADER_HOLOGRAM = Shader.PropertyToID("_HologramFade");
+        public readonly int SHADER_HOLOGRAM = Shader.PropertyToID("_HologramFade");
+        public readonly int SHADER_FADE = Shader.PropertyToID("_CustomFadeAlpha");
+        public readonly float DESIRED_TIME_FADE_OUT = 1.25f;
 
         public void Init()
         {
             MatHit_Monster = Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_HIT_WHITE);
             MatHit_Player = Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_HIT_RED);
             Mat_Hologram = Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_HOLOGRAM);
+            Mat_Fade = Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_FADE);
         }
 
         private const float HIT_RESET_DELAY = 0.1f;
-        private const float HOLOGRAM_RESET_DELAY = 0f;
+        private const float HOLOGRAM_RESET_DELAY = 0.05f;
+        private const float FADE_RESET_DELAY = 0f;
+
         public void Material(Define.MaterialType matType, CreatureController cc)
         {
             if (cc?.IsValid() == false)
@@ -36,6 +42,9 @@ namespace STELLAREST_2D
 
             switch (matType)
             {
+                case Define.MaterialType.None:
+                    return;
+
                 case Define.MaterialType.Hit:
                     {
                         if (cc.IsMonster())
@@ -47,6 +56,10 @@ namespace STELLAREST_2D
 
                 case Define.MaterialType.Hologram:
                     cc.RendererController.ChangeMaterial(matType, Mat_Hologram, HOLOGRAM_RESET_DELAY);
+                    break;
+
+                case Define.MaterialType.FadeOut:
+                    cc.RendererController.ChangeMaterial(matType, Mat_Fade, FADE_RESET_DELAY);
                     break;
             }
         }
@@ -139,6 +152,13 @@ namespace STELLAREST_2D
                                          .GetComponent<DamageNumber>().Spawn(spawnPos);
                         // GameObject go = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_ENV_DMG_TEXT_TO_PLAYER_DODGE, null, false);
                         // go.transform.position = spawnPos;
+                    }
+                    break;
+
+                case EnvTemplate.Skull:
+                    {
+                        GameObject go = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_ENV_SKULL, null, true);
+                        go.transform.position = spawnPos;
                     }
                     break;
             }

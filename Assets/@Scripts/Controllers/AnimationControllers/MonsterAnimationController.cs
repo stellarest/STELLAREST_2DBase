@@ -12,12 +12,12 @@ namespace STELLAREST_2D
         private readonly int IDLE = Animator.StringToHash("Idle");
         private readonly int RUN = Animator.StringToHash("Run");
         private readonly int ATTACK = Animator.StringToHash("Attack");
-        private readonly int DEATH = Animator.StringToHash("Death");
+        private readonly int DEAD = Animator.StringToHash("Dead");
 
         public void Idle() => AnimController.Play(IDLE);
         public void Run() => AnimController.Play(RUN);
         public void Attack() => AnimController.Play(ATTACK);
-        public void Death() => AnimController.Play(DEATH);
+        public void Dead() => AnimController.Play(DEAD);
     }
 }
 

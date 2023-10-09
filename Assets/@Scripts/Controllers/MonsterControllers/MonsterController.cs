@@ -3,7 +3,9 @@ using System.Collections;
 using STELLAREST_2D.UI;
 using UnityEngine;
 using UnityEngine.Rendering;
+
 using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
+using EnvTemplate = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
 
 namespace STELLAREST_2D
 {
@@ -11,27 +13,30 @@ namespace STELLAREST_2D
     {
         public Define.MonsterType MonsterType { get; set; } = Define.MonsterType.None;
         public MonsterAnimationController MonsterAnimController { get; private set; } = null;
-        protected bool _action = false;
+        public bool Action { get; protected set; } = false;
+        private Coroutine _coAction = null;
+
+        [SerializeField] private Sprite _defaultHead = null;
+        public Sprite DefaultHead => _defaultHead;
+
+        [SerializeField] private Sprite _angryHead = null;
+        public Sprite AngryHead => _angryHead;
+
+        [SerializeField] private Sprite _deadHead = null;
+        public Sprite DeadHead => _deadHead;
 
         public override void Init(int templateID)
         {
             if (this.IsFirstPooling)
             {
                 base.Init(templateID);
-                if (MonsterAnimController == null)
-                    MonsterAnimController = AnimController as MonsterAnimationController;
-
+                LateInit();
+                MonsterAnimController = AnimController as MonsterAnimationController;
                 Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.MonsterBody);
                 this.IsFirstPooling = false;
             }
-            else // Respawn from pooling
-            {
-                InitCreatureStat(templateID);
-            }
-
-            ResetAllHitFrom();
-            _action = false;
-            StartCoroutine(CoStartAction());
+            
+            StartGame(templateID);
         }
 
         protected override void InitChildObject()
@@ -40,19 +45,34 @@ namespace STELLAREST_2D
             Center = Utils.FindChild<Transform>(AnimTransform.gameObject, "Body", true);
         }
 
+        protected virtual void LateInit() { }
+
+        protected override void StartGame(int templateID)
+        {
+            this.RendererController.StartGame();
+            InitCreatureStat(templateID);
+            ResetAllHitFrom();
+            _coAction = StartCoroutine(CoStartAction());
+        }
+
         protected virtual IEnumerator CoStartAction()
         {
+            Action = false;
+            CreatureState = Define.CreatureState.Idle;
+
+            this.RigidBody.simulated = true;
+            this.HitCollider.enabled = true;
+
             float delta = 0f;
             float desiredTime = LoadActionTime();
-
             while (true)
             {
                 delta += Time.deltaTime;
                 float percent = delta / desiredTime;
                 if (percent > 1f)
                 {
-                    _action = true;
-                    InitialActionState();
+                    Action = true;
+                    StartAction();
                     yield break;
                 }
 
@@ -60,7 +80,7 @@ namespace STELLAREST_2D
             }
         }
 
-        protected virtual void InitialActionState() { } // LATE INIT?
+        protected virtual void StartAction() { }
 
         // TEMP
         public void Stop()
@@ -71,6 +91,9 @@ namespace STELLAREST_2D
 
         private void FixedUpdate()
         {
+            if (this.IsDeadState)
+                return;
+
             MainTarget = Managers.Game.Player;
             if (MainTarget.IsValid() == false && MainTarget != null)
             {
@@ -82,7 +105,7 @@ namespace STELLAREST_2D
             if (this.LockFlip == false)
                 Flip(toTargetDir.x > 0 ? -1 : 1);
 
-            if (this._action == false)
+            if (this.Action == false)
                 return;
 
             if (this.CreatureState != Define.CreatureState.Run)
@@ -108,6 +131,7 @@ namespace STELLAREST_2D
             {
                 case Define.CreatureState.Idle:
                     MonsterAnimController.Idle();
+                    RendererController.MonsterHead.sprite = this.DefaultHead;
                     break;
 
                 case Define.CreatureState.Run:
@@ -116,6 +140,10 @@ namespace STELLAREST_2D
 
                 case Define.CreatureState.Skill:
                     RunSkill();
+                    break;
+
+                case Define.CreatureState.Dead:
+                    OnDead();
                     break;
             }
         }
@@ -147,6 +175,7 @@ namespace STELLAREST_2D
             }
 
             CreatureState = Define.CreatureState.Run;
+
             //if (_ccStates[(int)Define.CCType.Stun] == false && _ccStates[(int)Define.CCType.None])
             // CreatureState = Define.CreatureState.Run;
 
@@ -165,15 +194,32 @@ namespace STELLAREST_2D
 
         public override void OnDamaged(CreatureController attacker, SkillBase from)
         {
+            if (this.Action == false)
+            {
+                StopCoroutine(_coAction);
+                _coAction = null;
+                StartAction();
+            }
+
             base.OnDamaged(attacker, from);
-            //Utils.Log($"Hit, from : {from.Data.Name}");
         }
 
         protected override void OnDead()
         {
-            //base.OnDead();
-            Utils.Log($"{Stat.Name} : I'am dead.");
+            base.OnDead();
+            Managers.VFX.Environment(EnvTemplate.Skull, this);
+            this.RendererController.MonsterHead.sprite = this.DeadHead;
+            MonsterAnimController.Dead();
+            StartCoroutine(CoDespawn());
         }
+
+        protected virtual IEnumerator CoDespawn()
+        {
+            Managers.VFX.Material(Define.MaterialType.FadeOut, this);
+            yield return new WaitForSeconds(Managers.VFX.DESIRED_TIME_FADE_OUT);
+            Managers.Object.Despawn(this);
+        }
+
     }
 }
 

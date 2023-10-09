@@ -31,7 +31,7 @@ namespace STELLAREST_2D
         public enum StageType { Normal, MiddleBoss, Boss, }
         // public enum CCStatus { None, Stun, KnockBack, Poisoned, Frozen, Cursed, Confused, Silent, Max }
         public enum SkillType { None = -1, Repeat = 1, Sequence }
-        public enum CreatureState { Idle = 0, Walk = 1, Run = 2, Skill = 3, Invincible = 4, Death = 9 }
+        public enum CreatureState { Idle = 0, Walk = 1, Run = 2, Skill = 3, Invincible = 4, Dead = 9 }
         //public enum InGameGrade { Normal = 1, Elite = 2, Ultimate = 3 }
         public enum CollisionLayers { Default = 0, PlayerBody = 6, PlayerAttack = 7, MonsterBody = 8, MonsterAttack = 9 }
         public enum InitialStatRatioGrade { None = 0, Low = 5, Average = 15, High = 20 }
@@ -40,9 +40,8 @@ namespace STELLAREST_2D
         public enum MonsterFace { Normal = 0, Angry = 1, Death = 2 }
         public enum HitFromType { None = -1, ThrowingStar = 1, LazerBolt = 2, All = 9 }
         //public enum ImpactHits { None, Leaves, CriticalHit, }
-        public enum MaterialType { None = -1, Hit = 1, Hologram = 2 }
-
-        public enum FaceExpressionType { Default = 1, Battle, }
+        public enum MaterialType { None = -1, Hit = 1, Hologram = 2, FadeOut = 3 }
+        public enum FaceExpressionType { Default = 1, Battle, Dead, }
 
         public static class TemplateIDs
         {
@@ -200,6 +199,7 @@ namespace STELLAREST_2D
                     Spawn = 500102,
                     DamageFont = 500103,
                     Dodge = 500104,
+                    Skull = 500105,
                     Max = 999,
                 }
             }
@@ -226,6 +226,7 @@ namespace STELLAREST_2D
                 public const string VFX_ENV_DMG_TEXT_TO_PLAYER_DODGE = "VFX_Env_DmgText_ToPlayerDodge.prefab";
                 public const string VFX_ENV_DMG_NUMBER_TO_SHIELD = "VFX_Env_DmgNumber_ToShield.prefab";
                 public const string VFX_ENV_SPAWN = "VFX_Env_Spawn.prefab";
+                public const string VFX_ENV_SKULL = "VFX_Env_Skull.prefab";
 
                 public const string STUN_EFFECT = "StunEffect.prefab";
                 public const string CURSED_TEXT_EFFECT = "CursedTextEffect.prefab";

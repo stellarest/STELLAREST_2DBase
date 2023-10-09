@@ -28,7 +28,7 @@ namespace STELLAREST_2D.Data
         public int OtherExclusiveSkillSocket;
         public List<int> RepeatSkillList;
         public List<int> SequenceSkillList;
-        public FaceExpressionLoader[] FaceExpressionsLoader;
+        public PlayerFaceExpressionLoader[] PlayerFaceExpressionsLoader;
     }
 
     [Serializable]

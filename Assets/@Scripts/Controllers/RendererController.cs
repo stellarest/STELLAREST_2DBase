@@ -4,11 +4,13 @@ using System.Linq;
 using STELLAREST_2D.Data;
 using UnityEditor.Rendering;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace STELLAREST_2D
 {
+    // +++ PLAYER FACE EXPRESSION +++
     [System.Serializable]
-    public class FaceExpressionLoader
+    public class PlayerFaceExpressionLoader
     {
         public Define.FaceExpressionType FaceExpressionType;
         public string EyebrowsPrimaryKey;
@@ -21,7 +23,7 @@ namespace STELLAREST_2D
         public string MouthColorCode;
     }
 
-    public class FaceExpression
+    public class PlayerFaceExpression
     {
         public Sprite Eyebrows;
         public Color EyebrowsColor;
@@ -33,6 +35,12 @@ namespace STELLAREST_2D
         public Color MouthColor;
     }
 
+    public class PlayerFace
+    {
+        public SpriteRenderer eyebrowsSPR;
+        public SpriteRenderer eyesSPR;
+        public SpriteRenderer mouthSPR;
+    }
 
     // +++++ Base Container +++++
     public class BaseContainer
@@ -105,6 +113,23 @@ namespace STELLAREST_2D
     public class RendererController : MonoBehaviour
     {
         public CreatureController Owner { get; private set; } = null;
+        private MonsterController _ownerAsMonsterController = null;
+        public MonsterController OwnerAsMonsterController
+        {
+            get
+            {
+                if (this.IsPlayer)
+                {
+                    Utils.LogStrong(nameof(RendererController), nameof(OwnerAsMonsterController), $"Player tries to get acccess \"OwnerAsMonsterController\"");
+                    return null;
+                }
+
+                return _ownerAsMonsterController;
+            }
+
+            private set => _ownerAsMonsterController = value;
+        }
+
         public SpriteRenderer[] OwnerSPRs { get; private set; } = null;
         private Dictionary<CreatureController, Moderator> _moderatorDict = null;
         public bool IsChangingMaterial { get; private set; } = false;
@@ -144,8 +169,27 @@ namespace STELLAREST_2D
             private set => _playerEyesSPR = value;
         }
 
-        public Dictionary<Define.FaceExpressionType, FaceExpression> FaceExpressionDict { get; private set; } 
-                                                    = new Dictionary<Define.FaceExpressionType, FaceExpression>();
+        public Dictionary<Define.FaceExpressionType, PlayerFaceExpression> PlayerFaceExpressionDict { get; private set; } 
+                                                    = new Dictionary<Define.FaceExpressionType, PlayerFaceExpression>();
+
+        public PlayerFace PlayerFace { get; private set; } = null;
+
+        private SpriteRenderer _monsterHead = null;
+        public SpriteRenderer MonsterHead 
+        {
+            get
+            {
+                if (this.IsPlayer)
+                {
+                    Utils.LogStrong(nameof(RendererController), nameof(MonsterHead), $"Player tries to get acccess \"MonsterHead\"");
+                    return null;
+                }
+
+                return _monsterHead;
+            }
+
+            private set => _monsterHead = value;
+        }
         
         public void InitRendererController(CreatureController owner, InitialCreatureData initialCreatureData)
         {
@@ -157,66 +201,15 @@ namespace STELLAREST_2D
             OwnerSPRs = owner.SPRs;
 
             if (this.IsPlayer)
-                InitOwnerEyes();
-
-            /*
-                    public string EyesPrimaryKey;
-                    public string EyesColorCode;
-
-                    public string MouthPrimaryKey;
-                    public string MouthColorCode;
-            */
-
-            // Color color = ColorUtility.HexToColor("#FFFFFF");
-
-            FaceExpressionLoader[] loaders = new FaceExpressionLoader[initialCreatureData.FaceExpressionsLoader.Length];
-            for (int i = 0; i < initialCreatureData.FaceExpressionsLoader.Length; ++i)
             {
-                FaceExpression faceExpression = new FaceExpression();
-                
-                // Eyebrows
-                faceExpression.Eyebrows = Managers.Resource.Load<Sprite>(initialCreatureData.FaceExpressionsLoader[i].EyebrowsPrimaryKey);
-                if (ColorUtility.TryParseHtmlString(initialCreatureData.FaceExpressionsLoader[i].EyebrowsColorCode, out Color eyeBrowsColor))
-                    faceExpression.EyebrowsColor = eyeBrowsColor;
-                else
-                    Utils.LogStrong(nameof(RendererController), nameof(InitRendererController), $"Failed to set eyebrowsColor.");
-
-
-                // Eyes
-                faceExpression.Eyes = Managers.Resource.Load<Sprite>(initialCreatureData.FaceExpressionsLoader[i].EyesPrimaryKey);
-                if (ColorUtility.TryParseHtmlString(initialCreatureData.FaceExpressionsLoader[i].EyesColorCode, out Color eyesColor))
-                    faceExpression.EyesColor = eyesColor;
-                else
-                    Utils.LogStrong(nameof(RendererController), nameof(InitRendererController), $"Failed to set eyesColor.");
-
-
-                // Mouth
-                faceExpression.Mouth = Managers.Resource.Load<Sprite>(initialCreatureData.FaceExpressionsLoader[i].MouthPrimaryKey);
-                if (ColorUtility.TryParseHtmlString(initialCreatureData.FaceExpressionsLoader[i].MouthColorCode, out Color mouthColor))
-                    faceExpression.MouthColor = mouthColor;
-                else
-                    Utils.LogStrong(nameof(RendererController), nameof(InitRendererController), $"Failed to set mouthColor.");
-
-                FaceExpressionDict.Add(initialCreatureData.FaceExpressionsLoader[i].FaceExpressionType, faceExpression);
+                InitPlayerEyes();
+                InitPlayerFace();
+                InitPlayerFaceExpression(initialCreatureData);
             }
-
-
-            // CHECK 
-            foreach (KeyValuePair<Define.FaceExpressionType, FaceExpression> pair in FaceExpressionDict)
+            else
             {
-                Utils.Log($"Key : {pair.Key}");
-                
-                Utils.Log($"Eyebrows : {pair.Value.Eyebrows}");
-                Utils.Log($"EyebrowsColor : {pair.Value.EyebrowsColor}");
-
-                Utils.Log($"Eyes : {pair.Value.Eyes}");
-                Utils.Log($"EyesColor : {pair.Value.EyesColor}");
-
-                Utils.Log($"Mouth : {pair.Value.Mouth}");
-                Utils.Log($"MouthColor : {pair.Value.MouthColor}");
+                InitMonsterHead();
             }
-
-            Utils.LogBreak("BREAK");
 
             _moderatorDict = new Dictionary<CreatureController, Moderator>();
             Moderator moderator = new Moderator();
@@ -267,7 +260,7 @@ namespace STELLAREST_2D
             _moderatorDict.Add(owner, moderator);
         }
 
-        private void InitOwnerEyes()
+        private void InitPlayerEyes()
         {
             for (int i = 0; i < OwnerSPRs.Length; ++i)
             {
@@ -277,6 +270,116 @@ namespace STELLAREST_2D
                     this.PlayerEyesSprite = OwnerSPRs[i].sprite;
                 }
             }
+        }
+
+        private void InitPlayerFace()
+        {
+            if (this.PlayerFace != null)
+                return;
+            
+            this.PlayerFace = new PlayerFace();
+            for (int i = 0; i < OwnerSPRs.Length; ++i)
+            {
+                if (OwnerSPRs[i].name.Contains("Eyebrows"))
+                    this.PlayerFace.eyebrowsSPR = OwnerSPRs[i];
+
+                if (OwnerSPRs[i].name.Contains("Eyes"))
+                    this.PlayerFace.eyesSPR = OwnerSPRs[i];
+
+                if (OwnerSPRs[i].name.Contains("Mouth"))
+                    this.PlayerFace.mouthSPR = OwnerSPRs[i];
+            }
+        }   
+
+        private void InitPlayerFaceExpression(InitialCreatureData initialCreatureData)
+        {
+            PlayerFaceExpressionLoader[] loaders = new PlayerFaceExpressionLoader[initialCreatureData.PlayerFaceExpressionsLoader.Length];
+            for (int i = 0; i < initialCreatureData.PlayerFaceExpressionsLoader.Length; ++i)
+            {
+                PlayerFaceExpression faceExpression = new PlayerFaceExpression();
+
+                // Eyebrows
+                faceExpression.Eyebrows = Managers.Resource.Load<Sprite>(initialCreatureData.PlayerFaceExpressionsLoader[i].EyebrowsPrimaryKey);
+                if (ColorUtility.TryParseHtmlString(initialCreatureData.PlayerFaceExpressionsLoader[i].EyebrowsColorCode, out Color eyeBrowsColor))
+                    faceExpression.EyebrowsColor = eyeBrowsColor;
+                else
+                    Utils.LogStrong(nameof(RendererController), nameof(InitRendererController), $"Failed to set eyebrowsColor.");
+
+
+                // Eyes
+                faceExpression.Eyes = Managers.Resource.Load<Sprite>(initialCreatureData.PlayerFaceExpressionsLoader[i].EyesPrimaryKey);
+                if (ColorUtility.TryParseHtmlString(initialCreatureData.PlayerFaceExpressionsLoader[i].EyesColorCode, out Color eyesColor))
+                    faceExpression.EyesColor = eyesColor;
+                else
+                    Utils.LogStrong(nameof(RendererController), nameof(InitRendererController), $"Failed to set eyesColor.");
+
+
+                // Mouth
+                faceExpression.Mouth = Managers.Resource.Load<Sprite>(initialCreatureData.PlayerFaceExpressionsLoader[i].MouthPrimaryKey);
+                if (ColorUtility.TryParseHtmlString(initialCreatureData.PlayerFaceExpressionsLoader[i].MouthColorCode, out Color mouthColor))
+                    faceExpression.MouthColor = mouthColor;
+                else
+                    Utils.LogStrong(nameof(RendererController), nameof(InitRendererController), $"Failed to set mouthColor.");
+
+                PlayerFaceExpressionDict.Add(initialCreatureData.PlayerFaceExpressionsLoader[i].FaceExpressionType, faceExpression);
+            }
+        }
+
+        private void InitMonsterHead()
+        {
+            if (this.MonsterHead != null || this.OwnerAsMonsterController != null)
+                return;
+
+            for (int i = 0; i < OwnerSPRs.Length; ++i)
+            {
+                if (OwnerSPRs[i].gameObject.name.Contains("Head"))
+                    MonsterHead = OwnerSPRs[i];
+            }
+
+            OwnerAsMonsterController = this.Owner as MonsterController;
+        }
+
+        public void StartGame()
+        {
+            ResetMaterial();
+            if (this.IsPlayer == false)
+                this.MonsterHead.sprite = OwnerAsMonsterController.DefaultHead;
+        }
+
+        public void OnFaceBattleHandler()
+        {
+            if (this.IsPlayer)
+            {
+                PlayerFaceExpression battleFace = this.PlayerFaceExpressionDict[Define.FaceExpressionType.Battle];
+                PlayerFace.eyebrowsSPR.sprite = battleFace.Eyebrows;
+                PlayerFace.eyebrowsSPR.color = battleFace.EyebrowsColor;
+
+                PlayerFace.eyesSPR.sprite = battleFace.Eyes;
+                PlayerFace.eyesSPR.color = battleFace.EyesColor;
+
+                PlayerFace.mouthSPR.sprite = battleFace.Mouth;
+                PlayerFace.mouthSPR.color = battleFace.MouthColor;
+            }
+            else
+                MonsterHead.sprite = OwnerAsMonsterController.AngryHead;
+        }
+
+        public void OnFaceDefaultHandler()
+        {
+            if (this.IsPlayer)
+            {
+                PlayerFaceExpression defaultFace = this.PlayerFaceExpressionDict[Define.FaceExpressionType.Default];
+                PlayerFace.eyebrowsSPR.sprite = defaultFace.Eyebrows;
+                PlayerFace.eyebrowsSPR.color = defaultFace.EyebrowsColor;
+
+                PlayerFace.eyesSPR.sprite = defaultFace.Eyes;
+                PlayerFace.eyesSPR.color = defaultFace.EyesColor;
+
+                PlayerFace.mouthSPR.sprite = defaultFace.Mouth;
+                PlayerFace.mouthSPR.color = defaultFace.MouthColor;
+            }
+            else
+                MonsterHead.sprite = OwnerAsMonsterController.DefaultHead;
         }
 
         public void ChangeMaterial(Define.MaterialType changeMatType, Material mat, float resetDelay)
@@ -292,61 +395,31 @@ namespace STELLAREST_2D
                     break;
 
                 case Define.MaterialType.Hologram:
-                    DoHologram(mat, resetDelay);
+                    Hologram(mat, resetDelay);
+                    break;
+
+                case Define.MaterialType.FadeOut:
+                    FadeOut(mat, resetDelay);
                     break;
             }
         }
 
-        public void Hit(Material mat, float resetDelay)
+        public void Hit(Material hitMat, float resetDelay)
         {
             if (this.IsChangingMaterial == false)
             {
                 IsChangingMaterial = true;
-
-                if (this.IsPlayer)
-                    PlayerEyesSPR.sprite = null;
-
-                for (int i = 0; i < OwnerSPRs.Length; ++i)
-                {
-                    if (OwnerSPRs[i].sprite != null)
-                        OwnerSPRs[i].material = mat;
-                }
-
-                StartCoroutine(ResetDelay(resetDelay));
+                ChangeMaterial(hitMat);
+                StartCoroutine(CoReset(resetDelay));
             }
         }
 
-        private IEnumerator ResetDelay(float resetDelay)
-        {
-            yield return new WaitForSeconds(resetDelay);
-            ResetMaterial();
-            IsChangingMaterial = false;
-        }
-
-        private void ResetMaterial()
-        {
-            BaseContainer[] BCs = this.BaseContainers(_currentKeyGrade);
-            for (int i = 0; i < OwnerSPRs.Length; ++i)
-                OwnerSPRs[i].material = BCs[i].MatOrigin;
-            if (this.IsPlayer)
-                PlayerEyesSPR.sprite = PlayerEyesSprite;
-        }
-
-        private void DoHologram(Material mat, float resetDelay)
+        private void Hologram(Material hologramMat, float resetDelay)
         {
             if (this.IsChangingMaterial == false)
             {
                 this.IsChangingMaterial = true;
-
-                if (this.IsPlayer)
-                    PlayerEyesSPR.sprite = null;
-
-                for (int i = 0; i < OwnerSPRs.Length; ++i)
-                {
-                    if (OwnerSPRs[i].sprite != null)
-                        OwnerSPRs[i].material = mat;
-                }
-
+                ChangeMaterial(hologramMat);
                 StartCoroutine(CoHologram(resetDelay));
             }
         }
@@ -361,6 +434,8 @@ namespace STELLAREST_2D
                 yield return null;
             }
 
+            StartCoroutine(CoReset(resetDelay));
+
             percent = 1f;
             float elapsedTime = 0f;
             while (percent > 0f)
@@ -370,15 +445,27 @@ namespace STELLAREST_2D
                 percent = 1f - (elapsedTime * 20f);
                 yield return null;
             }
+            // StartCoroutine(CoReset(resetDelay));
+        }
 
-            StartCoroutine(ResetDelay(resetDelay));
-            //ResetDelay(resetDelay);
-            // BaseContainer[] BCs = this.BaseContainers(_currentKeyGrade);
-            // for (int i = 0; i < OwnerSPRs.Length; ++i)
-            //     OwnerSPRs[i].material = BCs[i].MatOrigin;
-            // if (this.IsPlayer)
-            //     PlayerEyesSPR.sprite = PlayerEyesSprite;
-            // IsChangingMaterial = false;
+        private void FadeOut(Material fadeMat, float resetDelay)
+        {
+            ChangeMaterial(fadeMat); // *** PLAYER EYES SPRITE의 경우, FADE 전용 EYES로 교체 필요.
+            StartCoroutine(CoFade(resetDelay));
+        }
+
+        private IEnumerator CoFade(float resetDelay)
+        {
+            Managers.VFX.Mat_Fade.SetFloat(Managers.VFX.SHADER_FADE, 1f);
+            float delta = 0f;
+            float percent = 1f;
+            while (percent > 0f)
+            {
+                delta += Time.deltaTime;
+                percent = 1f - (delta / Managers.VFX.DESIRED_TIME_FADE_OUT);
+                Managers.VFX.Mat_Fade.SetFloat(Managers.VFX.SHADER_FADE, percent);
+                yield return null;
+            }
         }
 
         public void Upgrade(Define.InGameGrade keyGrade)
@@ -412,6 +499,35 @@ namespace STELLAREST_2D
             => _moderatorDict.TryGetValue(this.Owner, out Moderator value) ? value.GetSpriteRenderers(grade) : null;
         private BaseContainer[] BaseContainers(Define.InGameGrade grade)
             => _moderatorDict.TryGetValue(this.Owner, out Moderator value) ? value.GetBaseContainers(grade) : null;
+
+        private IEnumerator CoReset(float resetDelay)
+        {
+            yield return new WaitForSeconds(resetDelay);
+            ResetMaterial();
+        }
+
+        public void ResetMaterial()
+        {
+            BaseContainer[] BCs = this.BaseContainers(_currentKeyGrade);
+            for (int i = 0; i < OwnerSPRs.Length; ++i)
+                OwnerSPRs[i].material = BCs[i].MatOrigin;
+            if (this.IsPlayer)
+                PlayerEyesSPR.sprite = PlayerEyesSprite;
+
+            IsChangingMaterial = false;
+        }
+
+        private void ChangeMaterial(Material mat)
+        {
+            if (this.IsPlayer)
+                PlayerEyesSPR.sprite = null;
+
+            for (int i = 0; i < OwnerSPRs.Length; ++i)
+            {
+                if (OwnerSPRs[i].sprite != null)
+                    OwnerSPRs[i].material = mat;
+            }
+        }
 
         private void OnDestroy()
         {

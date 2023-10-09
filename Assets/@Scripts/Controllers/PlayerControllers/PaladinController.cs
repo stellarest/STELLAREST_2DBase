@@ -16,7 +16,7 @@ namespace STELLAREST_2D
         protected override void RunSkill()
         {
             //base.RunSkill();
-            Utils.Log("PALADIN ATTACKS.");
+            //Utils.Log("PALADIN ATTACKS.");
             PlayerAnimController.Attack();
         }
     }
