@@ -83,7 +83,19 @@ namespace STELLAREST_2D
         private bool _isOffParticle = false;
         private int _bounceCount = 0;
         private int _maxBounceCount = 0;
-        public bool CanStillBounce => (_bounceCount++ < _maxBounceCount);
+        public bool CanStillBounce()
+        {
+            // 1, 2, 4
+            if (_bounceCount++ < _maxBounceCount)
+            {
+                if (Managers.Object.Monsters.Count == _bounceCount)
+                    return false;
+
+                return true;
+            }
+
+            return false;
+        }
 
         private int _penetrationCount = 0;
         private int _maxPenetrationCount = 0;
@@ -356,8 +368,7 @@ namespace STELLAREST_2D
 
         private Vector3 NextBounceTarget(CreatureController cc, Define.HitFromType hitFromType = Define.HitFromType.None)
         {
-            // TODO : 개선 필요
-            if (CanStillBounce == false)
+            if (CanStillBounce() == false)
             {
                 if (this.IsValid())
                     Managers.Object.Despawn(this);

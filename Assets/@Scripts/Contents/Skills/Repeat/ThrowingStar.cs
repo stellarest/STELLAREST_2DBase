@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Linq;
 using STELLAREST_2D.Data;
 using UnityEngine;
 
@@ -7,6 +5,8 @@ namespace STELLAREST_2D
 {
     public class ThrowingStar : RepeatSkill
     {
+        private readonly float RESET_HIT_FROM_DELAY = 0.5f;
+
         public override void InitOrigin(CreatureController owner, SkillData data)
         {
             base.InitOrigin(owner, data);
@@ -47,7 +47,7 @@ namespace STELLAREST_2D
             if (cc.IsValid() == false)
                 return;
 
-            cc.ResetHitFrom(Define.HitFromType.ThrowingStar, 10.25f);
+            cc.ResetHitFrom(Define.HitFromType.ThrowingStar, RESET_HIT_FROM_DELAY);
         }
     }
 }

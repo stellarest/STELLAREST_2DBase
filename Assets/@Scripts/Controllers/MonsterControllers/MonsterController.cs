@@ -108,10 +108,10 @@ namespace STELLAREST_2D
             if (this.Action == false)
                 return;
 
-            if (this.CreatureState != Define.CreatureState.Run)
-                return;
-            else
-                MoveToTarget(MainTarget);
+            // if (this.CreatureState != Define.CreatureState.Run)
+            //     return;
+            // else
+            //     MoveToTarget(MainTarget);
         }
 
         protected virtual void MoveToTarget(CreatureController target)

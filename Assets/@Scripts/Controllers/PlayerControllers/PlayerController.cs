@@ -189,17 +189,9 @@ namespace STELLAREST_2D
             if (Input.GetKeyDown(KeyCode.T))
                 Flag5();
 
-            if (Input.GetKeyDown(KeyCode.L))
-            {
-                // Utils.Log($"{this.RendererController.PlayerEyesSprite != null}");
-                this.RendererController.PlayerEyesSPR.sprite = null;
-                Utils.Log("Eyes null");
-            }
-
             // if (Input.GetKeyDown(KeyCode.U))
             //     Utils.Log("MON COUNT : " + Managers.Object.Monsters.Count);
 #endif
-
             MoveByJoystick();
             CollectEnv();
         }
