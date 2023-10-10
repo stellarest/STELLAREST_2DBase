@@ -247,6 +247,7 @@ namespace STELLAREST_2D
             this.HitCollider.enabled = false;
             this.RigidBody.simulated = false;
             this.Stat.Hp = 0f;
+            //this.SkillBook.DeactivateAll();
             this.SkillBook.DeactivateAll();
         }
 

@@ -175,7 +175,6 @@ namespace STELLAREST_2D
             }
 
             CreatureState = Define.CreatureState.Run;
-
             //if (_ccStates[(int)Define.CCType.Stun] == false && _ccStates[(int)Define.CCType.None])
             // CreatureState = Define.CreatureState.Run;
 
@@ -219,7 +218,6 @@ namespace STELLAREST_2D
             yield return new WaitForSeconds(Managers.VFX.DESIRED_TIME_FADE_OUT);
             Managers.Object.Despawn(this);
         }
-
     }
 }
 

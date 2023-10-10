@@ -1,16 +1,48 @@
 // using System.Collections;
 // using System.Collections.Generic;
+using CartoonFX;
 using STELLAREST_2D.Data;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace STELLAREST_2D
 {
     public class BombTrap : RepeatSkill
     {
+        public override void InitOrigin(CreatureController owner, SkillData data)
+        {
+            base.InitOrigin(owner, data);
+            GetComponent<Rigidbody2D>().simulated = false;
+            GetComponent<Collider2D>().enabled = false;
+            GetComponent<SpriteRenderer>().enabled = false;
+            foreach (var particle in GetComponentsInChildren<ParticleSystem>())
+            {
+                var emission = particle.emission;
+                emission.enabled = false;
+            }
+        }
+
+        public override void InitClone(CreatureController ownerFromOrigin, SkillData dataFromOrigin)
+        {
+            if (this.IsFirstPooling)
+            {
+                BombTrapChild bombChild = transform.GetChild(0).GetComponent<BombTrapChild>();
+                bombChild.Init(ownerFromOrigin, dataFromOrigin);
+                SR = GetComponent<SpriteRenderer>();
+                RigidBody = GetComponent<Rigidbody2D>();
+                HitCollider = GetComponent<Collider2D>();
+
+                base.InitClone(ownerFromOrigin, dataFromOrigin);
+                this.IsFirstPooling = false;
+            }
+        }
 
         protected override void DoSkillJob()
         {
         }
+
+        protected override void SetSortingOrder() 
+            => GetComponent<SortingGroup>().sortingOrder = (int)Define.SortingOrder.Skill;
     }
 }
 

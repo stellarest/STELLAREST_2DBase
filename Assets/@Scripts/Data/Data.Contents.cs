@@ -121,7 +121,8 @@ namespace STELLAREST_2D.Data
         public Vector3[] AdditionalLocalPositions;
         public Vector3[] ScaleInterpolations;
         public bool[] IsOnlyVisibles;
-        public float ColliderPreDisableLifeRatio;
+        //public float ColliderPreDisableLifeRatio;
+        public bool IsColliderHalfRatio;
         public int MaxBounceCount;
         public int MaxPenetrationCount;
         public Define.TemplateIDs.Status.AfterEffect AfterEffectType;

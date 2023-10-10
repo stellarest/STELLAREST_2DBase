@@ -24,7 +24,7 @@ namespace STELLAREST_2D
         public override void InitOrigin(CreatureController owner, SkillData data)
         {
             base.InitOrigin(owner, data);
-            InitBodycolliderInfo();
+            InitBodyColliderInfo();
         }
 
         public override void DoSkillJob(Action callback = null)
@@ -89,7 +89,7 @@ namespace STELLAREST_2D
             return false;
         }
 
-        private void InitBodycolliderInfo()
+        private void InitBodyColliderInfo()
         {
             CircleCollider2D ownerHitBody = this.Owner.GetComponent<Collider2D>() as CircleCollider2D;
             HitCollider = GetComponent<Collider2D>();

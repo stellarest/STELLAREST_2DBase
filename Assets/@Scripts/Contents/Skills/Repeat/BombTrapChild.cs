@@ -9,8 +9,13 @@ using UnityEngine;
 
 namespace STELLAREST_2D
 {
-    public class BombTrapChild : MonoBehaviour
+    public class BombTrapChild : BombTrap
     {
+        public void Init(CreatureController owner, Data.SkillData data)
+        {
+            this.Owner = owner;
+            this.Data = data;
+        }
     }
 }
 

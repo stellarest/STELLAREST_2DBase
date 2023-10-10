@@ -270,6 +270,12 @@ namespace STELLAREST_2D
             group.Deactivate();
         }
 
+        public void DeactivateAll()
+        {
+            foreach (var group in SkillGroupsDict)
+                group.Value.Deactivate();
+        }
+
         public SkillBase GetCanActiveSkillMember(SkillTemplate templateOrigin)
         {
             if (SkillGroupsDict.TryGetValue((int)templateOrigin, out SkillGroup group) == false)
@@ -282,18 +288,18 @@ namespace STELLAREST_2D
             return skill;
         }
 
-        public void ActivateAll()
-        {
-            foreach (KeyValuePair<int, SkillGroup> pair in SkillGroupsDict)
-            {
-                for (int i = 0; i < pair.Value.MemberCount; ++i)
-                {
-                    SkillBase skillOrigin = pair.Value.Members[i].SkillOrigin;
-                    if (skillOrigin.IsLearned && skillOrigin.IsLast)
-                        skillOrigin.Activate();
-                }
-            }
-        }
+        // public void ActivateAll()
+        // {
+        //     foreach (KeyValuePair<int, SkillGroup> pair in SkillGroupsDict)
+        //     {
+        //         for (int i = 0; i < pair.Value.MemberCount; ++i)
+        //         {
+        //             SkillBase skillOrigin = pair.Value.Members[i].SkillOrigin;
+        //             if (skillOrigin.IsLearned && skillOrigin.IsLast)
+        //                 skillOrigin.Activate();
+        //         }
+        //     }
+        // }
 
         // callback 전용 메서드 정의
         public void RandomizeSequenceGroup(SkillTemplate prevTemplateOrigin)
@@ -302,18 +308,18 @@ namespace STELLAREST_2D
             //Utils.Log("Randomize Sequence Something if you want to.");
         }
 
-        public void DeactivateAll()
-        {
-            foreach (KeyValuePair<int, SkillGroup> pair in SkillGroupsDict)
-            {
-                for (int i = 0; i < pair.Value.MemberCount; ++i)
-                {
-                    SkillBase skillOrigin = pair.Value.Members[i].SkillOrigin;
-                    if (skillOrigin.IsLearned && skillOrigin.IsLast)
-                        skillOrigin.Deactivate();
-                }
-            }
-        }
+        // public void DeactivateAll()
+        // {
+        //     foreach (KeyValuePair<int, SkillGroup> pair in SkillGroupsDict)
+        //     {
+        //         for (int i = 0; i < pair.Value.MemberCount; ++i)
+        //         {
+        //             SkillBase skillOrigin = pair.Value.Members[i].SkillOrigin;
+        //             if (skillOrigin.IsLearned && skillOrigin.IsLast)
+        //                 skillOrigin.Deactivate();
+        //         }
+        //     }
+        // }
 
         private void OnDestroy()
         {

@@ -10,9 +10,9 @@ namespace STELLAREST_2D
     public class ProjectileLaunchInfoEventArgs : System.EventArgs
     {
         public ProjectileLaunchInfoEventArgs(Define.LookAtDirection lootAtDir, Vector3 shootDir, Vector3 localScale, Vector3 indicatorAngle,
-                    float movementSpeed, float rotationSpeed, float lifeTime, float colliderPreDisableLifeRatio, float continuousAngle, float continuousSpeedRatio,
-                    float continuousFlipX, float continuousFlipY, float interpolateTargetScaleX, float interpolateTargetScaleY, bool isOnlyVisible,
-                    int maxBounceCount, int maxPenetrationCount)
+                    float movementSpeed, float rotationSpeed, float lifeTime, float continuousAngle, float continuousSpeedRatio,
+                    float continuousFlipX, float continuousFlipY, float interpolateTargetScaleX, float interpolateTargetScaleY, 
+                    bool isOnlyVisible, bool isColliderHalfRatio, int maxBounceCount, int maxPenetrationCount)
         {
             this.LookAtDir = lootAtDir;
             this.ShootDir = shootDir;
@@ -21,8 +21,7 @@ namespace STELLAREST_2D
             this.MovementSpeed = movementSpeed;
             this.RotationSpeed = rotationSpeed;
             this.LifeTime = lifeTime;
-            this.ColliderPreDisableLifeRatio = colliderPreDisableLifeRatio;
-
+            //this.ColliderPreDisableLifeRatio = colliderPreDisableLifeRatio;
             this.ContinuousAngle = continuousAngle;
             this.ContinuousSpeedRatio = continuousSpeedRatio;
             this.ContinuousFlipX = continuousFlipX;
@@ -30,6 +29,7 @@ namespace STELLAREST_2D
             this.InterpolateTargetScaleX = interpolateTargetScaleX;
             this.InterpolateTargetScaleY = interpolateTargetScaleY;
             this.IsOnlyVisible = isOnlyVisible;
+            this.IsColliderHalfRatio = isColliderHalfRatio;
 
             this.MaxBounceCount = maxBounceCount;
             this.MaxPenetrationCount = maxPenetrationCount;
@@ -43,8 +43,7 @@ namespace STELLAREST_2D
         public float MovementSpeed { get; private set; } = 0f;
         public float RotationSpeed { get; private set; } = 0f;
         public float LifeTime { get; private set; } = 0f;
-        public float ColliderPreDisableLifeRatio { get; private set; } = 0f;
-
+        //public float ColliderPreDisableLifeRatio { get; private set; } = 0f;
         public float ContinuousAngle { get; private set; } = 0f;
         public float ContinuousSpeedRatio { get; private set; } = 0f;
         public float ContinuousFlipX { get; private set; } = 0f;
@@ -52,7 +51,7 @@ namespace STELLAREST_2D
         public float InterpolateTargetScaleX { get; private set; } = 0f;
         public float InterpolateTargetScaleY { get; private set; } = 0f;
         public bool IsOnlyVisible { get; private set; } = false;
-
+        public bool IsColliderHalfRatio { get; private set; } = false;
         public int MaxBounceCount { get; private set; } = 0;
         public int MaxPenetrationCount { get; private set; } = 0;
         #endregion
@@ -74,12 +73,11 @@ namespace STELLAREST_2D
         private float _continuousSpeedRatio = 0f;
         private float _continuousFlipX = 0f;
         private float _continuousFlipY = 0f;
-        private float _colliderPreDisableRatio = 0f;
-        private float _colliderPreDisableLifeDelta = 0f;
         private Vector3 _interpolateStartScale = Vector3.zero;
         private Vector3 _interpolateTargetScale = Vector3.zero;
         private bool _isOnReadyInterpolateScale = false;
         private bool _isOnlyVisible = false;
+        private bool _isColliderHalfRatio = false;
         private bool _isOffParticle = false;
         private int _bounceCount = 0;
         private int _maxBounceCount = 0;
@@ -99,7 +97,6 @@ namespace STELLAREST_2D
 
         private int _penetrationCount = 0;
         private int _maxPenetrationCount = 0;
-
         public void OnProjectileLaunchInfoHandler(object sender, ProjectileLaunchInfoEventArgs e)
         {
             this._initialLookAtDir = e.LookAtDir;
@@ -109,7 +106,9 @@ namespace STELLAREST_2D
             this._movementSpeed = e.MovementSpeed;
             this._rotationSpeed = e.RotationSpeed;
             this._lifeTime = e.LifeTime;
-            this._colliderPreDisableRatio = e.ColliderPreDisableLifeRatio;
+            //this._colliderPreDisableRatio = e.ColliderPreDisableLifeRatio;
+            this._isColliderHalfRatio = e.IsColliderHalfRatio;
+
             this._continuousAngle = e.ContinuousAngle;
             this._continuousSpeedRatio = e.ContinuousSpeedRatio;
             this._continuousFlipX = e.ContinuousFlipX;
@@ -137,6 +136,10 @@ namespace STELLAREST_2D
         {
             HitCollider.enabled = (_isOnlyVisible) ? false : true;
             SkillTemplate templateOrigin = this.Data.OriginalTemplate;
+
+            if (this._isColliderHalfRatio)
+                StartCoroutine(CoPreDisableCollider(this._lifeTime * 0.5f));
+            
             switch (templateOrigin)
             {
                 case SkillTemplate.PaladinMastery:
@@ -346,6 +349,13 @@ namespace STELLAREST_2D
             }
 
             return false;
+        }
+
+        private IEnumerator CoPreDisableCollider(float seconds)
+        {
+            this.HitCollider.enabled = true;
+            yield return new WaitForSeconds(seconds);
+            this.HitCollider.enabled = false;
         }
 
         // 데미지가 아닌, 프로젝타일 로직과 관련된 것만 적는다.

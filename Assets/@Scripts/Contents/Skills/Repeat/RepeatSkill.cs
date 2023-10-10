@@ -73,7 +73,8 @@ namespace STELLAREST_2D
             float movementSpeed = this.Data.MovementSpeed;
             float rotationSpeed = this.Data.RotationSpeed;
             float lifeTime = this.Data.Duration;
-            float colliderPreDisableLifeRatio = this.Data.ColliderPreDisableLifeRatio;
+            //float colliderPreDisableLifeRatio = this.Data.ColliderPreDisableLifeRatio;
+            bool isColliderHalfRatio = this.Data.IsColliderHalfRatio;
 
             float[] continuousAngles = new float[continuousCount];
             float[] continuousSpeedRatios = new float[continuousCount];
@@ -121,7 +122,7 @@ namespace STELLAREST_2D
                         movementSpeed: movementSpeed,
                         rotationSpeed: rotationSpeed,
                         lifeTime: lifeTime,
-                        colliderPreDisableLifeRatio: colliderPreDisableLifeRatio,
+                        //colliderPreDisableLifeRatio: colliderPreDisableLifeRatio,
                         continuousAngle: continuousAngles[i],
                         continuousSpeedRatio: continuousSpeedRatios[i],
                         continuousFlipX: continuousFlipXs[i],
@@ -129,6 +130,7 @@ namespace STELLAREST_2D
                         interpolateTargetScaleX: interpolateTargetScaleXs[i],
                         interpolateTargetScaleY: interpolateTargetScaleYs[i],
                         isOnlyVisible: isOnlyVisibles[i],
+                        isColliderHalfRatio: isColliderHalfRatio,
                         maxBounceCount: maxBounceCount,
                         maxPenetrationCount: maxPenetrationCount
                     ));
