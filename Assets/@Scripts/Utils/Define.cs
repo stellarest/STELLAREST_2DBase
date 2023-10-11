@@ -40,7 +40,7 @@ namespace STELLAREST_2D
         public enum MonsterFace { Normal = 0, Angry = 1, Death = 2 }
         public enum HitFromType { None = -1, ThrowingStar = 1, LazerBolt = 2, All = 9 }
         //public enum ImpactHits { None, Leaves, CriticalHit, }
-        public enum MaterialType { None = -1, Hit = 1, Hologram = 2, FadeOut = 3 }
+        public enum MaterialType { None = -1, Hit = 1, Hologram = 2, FadeOut = 3, StrongTintWhite }
         public enum FaceExpressionType { Default = 1, Battle, Dead, }
 
         public static class TemplateIDs

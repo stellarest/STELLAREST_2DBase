@@ -10,6 +10,14 @@ using UnityEngine.Rendering;
 
 namespace STELLAREST_2D
 {
+    /*
+    +++++++++++++++++++++++++++++++++++++++++++
+        Continuous Count : Max Count
+        Duration : Start Explosion Time
+        CoolTime : Generate Time
+    +++++++++++++++++++++++++++++++++++++++++++
+    */
+
     public class BombTrap : RepeatSkill
     {
         public BombTrap Commander { get; private set; } = null;
@@ -57,15 +65,14 @@ namespace STELLAREST_2D
         }
 
         public int _currentCount = 0;
-        private readonly int MAX_COUNT = 5;
+        private readonly int MAX_COUNT = 1;
         private float _coolTimeDelta = 0f;
         protected override IEnumerator CoStartSkill()
         {
             while (true)
             {
-                Utils.Log($"{this._currentCount} / {this.MAX_COUNT}");
-
-                if (this._currentCount < this.MAX_COUNT)
+                Utils.Log($"{this._currentCount} / {this.Data.ContinuousCount}");
+                if (this._currentCount < this.Data.ContinuousCount)
                 {
                     _coolTimeDelta += Time.deltaTime;
                     if (_coolTimeDelta > this.Data.CoolTime)
@@ -136,21 +143,47 @@ namespace STELLAREST_2D
             _childFuse.SetActive(false);
         }
 
+        [ContextMenu("TEST_STRONG_TINT_WHITE")]
+        private void TEST_STRONG_TINT_WHITE()
+        {
+            StartCoroutine(Managers.VFX.MakeStrongTintWhite(this, SR, 2f, delegate
+            {
+                // EXPLOSION.
+                Utils.Log("Complete Strong Tint White.");
+            }));
+        }
+
+        private void StartExplosion()
+        {
+            this.RigidBody.simulated = false;
+            this.HitCollider.enabled = false;
+            StartCoroutine(Managers.VFX.MakeStrongTintWhite(this, SR, this.Data.Duration, delegate
+            {
+                _childExplosion.RigidBody.simulated = true;
+                _childExplosion.HitCollider.enabled = true;
+                _childExplosion.gameObject.SetActive(true);
+                SR.enabled = false;
+                this.Commander._currentCount--;
+            }));
+        }
+
         private void OnTriggerEnter2D(Collider2D other)
         {
             CreatureController cc = other.GetComponent<CreatureController>();
             if (cc.IsValid() == false)
                 return;
 
-            this.RigidBody.simulated = false;
-            this.HitCollider.enabled = false;
+            StartExplosion();
 
-            _childExplosion.RigidBody.simulated = true;
-            _childExplosion.HitCollider.enabled = true;
-            _childExplosion.gameObject.SetActive(true);
-            SR.enabled = false;
+            // this.RigidBody.simulated = false;
+            // this.HitCollider.enabled = false;
 
-            this.Commander._currentCount--;
+            // _childExplosion.RigidBody.simulated = true;
+            // _childExplosion.HitCollider.enabled = true;
+            // _childExplosion.gameObject.SetActive(true);
+            // SR.enabled = false;
+
+            // this.Commander._currentCount--;
         }
 
         protected override void SetSortingOrder() 

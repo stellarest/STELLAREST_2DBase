@@ -9,6 +9,7 @@ using EnvTemplate = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
 using Unity.VisualScripting;
 using System;
 using System.Runtime.InteropServices.WindowsRuntime;
+using UnityEditor.Analytics;
 
 namespace STELLAREST_2D
 {
@@ -18,9 +19,11 @@ namespace STELLAREST_2D
         public Material MatHit_Player { get; private set; } = null;
         public Material Mat_Hologram { get; private set; } = null;
         public Material Mat_Fade { get; private set; } = null;
+        public Material Mat_StrongTintWhite { get; private set; } = null;
 
         public readonly int SHADER_HOLOGRAM = Shader.PropertyToID("_HologramFade");
         public readonly int SHADER_FADE = Shader.PropertyToID("_CustomFadeAlpha");
+        public readonly int SHADER_STRONG_TINT_WHITE = Shader.PropertyToID("_StrongTintFade");
         public readonly float DESIRED_TIME_FADE_OUT = 1.25f;
 
         public void Init()
@@ -29,6 +32,7 @@ namespace STELLAREST_2D
             MatHit_Player = Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_HIT_RED);
             Mat_Hologram = Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_HOLOGRAM);
             Mat_Fade = Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_FADE);
+            Mat_StrongTintWhite = Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_STRONG_TINT_WHITE);
         }
 
         private const float HIT_RESET_DELAY = 0.1f;
@@ -62,6 +66,65 @@ namespace STELLAREST_2D
                     cc.RendererController.ChangeMaterial(matType, Mat_Fade, FADE_RESET_DELAY);
                     break;
             }
+        }
+
+        public IEnumerator CoClonedMaterial(Define.MaterialType matType, BaseController bc, SpriteRenderer spr, float desiredTime, System.Action callback)
+        {
+            if (bc.IsValid() == false)
+                yield break;;
+
+            Material matOrigin = spr.material;
+            Material clonedStrongTintWhiteMat = null;
+            switch (matType)
+            {
+                case Define.MaterialType.StrongTintWhite:
+                    {
+                        clonedStrongTintWhiteMat = new Material(Mat_StrongTintWhite);
+                        spr.material = clonedStrongTintWhiteMat;
+                    }
+                    break;
+            }
+
+            float percent = 0f;
+            while (percent < 1f)
+            {
+                percent += Time.deltaTime / desiredTime;
+                clonedStrongTintWhiteMat.SetFloat(SHADER_STRONG_TINT_WHITE, percent);
+                yield return null;
+            }
+
+            callback?.Invoke(); // START BOMB
+            spr.material = matOrigin; // RESET MATERIAL
+        }
+
+        // TEMP METHOD
+        public IEnumerator MakeStrongTintWhite(BaseController bc, SpriteRenderer spr, float desiredTime, System.Action callback = null)
+        {
+            if (bc.IsValid() == false)
+                yield break;
+
+            Material matOrigin = spr.material;
+
+            // NEED TO MAKE NEW MAT
+            Material clonedStrongTintWhiteMat = new Material(Mat_StrongTintWhite);
+            spr.material = clonedStrongTintWhiteMat;
+            float percent = 0f;
+            while (percent < 1f)
+            {
+                percent += Time.deltaTime / desiredTime;
+                clonedStrongTintWhiteMat.SetFloat(SHADER_STRONG_TINT_WHITE, percent);
+                yield return null;
+            }
+
+            callback?.Invoke(); // START BOMB
+            percent = 0f;
+            while (percent < 0.1f)
+            {
+                percent += Time.deltaTime;
+                yield return null;
+            }
+
+            spr.material = matOrigin; // RESET MATERIAL
         }
 
         // Critical Ratio of all of monsters is zero.
