@@ -48,14 +48,18 @@ namespace STELLAREST_2D
             if (prevCheckPosition == Vector3.zero)
                 yield break;
 
+            Vector3 spawnPos = Vector3.zero;
             for (int i = 0; i < this.Data.ContinuousCount; ++i)
             {
+                spawnPos = Utils.GetRandomTargetPosition<MonsterController>(this.Owner.transform.position,
+                                            FROM_MIN_RANGE, FROM_MAX_RANGE, Define.HitFromType.LazerBolt);
+
                 SkillBase clone = Managers.Object.Spawn<SkillBase>(spawnPos: Vector3.zero, templateID: this.Data.TemplateID,
                         spawnObjectType: Define.ObjectType.Skill, isPooling: true);
-
                 clone.InitClone(this.Owner, this.Data);
-                clone.transform.position = Utils.GetRandomTargetPosition<MonsterController>(this.Owner.Center.position,
-                                                FROM_MIN_RANGE, FROM_MAX_RANGE, Define.HitFromType.LazerBolt);
+                if (spawnPos == Vector3.zero)
+                    spawnPos = Utils.GetRandomPosition(this.Owner.transform.position);
+                clone.transform.position = spawnPos;
 
                 yield return new WaitForSeconds(this.Data.ContinuousSpacing);
             }
