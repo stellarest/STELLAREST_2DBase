@@ -4,14 +4,13 @@ using UnityEngine;
 
 namespace STELLAREST_2D
 {
-    public class SpawningPool : MonoBehaviour
+    public class  SpawningPool : MonoBehaviour
     {
         private float _spawnInterval = 1f; // 이것도 나중에 데이터 시트로 뺴야함. 무조건.
         private const int MaxMonsterCount = 8; // 나중에 데이터 시트로 빼야함
 
         private Coroutine _coUpdateSpawningPool;
         public bool Stopped { get; set; } = false;
-
         private void Start()
         {
             _coUpdateSpawningPool = StartCoroutine(UpdateSpawningPool());

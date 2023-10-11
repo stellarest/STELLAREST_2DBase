@@ -96,7 +96,7 @@ namespace STELLAREST_2D
             _spawningPool = gameObject.AddComponent<SpawningPool>();
             
             // Set Collision Layers
-            Managers.Collision.SetCollisionLayers();
+            Managers.Collision.InitCollisionLayers();
 
             // Managers.Collision.SetCollisionLayers(Define.CollisionLayers.PlayerAttack, Define.CollisionLayers.MonsterBody, true);
             // // Managers.Collision.SetCollisionLayers(Define.CollisionLayers.PlayerBody, Define.CollisionLayers.MonsterAttack, true);

@@ -91,7 +91,6 @@ namespace STELLAREST_2D
                 Managers.Game.OnMoveDirChanged -= OnMoveDirChangedHandler;
         }
 
-
         private void OnMoveDirChangedHandler(Vector3 moveDir)
         {
             this.MoveDir = moveDir;
@@ -110,87 +109,36 @@ namespace STELLAREST_2D
             }
         }
 
-#if UNITY_EDITOR
-        private bool flag1 = false;
-        private void Flag1()
+        private void SkillFlag(SkillTemplate templateOrigin)
         {
-            flag1 = !flag1;
-            if (flag1)
-                SkillBook.Activate(SkillBook.FirstSkill);
-            else
-                SkillBook.Deactivate(SkillBook.FirstSkill);
-        }
-
-        private bool flag2 = false;
-        private void Flag2()
-        {
-            flag2 = !flag2;
-            if (flag2)
-                SkillBook.Activate(SkillTemplate.ThrowingStar);
-            else
-                SkillBook.Deactivate(SkillTemplate.ThrowingStar);
-        }
-
-        private bool flag3 = false;
-        private void Flag3()
-        {
-            flag3 = !flag3;
-            if (flag3)
-                SkillBook.Activate(SkillTemplate.Boomerang);
-            else
-                SkillBook.Deactivate(SkillTemplate.Boomerang);
-        }
-
-        private bool flag4 = false;
-        private void Flag4()
-        {
-            flag4 = !flag4;
-            if (flag4)
-                SkillBook.Activate(SkillTemplate.LazerBolt);
-            else
-                SkillBook.Deactivate(SkillTemplate.LazerBolt);
-        }
-
-        private bool flag5 = false;
-        private void Flag5()
-        {
-            flag5 = !flag5;
-            if (flag5)
-                SkillBook.Activate(SkillTemplate.Spear);
-            else
-                SkillBook.Deactivate(SkillTemplate.Spear);
+            SkillBook.LevelUp(templateOrigin);
+            SkillBook.Activate(templateOrigin);
         }
 
         private void Update()
         {
+#if UNITY_EDITOR
             DEV_CLEAR_LOG();
             if (Input.GetKeyDown(KeyCode.Alpha1))
-                SkillBook.LevelUp(SkillTemplate.PaladinMastery);
-            if (Input.GetKeyDown(KeyCode.Q))
-                Flag1();
+                SkillFlag(SkillTemplate.PaladinMastery);
 
             if (Input.GetKeyDown(KeyCode.Alpha2))
-                SkillBook.LevelUp(SkillTemplate.ThrowingStar);
-            if (Input.GetKeyDown(KeyCode.W))
-                Flag2();
+                SkillFlag(SkillTemplate.ThrowingStar);
 
             if (Input.GetKeyDown(KeyCode.Alpha3))
-                SkillBook.LevelUp(SkillTemplate.Boomerang);
-            if (Input.GetKeyDown(KeyCode.E))
-                Flag3();
+                SkillFlag(SkillTemplate.Boomerang);
 
             if (Input.GetKeyDown(KeyCode.Alpha4))
-                SkillBook.LevelUp(SkillTemplate.LazerBolt);
-            if (Input.GetKeyDown(KeyCode.R))
-                Flag4();
+                SkillFlag(SkillTemplate.LazerBolt);
 
             if (Input.GetKeyDown(KeyCode.Alpha5))
-                SkillBook.LevelUp(SkillTemplate.Spear);
-            if (Input.GetKeyDown(KeyCode.T))
-                Flag5();
+                SkillFlag(SkillTemplate.Spear);
 
-            // if (Input.GetKeyDown(KeyCode.U))
-            //     Utils.Log("MON COUNT : " + Managers.Object.Monsters.Count);
+            if (Input.GetKeyDown(KeyCode.Alpha6))
+                SkillFlag(SkillTemplate.BombTrap);
+
+            if (Input.GetKeyDown(KeyCode.M))
+                Utils.Log($"Monster Count : {Managers.Object.Monsters.Count}");
 #endif
             MoveByJoystick();
             CollectEnv();

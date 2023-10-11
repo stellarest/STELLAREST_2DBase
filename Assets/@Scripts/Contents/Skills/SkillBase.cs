@@ -63,7 +63,7 @@ namespace STELLAREST_2D
         public virtual void SetClonedRootTargetOnParticleStopped() 
         {
             Transform root = transform.root;
-            foreach (var particle in root.GetComponentsInChildren<ParticleSystem>())
+            foreach (var particle in root.GetComponentsInChildren<ParticleSystem>(includeInactive: true))
             {
                 OnParticleStopped particleStopped = particle.GetComponent<OnParticleStopped>();
                 if (particleStopped != null && particleStopped.RootTarget == null)
