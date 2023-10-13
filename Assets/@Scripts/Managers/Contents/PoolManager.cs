@@ -79,7 +79,7 @@ namespace STELLAREST_2D
         // 스킬을 찍는 UI가 나오면 현재 작동하고 있는 모든 스킬을 먼저 Deactivate한다.
         // 이후에 모든 스킬을 찍고 난 이후에, UI가 꺼지면 ResetPools를 실행한다.
         // 이후에는 다시 AcquiredSkills를 Activate하면 된다.
-        public void ClearPools_TEMP()
+        public void ClearPoolsAll()
         {
             foreach (KeyValuePair<string, Pool> pool in _pools)
             {

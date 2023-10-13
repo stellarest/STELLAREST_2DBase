@@ -58,7 +58,8 @@ namespace STELLAREST_2D
             for (int i = 0; i < _particles.Length; ++i)
             {
                 Vector3 angle = indicatorAngle;
-                angle.z += continuousAngle;
+                //angle.z += continuousAngle;
+                angle.z -= continuousAngle;
                 transform.rotation = Quaternion.Euler(angle);
 
                 var main = _particles[i].main;

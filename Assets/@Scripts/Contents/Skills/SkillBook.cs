@@ -159,7 +159,7 @@ namespace STELLAREST_2D
                 if (Members[i].IsLast == false)
                     continue;
 
-                if (Members[i].IsLearned && Members[i].IsLast)
+                if (Members[i].IsActive == false && Members[i].IsLearned && Members[i].IsLast)
                 {
                     Members[i].SetActiveLog(true);
                     Members[i].SkillOrigin.Activate();
@@ -180,7 +180,7 @@ namespace STELLAREST_2D
                 if (Members[i].IsLast == false)
                     continue;
 
-                if (Members[i].IsLearned && Members[i].IsLearned)
+                if (Members[i].IsActive && Members[i].IsLearned && Members[i].IsLast)
                 {
                     Members[i].SetActiveLog(false);
                     Members[i].SkillOrigin.Deactivate();
@@ -260,6 +260,12 @@ namespace STELLAREST_2D
                 Utils.LogCritical(nameof(SkillBook), nameof(Acquire), $"Check TemplateID : {templateOrigin}");
 
             group.Activate();
+        }
+
+        public void ActivateAll()
+        {
+            foreach (var group in SkillGroupsDict)
+                group.Value.Activate();
         }
 
         public void Deactivate(SkillTemplate templateOrigin)

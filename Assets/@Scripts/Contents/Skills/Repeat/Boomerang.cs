@@ -65,16 +65,17 @@ namespace STELLAREST_2D
         protected override IEnumerator CoStartSkill()
         {
             if (this.Data.Grade < this.Data.MaxGrade)
-                yield return base.CoStartSkill();
+                yield return base.CoStartSkill(); // JUST RUN EVERY COOLTIME.
             else
             {
-                base.DoSkillJob(); // ONCE
+                base.DoSkillJob(); // ONLY ONCE RUN
                 yield return null;
             }
         }
 
-        protected override IEnumerator Delay(SkillBase caller, float delay)
+        protected override IEnumerator CoDoSkillJobManually(SkillBase caller, float delay)
         {
+            // DEACTIVE
             this.SR.enabled = false;
             this.RigidBody.simulated = false;
             this.HitCollider.enabled = false;

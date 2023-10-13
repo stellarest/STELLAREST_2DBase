@@ -29,7 +29,8 @@ namespace STELLAREST_2D
             get => AnimTransform.transform.localScale;
             set => AnimTransform.transform.localScale = value;
         }
-        public bool IsFacingRight => (LocalScale.x != LocalScale.x * -1f) ? true : false;
+        //public bool IsFacingRight => (LocalScale.x != LocalScale.x * -1f) ? true : false;
+        public bool IsFacingRight => this.LookAtDir == Define.LookAtDirection.Right;
 
         // +++ BASE COMPONENTS +++
         public AnimationCallback AnimCallback { get; protected set; } = null;
@@ -247,7 +248,6 @@ namespace STELLAREST_2D
             this.HitCollider.enabled = false;
             this.RigidBody.simulated = false;
             this.Stat.Hp = 0f;
-            //this.SkillBook.DeactivateAll();
             this.SkillBook.DeactivateAll();
         }
 

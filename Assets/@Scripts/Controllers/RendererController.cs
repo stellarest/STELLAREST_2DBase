@@ -350,6 +350,9 @@ namespace STELLAREST_2D
         {
             if (this.IsPlayer)
             {
+                if (this.Owner.IsDeadState)
+                    return;
+
                 PlayerFaceExpression battleFace = this.PlayerFaceExpressionDict[Define.FaceExpressionType.Battle];
                 PlayerFace.eyebrowsSPR.sprite = battleFace.Eyebrows;
                 PlayerFace.eyebrowsSPR.color = battleFace.EyebrowsColor;
@@ -368,6 +371,9 @@ namespace STELLAREST_2D
         {
             if (this.IsPlayer)
             {
+                if (this.Owner.IsDeadState)
+                    return;
+
                 PlayerFaceExpression defaultFace = this.PlayerFaceExpressionDict[Define.FaceExpressionType.Default];
                 PlayerFace.eyebrowsSPR.sprite = defaultFace.Eyebrows;
                 PlayerFace.eyebrowsSPR.color = defaultFace.EyebrowsColor;
@@ -380,6 +386,22 @@ namespace STELLAREST_2D
             }
             else
                 MonsterHead.sprite = OwnerAsMonsterController.DefaultHead;
+        }
+
+        public void OnFaceDeadHandler()
+        {
+            if (this.IsPlayer)
+            {
+                PlayerFaceExpression deadFace = this.PlayerFaceExpressionDict[Define.FaceExpressionType.Dead];
+                PlayerFace.eyebrowsSPR.sprite = deadFace.Eyebrows;
+                PlayerFace.eyebrowsSPR.color = deadFace.EyebrowsColor;
+
+                PlayerFace.eyesSPR.sprite = deadFace.Eyes;
+                PlayerFace.eyesSPR.color = deadFace.EyesColor;
+
+                PlayerFace.mouthSPR.sprite = deadFace.Mouth;
+                PlayerFace.mouthSPR.color = deadFace.MouthColor;
+            }
         }
 
         public void ChangeMaterial(Define.MaterialType changeMatType, Material mat, float resetDelay)
@@ -508,11 +530,24 @@ namespace STELLAREST_2D
 
         public void ResetMaterial()
         {
+            // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+            // BCs.Length > OwnerSPRs.Length or BCs.Length == OwnerSPRs.Length (No Error)
+            // BCs.Length < OwnerSPRs.Length (Error)
+            // 정확한 원인은 아직 파악중
+            // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
             BaseContainer[] BCs = this.BaseContainers(_currentKeyGrade);
-            for (int i = 0; i < OwnerSPRs.Length; ++i)
+            int legnth = Mathf.Min(BCs.Length, OwnerSPRs.Length);
+            for (int i = 0; i < legnth; ++i)
                 OwnerSPRs[i].material = BCs[i].MatOrigin;
             if (this.IsPlayer)
+            {
                 PlayerEyesSPR.sprite = PlayerEyesSprite;
+            }
+
+            // for (int i = 0; i < OwnerSPRs.Length; ++i)
+            //     OwnerSPRs[i].material = BCs[i].MatOrigin;
+            // if (this.IsPlayer)
+            //     PlayerEyesSPR.sprite = PlayerEyesSprite;
 
             IsChangingMaterial = false;
         }

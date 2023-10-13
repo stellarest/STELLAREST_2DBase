@@ -101,7 +101,7 @@ namespace STELLAREST_2D
         {
             this._initialLookAtDir = e.LookAtDir;
             this._shootDir = e.ShootDir;
-            transform.localScale = e.LocalScale;
+            transform.localScale = e.LocalScale; // SET LOCAL SCALE
             this._indicatorAngle = e.IndicatorAngle;
             this._movementSpeed = e.MovementSpeed;
             this._rotationSpeed = e.RotationSpeed;
@@ -113,7 +113,8 @@ namespace STELLAREST_2D
             this._continuousSpeedRatio = e.ContinuousSpeedRatio;
             this._continuousFlipX = e.ContinuousFlipX;
             this._continuousFlipY = e.ContinuousFlipY;
-            if (e.InterpolateTargetScaleX > e.LocalScale.x || e.InterpolateTargetScaleY > e.LocalScale.y)
+
+            if (e.InterpolateTargetScaleX > Mathf.Abs(e.LocalScale.x) || e.InterpolateTargetScaleY > Mathf.Abs(e.LocalScale.y))
             {
                 this._interpolateStartScale = e.LocalScale;
                 this._interpolateTargetScale = new Vector3(e.InterpolateTargetScaleX, e.InterpolateTargetScaleY, 1);
@@ -147,6 +148,17 @@ namespace STELLAREST_2D
                     OnSetParticleInfo?.Invoke(_indicatorAngle, _initialLookAtDir, _continuousAngle, _continuousFlipX, _continuousFlipY);
                     StartCoroutine(CoMeleeSwing());
                     break;
+                case SkillTemplate.KnightMastery:
+                    StartDestroy(_lifeTime);
+                    OnSetParticleInfo?.Invoke(_indicatorAngle, _initialLookAtDir, _continuousAngle, _continuousFlipX, _continuousFlipY);
+                    _shootDir = Quaternion.Euler(0, 0, _continuousAngle * -1) * _shootDir; // Knight Mastery
+                    StartCoroutine(CoMeleeSwing());
+                    break;
+                case SkillTemplate.PhantomKnightMastery:
+                    StartDestroy(_lifeTime);
+                    OnSetParticleInfo?.Invoke(_indicatorAngle, _initialLookAtDir, _continuousAngle, _continuousFlipX, _continuousFlipY);
+                    StartCoroutine(CoMeleeSwing());
+                    break;
 
                 case SkillTemplate.ThrowingStar:
                     StartDestroy(_lifeTime);
@@ -162,6 +174,12 @@ namespace STELLAREST_2D
                     else
                         StartCoroutine(CoBoomerangUltimate());
                     break;
+            }
+
+            if (_isOnReadyInterpolateScale)
+            {
+                Utils.Log("Interpolate Scale.");
+                StartCoroutine(CoInterpolateScale());
             }
         }
 
@@ -308,6 +326,7 @@ namespace STELLAREST_2D
             this.RigidBody.simulated = false;
             this.HitCollider.enabled = false;
 
+            // +++
             GetComponent<Boomerang>().DoSkillJobManually(this, 1f);
             //Managers.Object.Despawn<SkillBase>(this);
         }
@@ -326,9 +345,7 @@ namespace STELLAREST_2D
                 // percent에 별다른 속도를 점점 Lerp로 가중시켜서 힘좀 줘도 될듯
                 float percent = rotAround_Delta / rotAround_AdjustDistanceSameDesiredDuration;
                 if (percent < 1f)
-                {
                     child.localPosition = Vector3.right * Mathf.Lerp(rotAround_MinDistance, rotAround_MaxDistance, curve.Evaluate(percent));
-                }
                 else
                 {
                     rotAround_StartEnlargeDistance = false;
@@ -343,12 +360,24 @@ namespace STELLAREST_2D
                 if (percent < 1f)
                     child.localPosition = Vector3.right * Mathf.Lerp(rotAround_MaxDistance, rotAround_MinDistance, curve.Evaluate(percent));
                 else
-                {
                     return true;
-                }
             }
 
             return false;
+        }
+
+        private IEnumerator CoInterpolateScale()
+        {
+            float delta = 0f;
+            float percent = 0f;
+
+            while (percent < 1f)
+            {
+                delta += Time.deltaTime;
+                percent = delta / this.Data.Duration;
+                transform.localScale = Vector3.Lerp(_interpolateStartScale, _interpolateTargetScale, percent);
+                yield return null;
+            }
         }
 
         private IEnumerator CoPreDisableCollider(float seconds)

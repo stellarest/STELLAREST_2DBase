@@ -105,7 +105,7 @@ namespace STELLAREST_2D
             }
         }
 
-        public bool IsStopped { get; protected set; } = false;
+        [field: SerializeField] public bool IsStopped { get; protected set; } = false;
 
         protected Coroutine _coSkillActivate = null;
 
@@ -118,15 +118,36 @@ namespace STELLAREST_2D
             }
 
             IsStopped = false;
+
+            Transform root = Managers.Pool.GetRoot(this.gameObject.name);
+            if (root != null)
+            {
+                for (int i = 0; i < root.childCount; ++i)
+                    root.GetChild(i).GetComponent<SkillBase>().IsStopped = this.IsStopped;
+            }
+
             gameObject.SetActive(true);
         }
 
         public virtual void Deactivate(bool isPoolingClear = false)
         {
             IsStopped = true;
+            
+            Transform root = Managers.Pool.GetRoot(this.gameObject.name);
+            if (root != null)
+            {
+                for (int i = 0; i < root.childCount; ++i)
+                    root.GetChild(i).GetComponent<SkillBase>().IsStopped = this.IsStopped;
+            }
+
             gameObject.SetActive(false);
             if (isPoolingClear)
                 Managers.Pool.ClearPool<SkillBase>(this.gameObject);
+        }
+
+        public void OnClonedDeactivateHandler(bool isStopped)
+        {
+            this.IsStopped = isStopped;
         }
 
         protected Coroutine _coDestroy = null;

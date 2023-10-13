@@ -1,20 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Diagnostics;
 
 namespace STELLAREST_2D
 {
-    public class PaladinAnimationController : PlayerAnimationController
+    public class KnightAnimationController : PlayerAnimationController
     {
-        private readonly int UPPER_READY = Animator.StringToHash("ReadyMelee1H");
+        private readonly int UPPER_READY = Animator.StringToHash("ReadyMelee2H");
         private readonly int UPPER_RELEASE = Animator.StringToHash("IdleMelee");
-        private readonly int UPPER_ATTACK = Animator.StringToHash("SlashMelee1H");
+        private readonly int UPPER_ATTACK = Animator.StringToHash("SlashMelee2H");
 
-        private readonly int LOWER_DEATH_BACK = Animator.StringToHash("DeathBack");
-        private readonly int LOWER_DEATH_FRONT = Animator.StringToHash("DeathFront");
-
-        
         public override void Init(CreatureController owner)
         {
             base.Init(owner);
@@ -25,3 +20,4 @@ namespace STELLAREST_2D
         public override void Attack() => AnimController.Play(UPPER_ATTACK);
     }
 }
+

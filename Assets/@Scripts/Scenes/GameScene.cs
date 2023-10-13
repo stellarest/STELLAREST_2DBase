@@ -84,7 +84,12 @@ namespace STELLAREST_2D
             // +++ GARY +++
             var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Creatures.Player.Gary_Paladin, 
                         Define.ObjectType.Player, isPooling: false);
+            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Creatures.Player.Gary_Knight,
+            //             Define.ObjectType.Player, isPooling: false);
+            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Creatures.Player.Gary_PhantomKnight,
+            //             Define.ObjectType.Player, isPooling: false);
 
+            // +++ REINA +++
             var CMcam = Camera.main.GetComponent<CinemachineBrain>().ActiveVirtualCamera.VirtualCameraGameObject;
             CMcam.GetComponent<CameraController>().SetTarget(player.gameObject);
 
@@ -99,8 +104,8 @@ namespace STELLAREST_2D
             Managers.Collision.InitCollisionLayers();
 
             // Managers.Collision.SetCollisionLayers(Define.CollisionLayers.PlayerAttack, Define.CollisionLayers.MonsterBody, true);
-            // // Managers.Collision.SetCollisionLayers(Define.CollisionLayers.PlayerBody, Define.CollisionLayers.MonsterAttack, true);
-            // // Managers.Collision.SetCollisionLayers(Define.CollisionLayers.MonsterBody, Define.CollisionLayers.MonsterBody, true);
+            // Managers.Collision.SetCollisionLayers(Define.CollisionLayers.PlayerBody, Define.CollisionLayers.MonsterAttack, true);
+            // Managers.Collision.SetCollisionLayers(Define.CollisionLayers.MonsterBody, Define.CollisionLayers.MonsterBody, true);
 
             // Test Gem Spawn
             // for (int i = 0; i < 30; ++i)

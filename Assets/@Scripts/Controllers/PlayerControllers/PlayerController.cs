@@ -93,6 +93,9 @@ namespace STELLAREST_2D
 
         private void OnMoveDirChangedHandler(Vector3 moveDir)
         {
+            if (this.IsDeadState)
+                return;
+
             this.MoveDir = moveDir;
             if (moveDir == Vector3.zero)
                 CreatureState = Define.CreatureState.Idle;
@@ -113,14 +116,24 @@ namespace STELLAREST_2D
         {
             SkillBook.LevelUp(templateOrigin);
             SkillBook.Activate(templateOrigin);
+
+            if (templateOrigin == SkillBook.FirstSkill)
+            {
+                SkillBase skill = SkillBook.GetCanActiveSkillMember(templateOrigin);
+                if (skill.Data.Grade > Define.InGameGrade.Default)
+                    this.RendererController.Upgrade(skill.Data.Grade);
+            }
         }
 
         private void Update()
         {
+            if (this.IsDeadState)
+                return;
+
 #if UNITY_EDITOR
             DEV_CLEAR_LOG();
             if (Input.GetKeyDown(KeyCode.Alpha1))
-                SkillFlag(SkillTemplate.PaladinMastery);
+                SkillFlag(SkillBook.FirstSkill);
 
             if (Input.GetKeyDown(KeyCode.Alpha2))
                 SkillFlag(SkillTemplate.ThrowingStar);
@@ -136,6 +149,12 @@ namespace STELLAREST_2D
 
             if (Input.GetKeyDown(KeyCode.Alpha6))
                 SkillFlag(SkillTemplate.BombTrap);
+
+            if (Input.GetKeyDown(KeyCode.K))
+                SkillBook.ActivateAll();
+
+            if (Input.GetKeyDown(KeyCode.L))
+                SkillBook.DeactivateAll();
 
             if (Input.GetKeyDown(KeyCode.M))
                 Utils.Log($"Monster Count : {Managers.Object.Monsters.Count}");
@@ -159,6 +178,10 @@ namespace STELLAREST_2D
                 case Define.CreatureState.Skill:
                     //PlayerAnimController.Attack();
                     RunSkill();
+                    break;
+
+                case Define.CreatureState.Dead:
+                    OnDead();
                     break;
             }
         }
@@ -252,7 +275,9 @@ namespace STELLAREST_2D
 
         protected override void OnDead()
         {
-            //base.OnDead();
+            base.OnDead();
+            Utils.Log($"Player HP is on dead : {Stat.Hp}");
+            PlayerAnimController.DeathBack();
         }
 
         public void Expression(Define.ExpressionType expression, float duration)

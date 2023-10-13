@@ -95,7 +95,7 @@ namespace STELLAREST_2D
                 return;
 
             MainTarget = Managers.Game.Player;
-            if (MainTarget.IsValid() == false && MainTarget != null)
+            if (MainTarget.IsDeadState)
             {
                 MainTarget = null;
                 return;
@@ -108,10 +108,10 @@ namespace STELLAREST_2D
             if (this.Action == false)
                 return;
 
-            if (this.CreatureState != Define.CreatureState.Run)
-                return;
-            else
-                MoveToTarget(MainTarget);
+            // if (this.CreatureState != Define.CreatureState.Run)
+            //     return;
+            // else
+            //     MoveToTarget(MainTarget);
         }
 
         protected virtual void MoveToTarget(CreatureController target)

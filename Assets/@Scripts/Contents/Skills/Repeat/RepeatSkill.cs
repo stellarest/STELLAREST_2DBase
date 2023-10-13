@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using STELLAREST_2D.Data;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace STELLAREST_2D
@@ -35,9 +36,20 @@ namespace STELLAREST_2D
             StartCoroutine(CoCloneSkill());
         }
 
-        public virtual void DoSkillJobManually(SkillBase caller, float delay) => StartCoroutine(Delay(caller, delay));
+        public virtual void DoSkillJobManually(SkillBase caller, float delay) 
+        {
+            if (this.IsStopped && _coSkillActivate != null)
+            {
+                StopCoroutine(_coSkillActivate);
+                _coSkillActivate = null;
+                StartDestroy(1f);
+                return;
+            }
+
+            _coSkillActivate = StartCoroutine(CoDoSkillJobManually(caller, delay));
+        }
         
-        protected virtual IEnumerator Delay(SkillBase caller, float delay)
+        protected virtual IEnumerator CoDoSkillJobManually(SkillBase caller, float delay)
         {
             if (delay > 0f)
             {
@@ -112,6 +124,7 @@ namespace STELLAREST_2D
                 SkillBase clone = Managers.Object.Spawn<SkillBase>(spawnPos: spawnPos, templateID: this.Data.TemplateID,
                         spawnObjectType: Define.ObjectType.Skill, isPooling: true);
                 clone.InitClone(this.Owner, this.Data);
+
                 if (clone.PC != null)
                 {
                     clone.OnProjectileLaunchInfo?.Invoke(this, new ProjectileLaunchInfoEventArgs(
@@ -142,6 +155,7 @@ namespace STELLAREST_2D
             }
         }
 
+        // +++ FIXED BOOKMARKS +++
         public override void Deactivate(bool isPoolingClear = false)
         {
             if (IsStopped)
