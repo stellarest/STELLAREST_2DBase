@@ -150,11 +150,10 @@ namespace STELLAREST_2D
             if (Input.GetKeyDown(KeyCode.Alpha6))
                 SkillFlag(SkillTemplate.BombTrap);
 
-            if (Input.GetKeyDown(KeyCode.K))
-                SkillBook.ActivateAll();
-
-            if (Input.GetKeyDown(KeyCode.L))
-                SkillBook.DeactivateAll();
+            // if (Input.GetKeyDown(KeyCode.K))
+            //     SkillBook.ActivateAll();
+            // if (Input.GetKeyDown(KeyCode.L))
+            //     SkillBook.DeactivateAll();
 
             if (Input.GetKeyDown(KeyCode.M))
                 Utils.Log($"Monster Count : {Managers.Object.Monsters.Count}");
@@ -278,6 +277,7 @@ namespace STELLAREST_2D
             base.OnDead();
             Utils.Log($"Player HP is on dead : {Stat.Hp}");
             PlayerAnimController.DeathBack();
+            this.RendererController.OnFaceDeadHandler();
         }
 
         public void Expression(Define.ExpressionType expression, float duration)
