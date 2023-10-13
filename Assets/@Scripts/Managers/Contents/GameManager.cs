@@ -32,6 +32,7 @@ namespace STELLAREST_2D
         }
 
         public PlayerController Player { get => Managers.Object?.Player; }
+        public System.Action OnPlayerIsDead = null;
 
         private const float MIN_CRITICAL_RATIO = 1.5f;
         private const float MAX_CRITICAL_RATIO = 2f;

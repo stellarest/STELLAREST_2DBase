@@ -30,6 +30,9 @@ namespace STELLAREST_2D
             if (Stopped)
                 return;
 
+            if (Managers.Game.Player == null)
+                return;
+
             int monsterCount = Managers.Object.Monsters.Count;
             if (monsterCount >= MaxMonsterCount)
                 return;
@@ -46,6 +49,7 @@ namespace STELLAREST_2D
             // 4. 또한 CreatureData, CreatureStat, Stage, 또는 Wave 데이터에서 IsPooling에 대한 정보를 가져와서, 이를 바탕으로 오브젝트를 생성해야함
             // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
             // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+            
             Vector3 randPos = Utils.GetRandomPosition(Managers.Game.Player.transform.position, 5f, 20f);
             Managers.Object.Spawn<MonsterController>(randPos, (int)Define.TemplateIDs.Creatures.Monster.Chicken, Define.ObjectType.Monster, true);
             //MonsterController mc = Managers.Object.Spawn<MonsterController>(randPos, (int)Define.TemplateIDs.Monster.Chicken);

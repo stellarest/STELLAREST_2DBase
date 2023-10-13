@@ -21,10 +21,12 @@ namespace STELLAREST_2D
         public HashSet<GemController> Gems { get; } = new HashSet<GemController>();
         // EnvCont는 나중에 추가하던지
         public GridController GridController { get; private set; } = null;
+        public void OnPlayerDeadHandler() => this.Player = null;
 
         public void Init()
         {
             GridController = UnityEngine.GameObject.Find("@Grid").GetComponent<GridController>();
+            Managers.Game.OnPlayerIsDead += OnPlayerDeadHandler;
         }
 
         public T Spawn<T>(Vector3 spawnPos, int templateID, Define.ObjectType spawnObjectType, bool isPooling = false) where T : BaseController
@@ -153,6 +155,15 @@ namespace STELLAREST_2D
                     continue;
 
                 Despawn<MonsterController>(monster);
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (Managers.Game.OnPlayerIsDead != null)
+            {
+                Utils.Log("Release Event : OnPlayerDeadHandler");
+                Managers.Game.OnPlayerIsDead -= OnPlayerDeadHandler;
             }
         }
 

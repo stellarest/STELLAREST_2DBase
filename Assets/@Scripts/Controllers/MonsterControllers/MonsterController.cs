@@ -33,6 +33,8 @@ namespace STELLAREST_2D
                 LateInit();
                 MonsterAnimController = AnimController as MonsterAnimationController;
                 Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.MonsterBody);
+                Managers.Game.OnPlayerIsDead += OnPlayerIsDeadHandler;
+                Utils.Log("Add Event : OnPlayerIsDeadHandler");
                 this.IsFirstPooling = false;
             }
             
@@ -53,6 +55,14 @@ namespace STELLAREST_2D
             InitCreatureStat(templateID);
             ResetAllHitFrom();
             _coAction = StartCoroutine(CoStartAction());
+
+            if (Managers.Game.Player != null)
+            {
+                this.MainTarget = Managers.Game.Player;
+                Utils.Log("Set MainTarget");
+            }
+            else
+                Utils.Log("InValid MainTarget.");
         }
 
         protected virtual IEnumerator CoStartAction()
@@ -94,12 +104,20 @@ namespace STELLAREST_2D
             if (this.IsDeadState)
                 return;
 
-            MainTarget = Managers.Game.Player;
-            if (MainTarget.IsDeadState)
-            {
-                MainTarget = null;
+
+            if (this.MainTarget == null)
                 return;
-            }
+
+            // CHANGE TO EVENT (Managers.Game.OnPlayerIsDead)
+            // MainTarget = Managers.Game.Player;
+            // if (MainTarget.IsDeadState)
+            // {
+            //     // if (MainTarget != null)
+            //     //     MainTarget = null;
+
+            //     // AfterTargetDeath();
+            //     return;
+            // }
 
             Vector3 toTargetDir = (MainTarget.Center.transform.position - transform.position);
             if (this.LockFlip == false)
@@ -113,6 +131,8 @@ namespace STELLAREST_2D
             else
                 MoveToTarget(MainTarget);
         }
+
+        protected virtual void AfterTargetDeath() { }
 
         protected virtual void MoveToTarget(CreatureController target)
         {
@@ -191,6 +211,15 @@ namespace STELLAREST_2D
         protected void Flip(float flipX)
                 => transform.localScale = new Vector2(_baseRootLocalScale.x * flipX, _baseRootLocalScale.y);
 
+        public void OnPlayerIsDeadHandler()
+        {
+            Utils.Log("Called::OnPlayerIsDeadHandler");
+            MainTarget = null;
+            this.CreatureState = Define.CreatureState.Idle;
+            // AfterTargetDeath(); // DO SOMETHING WHEN YOU WANT TO
+            // (ex) Move To Target Random Pos
+        }
+
         public override void OnDamaged(CreatureController attacker, SkillBase from)
         {
             if (this.Action == false)
@@ -217,6 +246,15 @@ namespace STELLAREST_2D
             Managers.VFX.Material(Define.MaterialType.FadeOut, this);
             yield return new WaitForSeconds(Managers.VFX.DESIRED_TIME_FADE_OUT);
             Managers.Object.Despawn(this);
+        }
+
+        private void OnDestroy()
+        {
+            if (Managers.Game.OnPlayerIsDead != null)
+            {
+                Utils.Log("Release Event : OnPlayerIsDeadHandler");
+                Managers.Game.OnPlayerIsDead -= OnPlayerIsDeadHandler;
+            }
         }
     }
 }

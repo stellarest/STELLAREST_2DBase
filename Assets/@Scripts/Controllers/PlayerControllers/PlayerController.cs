@@ -278,6 +278,7 @@ namespace STELLAREST_2D
             Utils.Log($"Player HP is on dead : {Stat.Hp}");
             PlayerAnimController.DeathBack();
             this.RendererController.OnFaceDeadHandler();
+            Managers.Game.OnPlayerIsDead?.Invoke();
         }
 
         public void Expression(Define.ExpressionType expression, float duration)
