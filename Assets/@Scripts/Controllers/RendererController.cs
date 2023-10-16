@@ -1,11 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using STELLAREST_2D.Data;
-using UnityEditor.Rendering;
 using UnityEngine;
-using UnityEngine.UIElements;
+
+using EnvTemplate = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
 
 namespace STELLAREST_2D
 {
@@ -388,10 +387,10 @@ namespace STELLAREST_2D
             else
                 MonsterHead.sprite = OwnerAsMonsterController.AngryHead;
         }
-
 #endregion
-        public PlayerFace PlayerFace { get; private set; } = null;
+        public void OnDustVFXHandler() => Managers.VFX.Environment(EnvTemplate.Dust, this.Owner);
 
+        public PlayerFace PlayerFace { get; private set; } = null;
         private SpriteRenderer _monsterHead = null;
         public SpriteRenderer MonsterHead 
         {

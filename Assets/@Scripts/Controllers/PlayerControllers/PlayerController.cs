@@ -251,7 +251,6 @@ namespace STELLAREST_2D
             //Debug.Log($"Find Gem : {findGems.Count} / Total Gem : {allSpawnedGems.Count}");
         }
 
-
         public override Vector3 LoadVFXEnvSpawnPos(EnvTemplate templateOrigin)
         {
             switch (templateOrigin)
@@ -264,6 +263,9 @@ namespace STELLAREST_2D
 
                 case EnvTemplate.Dodge:
                     return (transform.position + (Vector3.up * 2.95f));
+
+                case EnvTemplate.Dust:
+                    return this.BodyParts.LegRight.position + (Vector3.down * 0.35f);
 
                 default:
                     return base.LoadVFXEnvSpawnPos(templateOrigin);

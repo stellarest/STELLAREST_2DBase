@@ -199,6 +199,7 @@ namespace STELLAREST_2D
                     DamageFont = 500103,
                     Dodge = 500104,
                     Skull = 500105,
+                    Dust = 500106,
                     Max = 999,
                 }
             }

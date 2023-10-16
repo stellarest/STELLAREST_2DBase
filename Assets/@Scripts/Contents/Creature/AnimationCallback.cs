@@ -9,12 +9,14 @@ namespace STELLAREST_2D
     {
         private CreatureController _owner = null;
         public System.Action OnCloneRepeatSkill = null;
+        public System.Action OnDustVFX = null;
 
         public void Init(CreatureController owner) => this._owner = owner;
         public void OnCloneRepeatSkillHandler() => OnCloneRepeatSkill?.Invoke();
         public void OnFaceBattleHandler() => this._owner.RendererController.OnFaceBattleHandler();
         public void OnFaceDefaultHandler() => this._owner.RendererController.OnFaceDefaultHandler();
         public void OnFaceDeadHandler() => this._owner.RendererController.OnFaceDeadHandler();
+        public void OnDustVFXHandler() => this._owner.RendererController.OnDustVFXHandler();
 
         //public void ShowDustEffect() => Managers.Effect.ShowPlayerDust();
         public void BattleFaceExpression()

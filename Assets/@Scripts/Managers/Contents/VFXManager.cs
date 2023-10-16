@@ -213,14 +213,19 @@ namespace STELLAREST_2D
                     {
                         Managers.Resource.Load<GameObject>(Define.Labels.Prefabs.VFX_ENV_DMG_TEXT_TO_PLAYER_DODGE)
                                          .GetComponent<DamageNumber>().Spawn(spawnPos);
-                        // GameObject go = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_ENV_DMG_TEXT_TO_PLAYER_DODGE, null, false);
-                        // go.transform.position = spawnPos;
                     }
                     break;
 
                 case EnvTemplate.Skull:
                     {
                         GameObject go = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_ENV_SKULL, null, true);
+                        go.transform.position = spawnPos;
+                    }
+                    break;
+
+                case EnvTemplate.Dust:
+                    {
+                        GameObject go = Managers.Resource.Instantiate(Define.Labels.Prefabs.DUST, null, true);
                         go.transform.position = spawnPos;
                     }
                     break;
