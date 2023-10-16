@@ -209,7 +209,7 @@ namespace STELLAREST_2D.Test
         //     // _curve.preWrapMode = WrapMode.PingPong;
         //     // _curve.postWrapMode = WrapMode.PingPong;
 
-        //     // Managers.Resource.LoadAllAsync<Object>("PreLoad", (delegate (string key, int count, int totalCount)
+        //     // Managers.Resource.LoadAllAsync<Object>("PreLoad", ( (string key, int count, int totalCount)
         //     // {
         //     //     // 굳이 count / totalCount를 적어놓은 이유는 처음에 로딩화면, 로딩바에서 1,2,3,4,5... 이를 이용해 퍼센테이지로 표현 가능
         //     //     // 이런 프로세스바를 나중에 구현하기 위함

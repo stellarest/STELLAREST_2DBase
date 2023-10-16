@@ -9,7 +9,6 @@ using UnityEngine.UIElements;
 
 namespace STELLAREST_2D
 {
-
     #region Load Player Face Expressions
     [System.Serializable]
     public class PlayerFaceExpressionLoader
@@ -314,6 +313,7 @@ namespace STELLAREST_2D
                             container.MouthColor = expressions[i].MouthColor;
 
                             PlayerFaceExpressionContainerDict.Add(Define.FaceExpressionType.Dead, container);
+                            Utils.Log($"##### Check Dead Eyes Sprite you have : {container.Eyes} #####");
                         }
                         break;
                 }
@@ -327,6 +327,7 @@ namespace STELLAREST_2D
                 if (this.Owner.IsDeadState)
                     return;
 
+                CurrentFaceState = Define.FaceExpressionType.Battle;
                 PlayerFaceExpressionContainer container = PlayerFaceExpressionContainerDict[Define.FaceExpressionType.Battle];
                 PlayerFace.eyebrowsSPR.sprite = container.Eyebrows;
                 PlayerFace.eyebrowsSPR.color = container.EyebrowsColor;
@@ -336,7 +337,6 @@ namespace STELLAREST_2D
 
                 PlayerFace.mouthSPR.sprite = container.Mouth;
                 PlayerFace.mouthSPR.color = container.MouthColor;
-                CurrentFaceState = Define.FaceExpressionType.Battle;
             }
             else
                 MonsterHead.sprite = OwnerAsMonsterController.AngryHead;
@@ -352,6 +352,7 @@ namespace STELLAREST_2D
                 if (this.Owner.IsDeadState)
                     return;
 
+                CurrentFaceState = Define.FaceExpressionType.Default;
                 PlayerFaceExpressionContainer container = PlayerFaceExpressionContainerDict[Define.FaceExpressionType.Default];
                 PlayerFace.eyebrowsSPR.sprite = container.Eyebrows;
                 PlayerFace.eyebrowsSPR.color = container.EyebrowsColor;
@@ -361,7 +362,6 @@ namespace STELLAREST_2D
 
                 PlayerFace.mouthSPR.sprite = container.Mouth;
                 PlayerFace.mouthSPR.color = container.MouthColor;
-                CurrentFaceState = Define.FaceExpressionType.Default;
             }
             else
                 MonsterHead.sprite = OwnerAsMonsterController.AngryHead;
@@ -374,6 +374,7 @@ namespace STELLAREST_2D
         {
             if (this.IsPlayer)
             {
+                CurrentFaceState = Define.FaceExpressionType.Dead;
                 PlayerFaceExpressionContainer container = PlayerFaceExpressionContainerDict[Define.FaceExpressionType.Dead];
                 PlayerFace.eyebrowsSPR.sprite = container.Eyebrows;
                 PlayerFace.eyebrowsSPR.color = container.EyebrowsColor;
@@ -383,7 +384,6 @@ namespace STELLAREST_2D
 
                 PlayerFace.mouthSPR.sprite = container.Mouth;
                 PlayerFace.mouthSPR.color = container.MouthColor;
-                CurrentFaceState = Define.FaceExpressionType.Dead;
             }
             else
                 MonsterHead.sprite = OwnerAsMonsterController.AngryHead;

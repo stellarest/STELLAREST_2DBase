@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Pool;
@@ -56,17 +57,20 @@ namespace STELLAREST_2D
 
         public void OnGet(GameObject go)
         {
-            go.SetActive(true);
+            if (go != null)
+                go.SetActive(true);
         }
 
         public void OnRelease(GameObject go)
         {
-            go.SetActive(false);
+            if (go != null)
+                go.SetActive(false);
         }
 
         public void OnDestroy(GameObject go)
         {
-            UnityEngine.Object.Destroy(go, Time.deltaTime);
+            if (go != null)
+                UnityEngine.Object.Destroy(go, Time.deltaTime);
         }
 
         #endregion
@@ -75,7 +79,6 @@ namespace STELLAREST_2D
     public class PoolManager
     {
         private Dictionary<string, Pool> _pools = new Dictionary<string, Pool>();
-
         // 스킬을 찍는 UI가 나오면 현재 작동하고 있는 모든 스킬을 먼저 Deactivate한다.
         // 이후에 모든 스킬을 찍고 난 이후에, UI가 꺼지면 ResetPools를 실행한다.
         // 이후에는 다시 AcquiredSkills를 Activate하면 된다.
@@ -88,7 +91,6 @@ namespace STELLAREST_2D
                 UnityEngine.Object.Destroy(pool.Value.Root.gameObject);
             }
 
-            Utils.Log("All of Pools, Cleared.");
             _pools.Clear();
         }
 
@@ -105,21 +107,21 @@ namespace STELLAREST_2D
             if (_pools.TryGetValue(go.name, out Pool value) == false)
             {
                 Debug.Log("...None of pools...");
-                //Utils.Log("...None of pools.");
-                //Utils.ClearLog();
                 return;
             }
 
             System.Type type = typeof(T);
-            for (int i = 0; i < value.Root.childCount; ++i)
-            {
-                if (type == typeof(SkillBase))
-                    Managers.Object.Skills.Remove(value.Root.GetChild(i).gameObject.GetComponent<SkillBase>());
-            }
+            if (type == typeof(MonsterController))
+                RemoveRoot(value);
+            else if (type == typeof(SkillBase))
+                RemoveRoot(value);
+        }
 
-            for (int i = 0; i < value.Root.childCount; ++i)
-                UnityEngine.Object.Destroy(value.Root.GetChild(i).gameObject);
-            UnityEngine.Object.Destroy(value.Root.gameObject);
+        private void RemoveRoot(Pool pool)
+        {
+            for (int i = 0; i < pool.Root.childCount; ++i)
+                UnityEngine.Object.Destroy(pool.Root.GetChild(i).gameObject);
+            UnityEngine.Object.Destroy(pool.Root.gameObject);
         }
 
         public GameObject Pop(GameObject prefab) // 꺼냄

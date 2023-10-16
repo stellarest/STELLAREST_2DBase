@@ -27,6 +27,7 @@ namespace STELLAREST_2D
 
             this.IsLearned = false;
             this.IsLast = false;
+            _isCompleteInitOrigin = true;
         }
 
         public virtual void InitClone(CreatureController ownerFromOrigin, Data.SkillData dataFromOrigin)
@@ -78,6 +79,8 @@ namespace STELLAREST_2D
             }
         }
 
+        protected bool _isCompleteInitOrigin = false;
+
         private bool _isLearned = false;
         public bool IsLearned
         {
@@ -92,21 +95,12 @@ namespace STELLAREST_2D
             set
             {
                 _isLast = value;
-                if (_isLast == false) // When Upgrade Skills,,
-                {
-                    if (this.IsStopped)
-                    {
-                        Utils.Log(nameof(SkillBase), nameof(IsLast), Data.Name, "is already stopped.");
-                        return;
-                    }
-
-                    this.Deactivate(true);
-                }
+                if (_isLast == false && _isCompleteInitOrigin) 
+                    this.RequestDestroy();
             }
         }
 
         [field: SerializeField] public bool IsStopped { get; protected set; } = false;
-
         protected Coroutine _coSkillActivate = null;
 
         public virtual void Activate()
@@ -118,6 +112,7 @@ namespace STELLAREST_2D
             }
 
             IsStopped = false;
+            gameObject.SetActive(true);
 
             Transform root = Managers.Pool.GetRoot(this.gameObject.name);
             if (root != null)
@@ -125,26 +120,27 @@ namespace STELLAREST_2D
                 for (int i = 0; i < root.childCount; ++i)
                     root.GetChild(i).GetComponent<SkillBase>().IsStopped = this.IsStopped;
             }
-
-            gameObject.SetActive(true);
         }
 
-        public virtual void Deactivate(bool isPoolingClear = false)
+        public virtual void Deactivate()
         {
             IsStopped = true;
-            
+            gameObject.SetActive(false);
+
             Transform root = Managers.Pool.GetRoot(this.gameObject.name);
             if (root != null)
             {
                 for (int i = 0; i < root.childCount; ++i)
                     root.GetChild(i).GetComponent<SkillBase>().IsStopped = this.IsStopped;
             }
-
-            gameObject.SetActive(false);
-            if (isPoolingClear)
-                Managers.Pool.ClearPool<SkillBase>(this.gameObject);
         }
 
+        public void RequestDestroy()
+        {
+            this.Deactivate();
+            Managers.Object.DestroySpawnedObject<SkillBase>(this);
+        }
+   
         public void OnClonedDeactivateHandler(bool isStopped)
         {
             this.IsStopped = isStopped;

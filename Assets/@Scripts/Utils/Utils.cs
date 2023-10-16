@@ -94,6 +94,28 @@ namespace STELLAREST_2D
             return fromPos;
         }
 
+        public static bool IsArriveToTarget(Transform from, Transform target, float minDistance = 1f)
+        {
+            if (Managers.Stage.IsOutOfPos(from.position))
+                return true;
+
+            if ((target.transform.position - from.position).sqrMagnitude < minDistance)
+                return true;
+
+            return false;
+        }
+
+        public static bool IsArriveToTarget(Transform from, Vector3 toTargetPoint, float minDistance = 1f)
+        {
+            if (Managers.Stage.IsOutOfPos(from.position))
+                return true;
+
+            if ((toTargetPoint - from.position).sqrMagnitude < minDistance)
+                return true;
+
+            return false;
+        }
+
         public static Vector3 GetRandomTargetPosition<T>(Vector3 fromPos, float fromMinDistance, float fromMaxDistance,
                                                 Define.HitFromType hitFromType = Define.HitFromType.None) where T : BaseController
         {

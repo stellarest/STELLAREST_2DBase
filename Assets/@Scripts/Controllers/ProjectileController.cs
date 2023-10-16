@@ -213,12 +213,21 @@ namespace STELLAREST_2D
         private readonly float Sensitivity = 0.6f;
         private void CheckOffSwingParticle()
         {
-            if (_initialLookAtDir != Managers.Game.Player.LookAtDir)
+            if (this.Owner.LookAtDir != _initialLookAtDir)
                 _isOffParticle = true;
-            if (Managers.Game.Player.IsMoving == false)
+            if (this.Owner.IsMoving == false)
                 _isOffParticle = true;
-            if ((Managers.Game.Player.ShootDir - _shootDir).sqrMagnitude > Sensitivity * Sensitivity)
+            if ((this.Owner.ShootDir - _shootDir).sqrMagnitude > Sensitivity * Sensitivity)
                 _isOffParticle = true;
+            
+            // ===============================================================
+            // ===============================================================
+            // if (_initialLookAtDir != Managers.Game.Player.LookAtDir)
+            //     _isOffParticle = true;
+            // if (Managers.Game.Player.IsMoving == false)
+            //     _isOffParticle = true;
+            // if ((Managers.Game.Player.ShootDir - _shootDir).sqrMagnitude > Sensitivity * Sensitivity)
+            //     _isOffParticle = true;
         }
 
         private IEnumerator CoThrowingStar()

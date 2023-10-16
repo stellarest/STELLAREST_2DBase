@@ -137,7 +137,7 @@ namespace STELLAREST_2D
             this.DoSkillJob();
         }
 
-        public override void Deactivate(bool isPoolingClear = false)
+        public override void Deactivate()
         {
             gameObject.SetActive(false);
             if (this._spears == null)

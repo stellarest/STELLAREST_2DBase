@@ -156,7 +156,7 @@ namespace STELLAREST_2D
         }
 
         // +++ FIXED BOOKMARKS +++
-        public override void Deactivate(bool isPoolingClear = false)
+        public override void Deactivate()
         {
             if (IsStopped)
                 return;
@@ -167,7 +167,7 @@ namespace STELLAREST_2D
                 _coSkillActivate = null;
             }
 
-            base.Deactivate(isPoolingClear);
+            base.Deactivate();
         }
     }
 }

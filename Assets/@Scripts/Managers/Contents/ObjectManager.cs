@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
 using TMPro.EditorUtilities;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -21,7 +22,11 @@ namespace STELLAREST_2D
         public HashSet<GemController> Gems { get; } = new HashSet<GemController>();
         // EnvCont는 나중에 추가하던지
         public GridController GridController { get; private set; } = null;
-        public void OnPlayerDeadHandler() => this.Player = null;
+        public void OnPlayerDeadHandler() 
+        {
+            this.Player = null;
+            Managers.Game.GAME_OVER();
+        }
 
         public void Init()
         {
@@ -146,15 +151,18 @@ namespace STELLAREST_2D
             }
         }
 
-        public void DespawnAllMonsters()
+        public void DestroySpawnedObject<T>(T obj) where T : BaseController
         {
-            var monsters = Monsters.ToList();
-            foreach (var monster in monsters)
+            System.Type type = typeof(T);
+            if (type == typeof(MonsterController))
             {
-                if (monster.IsValid() == false)
-                    continue;
-
-                Despawn<MonsterController>(monster);
+                Managers.Pool.ClearPool<MonsterController>(obj.gameObject);
+                Monsters.Clear();
+            }
+            else if (type == typeof(SkillBase))
+            {
+                Managers.Pool.ClearPool<SkillBase>(obj.gameObject);
+                Skills.Clear();
             }
         }
 
@@ -168,6 +176,19 @@ namespace STELLAREST_2D
         }
 
         // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+        // public void DespawnAllMonsters()
+        // {
+        //     var monsters = Monsters.ToList();
+        //     foreach (var monster in monsters)
+        //     {
+        //         if (monster.IsValid() == false)
+        //             continue;
+
+        //         Despawn<MonsterController>(monster);
+        //         // Managers.Pool.ClearPool<MonsterController> --> Test
+        //     }
+        // }
 
         // 해당 dist 안에 가장 몬스터가 밀집되어 있는 곳을 골라서 리턴해준다.
         // public GameObject GetClosestTarget<T>(GameObject from, float fromRange, GameObject priority, float priorityRange) where T : BaseController

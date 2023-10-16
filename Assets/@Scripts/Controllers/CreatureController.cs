@@ -332,7 +332,7 @@ namespace STELLAREST_2D
 
         public virtual Vector3 LoadVFXEnvSpawnPos(EnvTemplate templateOrigin) => this.Center.transform.position;
         public bool IsRun => this.CreatureState == Define.CreatureState.Run;
-        public bool IsDeadState => (this.CreatureState == Define.CreatureState.Dead);
+        public bool IsDeadState => (this.CreatureState == Define.CreatureState.Dead) && (this.Stat.Hp <= 0);
     }
 }
 

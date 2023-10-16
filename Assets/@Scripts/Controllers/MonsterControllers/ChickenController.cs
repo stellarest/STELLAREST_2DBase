@@ -35,11 +35,6 @@ namespace STELLAREST_2D
             }
         }
 
-        protected override void AfterTargetDeath()
-        {
-            
-        }
-
         public override Vector3 LoadVFXEnvSpawnPos(EnvTemplate templateOrigin)
         {
             switch (templateOrigin)

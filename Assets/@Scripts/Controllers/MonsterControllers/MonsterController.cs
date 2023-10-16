@@ -6,6 +6,7 @@ using UnityEngine.Rendering;
 
 using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 using EnvTemplate = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
+using UnityEditor.Build.Pipeline;
 
 namespace STELLAREST_2D
 {
@@ -58,6 +59,7 @@ namespace STELLAREST_2D
 
             if (Managers.Game.Player != null)
             {
+                // MainTarget은 중간에 바뀔수도 있긴함
                 this.MainTarget = Managers.Game.Player;
                 Utils.Log("Set MainTarget");
             }
@@ -99,49 +101,82 @@ namespace STELLAREST_2D
             StartCoroutine(CoStartAction());
         }
 
+        private bool lockMoveToRandomPoint = false;
         private void FixedUpdate()
         {
-            if (this.IsDeadState)
-                return;
+            if (this.MainTarget != null)
+            {
+                if (this.IsDeadState)
+                    return;
 
+                if (this.Action == false)
+                    return;
 
-            if (this.MainTarget == null)
-                return;
+                if (this.CreatureState != Define.CreatureState.Run)
+                    return;
+                else if (this.MainTarget != null && this.MainTarget.IsPlayer())
+                    MoveToTarget(MainTarget, this.Stat.CollectRange * this.Stat.CollectRange);
+            }
+        }
 
-            // CHANGE TO EVENT (Managers.Game.OnPlayerIsDead)
-            // MainTarget = Managers.Game.Player;
-            // if (MainTarget.IsDeadState)
-            // {
-            //     // if (MainTarget != null)
-            //     //     MainTarget = null;
+        public void StartMovementToRandomPoint()
+        {
+            this.SkillBook.DeactivateAll();
+            StartCoroutine(CoMoveToRandomPoint());
+        }
 
-            //     // AfterTargetDeath();
-            //     return;
-            // }
+        private readonly float MIN_MOVE_TO_RANDOM_POINT_DELAY = 3f;
+        private readonly float MAX_MOVE_TO_RANDOM_POINT_DELAY = 5f;
 
-            Vector3 toTargetDir = (MainTarget.Center.transform.position - transform.position);
+        private readonly float MIN_MOVE_TO_RANDOM_POINT_DISTANCE = 5f;
+        private readonly float MAX_MOVE_TO_RANDOM_POINT_DISTANCE = 10f;
+
+        protected IEnumerator CoMoveToRandomPoint()
+        {
+            while (true)
+            {
+                yield return null;
+                this.CreatureState = Define.CreatureState.Idle;
+                float waitDelay = UnityEngine.Random.Range(MIN_MOVE_TO_RANDOM_POINT_DELAY, MAX_MOVE_TO_RANDOM_POINT_DELAY);
+                Vector3 randomPoint = Utils.GetRandomPosition(this.Center.transform.position,
+                        MIN_MOVE_TO_RANDOM_POINT_DISTANCE, MAX_MOVE_TO_RANDOM_POINT_DISTANCE);
+
+                yield return new WaitForSeconds(waitDelay);
+                this.CreatureState = Define.CreatureState.Run;
+                yield return new WaitUntil(() => MoveToTarget(randomPoint));
+            }
+        }
+
+        protected bool MoveToTarget(CreatureController target, float minDistance = 1f)
+        {
+            Vector3 toTargetDir = (target.Center.transform.position - this.Center.transform.position);
             if (this.LockFlip == false)
                 Flip(toTargetDir.x > 0 ? -1 : 1);
 
-            if (this.Action == false)
-                return;
-
-            if (this.CreatureState != Define.CreatureState.Run)
-                return;
-            else
-                MoveToTarget(MainTarget);
-        }
-
-        protected virtual void AfterTargetDeath() { }
-
-        protected virtual void MoveToTarget(CreatureController target)
-        {
-            Vector3 toTargetDir = (target.Center.transform.position - this.Center.transform.position);
             Vector3 toTargetMovement = this.transform.position + (toTargetDir.normalized * Stat.MovementSpeed * Time.deltaTime);
             this.RigidBody.MovePosition(toTargetMovement);
-            if (toTargetDir.sqrMagnitude < this.Stat.CollectRange * this.Stat.CollectRange)
+            if (Utils.IsArriveToTarget(this.Center, this.MainTarget.transform, minDistance))
             {
                 this.CreatureState = Define.CreatureState.Skill;
+                return true;
+            }
+
+            return false;
+        }
+
+        protected bool MoveToTarget(Vector3 targetPoint, float minDistance = 1f)
+        {
+            Vector3 toTargetPointDir = (targetPoint - this.Center.position);
+            if (this.LockFlip == false)
+                Flip(toTargetPointDir.x > 0 ? -1 : 1);
+
+            Vector3 toTargetPointMovement = this.transform.position + (toTargetPointDir.normalized * Stat.MovementSpeed * Time.deltaTime);
+            if (Utils.IsArriveToTarget(this.Center, targetPoint, minDistance))
+                return true;
+            else
+            {
+                this.transform.position = toTargetPointMovement;
+                return false;
             }
         }
 
@@ -170,7 +205,6 @@ namespace STELLAREST_2D
 
         protected virtual float LoadActionTime() => -1f;
 
-        //private Coroutine _coReadyToAction;
         public void CoStartReadyToAction(bool isSpawned = true)
                 => StartCoroutine(CoReadyToAction(isSpawned));
 
@@ -215,9 +249,7 @@ namespace STELLAREST_2D
         {
             Utils.Log("Called::OnPlayerIsDeadHandler");
             MainTarget = null;
-            this.CreatureState = Define.CreatureState.Idle;
-            // AfterTargetDeath(); // DO SOMETHING WHEN YOU WANT TO
-            // (ex) Move To Target Random Pos
+            StartMovementToRandomPoint();
         }
 
         public override void OnDamaged(CreatureController attacker, SkillBase from)

@@ -82,15 +82,15 @@ namespace STELLAREST_2D
 
             // Spawn Player
             // +++ GARY +++
-            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Creatures.Player.Gary_Paladin, 
-            //             Define.ObjectType.Player, isPooling: false);
+            var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Creatures.Player.Gary_Paladin, 
+                        Define.ObjectType.Player, isPooling: false);
             // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Creatures.Player.Gary_Knight,
             //             Define.ObjectType.Player, isPooling: false);
-            var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Creatures.Player.Gary_PhantomKnight,
-                        Define.ObjectType.Player, isPooling: false);
+            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Creatures.Player.Gary_PhantomKnight,
+            //             Define.ObjectType.Player, isPooling: false);
 
             // +++ REINA +++
-
+            
 
             // +++ REINA +++
             var CMcam = Camera.main.GetComponent<CinemachineBrain>().ActiveVirtualCamera.VirtualCameraGameObject;
@@ -117,6 +117,8 @@ namespace STELLAREST_2D
             //     GemController gc = Managers.Object.Spawn<GemController>(randPos);
             //     gc.GemSize = Random.Range(0, 2) == 0 ? gc.GemSize = GemSize.Normal : gc.GemSize = GemSize.Large;
             // }
+
+            Managers.Game.GAME_START();
         }
 
         public void OnKillCountChangedHandler(int killCount)
@@ -128,18 +130,18 @@ namespace STELLAREST_2D
             {
                 // Debug.Log("BOSS MON INCOMING");
                 StageType = Define.StageType.Boss;
-                StartCoroutine(CoIncomingBoss());
+                // StartCoroutine(CoIncomingBoss());
             }
         }
 
-        private IEnumerator CoIncomingBoss()
-        {
-            yield return new WaitForSeconds(1.0f);
-            Managers.Object.DespawnAllMonsters(); // 죽이자마자 전부 DespawnAllMonster해서 IsVaild() == false에 걸렸었던것
-            Vector2 spawnPos = Utils.GetRandomPosition(Managers.Object.Player.transform.position, 5f, 10f);
-            //Managers.Object.Spawn<MonsterController>(spawnPos, (int)Define.TemplateIDs.Boss.Gnoll); // 3 is BOSS_ID
-            //Managers.Object.Spawn<BossController>(spawnPos, 3);
-        }
+        // private IEnumerator CoIncomingBoss()
+        // {
+        //     yield return new WaitForSeconds(1.0f);
+        //     Managers.Object.DespawnAllMonsters(); // 죽이자마자 전부 DespawnAllMonster해서 IsVaild() == false에 걸렸었던것
+        //     Vector2 spawnPos = Utils.GetRandomPosition(Managers.Object.Player.transform.position, 5f, 10f);
+        //     //Managers.Object.Spawn<MonsterController>(spawnPos, (int)Define.TemplateIDs.Boss.Gnoll); // 3 is BOSS_ID
+        //     //Managers.Object.Spawn<BossController>(spawnPos, 3);
+        // }
 
         private int _collectedGemCount = 0;
         // private int _remainingTotalGemCount = 10;

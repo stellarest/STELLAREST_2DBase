@@ -125,12 +125,17 @@ namespace STELLAREST_2D
             }
         }
 
+#if UNITY_EDITOR
+        public int TestMonsterCount = 0;
+        public int TestSkillCount = 0;
         private void Update()
         {
             if (this.IsDeadState)
                 return;
 
-#if UNITY_EDITOR
+            TestMonsterCount = Managers.Object.Monsters.Count;
+            TestSkillCount = Managers.Object.Skills.Count;
+
             DEV_CLEAR_LOG();
             if (Input.GetKeyDown(KeyCode.Alpha1))
                 SkillFlag(SkillBook.FirstSkill);
@@ -150,13 +155,11 @@ namespace STELLAREST_2D
             if (Input.GetKeyDown(KeyCode.Alpha6))
                 SkillFlag(SkillTemplate.BombTrap);
 
-            // if (Input.GetKeyDown(KeyCode.K))
-            //     SkillBook.ActivateAll();
-            // if (Input.GetKeyDown(KeyCode.L))
-            //     SkillBook.DeactivateAll();
+            if (Input.GetKeyDown(KeyCode.K))
+                SkillBook.ActivateAll();
+            if (Input.GetKeyDown(KeyCode.L))
+                SkillBook.DeactivateAll();
 
-            if (Input.GetKeyDown(KeyCode.M))
-                Utils.Log($"Monster Count : {Managers.Object.Monsters.Count}");
 #endif
             MoveByJoystick();
             CollectEnv();
@@ -177,6 +180,9 @@ namespace STELLAREST_2D
                 case Define.CreatureState.Skill:
                     //PlayerAnimController.Attack();
                     RunSkill();
+                    // 메서드로 따로 빼도 될지
+                    if (this.IsDeadState && this.RendererController.CurrentFaceState != Define.FaceExpressionType.Dead)
+                        this.RendererController.OnFaceDeadHandler();
                     break;
 
                 case Define.CreatureState.Dead:
