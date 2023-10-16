@@ -17,7 +17,6 @@ namespace STELLAREST_2D
         CoolTime : Generate Time
     +++++++++++++++++++++++++++++++++++++++++++
     */
-
     public class BombTrap : RepeatSkill
     {
         public BombTrap Commander { get; private set; } = null;
@@ -91,7 +90,6 @@ namespace STELLAREST_2D
 
         private readonly float MIN_RANDOM_DISTANCE = 5f;
         private readonly float MAX_RANDOM_DISTNACE = 8f;
-
         private IEnumerator CoGenerateBombTrap()
         {
             SkillBase clone = Managers.Object.Spawn<SkillBase>(spawnPos: Vector3.zero, templateID: this.Data.TemplateID,

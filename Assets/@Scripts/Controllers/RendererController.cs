@@ -199,11 +199,11 @@ namespace STELLAREST_2D
         }
 
 #region Player Expressions Block
-        // LOADER PLAYER FACE EXPRESSIONS
+        // +++ LOADER PLAYER FACE EXPRESSIONS +++
         public Dictionary<Define.InGameGrade, PlayerFaceExpression[]> PlayerFaceExpressionsDict { get; private set; } 
                                                 = new Dictionary<Define.InGameGrade, PlayerFaceExpression[]>();
         
-        // CACHE PLAYER FACE EXPRESSINOS
+        // +++++ CACHE PLAYER FACE EXPRESSINOS +++++
         public Dictionary<Define.FaceExpressionType, PlayerFaceExpressionContainer> PlayerFaceExpressionContainerDict { get; private set; } 
                                                 = new Dictionary<Define.FaceExpressionType, PlayerFaceExpressionContainer>();
 
@@ -693,6 +693,14 @@ namespace STELLAREST_2D
                     OwnerSPRs[i].material = mat;
             }
         }
+
+#if UNITY_EDITOR
+        public bool IsPlayerDeadEyes()
+        {
+            PlayerFaceExpressionContainer container = PlayerFaceExpressionContainerDict[Define.FaceExpressionType.Dead];
+            return container.Eyes.name.Contains("Eyes_Dead");
+        }
+#endif
 
         private void OnDestroy()
         {

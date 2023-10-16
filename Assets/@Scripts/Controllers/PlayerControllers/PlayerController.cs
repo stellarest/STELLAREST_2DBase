@@ -287,6 +287,7 @@ namespace STELLAREST_2D
             PlayerAnimController.DeathBack();
             this.RendererController.OnFaceDeadHandler();
             Managers.Game.OnPlayerIsDead?.Invoke();
+            StartCheckDeadEyes();
         }
 
         public void Expression(Define.ExpressionType expression, float duration)
@@ -301,6 +302,14 @@ namespace STELLAREST_2D
         {
             if (Input.GetKeyDown(KeyCode.Escape))
                 Utils.ClearLog();
+        }
+
+        private void StartCheckDeadEyes() => StartCoroutine(CoCheckDeadEyes());
+        private IEnumerator CoCheckDeadEyes()
+        {
+            yield return new WaitForSeconds(UnityEngine.Random.Range(2f, 3f));
+            if (this.RendererController.IsPlayerDeadEyes() == false)
+                Utils.LogStrong(nameof(PlayerController), nameof(CoCheckDeadEyes), $"Player Eyes is not dead eyes.", true);
         }
 #endif
     }

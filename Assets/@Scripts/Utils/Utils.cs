@@ -333,7 +333,7 @@ namespace STELLAREST_2D
         }
 
         [Conditional("UNITY_EDITOR")]
-        public static void LogStrong(object calledBy, object calledByMethod, object message = null)
+        public static void LogStrong(object calledBy, object calledByMethod, object message = null, bool isOnBreak = false)
         {
             Debug.Log($"<color=yellow> ↓ [   LOG STRONG   ] ↓</color>");
             if (message == null)
@@ -343,6 +343,9 @@ namespace STELLAREST_2D
 
             Debug.LogWarning($"<color=yellow>{message}</color>");
             Debug.Log($"<color=yellow> ↑ [   LOG STRONG   ] ↑</color>");
+
+            if (isOnBreak)
+                Debug.Break();
         }
 
         [Conditional("UNITY_EDITOR")]
