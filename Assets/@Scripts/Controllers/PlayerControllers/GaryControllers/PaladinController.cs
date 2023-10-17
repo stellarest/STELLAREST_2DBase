@@ -12,7 +12,7 @@ namespace STELLAREST_2D
         {
             base.Init(templateID);
         }
-
+        
         protected override void RunSkill()
         {
             //base.RunSkill();

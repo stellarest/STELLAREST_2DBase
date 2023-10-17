@@ -10,13 +10,10 @@ namespace STELLAREST_2D
             base.Init(owner);
         }
 
-        public bool IsOnReady { get; protected set; } = false;
-
         private readonly int UPPER_STAND = Animator.StringToHash("Stand");
         private readonly int LOWER_RUN = Animator.StringToHash("Run");
 
-        public virtual void Ready() => IsOnReady = true;
-        public virtual void Release() { }
+        public virtual void Idle() { }
         public virtual void Attack() { }
 
         public void Stand() => AnimController.Play(UPPER_STAND);

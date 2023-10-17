@@ -38,7 +38,7 @@ namespace STELLAREST_2D
     public class PlayerController : CreatureController
     {
         private readonly float ENV_COLLECTION_FIXED_DIST = 5f; // +++ NO DATE SHEET +++
-        private float _armBowFixedAngle = 110f; // REINA에서 뺴야함
+        protected float _armBowFixedAngle = 110f; // REINA에서 뺴야함
         private float _armRifleFixedAngle = 146f; // CHRISTIAN에서 빼야함
         public PlayerBody BodyParts { get; protected set; } = null;
         public PlayerAnimationController PlayerAnimController { get; private set; } = null;
@@ -91,12 +91,8 @@ namespace STELLAREST_2D
                 Managers.Game.OnMoveDirChanged -= OnMoveDirChangedHandler;
         }
 
-        public void ForceReadyToSet()
-        {
-            if (PlayerAnimController.IsOnReady == false)
-                PlayerAnimController.Ready();
-        }
-
+        public void ForceReadyToSet() => PlayerAnimController.Idle();
+        
         private void OnMoveDirChangedHandler(Vector3 moveDir)
         {
             if (this.IsDeadState)
@@ -109,6 +105,7 @@ namespace STELLAREST_2D
                 CreatureState = Define.CreatureState.Run;
         }
 
+#if UNITY_EDITOR
         private void SkillFlag(SkillTemplate templateOrigin)
         {
             SkillBook.LevelUp(templateOrigin);
@@ -122,7 +119,6 @@ namespace STELLAREST_2D
             }
         }
 
-#if UNITY_EDITOR
         public int TestMonsterCount = 0;
         public int TestSkillCount = 0;
         private void Update()

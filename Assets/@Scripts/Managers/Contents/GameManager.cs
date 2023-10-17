@@ -5,8 +5,8 @@ namespace STELLAREST_2D
 {
     public class GameManager
     {
-        public void GAME_START() => IsGameStart = true;
         private bool _isGameStart = false;
+        public void GAME_START() => IsGameStart = true;
         public bool IsGameStart 
         { 
             get => _isGameStart;
@@ -18,8 +18,8 @@ namespace STELLAREST_2D
             }
         }
 
-        public void GAME_OVER() => IsGameOver = true;
         private bool _isGameOver = false;
+        public void GAME_OVER() => IsGameOver = true;
         public bool IsGameOver
         {
             get => _isGameOver;

@@ -217,6 +217,10 @@ namespace STELLAREST_2D
 
         private IEnumerator CoRangedShot()
         {
+            float degrees = Mathf.Atan2(this.Owner.ShootDir.y, this.Owner.ShootDir.x) * Mathf.Rad2Deg;
+            this.transform.rotation = Quaternion.Euler(0, 0, degrees);
+            this.transform.localScale = Vector3.one;
+
             while (true)
             {
                 float movementSpeed = Owner.Stat.MovementSpeed + this._movementSpeed;

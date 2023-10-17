@@ -82,19 +82,17 @@ namespace STELLAREST_2D
 
             // Spawn Player
             // +++ GARY +++
-            var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Creatures.Player.Gary_Paladin, 
-                        Define.ObjectType.Player, isPooling: false);
+            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Creatures.Player.Gary_Paladin, 
+            //             Define.ObjectType.Player, isPooling: false);
             // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Creatures.Player.Gary_Knight,
             //             Define.ObjectType.Player, isPooling: false);
             // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Creatures.Player.Gary_PhantomKnight,
             //             Define.ObjectType.Player, isPooling: false);
 
             // +++ REINA +++
-            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Creatures.Player.Reina_ArrowMaster,
-            //                 Define.ObjectType.Player, isPooling: false);
+            var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Creatures.Player.Reina_ArrowMaster,
+                            Define.ObjectType.Player, isPooling: false);
             
-
-            // +++ REINA +++
             var CMcam = Camera.main.GetComponent<CinemachineBrain>().ActiveVirtualCamera.VirtualCameraGameObject;
             CMcam.GetComponent<CameraController>().SetTarget(player.gameObject);
 
@@ -121,13 +119,6 @@ namespace STELLAREST_2D
             // }
 
             Managers.Game.GAME_START();
-            StartCoroutine(CoForceGameStart());
-        }
-
-        private const float READY_TO_PLAYER = 5f;
-        private IEnumerator CoForceGameStart()
-        {
-            yield return new WaitForSeconds(READY_TO_PLAYER);
             Managers.Game.Player.ForceReadyToSet();
         }
 

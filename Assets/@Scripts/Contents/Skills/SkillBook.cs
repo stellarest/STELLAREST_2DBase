@@ -149,7 +149,7 @@ namespace STELLAREST_2D
             {
                 if (Members[i].IsActive)
                 {
-                    Utils.Log("T_T");
+                    Utils.Log("IS ALREADY ACTIVE T_T");
                     continue;
                 }
 

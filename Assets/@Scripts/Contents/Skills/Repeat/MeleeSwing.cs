@@ -46,12 +46,11 @@ namespace STELLAREST_2D
         protected override void SetSortingOrder()
                 => GetComponent<SortingGroup>().sortingOrder = (int)Define.SortingOrder.Skill;
 
-        protected override void DoSkillJob()
-        {
-            Owner.CreatureState = Define.CreatureState.Skill;
-        }
+        protected override void DoSkillJob() 
+                => Owner.CreatureState = Define.CreatureState.Skill;
 
-        protected override IEnumerator CoCloneSkill() => base.CoCloneSkill();
+        protected override IEnumerator CoCloneSkill() 
+                => base.CoCloneSkill();
 
         public void OnSetSwingParticleInfoHandler(Vector3 indicatorAngle, Define.LookAtDirection lookAtDir, float continuousAngle, float continuousFlipX, float continuousFlipY)
         {

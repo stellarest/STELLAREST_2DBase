@@ -153,6 +153,8 @@ namespace STELLAREST_2D
 
                 yield return new WaitForSeconds(Data.ContinuousSpacing);
             }
+
+            Owner.AttackEndPoint = transform.position;
         }
 
         // +++ FIXED BOOKMARKS +++
