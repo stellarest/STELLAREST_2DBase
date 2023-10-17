@@ -10,12 +10,18 @@ namespace STELLAREST_2D
         private readonly int UPPER_RELEASE = Animator.StringToHash("IdleMelee");
         private readonly int UPPER_ATTACK = Animator.StringToHash("SlashMelee2H");
 
-        public override void Init(CreatureController owner)
+        public override void Init(CreatureController owner) => base.Init(owner);
+
+        public override void Ready()
         {
-            base.Init(owner);
+            if (this.IsOnReady == false)
+            {
+                Utils.Log("ON READY IN ANIM CONTROLLER !!");
+                AnimController.Play(UPPER_READY);
+                this.IsOnReady = true;
+            }
         }
 
-        public override void Ready() => AnimController.Play(UPPER_READY);
         public override void Release() => AnimController.Play(UPPER_RELEASE);
         public override void Attack() => AnimController.Play(UPPER_ATTACK);
     }

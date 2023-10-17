@@ -59,7 +59,7 @@ namespace STELLAREST_2D
 
             if (Managers.Game.Player != null)
             {
-                // MainTarget은 중간에 바뀔수도 있긴함
+                // MainTarget은 중간에 바뀔수도 있긴함 (ex) Forest Guardian : Black Panther
                 this.MainTarget = Managers.Game.Player;
                 Utils.Log("Set MainTarget");
             }

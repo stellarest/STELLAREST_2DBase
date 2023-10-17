@@ -90,6 +90,8 @@ namespace STELLAREST_2D
             //             Define.ObjectType.Player, isPooling: false);
 
             // +++ REINA +++
+            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Creatures.Player.Reina_ArrowMaster,
+            //                 Define.ObjectType.Player, isPooling: false);
             
 
             // +++ REINA +++
@@ -119,6 +121,14 @@ namespace STELLAREST_2D
             // }
 
             Managers.Game.GAME_START();
+            StartCoroutine(CoForceGameStart());
+        }
+
+        private const float READY_TO_PLAYER = 5f;
+        private IEnumerator CoForceGameStart()
+        {
+            yield return new WaitForSeconds(READY_TO_PLAYER);
+            Managers.Game.Player.ForceReadyToSet();
         }
 
         public void OnKillCountChangedHandler(int killCount)

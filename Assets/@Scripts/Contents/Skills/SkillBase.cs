@@ -16,6 +16,7 @@ namespace STELLAREST_2D
         public CreatureController Owner { get; protected set; } = null;
         public Data.SkillData Data { get; protected set; } = null;
         public ProjectileController PC { get; protected set; } = null;
+        
         public SpriteRenderer SR { get; protected set; } = null;
         public Rigidbody2D RigidBody { get; protected set; } = null;
         public Collider2D HitCollider { get; protected set; } = null;

@@ -13,14 +13,19 @@ namespace STELLAREST_2D
 
         private readonly int LOWER_DEATH_BACK = Animator.StringToHash("DeathBack");
         private readonly int LOWER_DEATH_FRONT = Animator.StringToHash("DeathFront");
-
         
-        public override void Init(CreatureController owner)
-        {
-            base.Init(owner);
-        }
+        public override void Init(CreatureController owner) => base.Init(owner);
 
-        public override void Ready() => AnimController.Play(UPPER_READY);
+        public override void Ready()
+        {
+            if (this.IsOnReady == false)
+            {
+                Utils.Log("ON READY IN ANIM CONTROLLER !!");
+                AnimController.Play(UPPER_READY);
+                this.IsOnReady = true;
+            }
+        }
+        
         public override void Release() => AnimController.Play(UPPER_RELEASE);
         public override void Attack() => AnimController.Play(UPPER_ATTACK);
     }

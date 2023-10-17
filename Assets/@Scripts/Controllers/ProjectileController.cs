@@ -160,6 +160,11 @@ namespace STELLAREST_2D
                     StartCoroutine(CoMeleeSwing());
                     break;
 
+                case SkillTemplate.ArrowMasterMastery:
+                    StartDestroy(_lifeTime);
+                    StartCoroutine(CoRangedShot());
+                    break;
+
                 case SkillTemplate.ThrowingStar:
                     StartDestroy(_lifeTime);
                     StartCoroutine(CoThrowingStar());
@@ -210,6 +215,16 @@ namespace STELLAREST_2D
             }
         }
 
+        private IEnumerator CoRangedShot()
+        {
+            while (true)
+            {
+                float movementSpeed = Owner.Stat.MovementSpeed + this._movementSpeed;
+                this.transform.position += _shootDir * this._movementSpeed * Time.deltaTime;
+                yield return null;
+            }
+        }
+
         private readonly float Sensitivity = 0.6f;
         private void CheckOffSwingParticle()
         {
@@ -232,8 +247,6 @@ namespace STELLAREST_2D
 
         private IEnumerator CoThrowingStar()
         {
-            ThrowingStar skill = GetComponent<ThrowingStar>();
-
             float rotAngle = 0f;
             while (true)
             {

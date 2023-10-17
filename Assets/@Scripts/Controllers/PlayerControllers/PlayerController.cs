@@ -91,6 +91,12 @@ namespace STELLAREST_2D
                 Managers.Game.OnMoveDirChanged -= OnMoveDirChangedHandler;
         }
 
+        public void ForceReadyToSet()
+        {
+            if (PlayerAnimController.IsOnReady == false)
+                PlayerAnimController.Ready();
+        }
+
         private void OnMoveDirChangedHandler(Vector3 moveDir)
         {
             if (this.IsDeadState)
@@ -100,16 +106,7 @@ namespace STELLAREST_2D
             if (moveDir == Vector3.zero)
                 CreatureState = Define.CreatureState.Idle;
             else
-            {
                 CreatureState = Define.CreatureState.Run;
-                if (Managers.Game.IsGameStart == false)
-                {
-                    PlayerAnimController.Ready();
-                    // SkillBook.LevelUp(SkillBook.FirstExclusiveSkill);
-                    // SkillBook.Activate(SkillBook.FirstExclusiveSkill);
-                    Managers.Game.GAME_START();
-                }
-            }
         }
 
         private void SkillFlag(SkillTemplate templateOrigin)
@@ -287,7 +284,9 @@ namespace STELLAREST_2D
             PlayerAnimController.DeathBack();
             this.RendererController.OnFaceDeadHandler();
             Managers.Game.OnPlayerIsDead?.Invoke();
-            StartCheckDeadEyes();
+#if UNITY_EDITOR
+            IsStillDeadEyes();
+#endif
         }
 
         public void Expression(Define.ExpressionType expression, float duration)
@@ -304,12 +303,14 @@ namespace STELLAREST_2D
                 Utils.ClearLog();
         }
 
-        private void StartCheckDeadEyes() => StartCoroutine(CoCheckDeadEyes());
+        private void IsStillDeadEyes() => StartCoroutine(CoCheckDeadEyes());
         private IEnumerator CoCheckDeadEyes()
         {
             yield return new WaitForSeconds(UnityEngine.Random.Range(2f, 3f));
             if (this.RendererController.IsPlayerDeadEyes() == false)
                 Utils.LogStrong(nameof(PlayerController), nameof(CoCheckDeadEyes), $"Player Eyes is not dead eyes.", true);
+            else
+                Utils.Log("### STILL DEAD EYES ###");
         }
 #endif
     }
