@@ -67,16 +67,22 @@ namespace STELLAREST_2D
             Transform root = transform.root;
             foreach (var particle in root.GetComponentsInChildren<ParticleSystem>(includeInactive: true))
             {
-                OnParticleStopped particleStopped = particle.GetComponent<OnParticleStopped>();
-                if (particleStopped != null && particleStopped.RootTarget == null)
+                OnCustomParticleStopped particleStopped = particle.GetComponent<OnCustomParticleStopped>();
+                if (particleStopped != null && particleStopped.SkillParticleRootTarget == null)
                 {
                     var main = particle.main;
                     if (main.stopAction != ParticleSystemStopAction.Callback)
                         main.stopAction = ParticleSystemStopAction.Callback;
 
-                    particleStopped.RootTarget = particle.transform.parent.gameObject;
+                    //particleStopped.RootTarget = particle.transform.parent.gameObject;
+                    // Utils.LogBreak($"Particle Name : {particle.gameObject.name}");
+                    // Utils.LogBreak($"Parent Name : {particle.transform.parent.name}");
+
+                    particleStopped.SkillParticleRootTarget = particle.transform.parent.GetComponent<SkillBase>();
                     return;
                 }
+                else if (particleStopped != null && particleStopped.SkillParticleRootTarget != null)
+                    return;
             }
         }
 
@@ -158,10 +164,7 @@ namespace STELLAREST_2D
         {
             yield return new WaitForSeconds(delaySeconds);
             if (this.IsValid())
-            {
-                //Managers.Object.Despawn(this.GetComponent<ProjectileController>());
-                Managers.Object.Despawn(this.GetComponent<SkillBase>());
-            }
+                Managers.Object.Despawn(this);
         }
 
         public void StopDestroy()

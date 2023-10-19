@@ -5,7 +5,8 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
-using EnvTemplate = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
+
+using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
 using UnityEditor.Build.Pipeline;
 
 namespace STELLAREST_2D
@@ -101,7 +102,6 @@ namespace STELLAREST_2D
             StartCoroutine(CoStartAction());
         }
 
-        private bool lockMoveToRandomPoint = false;
         private void FixedUpdate()
         {
             if (this.MainTarget != null)
@@ -112,17 +112,18 @@ namespace STELLAREST_2D
                 if (this.Action == false)
                     return;
 
-                if (this.CreatureState != Define.CreatureState.Run)
-                    return;
-                else if (this.MainTarget != null && this.MainTarget.IsPlayer())
-                    MoveToTarget(MainTarget, this.Stat.CollectRange * this.Stat.CollectRange);
+                // if (this.CreatureState != Define.CreatureState.Run)
+                //     return;
+                // else if (this.MainTarget != null && this.MainTarget.IsPlayer())
+                //     MoveToTarget(MainTarget, this.Stat.CollectRange * this.Stat.CollectRange);
             }
         }
 
         public void StartMovementToRandomPoint()
         {
             this.SkillBook.DeactivateAll();
-            StartCoroutine(CoMoveToRandomPoint());
+            if (this.IsValid())
+                StartCoroutine(CoMoveToRandomPoint());
         }
 
         private readonly float MIN_MOVE_TO_RANDOM_POINT_DELAY = 3f;
@@ -267,7 +268,7 @@ namespace STELLAREST_2D
         protected override void OnDead()
         {
             base.OnDead();
-            Managers.VFX.Environment(EnvTemplate.Skull, this);
+            Managers.VFX.Environment(VFXEnv.Skull, this);
             this.RendererController.MonsterHead.sprite = this.DeadHead;
             MonsterAnimController.Dead();
             StartCoroutine(CoDespawn());

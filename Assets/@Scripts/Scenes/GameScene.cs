@@ -90,9 +90,11 @@ namespace STELLAREST_2D
             //             Define.ObjectType.Player, isPooling: false);
 
             // +++ REINA +++
-            var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Creatures.Player.Reina_ArrowMaster,
+            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Creatures.Player.Reina_ArrowMaster,
+            //                 Define.ObjectType.Player, isPooling: false);
+            var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Creatures.Player.Reina_ElementalArcher,
                             Define.ObjectType.Player, isPooling: false);
-            
+
             var CMcam = Camera.main.GetComponent<CinemachineBrain>().ActiveVirtualCamera.VirtualCameraGameObject;
             CMcam.GetComponent<CameraController>().SetTarget(player.gameObject);
 
@@ -101,7 +103,7 @@ namespace STELLAREST_2D
             joystick.name = "@Joystick"; // UI_Joystick라고 하기엔 좀 애매함
 
             // Create Spawning Pool
-            // _spawningPool = gameObject.AddComponent<SpawningPool>();
+            _spawningPool = gameObject.AddComponent<SpawningPool>();
             
             // Set Collision Layers
             Managers.Collision.InitCollisionLayers();
@@ -119,7 +121,6 @@ namespace STELLAREST_2D
             // }
 
             Managers.Game.GAME_START();
-            Managers.Game.Player.ForceReadyToSet();
         }
 
         public void OnKillCountChangedHandler(int killCount)

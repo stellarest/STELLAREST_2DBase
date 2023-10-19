@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-using EnvTemplate = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
+using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
 using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 
 namespace STELLAREST_2D
@@ -35,14 +35,14 @@ namespace STELLAREST_2D
             }
         }
 
-        public override Vector3 LoadVFXEnvSpawnPos(EnvTemplate templateOrigin)
+        public override Vector3 LoadVFXEnvSpawnPos(VFXEnv templateOrigin)
         {
             switch (templateOrigin)
             {
-                case EnvTemplate.Spawn:
+                case VFXEnv.Spawn:
                     return (transform.position + (Vector3.up * 2.5f)) + new Vector3(0.1f, 1.2f, 1f);
 
-                case EnvTemplate.DamageFont:
+                case VFXEnv.Damage:
                     return (transform.position + (Vector3.up * 2.5f)) - Vector3.up;
 
                 default:

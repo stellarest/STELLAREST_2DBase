@@ -13,7 +13,7 @@ namespace STELLAREST_2D
         private readonly int UPPER_STAND = Animator.StringToHash("Stand");
         private readonly int LOWER_RUN = Animator.StringToHash("Run");
 
-        public virtual void Idle() { }
+        public virtual void Ready() { }
         public virtual void Attack() { }
 
         public void Stand() => AnimController.Play(UPPER_STAND);

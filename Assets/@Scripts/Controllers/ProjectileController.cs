@@ -3,6 +3,7 @@ using STELLAREST_2D.Data;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Timeline;
+
 using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 
 namespace STELLAREST_2D
@@ -97,6 +98,7 @@ namespace STELLAREST_2D
 
         private int _penetrationCount = 0;
         private int _maxPenetrationCount = 0;
+        private Coroutine _coProjectile = null;
         public void OnProjectileLaunchInfoHandler(object sender, ProjectileLaunchInfoEventArgs e)
         {
             this._initialLookAtDir = e.LookAtDir;
@@ -138,6 +140,9 @@ namespace STELLAREST_2D
             HitCollider.enabled = (_isOnlyVisible) ? false : true;
             SkillTemplate templateOrigin = this.Data.OriginalTemplate;
 
+            // _movementSpeed *= _continuousSpeedRatio;
+            // Utils.Log("Movement Speed : " + _movementSpeed);
+
             if (this._isColliderHalfRatio)
                 StartCoroutine(CoPreDisableCollider(this._lifeTime * 0.5f));
             
@@ -146,38 +151,53 @@ namespace STELLAREST_2D
                 case SkillTemplate.PaladinMastery:
                     StartDestroy(_lifeTime);
                     OnSetParticleInfo?.Invoke(_indicatorAngle, _initialLookAtDir, _continuousAngle, _continuousFlipX, _continuousFlipY);
-                    StartCoroutine(CoMeleeSwing());
+                    _coProjectile = StartCoroutine(CoMeleeSwing());
                     break;
                 case SkillTemplate.KnightMastery:
                     StartDestroy(_lifeTime);
                     OnSetParticleInfo?.Invoke(_indicatorAngle, _initialLookAtDir, _continuousAngle, _continuousFlipX, _continuousFlipY);
                     _shootDir = Quaternion.Euler(0, 0, _continuousAngle * -1) * _shootDir; // Knight Mastery
-                    StartCoroutine(CoMeleeSwing());
+                    _coProjectile = StartCoroutine(CoMeleeSwing());
                     break;
                 case SkillTemplate.PhantomKnightMastery:
                     StartDestroy(_lifeTime);
                     OnSetParticleInfo?.Invoke(_indicatorAngle, _initialLookAtDir, _continuousAngle, _continuousFlipX, _continuousFlipY);
-                    StartCoroutine(CoMeleeSwing());
+                    _coProjectile = StartCoroutine(CoMeleeSwing());
                     break;
+
+
 
                 case SkillTemplate.ArrowMasterMastery:
                     StartDestroy(_lifeTime);
-                    StartCoroutine(CoRangedShot());
+                    _coProjectile = StartCoroutine(CoRangedShot());
                     break;
+                case SkillTemplate.ElementalArcherMastery:
+                    SR.enabled = true;
+                    RigidBody.simulated = true;
+                    HitCollider.enabled = true;
+                    StartDestroy(_lifeTime);
+                    _coProjectile = StartCoroutine(CoRangedShot());
+                    // if (this.Data.Grade < Define.InGameGrade.Ultimate)
+                    //     _coProjectile = StartCoroutine(CoRangedShot());
+                    // else
+                    //     _coProjectile = StartCoroutine(CoRangedGuidedShot()); // TEMP
+                    break;
+
+
 
                 case SkillTemplate.ThrowingStar:
                     StartDestroy(_lifeTime);
-                    StartCoroutine(CoThrowingStar());
+                    _coProjectile = StartCoroutine(CoThrowingStar());
                     break;
 
                 case SkillTemplate.Boomerang:
                     if (Data.Grade < Data.MaxGrade)
                     {
                         StartDestroy(_lifeTime);
-                        StartCoroutine(CoBoomerang());
+                        _coProjectile = StartCoroutine(CoBoomerang());
                     }
                     else
-                        StartCoroutine(CoBoomerangUltimate());
+                        _coProjectile = StartCoroutine(CoBoomerangUltimate());
                     break;
             }
 
@@ -217,7 +237,8 @@ namespace STELLAREST_2D
 
         private IEnumerator CoRangedShot()
         {
-            float degrees = Mathf.Atan2(this.Owner.ShootDir.y, this.Owner.ShootDir.x) * Mathf.Rad2Deg;
+            _shootDir = Quaternion.Euler(0, 0, _continuousAngle) * this.Owner.ShootDir;
+            float degrees = Mathf.Atan2(_shootDir.y, _shootDir.x) * Mathf.Rad2Deg;
             this.transform.rotation = Quaternion.Euler(0, 0, degrees);
             this.transform.localScale = Vector3.one;
 
@@ -227,6 +248,13 @@ namespace STELLAREST_2D
                 this.transform.position += _shootDir * this._movementSpeed * Time.deltaTime;
                 yield return null;
             }
+        }
+
+        private IEnumerator CoRangedGuidedShot()
+        {
+            Vector3 originShootDir = _shootDir;
+            GameObject target = Utils.GetClosestTarget<MonsterController>(this.Owner.transform.position);
+            yield return null;
         }
 
         private readonly float Sensitivity = 0.6f;
@@ -426,7 +454,20 @@ namespace STELLAREST_2D
                     _shootDir = NextBounceTarget(cc, Define.HitFromType.ThrowingStar);
                     break;
 
-                case SkillTemplate.Boomerang:
+                case SkillTemplate.ArrowMasterMastery:
+                    if (_maxPenetrationCount == -1)
+                        return;
+                    else
+                        Managers.Object.Despawn(this);
+                    break;
+
+                case SkillTemplate.ElementalArcherMastery:
+                    {
+                        if (this.Data.Grade == Define.InGameGrade.Default)
+                            Managers.Object.Despawn(this);
+                        else
+                            StopCoroutine(_coProjectile); // Projectile Stop 만,,,
+                    }
                     break;
             }
         }

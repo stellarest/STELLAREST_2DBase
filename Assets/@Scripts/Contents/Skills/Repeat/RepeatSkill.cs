@@ -70,6 +70,7 @@ namespace STELLAREST_2D
                 return;
 
             Owner.AttackStartPoint = transform.position;
+            this.Owner.ShowMuzzle();
             StartCoroutine(this.CoCloneSkill());
         }
 

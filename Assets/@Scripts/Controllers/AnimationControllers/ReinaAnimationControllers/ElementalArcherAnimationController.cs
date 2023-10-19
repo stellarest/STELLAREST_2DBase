@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace STELLAREST_2D
 {
-    public class ArrowMasterAnimationController : PlayerAnimationController
+    public class ElementalArcherAnimationController : PlayerAnimationController
     {
         private readonly int UPPER_READY = Animator.StringToHash("ReadyBow");
         private readonly int UPPER_ATTACK = Animator.StringToHash("RangedShot");
@@ -16,4 +16,3 @@ namespace STELLAREST_2D
         }
     }
 }
-

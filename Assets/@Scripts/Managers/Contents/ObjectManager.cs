@@ -8,7 +8,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering; // Sorting Group
 
-using EnvTemplate = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
+using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
 
 // using DamageNumbersPro;
 namespace STELLAREST_2D
@@ -17,7 +17,6 @@ namespace STELLAREST_2D
     {
         public PlayerController Player { get; private set; } = null;
         public HashSet<MonsterController> Monsters { get; } = new HashSet<MonsterController>();
-        public HashSet<ProjectileController> Projectiles { get; } = new HashSet<ProjectileController>();
         public HashSet<SkillBase> Skills { get; } = new HashSet<SkillBase>();
         public HashSet<GemController> Gems { get; } = new HashSet<GemController>();
         // EnvCont는 나중에 추가하던지
@@ -73,7 +72,7 @@ namespace STELLAREST_2D
 
                                     chicken.Init(templateID);
                                     Monsters.Add(chicken);
-                                    Managers.VFX.Environment(EnvTemplate.Spawn, chicken);
+                                    Managers.VFX.Environment(VFXEnv.Spawn, chicken);
 
                                     return chicken as T;
                                 }
@@ -96,20 +95,6 @@ namespace STELLAREST_2D
                         Skills.Add(skill);
                         return skill as T;
                     }
-
-                // case Define.ObjectType.Projectile:
-                // {
-                //         GameObject go = Managers.Resource.Instantiate(Managers.Data.SkillsDict[templateID].PrimaryLabel, pooling: isPooling);
-                //         go.transform.position = spawnPos;
-
-                //         ProjectileController pc = go.GetOrAddComponent<ProjectileController>();
-                //         pc.ObjectType = spawnObjectType;
-
-                //         // pc.Init(templateID);
-                //         Projectiles.Add(pc);
-
-                //         return pc as T;
-                // }
             }
 
             return null;
@@ -118,10 +103,7 @@ namespace STELLAREST_2D
         public void Despawn<T>(T obj) where T : BaseController
         {
             if (obj.IsValid() == false)
-            {
-                Debug.Log("<color=magenta>##### Already despawned #####</color>"); // 단순 체크용
                 return;
-            }
 
             System.Type type = typeof(T);
             if (type == typeof(PlayerController))
@@ -129,8 +111,7 @@ namespace STELLAREST_2D
             }
             else if (typeof(T).IsSubclassOf(typeof(CreatureController)))
             {
-                //Utils.LogStrong("DESPAWN MONSTER...2 !!!");
-                Monsters.Remove(obj as MonsterController);
+                Monsters.Remove(obj.GetComponent<MonsterController>());
                 Managers.Resource.Destroy(obj.gameObject);
             }
             else if (type == typeof(GemController))
@@ -139,14 +120,11 @@ namespace STELLAREST_2D
                 Managers.Resource.Destroy(obj.gameObject);
                 GridController.Remove(obj.gameObject);
             }
-            else if (type == typeof(SkillBase))
+            else if (type == typeof(SkillBase) || type == typeof(ProjectileController))
             {
-                Skills.Remove(obj as SkillBase);
-                Managers.Resource.Destroy(obj.gameObject);
-            }
-            else if (type == typeof(ProjectileController))
-            {
-                Projectiles.Remove(obj as ProjectileController);
+                // as로 형변환하면 버그 있음. (제거가 될때도있고 안될때도 있음)
+                //Skills.Remove(obj as SkillBase);
+                Skills.Remove(obj.GetComponent<SkillBase>());
                 Managers.Resource.Destroy(obj.gameObject);
             }
         }

@@ -55,7 +55,7 @@ namespace STELLAREST_2D
 
                     Reina_ArrowMaster = 100103,
                     Reina_ElementalArcher = 100104,
-                    Reina_ForestWarden = 100105,
+                    Reina_ForestGuardian = 100105,
 
                     Kenneth_Assassin = 100106,
                     Kenneth_Thief = 100107,
@@ -182,24 +182,33 @@ namespace STELLAREST_2D
                     Bow,
                 }
 
-                public enum Impact
+                public enum ImpactHit
                 {
                     None = -1,
                     Hit = 400100,
-                    Leaves = 400101,
-                    Critical = 400102,
+                    Wind = 400101
+                }
+
+                public enum Trail
+                {
+                    None = -1,
+                    Wind,
                 }
 
                 public enum Environment
                 {
                     None = -1,
-                    Stun = 500100,
-                    KnockBack = 500101,
-                    Spawn = 500102,
-                    DamageFont = 500103,
-                    Dodge = 500104,
-                    Skull = 500105,
-                    Dust = 500106,
+                    Spawn,
+                    Damage,
+                    Dodge,
+                    Skull,
+                    Dust,
+
+
+
+                    Stun, // Stun = 500100,
+                    KnockBack,
+                    WindTrail,
                     Max = 999,
                 }
             }
@@ -218,16 +227,31 @@ namespace STELLAREST_2D
                 public const string JOYSTICK = "UI_Joystick.prefab";
                 public const string EXP_GEM = "EXPGem.prefab";
 
-                public const string VFX_ENV_DMG_NUMBER_TO_MONSTER = "VFX_Env_DmgNumber_ToMonster.prefab";
-                public const string VFX_ENV_DMG_NUMBER_TO_MONSTER_CRITICAL = "VFX_Env_DmgNumber_ToMonsterCritical.prefab";
-                public const string VFX_ENV_DMG_TEXT_TO_MONSTER_CRITICAL = "VFX_Env_DmgText_ToMonsterCritical.prefab";
+                // VFX_MUZZLE
+                public const string VFX_MUZZLE_BOW = "VFX_Muzzle_Bow.prefab";
 
-                public const string VFX_ENV_DMG_NUMBER_TO_PLAYER = "VFX_Env_DmgNumber_ToPlayer.prefab";
-                public const string VFX_ENV_DMG_TEXT_TO_PLAYER_DODGE = "VFX_Env_DmgText_ToPlayerDodge.prefab";
-                public const string VFX_ENV_DMG_NUMBER_TO_SHIELD = "VFX_Env_DmgNumber_ToShield.prefab";
+                // VFX_IMPACT
+                public const string VFX_IMPACT_HIT_DEFAULT = "VFX_Impact_Hit_Default.prefab";
+
+                // VFX Trail
+                public const string VFX_TRAIL_WIND = "VFX_Trail_Wind.prefab";
+
+                // VFX_ENV : Spawn, Damage, Dodge, Skull, Dust
                 public const string VFX_ENV_SPAWN = "VFX_Env_Spawn.prefab";
+                public const string VFX_ENV_DAMAGE_TO_MONSTER = "VFX_Env_Damage_To_Monster.prefab";
+                public const string VFX_ENV_DAMAGE_TO_MONSTER_CRITICAL = "VFX_Env_Damage_To_Monster_Critical.prefab";
+                public const string VFX_ENV_DAMAGE_TO_MONSTER_CRITICAL_FONT = "VFX_Env_Damage_To_Monster_Critical_Font.prefab";
+                public const string VFX_ENV_DAMAGE_TO_PLAYER = "VFX_Env_Damage_To_Player.prefab";
+                public const string VFX_ENV_DAMAGE_TO_PLAYER_SHIELD = "VFX_Env_Damage_To_Player_Shield.prefab";
+                public const string VFX_ENV_DAMAGE_TO_PLAYER_DODGE_FONT = "VFX_Env_Damage_To_Player_Dodge_Font.prefab";
                 public const string VFX_ENV_SKULL = "VFX_Env_Skull.prefab";
+                public const string VFX_ENV_DUST = "VFX_Env_Dust.prefab";
 
+                // TEMP
+                public const string VFX_ENV_WIND_TRAIL = "VFX_Env_WindTrail.prefab";
+                // =====================================================================================
+                // =====================================================================================
+                // =====================================================================================
                 public const string STUN_EFFECT = "StunEffect.prefab";
                 public const string CURSED_TEXT_EFFECT = "CursedTextEffect.prefab";
                 public const string ARROW_SHOT_MUZZLE_EFFECT = "ArrowShotMuzzleEffect.prefab";
@@ -237,36 +261,27 @@ namespace STELLAREST_2D
                 public const string GEM_GATHER = "GemGather.prefab";
                 public const string GEM_EXPLOSION_NORMAL = "GemExplosion_Normal.prefab";
                 public const string GEM_EXPLOSION_LARGE = "GemExplosion_Large.prefab";
-
-                public const string DUST = "Dust.prefab";
                 public const string DEATH_CLAW_SLASH = "DeathClawSlash.prefab";
                 public const string DEATH_CLAW_SLASH_LEGENDARY = "DeathClawSlash_Legendary.prefab";
                 public const string IMPACT_BLOODY_EFFECT = "ImpactBloodyEffect.prefab";
-
                 public const string WIND_TRAIL_EFFECT = "WindTrailEffect.prefab";
                 public const string IMPACT_WIND_LV1_EFFECT = "ImpactWindLv1Effect.prefab";
                 public const string IMPACT_WIND_LV2_EFFECT = "ImpactWindLv2Effect.prefab";
                 public const string IMPACT_WIND_LV3_EFFECT = "ImpactWindLv3Effect.prefab";
-
                 public const string FIRE_TRAIL_EFFECT = "FireTrailEffect.prefab";
                 public const string IMPACT_FIRE_LV1_EFFECT = "ImpactFireLv1Effect.prefab";
                 public const string IMPACT_FIRE_LV2_EFFECT = "ImpactFireLv2Effect.prefab";
                 public const string IMPACT_FIRE_LV3_EFFECT = "ImpactFireLv3Effect.prefab";
-
                 public const string ICE_TRAIL_EFFECT = "IceTrailEffect.prefab";
                 public const string IMPACT_ICE_LV1_EFFECT = "ImpactIceLv1Effect.prefab";
                 public const string IMPACT_ICE_LV2_EFFECT = "ImpactIceLv2Effect.prefab";
                 public const string IMPACT_ICE_LV3_EFFECT = "ImpactIceLv3Effect.prefab";
-
                 public const string BUBBLE_TRAIL_EFFECT = "BubbleTrailEffect.prefab";
                 public const string IMPACT_BUBBLE_EFFECT = "ImpactBubbleEffect.prefab";
-
                 public const string LIGHT_TRAIL_EFFECT = "LightTrailEffect.prefab";
                 public const string IMPACT_LIGHT_EFFECT = "ImpactLightEffect.prefab";
-
                 public const string IMPACT_HIT_LEAVES_EFFECT = "ImpactHitLeavesEffect.prefab";
                 public const string IMPACT_CRITICAL_HIT_EFFECT = "ImpactCriticalHitEffect.prefab";
-
                 public const string CONCENTRATION_BUFF = "ConcentrationBuff.prefab";
             }
 

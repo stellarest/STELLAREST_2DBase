@@ -4,7 +4,7 @@ using System.Linq;
 using STELLAREST_2D.Data;
 using UnityEngine;
 
-using EnvTemplate = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
+using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
 
 namespace STELLAREST_2D
 {
@@ -312,7 +312,6 @@ namespace STELLAREST_2D
                             container.MouthColor = expressions[i].MouthColor;
 
                             PlayerFaceExpressionContainerDict.Add(Define.FaceExpressionType.Dead, container);
-                            Utils.Log($"##### Check Dead Eyes Sprite you have : {container.Eyes} #####");
                         }
                         break;
                 }
@@ -323,9 +322,6 @@ namespace STELLAREST_2D
         {
             if (this.IsPlayer)
             {
-                if (this.Owner.IsDeadState)
-                    return;
-
                 CurrentFaceState = Define.FaceExpressionType.Battle;
                 PlayerFaceExpressionContainer container = PlayerFaceExpressionContainerDict[Define.FaceExpressionType.Battle];
                 PlayerFace.eyebrowsSPR.sprite = container.Eyebrows;
@@ -336,21 +332,18 @@ namespace STELLAREST_2D
 
                 PlayerFace.mouthSPR.sprite = container.Mouth;
                 PlayerFace.mouthSPR.color = container.MouthColor;
+
+                if (this.Owner.IsDeadState)
+                    OnFaceDeadHandler();
             }
             else
                 MonsterHead.sprite = OwnerAsMonsterController.AngryHead;
-
-            if (this.Owner.IsDeadState)
-                OnFaceDeadHandler();
         }
 
         public void OnFaceDefaultHandler()
         {
             if (this.IsPlayer)
             {
-                if (this.Owner.IsDeadState)
-                    return;
-
                 CurrentFaceState = Define.FaceExpressionType.Default;
                 PlayerFaceExpressionContainer container = PlayerFaceExpressionContainerDict[Define.FaceExpressionType.Default];
                 PlayerFace.eyebrowsSPR.sprite = container.Eyebrows;
@@ -361,12 +354,12 @@ namespace STELLAREST_2D
 
                 PlayerFace.mouthSPR.sprite = container.Mouth;
                 PlayerFace.mouthSPR.color = container.MouthColor;
+
+                if (this.Owner.IsDeadState)
+                    OnFaceDeadHandler();
             }
             else
                 MonsterHead.sprite = OwnerAsMonsterController.AngryHead;
-
-            if (this.Owner.IsDeadState)
-                OnFaceDeadHandler();
         }
 
         public void OnFaceDeadHandler() // +++ Remove Animation Event. Called from OnDead +++
@@ -387,8 +380,9 @@ namespace STELLAREST_2D
             else
                 MonsterHead.sprite = OwnerAsMonsterController.AngryHead;
         }
+
 #endregion
-        public void OnDustVFXHandler() => Managers.VFX.Environment(EnvTemplate.Dust, this.Owner);
+        public void OnDustVFXHandler() => Managers.VFX.Environment(VFXEnv.Dust, this.Owner);
 
         public PlayerFace PlayerFace { get; private set; } = null;
         private SpriteRenderer _monsterHead = null;

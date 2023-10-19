@@ -7,12 +7,11 @@ namespace STELLAREST_2D
 {
     public class MovementToOwner : MonoBehaviour
     {
-        private Transform Owner = null;
-        public void SetOwner(Transform owner) => Owner = owner;
+        public CreatureController Owner { get; set; } = null;
         private void LateUpdate()
         {
             if (Owner != null)
-                transform.position = Owner.transform.position;
+                transform.position = Owner.FireSocketPosition;
         }
     }
 }

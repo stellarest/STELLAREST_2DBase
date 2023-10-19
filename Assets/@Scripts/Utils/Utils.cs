@@ -116,6 +116,35 @@ namespace STELLAREST_2D
             return false;
         }
 
+        public static GameObject GetClosestTarget<T>(Vector3 from) where T : CreatureController
+        {
+            GameObject target = null;
+            System.Type type = typeof(T);
+            if (type == typeof(MonsterController))
+            {
+                List<MonsterController> toList = MakeToList_Monsters();
+                if (toList.Count > 0)
+                {
+                    float closestDist = float.MaxValue;
+                    for (int i = 0; i < toList.Count; ++i)
+                    {
+                        if (toList[i].IsValid() == false)
+                            continue;
+
+                        float distance = (from - toList[i].transform.position).sqrMagnitude;
+                        if (distance < closestDist)
+                        {
+                            closestDist = distance;
+                            target = toList[i].gameObject;
+                        }
+                    }
+                }
+            }
+
+            return target;
+        }
+
+        // LAZER BOLT
         public static Vector3 GetRandomTargetPosition<T>(Vector3 fromPos, float fromMinDistance, float fromMaxDistance,
                                                 Define.HitFromType hitFromType = Define.HitFromType.None) where T : BaseController
         {
@@ -148,6 +177,7 @@ namespace STELLAREST_2D
             return randomTargetPos;
         }
 
+        // SPEAR
         public static CreatureController GetClosestCreatureTargetFromAndRange<T>(GameObject from, CreatureController owner, float searchMaxRange)
         {
             CreatureController target = null;
@@ -210,6 +240,7 @@ namespace STELLAREST_2D
             return target;
         }
 
+        // THROWING STAR (NEXT BOUNCE DIR)
         public static Vector3 GetClosestFromTargetDirection<T>(CreatureController from, Define.HitFromType hitFromType = Define.HitFromType.None) where T : BaseController
         {
             Vector3 nextDir = Vector3.zero;
@@ -266,6 +297,10 @@ namespace STELLAREST_2D
 
             return toList;
         }
+
+        public static bool IsArrowMaster(CreatureController cc) => cc?.Stat.TemplateID == (int)Define.TemplateIDs.Creatures.Player.Reina_ArrowMaster;
+        public static bool IsElementalArcher(CreatureController cc) => cc?.Stat.TemplateID == (int)Define.TemplateIDs.Creatures.Player.Reina_ElementalArcher;
+
 
 #if UNITY_EDITOR
         [Conditional("UNITY_EDITOR")]

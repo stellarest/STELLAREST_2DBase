@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using STELLAREST_2D.Data;
 using UnityEngine;
 
-using EnvTemplate = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
+using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
 
 namespace STELLAREST_2D
 {
@@ -215,6 +215,7 @@ namespace STELLAREST_2D
             }
         }
 
+        public virtual void ShowMuzzle() { }
         protected virtual void RunSkill() { }
 
         public virtual void OnDamaged(CreatureController attacker, SkillBase from)
@@ -228,13 +229,13 @@ namespace STELLAREST_2D
             {
                 // DODGE
                 Managers.VFX.Material(Define.MaterialType.Hologram, this);
-                Managers.VFX.Environment(EnvTemplate.Dodge, this);
+                Managers.VFX.Environment(VFXEnv.Dodge, this);
                 return;
             }
 
             this.Stat.Hp -= dmgResult;
-            Managers.VFX.DamageFont(this, dmgResult, isCritical);
-            Managers.VFX.Impact(from.Data.VFX_Impact, this, from); // --> 메모리 문제 발생시, 크리티컬 쪽에서 스폰
+            Managers.VFX.Damage(this, dmgResult, isCritical);
+            Managers.VFX.ImpactHit(from.Data.VFX_ImpactHit, this, from); // --> 메모리 문제 발생시, 크리티컬 쪽에서 스폰
 
             if (this.Stat.Hp <= 0 && this.IsDeadState == false)
                 this.CreatureState = Define.CreatureState.Dead;
@@ -330,7 +331,7 @@ namespace STELLAREST_2D
         public virtual float ADDITIONAL_SPAWN_HEIGHT { get; protected set; } = 0f;
 
 
-        public virtual Vector3 LoadVFXEnvSpawnPos(EnvTemplate templateOrigin) => this.Center.transform.position;
+        public virtual Vector3 LoadVFXEnvSpawnPos(VFXEnv templateOrigin) => this.Center.transform.position;
         public bool IsRun => this.CreatureState == Define.CreatureState.Run;
         public bool IsDeadState => (this.CreatureState == Define.CreatureState.Dead) && (this.Stat.Hp <= 0);
     }

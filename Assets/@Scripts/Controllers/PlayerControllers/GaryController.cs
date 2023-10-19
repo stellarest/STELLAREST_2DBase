@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace STELLAREST_2D
 {
-    public class PhantomKnightController : PlayerController
+    public class GaryController : PlayerController
     {
         public override void Init(int templateID)
         {
@@ -13,7 +13,6 @@ namespace STELLAREST_2D
 
         protected override void RunSkill()
         {
-            //base.RunSkill();
             PlayerAnimController.Attack();
         }
     }

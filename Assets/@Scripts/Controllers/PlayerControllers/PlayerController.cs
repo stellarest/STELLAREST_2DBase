@@ -5,7 +5,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-using EnvTemplate = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
+using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
 using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 
 namespace STELLAREST_2D
@@ -62,6 +62,7 @@ namespace STELLAREST_2D
             }
 
             CreatureState = Define.CreatureState.Idle;
+            PlayerAnimController.Ready();
         }
 
         protected override void InitChildObject()
@@ -91,8 +92,6 @@ namespace STELLAREST_2D
                 Managers.Game.OnMoveDirChanged -= OnMoveDirChangedHandler;
         }
 
-        public void ForceReadyToSet() => PlayerAnimController.Idle();
-        
         private void OnMoveDirChangedHandler(Vector3 moveDir)
         {
             if (this.IsDeadState)
@@ -174,8 +173,8 @@ namespace STELLAREST_2D
                     //PlayerAnimController.Attack();
                     RunSkill();
                     // 메서드로 따로 빼도 될지
-                    if (this.IsDeadState && this.RendererController.CurrentFaceState != Define.FaceExpressionType.Dead)
-                        this.RendererController.OnFaceDeadHandler();
+                    // if (this.IsDeadState && this.RendererController.CurrentFaceState != Define.FaceExpressionType.Dead)
+                    //     this.RendererController.OnFaceDeadHandler();
                     break;
 
                 case Define.CreatureState.Dead:
@@ -244,20 +243,20 @@ namespace STELLAREST_2D
             //Debug.Log($"Find Gem : {findGems.Count} / Total Gem : {allSpawnedGems.Count}");
         }
 
-        public override Vector3 LoadVFXEnvSpawnPos(EnvTemplate templateOrigin)
+        public override Vector3 LoadVFXEnvSpawnPos(VFXEnv templateOrigin)
         {
             switch (templateOrigin)
             {
-                case EnvTemplate.Spawn:
+                case VFXEnv.Spawn:
                     return (transform.position + (Vector3.up * 2.5f));
 
-                case EnvTemplate.DamageFont:
+                case VFXEnv.Damage:
                     return (transform.position + (Vector3.up * 2.5f));
 
-                case EnvTemplate.Dodge:
+                case VFXEnv.Dodge:
                     return (transform.position + (Vector3.up * 2.95f));
 
-                case EnvTemplate.Dust:
+                case VFXEnv.Dust:
                     return this.BodyParts.LegRight.position + (Vector3.down * 0.35f);
 
                 default:

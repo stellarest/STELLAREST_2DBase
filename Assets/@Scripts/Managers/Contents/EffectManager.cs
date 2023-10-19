@@ -79,7 +79,7 @@ namespace STELLAREST_2D
             //     _upgradePlayerBuffEffect = Utils.FindChild(Managers.Game.Player.gameObject, Define.Player.UPGRADE_PLAYER_BUFF);
         }
 
-        public void Hit(BaseController target, Define.TemplateIDs.VFX.Impact effectHit, float duration)
+        public void Hit(BaseController target, Define.TemplateIDs.VFX.ImpactHit effectHit, float duration)
         {
             //skill.RepeatSkillData.ImpactHitEffectType
             //target.Star();
@@ -387,9 +387,9 @@ namespace STELLAREST_2D
 
         public void ShowPlayerDust()
         {
-            GameObject go = Managers.Resource.Instantiate(Define.Labels.Prefabs.DUST, pooling: true);
+            //GameObject go = Managers.Resource.Instantiate(Define.Labels.Prefabs.DUST, pooling: true);
             //go.transform.position = Managers.Game.Player.LegR.position + (Vector3.down * 0.35f);
-            go.transform.position = Managers.Game.Player.BodyParts.LegRight.position + (Vector3.down * 0.35f);
+            //go.transform.position = Managers.Game.Player.BodyParts.LegRight.position + (Vector3.down * 0.35f);
         }
 
         public void ShowGemGather(GemController gc)
@@ -412,37 +412,37 @@ namespace STELLAREST_2D
         public GameObject ShowStunEffect()
                 => Managers.Resource.Instantiate(Define.Labels.Prefabs.STUN_EFFECT, pooling: true);
 
-        public void ShowDamageFont(CreatureController cc, float damage, bool isCritical = false)
-        {
-            if (cc.IsValid() == false)
-                return;
+        // public void ShowDamageFont(CreatureController cc, float damage, bool isCritical = false)
+        // {
+        //     if (cc.IsValid() == false)
+        //         return;
 
-            Vector3 defaultSpawnPos = cc.transform.position + (Vector3.up * 2.5f);
-            if (cc?.IsMonster() == false)
-            {
-                Managers.Resource.Load<GameObject>
-                        (Define.Labels.Prefabs.VFX_ENV_DMG_NUMBER_TO_PLAYER).GetComponent<DamageNumber>().Spawn(defaultSpawnPos, damage);
-            }
-            else
-            {
-                if (cc.Stat.TemplateID == (int)Define.TemplateIDs.Creatures.Monster.Chicken)
-                    defaultSpawnPos -= Vector3.up;
+        //     Vector3 defaultSpawnPos = cc.transform.position + (Vector3.up * 2.5f);
+        //     if (cc?.IsMonster() == false)
+        //     {
+        //         Managers.Resource.Load<GameObject>
+        //                 (Define.Labels.Prefabs.VFX_ENV_DMG_NUMBER_TO_PLAYER).GetComponent<DamageNumber>().Spawn(defaultSpawnPos, damage);
+        //     }
+        //     else
+        //     {
+        //         if (cc.Stat.TemplateID == (int)Define.TemplateIDs.Creatures.Monster.Chicken)
+        //             defaultSpawnPos -= Vector3.up;
 
-                if (isCritical)
-                {
-                    Managers.Resource.Load<GameObject>
-                        (Define.Labels.Prefabs.VFX_ENV_DMG_NUMBER_TO_MONSTER_CRITICAL).GetComponent<DamageNumber>().Spawn(defaultSpawnPos, damage);
+        //         if (isCritical)
+        //         {
+        //             Managers.Resource.Load<GameObject>
+        //                 (Define.Labels.Prefabs.VFX_ENV_DMG_NUMBER_TO_MONSTER_CRITICAL).GetComponent<DamageNumber>().Spawn(defaultSpawnPos, damage);
 
-                    Managers.Resource.Load<GameObject>
-                        (Define.Labels.Prefabs.VFX_ENV_DMG_TEXT_TO_MONSTER_CRITICAL).GetComponent<DamageNumber>().Spawn(defaultSpawnPos);
-                }
-                else
-                {
-                    Managers.Resource.Load<GameObject>
-                        (Define.Labels.Prefabs.VFX_ENV_DMG_NUMBER_TO_MONSTER).GetComponent<DamageNumber>().Spawn(defaultSpawnPos, damage);
-                }
-            }
-        }
+        //             Managers.Resource.Load<GameObject>
+        //                 (Define.Labels.Prefabs.VFX_ENV_DMG_TEXT_TO_MONSTER_CRITICAL).GetComponent<DamageNumber>().Spawn(defaultSpawnPos);
+        //         }
+        //         else
+        //         {
+        //             Managers.Resource.Load<GameObject>
+        //                 (Define.Labels.Prefabs.VFX_ENV_DMG_NUMBER_TO_MONSTER).GetComponent<DamageNumber>().Spawn(defaultSpawnPos, damage);
+        //         }
+        //     }
+        // }
 
         public void ShowShieldDamageFont(CreatureController cc, float damage)
         {
@@ -451,7 +451,7 @@ namespace STELLAREST_2D
 
             Vector3 defaultSpawnPos = cc.transform.position + (Vector3.up * 2.5f);
             Managers.Resource.Load<GameObject>
-                (Define.Labels.Prefabs.VFX_ENV_DMG_NUMBER_TO_SHIELD).GetComponent<DamageNumber>().Spawn(defaultSpawnPos, damage);
+                (Define.Labels.Prefabs.VFX_ENV_DAMAGE_TO_PLAYER_SHIELD).GetComponent<DamageNumber>().Spawn(defaultSpawnPos, damage);
         }
 
         public void ShowDodgeText(CreatureController cc)
@@ -462,7 +462,7 @@ namespace STELLAREST_2D
             Vector3 defaultSpawnPos = cc.transform.position + (Vector3.up * 3f);
 
             Managers.Resource.Load<GameObject>
-                 (Define.Labels.Prefabs.VFX_ENV_DMG_TEXT_TO_PLAYER_DODGE).GetComponent<DamageNumber>().Spawn(defaultSpawnPos);
+                 (Define.Labels.Prefabs.VFX_ENV_DAMAGE_TO_PLAYER_DODGE_FONT).GetComponent<DamageNumber>().Spawn(defaultSpawnPos);
         }
 
         public void ShowCursedText(CreatureController cc)
@@ -606,6 +606,7 @@ namespace STELLAREST_2D
         public void ShowBubbleTrailEffect(BaseController followTarget)
         {
             GameObject go = Managers.Resource.Instantiate(Define.Labels.Prefabs.BUBBLE_TRAIL_EFFECT, pooling: true);
+            
             //go.GetComponent<BaseController>().CoTrailEffect(followTarget);
         }
 
@@ -631,11 +632,11 @@ namespace STELLAREST_2D
 
         public void ShowBowMuzzleEffect(Vector3 position, Transform followTickSocketOwner = null)
         {
-            GameObject go = Managers.Resource.Instantiate(Define.Labels.Prefabs.ARROW_SHOT_MUZZLE_EFFECT, pooling: true);
-            go.transform.position = position; // 움직이는것조차 따라가는 것을 하고싶다면 코루틴 돌리던지 컴포넌트 붙이던지
-            // 근데 코루틴은 너무 비효율적일 것 같은데.
-            if (followTickSocketOwner != null)
-                go.GetComponent<MovementToOwner>().SetOwner(followTickSocketOwner);
+            // GameObject go = Managers.Resource.Instantiate(Define.Labels.Prefabs.ARROW_SHOT_MUZZLE_EFFECT, pooling: true);
+            // go.transform.position = position; // 움직이는것조차 따라가는 것을 하고싶다면 코루틴 돌리던지 컴포넌트 붙이던지
+            // // 근데 코루틴은 너무 비효율적일 것 같은데.
+            // if (followTickSocketOwner != null)
+            //     go.GetComponent<MovementToOwner>().SetOwner(followTickSocketOwner);
         }
 
         // public GameObject ShowImpactHitLeavesEffect(Vector3 Position)

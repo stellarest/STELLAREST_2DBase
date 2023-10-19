@@ -1,15 +1,12 @@
 using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using DamageNumbersPro;
 using UnityEngine;
 
-using ImpactTemplate = STELLAREST_2D.Define.TemplateIDs.VFX.Impact;
-using EnvTemplate = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
-using Unity.VisualScripting;
-using System;
-using System.Runtime.InteropServices.WindowsRuntime;
-using UnityEditor.Analytics;
+using VFXMuzzle = STELLAREST_2D.Define.TemplateIDs.VFX.Muzzle;
+using VFXImpact = STELLAREST_2D.Define.TemplateIDs.VFX.ImpactHit;
+using VFXTrail = STELLAREST_2D.Define.TemplateIDs.VFX.Trail;
+using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
+using System.Runtime;
 
 namespace STELLAREST_2D
 {
@@ -97,7 +94,6 @@ namespace STELLAREST_2D
             spr.material = matOrigin; // RESET MATERIAL
         }
 
-        // TEMP METHOD
         public IEnumerator MakeStrongTintWhite(BaseController bc, SpriteRenderer spr, float desiredTime, System.Action callback = null)
         {
             if (bc.IsValid() == false)
@@ -127,45 +123,24 @@ namespace STELLAREST_2D
             spr.material = matOrigin; // RESET MATERIAL
         }
 
-        // Critical Ratio of all of monsters is zero.
-        public void DamageFont(CreatureController cc, float damage, bool isCritical)
+        public void Muzzle(VFXMuzzle templateOrigin, CreatureController target)
         {
-            if (cc.IsValid() == false)
-                return;
-
-            Vector3 spawnPos = (cc?.IsPlayer() == false && cc.GetComponent<MonsterController>() != null)
-                                ? cc.GetComponent<MonsterController>().LoadVFXEnvSpawnPos(EnvTemplate.DamageFont)
-                                : cc.GetComponent<PlayerController>().LoadVFXEnvSpawnPos(EnvTemplate.DamageFont);
-
-#if UNITY_EDITOR
-            if (spawnPos == Vector3.zero)
-                Utils.LogCritical(nameof(VFXManager), nameof(Environment), "Failed to load VFX Env Spawn Pos.");
-#endif
-
-            if (cc.IsMonster()) // 현재 크티티컬은 몬스터만 받아서 필요 없을수도
+            Vector3 muzzlePoint = Vector3.zero;
+            switch (templateOrigin)
             {
-                if (isCritical) 
-                {
-                    Managers.Resource.Load<GameObject>(Define.Labels.Prefabs.VFX_ENV_DMG_TEXT_TO_MONSTER_CRITICAL)
-                                     .GetComponent<DamageNumber>().Spawn(spawnPos);
+                case VFXMuzzle.None:
+                    return;
 
-                    Managers.Resource.Load<GameObject>(Define.Labels.Prefabs.VFX_ENV_DMG_NUMBER_TO_MONSTER_CRITICAL)
-                                     .GetComponent<DamageNumber>().Spawn(spawnPos, damage);
-                }
-                else
-                {
-                    Managers.Resource.Load<GameObject>(Define.Labels.Prefabs.VFX_ENV_DMG_NUMBER_TO_MONSTER)
-                                     .GetComponent<DamageNumber>().Spawn(spawnPos, damage);
-                }
-            }
-            else
-            {
-                Managers.Resource.Load<GameObject>(Define.Labels.Prefabs.VFX_ENV_DMG_NUMBER_TO_PLAYER)
-                                 .GetComponent<DamageNumber>().Spawn(spawnPos, damage);
+                case VFXMuzzle.Bow:
+                    GameObject go = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_MUZZLE_BOW, null, true);
+                    go.transform.position = target.FireSocketPosition;
+                    if (go.GetComponent<MovementToOwner>().Owner == null)
+                        go.GetComponent<MovementToOwner>().Owner = target;
+                    break;
             }
         }
 
-        public void Impact(ImpactTemplate templateOrigin, CreatureController target, SkillBase from)
+        public void ImpactHit(VFXImpact templateOrigin, CreatureController target, SkillBase from)
         {
             Vector3 impactPoint = Vector3.zero;
             if (from.Data.IsImpactPointOnTarget)
@@ -177,18 +152,78 @@ namespace STELLAREST_2D
             else
                 impactPoint = from.transform.position;
 
+            GameObject go = null;
             switch (templateOrigin)
             {
-                case ImpactTemplate.Hit:
-                    {
-                        GameObject go = Managers.Resource.Instantiate(Define.Labels.Prefabs.IMPACT_CRITICAL_HIT_EFFECT, null, true);
-                        go.transform.position = impactPoint;
-                    }
+                case VFXImpact.None:
+                    return;
+
+                case VFXImpact.Hit:
+                    go = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_IMPACT_HIT_DEFAULT, null, true);
+                    break;
+            }
+            
+            go.transform.position = impactPoint;
+        }
+
+        public void Trail(VFXTrail trailType, BaseController targetInSocket, CreatureController owner)
+        {
+            if (targetInSocket.TrailSocket == null)
+                Utils.LogCritical(nameof(VFXManager), nameof(Trail), "You have to set TrailSocket in advance if you want to use Trail.");
+
+            switch (trailType)
+            {
+                case VFXTrail.None:
+                    return;
+
+                case VFXTrail.Wind:
+                    GameObject go = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_TRAIL_WIND, null, true);
+                    TrailTarget trailTarget = go.GetComponent<TrailTarget>();
+                    trailTarget.transform.position = owner.FireSocketPosition;
+                    trailTarget.Owner = owner;
+                    trailTarget.Target = targetInSocket;
                     break;
             }
         }
 
-        public void Environment(EnvTemplate templateOrigin, CreatureController target)
+        public void Damage(CreatureController cc, float damage, bool isCritical)
+        {
+            if (cc.IsValid() == false)
+                return;
+
+            Vector3 spawnPos = (cc?.IsPlayer() == false && cc.GetComponent<MonsterController>() != null)
+                                ? cc.GetComponent<MonsterController>().LoadVFXEnvSpawnPos(VFXEnv.Damage)
+                                : cc.GetComponent<PlayerController>().LoadVFXEnvSpawnPos(VFXEnv.Damage);
+
+#if UNITY_EDITOR
+            if (spawnPos == Vector3.zero)
+                Utils.LogCritical(nameof(VFXManager), nameof(Environment), "Failed to load VFX Env Spawn Pos.");
+#endif
+
+            if (cc.IsMonster()) // 현재 크티티컬은 몬스터만 받아서 필요 없을수도
+            {
+                if (isCritical) 
+                {
+                    Managers.Resource.Load<GameObject>(Define.Labels.Prefabs.VFX_ENV_DAMAGE_TO_MONSTER_CRITICAL_FONT)
+                                     .GetComponent<DamageNumber>().Spawn(spawnPos);
+
+                    Managers.Resource.Load<GameObject>(Define.Labels.Prefabs.VFX_ENV_DAMAGE_TO_MONSTER_CRITICAL)
+                                     .GetComponent<DamageNumber>().Spawn(spawnPos, damage);
+                }
+                else
+                {
+                    Managers.Resource.Load<GameObject>(Define.Labels.Prefabs.VFX_ENV_DAMAGE_TO_MONSTER)
+                                     .GetComponent<DamageNumber>().Spawn(spawnPos, damage);
+                }
+            }
+            else
+            {
+                Managers.Resource.Load<GameObject>(Define.Labels.Prefabs.VFX_ENV_DAMAGE_TO_PLAYER)
+                                 .GetComponent<DamageNumber>().Spawn(spawnPos, damage);
+            }
+        }
+
+        public void Environment(VFXEnv templateOrigin, CreatureController target)
         {
             Vector3 spawnPos = Vector3.zero;
             spawnPos = (target?.IsPlayer() == false && target.GetComponent<MonsterController>() != null)
@@ -202,51 +237,53 @@ namespace STELLAREST_2D
 
             switch (templateOrigin)
             {
-                case EnvTemplate.Spawn:
+                case VFXEnv.Spawn:
                     {
                         GameObject go = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_ENV_SPAWN, null, true);
                         go.transform.position = spawnPos;
                     }
                     break;
 
-                case EnvTemplate.Dodge:
+                case VFXEnv.Dodge:
                     {
-                        Managers.Resource.Load<GameObject>(Define.Labels.Prefabs.VFX_ENV_DMG_TEXT_TO_PLAYER_DODGE)
+                        Managers.Resource.Load<GameObject>(Define.Labels.Prefabs.VFX_ENV_DAMAGE_TO_PLAYER_DODGE_FONT)
                                          .GetComponent<DamageNumber>().Spawn(spawnPos);
                     }
                     break;
 
-                case EnvTemplate.Skull:
+                case VFXEnv.Skull:
                     {
                         GameObject go = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_ENV_SKULL, null, true);
                         go.transform.position = spawnPos;
                     }
                     break;
 
-                case EnvTemplate.Dust:
+                case VFXEnv.Dust:
                     {
-                        GameObject go = Managers.Resource.Instantiate(Define.Labels.Prefabs.DUST, null, true);
+                        GameObject go = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_ENV_DUST, null, true);
                         go.transform.position = spawnPos;
                     }
                     break;
             }
         }
-
-        // private const float DEFAULT_DMG_SPAWN_HEIGHT = 2.5f;
-        // private Vector3 GetSpawnPosForDamageFont(CreatureController cc)
-        // {
-        //     Vector3 spawnPos = cc.transform.position + (Vector3.up * DEFAULT_DMG_SPAWN_HEIGHT);
-        //     if (cc?.IsPlayer() == false)
-        //     {
-        //         MonsterController mc = cc.GetComponent<MonsterController>();
-        //         switch (mc.MonsterType)
-        //         {
-        //             case Define.MonsterType.Chicken:
-        //                 return (spawnPos -= Vector3.up);
-        //         }
-        //     }
-
-        //     return spawnPos;
-        // }
     }
 }
+
+// -------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------
+// private const float DEFAULT_DMG_SPAWN_HEIGHT = 2.5f;
+// private Vector3 GetSpawnPosForDamageFont(CreatureController cc)
+// {
+//     Vector3 spawnPos = cc.transform.position + (Vector3.up * DEFAULT_DMG_SPAWN_HEIGHT);
+//     if (cc?.IsPlayer() == false)
+//     {
+//         MonsterController mc = cc.GetComponent<MonsterController>();
+//         switch (mc.MonsterType)
+//         {
+//             case Define.MonsterType.Chicken:
+//                 return (spawnPos -= Vector3.up);
+//         }
+//     }
+
+//     return spawnPos;
+// }

@@ -6,15 +6,15 @@ using UnityEngine;
 
 namespace STELLAREST_2D
 {
-    public class OnParticleStopped : MonoBehaviour
+    public class OnCustomParticleStopped : MonoBehaviour
     {
         // Init Clone으로부터 SetClonedRootTargetOnParticleStopped, Set RootTarget
-        public GameObject RootTarget { get; set; } = null;
+        public SkillBase SkillParticleRootTarget { get; set; } = null;
 
         public void OnParticleSystemStopped()
         {
-            if (RootTarget != null)
-                Managers.Resource.Destroy(RootTarget);
+            if (SkillParticleRootTarget != null)
+                Managers.Object.Despawn(SkillParticleRootTarget);
             else
                 Managers.Resource.Destroy(gameObject);
         }

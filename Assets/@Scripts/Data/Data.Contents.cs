@@ -115,21 +115,17 @@ namespace STELLAREST_2D.Data
         public float ContinuousSpacing;
         public float[] ContinuousSpeedRatios;
         public float[] ContinuousAngles;
-        public float[] ContinuousFixedRotations;
         public float[] ContinuousFlipXs;
         public float[] ContinuousFlipYs;
         public Vector3[] AdditionalLocalPositions;
         public Vector3[] ScaleInterpolations;
         public bool[] IsOnlyVisibles;
-        //public float ColliderPreDisableLifeRatio;
         public bool IsColliderHalfRatio;
         public int MaxBounceCount;
         public int MaxPenetrationCount;
-        public Define.TemplateIDs.Status.AfterEffect AfterEffectType;
-        public Define.TemplateIDs.VFX.Muzzle VFX_Muzzle;
-        public Define.TemplateIDs.VFX.Impact VFX_Impact;
+        public Define.TemplateIDs.VFX.ImpactHit VFX_ImpactHit;
         public bool IsImpactPointOnTarget;
-        // public Define.TemplateIDs.VFX.Environment VFX_Environment; // VFX_Env는 데이터에서 일단 제외
+        public Define.TemplateIDs.Status.Skill ExplosionSkillTemplate;
         public Define.TemplateIDs.Status.Skill UnlockSkillTemplate;
         public float CoolTime;
     }
