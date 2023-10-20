@@ -31,7 +31,7 @@ namespace STELLAREST_2D
         public enum StageType { Normal, MiddleBoss, Boss, }
         // public enum CCStatus { None, Stun, KnockBack, Poisoned, Frozen, Cursed, Confused, Silent, Max }
         public enum SkillType { None = -1, Repeat = 1, Sequence }
-        public enum CreatureState { Idle = 0, Walk = 1, Run = 2, Skill = 3, Invincible = 4, Dead = 9 }
+        public enum CreatureState { Idle = 0, Walk = 1, Run = 2, Skill = 3, Invincible = 4, CrowdControl = 5, Dead = 9 }
         //public enum InGameGrade { Normal = 1, Elite = 2, Ultimate = 3 }
         public enum CollisionLayers { Default = 0, PlayerBody = 6, PlayerAttack = 7, MonsterBody = 8, MonsterAttack = 9 }
         public enum InitialStatRatioGrade { None = 0, Low = 5, Average = 15, High = 20 }
@@ -161,17 +161,20 @@ namespace STELLAREST_2D
                     // HeavensJudgment,
                     // GuardiansShield,
                     // Concentration,
-                }
+                }            
+            }
 
-                public enum AfterEffect
-                {
-                    None = -1,
-                    Buff1 = 1,
-                    Buff2 = 2,
-                    Debuff1 = 11,
-                    Debuff2 = 12,
-                    CrowControl = 13,
-                }
+            public enum CrowdControl
+            {
+                None = -1,
+                Stun = 300100,
+                Slow = 300101,
+                KnockBack = 300102,
+                Slience = 300103,
+                Blind = 300104,
+                Charm = 300105,
+                Flee = 300106,
+                Slee = 300107
             }
 
             public static class VFX
@@ -203,10 +206,8 @@ namespace STELLAREST_2D
                     Dodge,
                     Skull,
                     Dust,
-
-
-
                     Stun, // Stun = 500100,
+
                     KnockBack,
                     WindTrail,
                     Max = 999,
@@ -246,9 +247,9 @@ namespace STELLAREST_2D
                 public const string VFX_ENV_DAMAGE_TO_PLAYER_DODGE_FONT = "VFX_Env_Damage_To_Player_Dodge_Font.prefab";
                 public const string VFX_ENV_SKULL = "VFX_Env_Skull.prefab";
                 public const string VFX_ENV_DUST = "VFX_Env_Dust.prefab";
+                public const string VFX_ENV_STUN = "VFX_Env_Stun.prefab";
 
                 // TEMP
-                public const string VFX_ENV_WIND_TRAIL = "VFX_Env_WindTrail.prefab";
                 // =====================================================================================
                 // =====================================================================================
                 // =====================================================================================
@@ -330,6 +331,8 @@ namespace STELLAREST_2D
                 public const string INITIAL_CREATURE_DATA = "InitialCreatureData.json";
                 public const string CREATURE_STAT = "CreatureStatData.json";
                 public const string SKILL = "SkillData.json";
+                public const string CROWD_CONTROL = "CrowdControlData.json";
+
                 // public const string SEQUENCE_SKILL = "SequenceSkillData.json";
                 // public const string BUFF_SKILL = "BuffSkillData.json";
             }

@@ -58,6 +58,8 @@ namespace STELLAREST_2D
             return (dmgResult, isCritical);
         }
 
+        public bool TryCrowdControl(SkillBase from) => UnityEngine.Random.Range(0f, 1f) <= from.Data.CrowdControlRatio;
+
         private int _gem = 0;
         public event Action<int> OnGemCountChanged;
         public int Gem 

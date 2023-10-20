@@ -38,10 +38,7 @@ namespace STELLAREST_2D.Data
         public Dictionary<int, InitialCreatureData> MakeDict()
         {
             if (initialCreatures.Count == 0)
-            {
-                Debug.LogError("Failed to load CreatureData.json");
-                Debug.Break();
-            }
+                Utils.LogCritical(nameof(InitialCreatureDataLoader), nameof(MakeDict), "Failed to load InitialCreatureData.json.json");
 
             Dictionary<int, InitialCreatureData> dict = new Dictionary<int, InitialCreatureData>();
             foreach (var creature in initialCreatures)
@@ -78,10 +75,7 @@ namespace STELLAREST_2D.Data
         public Dictionary<int, CreatureStatData> MakeDict()
         {
             if (creatureStats.Count == 0)
-            {
-                Debug.LogError("Failed to load CreatureStatData.json");
-                Debug.Break();
-            }
+                Utils.LogCritical(nameof(CreatureStatDataLoader), nameof(MakeDict), "Failed to load CreatureStatData.json");
 
             Dictionary<int, CreatureStatData> dict = new Dictionary<int, CreatureStatData>();
             foreach (CreatureStatData stat in creatureStats)
@@ -125,8 +119,11 @@ namespace STELLAREST_2D.Data
         public int MaxPenetrationCount;
         public Define.TemplateIDs.VFX.ImpactHit VFX_ImpactHit;
         public bool IsImpactPointOnTarget;
-        public Define.TemplateIDs.Status.Skill ExplosionSkillTemplate;
         public Define.TemplateIDs.Status.Skill UnlockSkillTemplate;
+        public Define.TemplateIDs.CrowdControl CrowdControlType;
+        public float CrowdControlRatio;
+        public float CrowdControlDuration;
+        public float CrowdControlIntensity;
         public float CoolTime;
     }
 
@@ -138,10 +135,7 @@ namespace STELLAREST_2D.Data
         public Dictionary<int, SkillData> MakeDict()
         {
             if (skills.Count == 0)
-            {
-                Debug.LogError("Failed to load SkillData.json");
-                Debug.Break();
-            }
+                Utils.LogCritical(nameof(SkillDataLoader), nameof(MakeDict), "Failed to load SkillData.json");
 
             Dictionary<int, SkillData> dict = new Dictionary<int, SkillData>();
             foreach (SkillData skill in skills)
@@ -150,6 +144,35 @@ namespace STELLAREST_2D.Data
             return dict;
         }
     }
+
+    // =============================================================================================
+    // =============================================================================================
+    // [Serializable]
+    // public class CrowdControlData
+    // {
+    //     public int TemplateID;
+    //     public string Name;
+    //     public string Description;
+
+    // }
+
+    // [Serializable]
+    // public class CrowdControlDataLoader : ILoader<int, CrowdControlData>
+    // {
+    //     public List<CrowdControlData> crowdControls = new List<CrowdControlData>();
+
+    //     public Dictionary<int, CrowdControlData> MakeDict()
+    //     {
+    //         if (crowdControls.Count == 0)
+    //             Utils.LogCritical(nameof(CrowdControlDataLoader), nameof(MakeDict), "Failed to load CrowdControlData.json");
+
+    //         Dictionary<int, CrowdControlData> dict = new Dictionary<int, CrowdControlData>();
+    //         foreach (CrowdControlData crowdControl in crowdControls)
+    //             dict.Add(crowdControl.TemplateID, crowdControl);
+
+    //         return dict;
+    //     }
+    // }
 
     [Serializable]
     public class BuffSkillData

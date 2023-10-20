@@ -68,6 +68,8 @@ namespace STELLAREST_2D
                 Utils.Log("InValid MainTarget.");
         }
 
+        
+
         protected virtual IEnumerator CoStartAction()
         {
             Action = false;
@@ -196,6 +198,12 @@ namespace STELLAREST_2D
 
                 case Define.CreatureState.Skill:
                     RunSkill();
+                    break;
+
+                case Define.CreatureState.CrowdControl:
+                    this.SkillBook.DeactivateAll();
+                    MonsterAnimController.Idle();
+                    RendererController.MonsterHead.sprite = this.DeadHead;
                     break;
 
                 case Define.CreatureState.Dead:

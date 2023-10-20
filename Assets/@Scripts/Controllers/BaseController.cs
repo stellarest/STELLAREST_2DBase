@@ -1,13 +1,11 @@
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 
+using CrowdControlType = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
+
 namespace STELLAREST_2D
 {
-    // public interface IHitStatus
-    // {
-    //     public bool IsThrowingStarHit { get; set; }
-    //     public bool IsLazerBoltHit { get; set; }
-    // }
 
     public class BaseController : MonoBehaviour
     {
@@ -17,10 +15,29 @@ namespace STELLAREST_2D
 
         public virtual void Init(int templateID) { }
         protected virtual void SetSortingOrder() { }
-        // public void CoTrailEffect(BaseController followTarget) 
-        //             => StartCoroutine(Managers.Effect.CoTrailEffect(gameObject, followTarget));
-        public void EffectHit()
+
+        private Coroutine _coCrowdControl = null;
+        public void RequestCrowdControl(CrowdControlType ccType)
         {
+            switch (ccType)
+            {
+                case CrowdControlType.None:
+                    {
+                        if (_coCrowdControl != null)
+                            StopCoroutine(_coCrowdControl);
+                        
+                        _coCrowdControl = null;
+                    }
+                    return;
+
+                case CrowdControlType.Stun:
+                    {
+                        if (_coCrowdControl != null)
+                            StopCoroutine(_coCrowdControl);
+
+                    }
+                    break;
+            }
         }
     }
 }

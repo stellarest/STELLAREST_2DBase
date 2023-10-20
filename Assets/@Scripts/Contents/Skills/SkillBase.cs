@@ -77,7 +77,6 @@ namespace STELLAREST_2D
                     //particleStopped.RootTarget = particle.transform.parent.gameObject;
                     // Utils.LogBreak($"Particle Name : {particle.gameObject.name}");
                     // Utils.LogBreak($"Parent Name : {particle.transform.parent.name}");
-
                     particleStopped.SkillParticleRootTarget = particle.transform.parent.GetComponent<SkillBase>();
                     return;
                 }

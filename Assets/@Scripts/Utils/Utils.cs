@@ -96,8 +96,12 @@ namespace STELLAREST_2D
 
         public static bool IsArriveToTarget(Transform from, Transform target, float minDistance = 1f)
         {
+            // Because of Chicken's Skill Bug
+            // if (Managers.Stage.IsOutOfPos(from.position))
+            //     return true;
+
             if (Managers.Stage.IsOutOfPos(from.position))
-                return true;
+                return false;
 
             if ((target.transform.position - from.position).sqrMagnitude < minDistance)
                 return true;
@@ -300,7 +304,7 @@ namespace STELLAREST_2D
 
         public static bool IsArrowMaster(CreatureController cc) => cc?.Stat.TemplateID == (int)Define.TemplateIDs.Creatures.Player.Reina_ArrowMaster;
         public static bool IsElementalArcher(CreatureController cc) => cc?.Stat.TemplateID == (int)Define.TemplateIDs.Creatures.Player.Reina_ElementalArcher;
-
+        public static bool IsForestGuardian(CreatureController cc) => cc?.Stat.TemplateID == (int)Define.TemplateIDs.Creatures.Player.Reina_ForestGuardian;
 
 #if UNITY_EDITOR
         [Conditional("UNITY_EDITOR")]

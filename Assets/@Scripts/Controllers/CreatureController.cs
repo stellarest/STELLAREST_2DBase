@@ -4,6 +4,7 @@ using STELLAREST_2D.Data;
 using UnityEngine;
 
 using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
+using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
 
 namespace STELLAREST_2D
 {
@@ -237,10 +238,15 @@ namespace STELLAREST_2D
             Managers.VFX.Damage(this, dmgResult, isCritical);
             Managers.VFX.ImpactHit(from.Data.VFX_ImpactHit, this, from); // --> 메모리 문제 발생시, 크리티컬 쪽에서 스폰
 
+
             if (this.Stat.Hp <= 0 && this.IsDeadState == false)
                 this.CreatureState = Define.CreatureState.Dead;
             else
+            {
                 Managers.VFX.Material(Define.MaterialType.Hit, this);
+                if (Managers.Game.TryCrowdControl(from))
+                    Managers.CrowdControl.Apply(from, this);
+            }
         }
 
         protected virtual void OnVFX_Hit() { }
@@ -334,6 +340,19 @@ namespace STELLAREST_2D
         public virtual Vector3 LoadVFXEnvSpawnPos(VFXEnv templateOrigin) => this.Center.transform.position;
         public bool IsRun => this.CreatureState == Define.CreatureState.Run;
         public bool IsDeadState => (this.CreatureState == Define.CreatureState.Dead) && (this.Stat.Hp <= 0);
+
+        public void RequestCrowdControl(CrowdControl ccType, SkillBase from)
+        {
+            switch (ccType)
+            {
+                case CrowdControl.None:
+                    return;
+
+                case CrowdControl.Stun:
+                    StartCoroutine(Managers.CrowdControl.CoStun(this, from));
+                    break;
+            }
+        }
     }
 }
 

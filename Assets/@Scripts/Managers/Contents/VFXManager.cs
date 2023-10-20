@@ -6,7 +6,6 @@ using VFXMuzzle = STELLAREST_2D.Define.TemplateIDs.VFX.Muzzle;
 using VFXImpact = STELLAREST_2D.Define.TemplateIDs.VFX.ImpactHit;
 using VFXTrail = STELLAREST_2D.Define.TemplateIDs.VFX.Trail;
 using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
-using System.Runtime;
 
 namespace STELLAREST_2D
 {
@@ -223,8 +222,9 @@ namespace STELLAREST_2D
             }
         }
 
-        public void Environment(VFXEnv templateOrigin, CreatureController target)
+        public GameObject Environment(VFXEnv templateOrigin, CreatureController target)
         {
+            GameObject goVFX = null;
             Vector3 spawnPos = Vector3.zero;
             spawnPos = (target?.IsPlayer() == false && target.GetComponent<MonsterController>() != null)
                         ? target.GetComponent<MonsterController>().LoadVFXEnvSpawnPos(templateOrigin)
@@ -239,8 +239,8 @@ namespace STELLAREST_2D
             {
                 case VFXEnv.Spawn:
                     {
-                        GameObject go = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_ENV_SPAWN, null, true);
-                        go.transform.position = spawnPos;
+                        goVFX = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_ENV_SPAWN, null, true);
+                        goVFX.transform.position = spawnPos;
                     }
                     break;
 
@@ -253,18 +253,27 @@ namespace STELLAREST_2D
 
                 case VFXEnv.Skull:
                     {
-                        GameObject go = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_ENV_SKULL, null, true);
-                        go.transform.position = spawnPos;
+                        goVFX = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_ENV_SKULL, null, true);
+                        goVFX.transform.position = spawnPos;
                     }
                     break;
 
                 case VFXEnv.Dust:
                     {
-                        GameObject go = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_ENV_DUST, null, true);
-                        go.transform.position = spawnPos;
+                        goVFX = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_ENV_DUST, null, true);
+                        goVFX.transform.position = spawnPos;
+                    }
+                    break;
+
+                case VFXEnv.Stun:
+                    {
+                        goVFX = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_ENV_STUN, null, true);
+                        goVFX.transform.position = spawnPos;
                     }
                     break;
             }
+
+            return goVFX;
         }
     }
 }

@@ -33,11 +33,14 @@ namespace STELLAREST_2D
         }
 
         #region Contents
-        private CCManager _ccManager = new CCManager();
-        public static CCManager CC => Instance?._ccManager;
+        // private CCManager _ccManager = new CCManager();
+        // public static CCManager CC => Instance?._ccManager;
 
         // private EffectManager _effectManager = new EffectManager();
         // public static EffectManager Effect => Instance?._effectManager;
+
+        private CrowdControlManager _crowdControlManager = new CrowdControlManager();
+        public static CrowdControlManager CrowdControl => Instance?._crowdControlManager;
 
         private GameManager _gameManager = new GameManager();
         public static GameManager Game => Instance?._gameManager;

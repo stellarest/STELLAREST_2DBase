@@ -15,6 +15,8 @@ namespace STELLAREST_2D
         public Dictionary<int, Data.InitialCreatureData> CreaturesDict { get; private set; } = new Dictionary<int, Data.InitialCreatureData>();
         public Dictionary<int, Data.CreatureStatData> StatsDict { get; private set; } = new Dictionary<int, Data.CreatureStatData>();
         public Dictionary<int, Data.SkillData> SkillsDict { get; private set; } = new Dictionary<int, Data.SkillData>();
+
+        //public Dictionary<int, Data.CrowdControlData> CrowdControlDict { get; private set; } = new Dictionary<int, Data.CrowdControlData>();
         //public Dictionary<int, Data.SequenceSkillData> SequenceSkillsDict { get; private set; } = new Dictionary<int, Data.SequenceSkillData>();
         //public Dictionary<int, Data.BuffSkillData> BuffSkillsDict { get; private set; } = new Dictionary<int, Data.BuffSkillData>();
 
@@ -28,6 +30,9 @@ namespace STELLAREST_2D
 
             SkillsDict = LoadJson<Data.SkillDataLoader, int, Data.SkillData>
                             (Define.Labels.Data.SKILL).MakeDict();
+
+            // CrowdControlDict = LoadJson<Data.CrowdControlDataLoader, int, Data.CrowdControlData>
+            //                 (Define.Labels.Data.SKILL).MakeDict();
 
             // SequenceSkillsDict = LoadJson<Data.SequenceSkillDataLoader, int, Data.SequenceSkillData>
             //                 (Define.Labels.Data.SEQUENCE_SKILL).MakeDict();

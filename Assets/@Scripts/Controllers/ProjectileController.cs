@@ -172,15 +172,15 @@ namespace STELLAREST_2D
                     _coProjectile = StartCoroutine(CoRangedShot());
                     break;
                 case SkillTemplate.ElementalArcherMastery:
-                    // SR.enabled = true;
-                    // RigidBody.simulated = true;
-                    // HitCollider.enabled = true;
                     StartDestroy(_lifeTime);
-                    //_coProjectile = StartCoroutine(CoRangedShot());
                     if (this.Data.Grade < Define.InGameGrade.Ultimate)
                         _coProjectile = StartCoroutine(CoRangedShot());
                     else
                         _coProjectile = StartCoroutine(CoRangedGuidedShot());
+                    break;
+                case SkillTemplate.ForestGuardianMastery:
+                    StartDestroy(_lifeTime);
+                    _coProjectile = StartCoroutine(CoRangedShot());
                     break;
 
 
@@ -487,6 +487,15 @@ namespace STELLAREST_2D
                             Managers.Object.Despawn(this);
                         else
                             StopCoroutine(_coProjectile); // Projectile Stop 만,,,
+                    }
+                    break;
+
+                case SkillTemplate.ForestGuardianMastery:
+                    {
+                        if (this.Data.Grade == Define.InGameGrade.Default)
+                            Managers.Object.Despawn(this);
+                        else
+                            StopCoroutine(_coProjectile);
                     }
                     break;
             }
