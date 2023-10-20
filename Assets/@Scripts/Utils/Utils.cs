@@ -116,9 +116,9 @@ namespace STELLAREST_2D
             return false;
         }
 
-        public static GameObject GetClosestTarget<T>(Vector3 from) where T : CreatureController
+        public static CreatureController GetClosestTarget<T>(Vector3 from) where T : CreatureController
         {
-            GameObject target = null;
+            CreatureController target = null;
             System.Type type = typeof(T);
             if (type == typeof(MonsterController))
             {
@@ -135,7 +135,7 @@ namespace STELLAREST_2D
                         if (distance < closestDist)
                         {
                             closestDist = distance;
-                            target = toList[i].gameObject;
+                            target = toList[i];
                         }
                     }
                 }

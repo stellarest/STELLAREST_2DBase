@@ -30,7 +30,6 @@ namespace STELLAREST_2D
                 RigidBody = GetComponent<Rigidbody2D>();
                 HitCollider = GetComponent<Collider2D>();
                 base.InitClone(ownerFromOrigin, dataFromOrigin);
-
                 if (Utils.IsArrowMaster(ownerFromOrigin))
                     InitArrowMasterMastery(ownerFromOrigin, dataFromOrigin);
                 else if (Utils.IsElementalArcher(ownerFromOrigin))
@@ -105,7 +104,7 @@ namespace STELLAREST_2D
             {
                 _childExplosion.gameObject.SetActive(true);
                 SR.enabled = false;
-                HitCollider.enabled = false;
+                //HitCollider.enabled = false;
             }
         }
 

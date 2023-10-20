@@ -82,7 +82,7 @@ namespace STELLAREST_2D
                 }
 
                 // --------------------------------------------------------------------------------------------------
-                // ***** Projectile is must be skill. But, skill is not sometimes projectil. It's just a skill. *****
+                // ***** Projectile is must be a skill. But, sometimes skill is not a projectile. It's just a skill. *****
                 // --------------------------------------------------------------------------------------------------
                 case Define.ObjectType.Skill:
                     {

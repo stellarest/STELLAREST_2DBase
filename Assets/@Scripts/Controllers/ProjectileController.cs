@@ -172,15 +172,15 @@ namespace STELLAREST_2D
                     _coProjectile = StartCoroutine(CoRangedShot());
                     break;
                 case SkillTemplate.ElementalArcherMastery:
-                    SR.enabled = true;
-                    RigidBody.simulated = true;
-                    HitCollider.enabled = true;
+                    // SR.enabled = true;
+                    // RigidBody.simulated = true;
+                    // HitCollider.enabled = true;
                     StartDestroy(_lifeTime);
-                    _coProjectile = StartCoroutine(CoRangedShot());
-                    // if (this.Data.Grade < Define.InGameGrade.Ultimate)
-                    //     _coProjectile = StartCoroutine(CoRangedShot());
-                    // else
-                    //     _coProjectile = StartCoroutine(CoRangedGuidedShot()); // TEMP
+                    //_coProjectile = StartCoroutine(CoRangedShot());
+                    if (this.Data.Grade < Define.InGameGrade.Ultimate)
+                        _coProjectile = StartCoroutine(CoRangedShot());
+                    else
+                        _coProjectile = StartCoroutine(CoRangedGuidedShot());
                     break;
 
 
@@ -241,20 +241,40 @@ namespace STELLAREST_2D
             float degrees = Mathf.Atan2(_shootDir.y, _shootDir.x) * Mathf.Rad2Deg;
             this.transform.rotation = Quaternion.Euler(0, 0, degrees);
             this.transform.localScale = Vector3.one;
-
             while (true)
             {
-                float movementSpeed = Owner.Stat.MovementSpeed + this._movementSpeed;
                 this.transform.position += _shootDir * this._movementSpeed * Time.deltaTime;
                 yield return null;
             }
         }
 
+        private const float RANGED_GUIDED_SHOT_ROT_SPEED = 80f;
         private IEnumerator CoRangedGuidedShot()
         {
-            Vector3 originShootDir = _shootDir;
-            GameObject target = Utils.GetClosestTarget<MonsterController>(this.Owner.transform.position);
-            yield return null;
+            float degrees = Mathf.Atan2(_shootDir.y, _shootDir.x) * Mathf.Rad2Deg;
+            this.transform.rotation = Quaternion.Euler(0, 0, degrees);
+            this.transform.localScale = Vector3.one;
+            while (true)
+            {
+                CreatureController target = Utils.GetClosestTarget<MonsterController>(this.transform.position);
+                if (target.IsValid() && target.IsDeadState == false)
+                {
+                    _shootDir = (target.transform.position - this.transform.position).normalized;
+                    degrees = Mathf.Atan2(_shootDir.y, _shootDir.x) * Mathf.Rad2Deg;
+                    this.transform.rotation = Quaternion.Slerp(this.transform.rotation, Quaternion.Euler(0, 0, degrees), Time.deltaTime * RANGED_GUIDED_SHOT_ROT_SPEED);
+
+                    if (target.IsDeadState)
+                        Utils.LogBreak("BREAK.");
+                }
+                else
+                    this.transform.rotation =  Quaternion.Euler(0, 0, Mathf.Atan2(_shootDir.y, _shootDir.x) * Mathf.Rad2Deg);
+  
+                this.transform.position += _shootDir * this._movementSpeed * Time.deltaTime;
+                if (HitCollider.enabled == false)
+                    HitCollider.enabled = true;
+
+                yield return null;
+            }
         }
 
         private readonly float Sensitivity = 0.6f;

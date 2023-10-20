@@ -112,10 +112,10 @@ namespace STELLAREST_2D
                 if (this.Action == false)
                     return;
 
-                // if (this.CreatureState != Define.CreatureState.Run)
-                //     return;
-                // else if (this.MainTarget != null && this.MainTarget.IsPlayer())
-                //     MoveToTarget(MainTarget, this.Stat.CollectRange * this.Stat.CollectRange);
+                if (this.CreatureState != Define.CreatureState.Run)
+                    return;
+                else if (this.MainTarget != null && this.MainTarget.IsPlayer())
+                    MoveToTarget(MainTarget, this.Stat.CollectRange * this.Stat.CollectRange);
             }
         }
 

@@ -6,8 +6,8 @@ namespace STELLAREST_2D
 {
     public class  SpawningPool : MonoBehaviour
     {
-        private float _spawnInterval = 1f; // 이것도 나중에 데이터 시트로 뺴야함. 무조건.
-        private const int MaxMonsterCount = 3; // 나중에 데이터 시트로 빼야함
+        private float _spawnInterval = 3f; // 이것도 나중에 데이터 시트로 뺴야함. 무조건.
+        private const int MAX_MONSTER_COUNT = 8; // 나중에 데이터 시트로 빼야함
 
         private Coroutine _coUpdateSpawningPool;
         public bool Stopped { get; set; } = false;
@@ -34,7 +34,7 @@ namespace STELLAREST_2D
                 return;
 
             int monsterCount = Managers.Object.Monsters.Count;
-            if (monsterCount >= MaxMonsterCount)
+            if (monsterCount >= MAX_MONSTER_COUNT)
                 return;
 
             // TEMP : DataID for spawning pos
