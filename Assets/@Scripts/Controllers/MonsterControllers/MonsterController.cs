@@ -13,15 +13,12 @@ namespace STELLAREST_2D
     {
         public Define.MonsterType MonsterType { get; set; } = Define.MonsterType.None;
         public MonsterAnimationController MonsterAnimController { get; private set; } = null;
-        public bool OnStartAction { get; protected set; } = false;
-        private Coroutine _coIdleToAction = null;
 
         public override float SpeedModifier 
         { 
             get => base.SpeedModifier;
             set
             {
-                //Utils.LogBreak("SET SPEED MODIFIER IN MONSTER CONTROLLER.");
                 base.SpeedModifier = value;
                 MonsterAnimController.SetAnimationSpeed(base.SpeedModifier);
             }
@@ -29,7 +26,6 @@ namespace STELLAREST_2D
 
         public override void ResetSpeedModifier()
         {
-            //Utils.LogBreak("RESET SPEED MODIFIER IN MONSTER CONTROLLER.");
             base.ResetSpeedModifier();
             MonsterAnimController.SetAnimationSpeed(base.SpeedModifier);
         }
@@ -71,11 +67,13 @@ namespace STELLAREST_2D
         {
             this.RendererController.StartGame();
             InitCreatureStat(templateID);
-            ResetAllHitFrom();
+            ClearCrowdControlStates();
+            ClearHitFroms();
 
-            if (_coIdleToAction != null)
-                StopCoroutine(CoIdleToAction());
-            _coIdleToAction = StartCoroutine(CoIdleToAction());
+            StartIdleToAction();
+            // if (_coIdleToAction != null)
+            //     StopCoroutine(CoIdleToAction());
+            // _coIdleToAction = StartCoroutine(CoIdleToAction());
 
             if (Managers.Game.Player != null)
             {
@@ -87,7 +85,7 @@ namespace STELLAREST_2D
                 Utils.Log("InValid MainTarget.");
         }
 
-        protected IEnumerator CoIdleToAction(bool isOnActiveImmediately = false)
+        protected override IEnumerator CoIdleToAction(bool isOnActiveImmediately = false)
         {
             OnStartAction = false;
             CreatureState = Define.CreatureState.Idle;
@@ -96,10 +94,6 @@ namespace STELLAREST_2D
             this.HitCollider.enabled = true;
             if (isOnActiveImmediately)
             {
-                if (CreatureState == Define.CreatureState.CC_Stun)
-                    yield break;
-
-                Utils.Log("IS ON ACTIVE IMMEDIATELY.");
                 StartAction();
                 yield break;
             }
@@ -108,9 +102,6 @@ namespace STELLAREST_2D
             float desiredTime = LoadIdleToActionTime();
             while (true)
             {
-                if (CreatureState == Define.CreatureState.CC_Stun)
-                    yield break;
-
                 delta += Time.deltaTime;
                 float percent = delta / desiredTime;
                 if (percent > 1f)
@@ -123,34 +114,19 @@ namespace STELLAREST_2D
             }
         }
 
-        public void StartIdleToAction(bool isOnActiveImmediately = false)
-        {
-            if (_coIdleToAction != null)
-                StopCoroutine(_coIdleToAction);
-
-            _coIdleToAction = StartCoroutine(CoIdleToAction(isOnActiveImmediately));
-        }
-
-        protected virtual void StartAction() { }
-
         // TEMP
-        public void Stop()
-        {
-            this.CreatureState = Define.CreatureState.Idle;
-            //StartCoroutine(CoStartAction());
-        }
-
-        /*
-            public enum CreatureState { Idle = 0, Walk = 1, Run = 2, Skill = 3, 
-            Invincible = 4, CC_Stun = 5, CC_Slow = 6, CC_KnockBack = 7, Dead = 999 }
-        */
+        // public void Stop()
+        // {
+        //     this.CreatureState = Define.CreatureState.Idle;
+        //     //StartCoroutine(CoStartAction());
+        // }
 
         private bool CanEnterRunState()
         {
             if (this.OnStartAction == false)
                 return false;
 
-            if (IsIdleState || IsSkillState || IsCCStunState || IsDeadState)
+            if (IsIdleState || IsSkillState || IsDeadState)
                 return false;
 
             return true;
@@ -244,54 +220,10 @@ namespace STELLAREST_2D
                     RunSkill();
                     break;
 
-                case Define.CreatureState.CC_Stun:
-                    this.SkillBook.DeactivateAll();
-                    MonsterAnimController.Idle();
-                    RendererController.MonsterHead.sprite = this.DeadHead;
-                    break;
-
-                case Define.CreatureState.CC_Slow:
-                    MonsterAnimController.SetAnimationSpeed(0.25f);
-                    break;
-
                 case Define.CreatureState.Dead:
                     OnDead();
                     break;
             }
-        }
-
-        protected virtual float LoadIdleToActionTime() => 1f;
-
-        public void CoStartReadyToAction(bool isSpawned = true)
-                => StartCoroutine(CoReadyToAction(isSpawned));
-
-        private IEnumerator CoReadyToAction(bool isSpawned = true)
-        {
-            if (CreatureState != Define.CreatureState.Idle)
-                CreatureState = Define.CreatureState.Idle;
-
-            float delta = 0f;
-            float percent = 0f;
-            //float desiredTime = Random.Range(CharaData.MinReadyToActionTime, CharaData.MaxReadyToActionTime);
-            float desiredTime = UnityEngine.Random.Range(3f, 4f);
-
-            if (isSpawned == false)
-                desiredTime = 0.5f;
-
-            while (percent < 1f)
-            {
-                delta += Time.deltaTime;
-                percent = delta / desiredTime;
-                yield return null;
-            }
-
-            CreatureState = Define.CreatureState.Run;
-            //if (_ccStates[(int)Define.CCType.Stun] == false && _ccStates[(int)Define.CCType.None])
-            // CreatureState = Define.CreatureState.Run;
-
-            // LEGACY
-            // if (CCStatus != Define.CCStatus.Stun)
-            //     CreatureState = Define.CreatureState.Run;
         }
 
         public bool LockFlip { get; set; } = false;
@@ -321,6 +253,10 @@ namespace STELLAREST_2D
 
             base.OnDamaged(attacker, from);
         }
+
+        // public void SetDeadHead() => RendererController.MonsterHead.sprite = this.DeadHead;
+        // public void SetDefaultHead() => RendererController.MonsterHead.sprite = this.DefaultHead;
+
 
         protected override void OnDead()
         {

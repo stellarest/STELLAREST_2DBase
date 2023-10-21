@@ -94,7 +94,7 @@ namespace STELLAREST_2D
             if (cc?.IsMonster() == true)
             {
                 Managers.Sprite.SetMonsterFace(mc, Define.MonsterFace.Normal);
-                mc.CoStartReadyToAction(false);
+                //mc.CoStartReadyToAction(false);
             }
         }
 

@@ -31,8 +31,7 @@ namespace STELLAREST_2D
         public enum StageType { Normal, MiddleBoss, Boss, }
         // public enum CCStatus { None, Stun, KnockBack, Poisoned, Frozen, Cursed, Confused, Silent, Max }
         public enum SkillType { None = -1, Repeat = 1, Sequence }
-        public enum CreatureState { Idle = 0, Walk = 1, Run = 2, Skill = 3, 
-            Invincible = 4, CC_Stun = 5, CC_Slow = 6, CC_KnockBack = 7, Dead = 999 }
+        public enum CreatureState { Idle = 0, Walk = 1, Run = 2, Skill = 3, Invincible = 4, Dead = 999 }
         //public enum InGameGrade { Normal = 1, Elite = 2, Ultimate = 3 }
         public enum CollisionLayers { Default = 0, PlayerBody = 6, PlayerAttack = 7, MonsterBody = 8, MonsterAttack = 9 }
         public enum InitialStatRatioGrade { None = 0, Low = 5, Average = 15, High = 20 }
@@ -176,6 +175,7 @@ namespace STELLAREST_2D
                 Charm = 300105,
                 Flee = 300106,
                 Sleep = 300107,
+                MaxCount = 8
             }
 
             public static class VFX

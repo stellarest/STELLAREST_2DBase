@@ -378,7 +378,7 @@ namespace STELLAREST_2D
                 PlayerFace.mouthSPR.color = container.MouthColor;
             }
             else
-                MonsterHead.sprite = OwnerAsMonsterController.AngryHead;
+                MonsterHead.sprite = OwnerAsMonsterController.DeadHead;
         }
 
 #endregion

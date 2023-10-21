@@ -14,6 +14,13 @@ namespace STELLAREST_2D
         public bool IsHitFrom_LazerBolt { get; set; }
     }
 
+    [System.Serializable]
+    public class CrowdControlState
+    {
+        [field:SerializeField] public string Tag { get; set; } = string.Empty;
+        [field:SerializeField] public bool IsOn { get; set; } = false;
+    }
+
     public class CreatureController : BaseController, IHitFrom
     {
         // +++ BASE CHILD OBJECTS +++
@@ -44,9 +51,17 @@ namespace STELLAREST_2D
         public void UpdateCreatureStat(int templateID) 
             => this.Stat = Stat.UpgradeStat(this, Stat, templateID);
 
+        // +++ CROWD CONTROL +++
         public const float ORIGIN_SPEED_MODIFIER = 1f;
         public virtual float SpeedModifier { get; set; } = 1f;
         public virtual void ResetSpeedModifier() => SpeedModifier = ORIGIN_SPEED_MODIFIER;
+        private const int FIRST_CROWD_CONTROL_ID = 300100;
+        [SerializeField] private CrowdControlState[] _ccStates = null;
+        public bool this[CrowdControl crowdControlType]
+        {
+            get => _ccStates[(int)crowdControlType % FIRST_CROWD_CONTROL_ID].IsOn;
+            set => _ccStates[(int)crowdControlType % FIRST_CROWD_CONTROL_ID].IsOn = value;
+        }
 
         // +++ SKILLS +++
         public SkillBook SkillBook { get; protected set; } = null;
@@ -79,6 +94,7 @@ namespace STELLAREST_2D
 
             InitChildObject();
             InitBaseComponents();
+            InitCrowdControlStates();
 
             InitCreatureStat(creatureData);
             InitCreatureSkill(creatureData);
@@ -130,8 +146,19 @@ namespace STELLAREST_2D
             }
         }
 
-        protected virtual void InitCreatureStat(Data.InitialCreatureData creatureData) 
+        protected virtual void InitCreatureStat(Data.InitialCreatureData creatureData)
             => Stat = new CreatureStat(this, creatureData);
+
+        private void InitCrowdControlStates()
+        {
+            CrowdControl ccState = CrowdControl.Stun;
+            _ccStates = new CrowdControlState[(int)CrowdControl.MaxCount];
+            for (int i = 0; i < (int)CrowdControl.MaxCount; ++i, ++ccState)
+            {
+                _ccStates[i] = new CrowdControlState();
+                _ccStates[i].Tag = ccState.ToString();
+            }
+        }
 
         protected void InitCreatureStat(int templateID)
         {
@@ -155,6 +182,21 @@ namespace STELLAREST_2D
         }
 
         protected virtual void StartGame(int templateID) { }
+
+
+        public bool OnStartAction { get; protected set; } = false;
+        protected Coroutine _coIdleToAction = null;
+        public virtual void StartIdleToAction(bool isOnActiveImmediately = false)
+        {
+            if (_coIdleToAction != null)
+                StopCoroutine(_coIdleToAction);
+
+            _coIdleToAction = StartCoroutine(CoIdleToAction(isOnActiveImmediately));
+        }
+        protected virtual void StartAction() { }
+        protected virtual float LoadIdleToActionTime() => 1f;
+        protected virtual IEnumerator CoIdleToAction(bool isOnActiveImmediately = false) { yield return null; }
+
 
         private void LoadRepeatSkills(Data.InitialCreatureData creatureData)
         {
@@ -284,7 +326,7 @@ namespace STELLAREST_2D
         public bool IsHitFrom_LazerBolt { get; set; } = false;
 
         // FOR RESPAWN OR ANOTHER
-        public void ResetAllHitFrom()
+        public void ClearHitFroms()
         {
             this.IsHitFrom_ThrowingStar = false;
             this.IsHitFrom_LazerBolt = false;
@@ -349,26 +391,43 @@ namespace STELLAREST_2D
         public bool IsIdleState => this.CreatureState == Define.CreatureState.Idle && (this.Stat.Hp > 0);
         public bool IsRunState => this.CreatureState == Define.CreatureState.Run && (this.Stat.Hp > 0);
         public bool IsSkillState => this.CreatureState == Define.CreatureState.Skill && (this.Stat.Hp > 0);
-        public bool IsCCStunState => this.CreatureState == Define.CreatureState.CC_Stun && (this.Stat.Hp > 0);
-        public bool IsCCSlowState => this.CreatureState == Define.CreatureState.CC_Slow && (this.Stat.Hp > 0);
-        public bool IsCCKnockBackState => this.CreatureState == Define.CreatureState.CC_KnockBack && (this.Stat.Hp > 0);
         public bool IsDeadState => this.CreatureState == Define.CreatureState.Dead && (this.Stat.Hp <= 0);
 
-        public void RequestCrowdControl(CrowdControl ccType, SkillBase from)
+        public void SetDeadHead() => this.RendererController.OnFaceDeadHandler();
+        public void SetDefaultHead() => this.RendererController.OnFaceDefaultHandler();
+
+        public void RequestCrowdControl(SkillBase from)
         {
+            CrowdControl ccType = from.Data.CrowdControlType;
             switch (ccType)
             {
                 case CrowdControl.None:
                     return;
 
                 case CrowdControl.Stun:
-                    StartCoroutine(Managers.CrowdControl.CoStun(this, from));
+                    {
+                        if (this[ccType] == false)
+                            StartCoroutine(Managers.CrowdControl.CoStun(this, from));
+                        else
+                            Utils.Log("Already Stun,,,");
+                    }
                     break;
 
                 case CrowdControl.Slow:
-                    StartCoroutine(Managers.CrowdControl.CoSlow(this, from));
+                    {
+                        if (this[ccType] == false)
+                            StartCoroutine(Managers.CrowdControl.CoSlow(this, from));
+                        else
+                            Utils.Log("Already Slow,,,");
+                    }
                     break;
             }
+        }
+
+        public void ClearCrowdControlStates()
+        {
+            for (int i = 0; i < _ccStates.Length; ++i)
+                _ccStates[i].IsOn = false;
         }
     }
 }
@@ -513,6 +572,7 @@ namespace STELLAREST_2D
 //     this.Buff = buff;
 // }
 
+// Indexer
 // public bool this[Define.TemplateIDs.CCType cc]
 // {
 //     get => _ccStates[(int)cc];
