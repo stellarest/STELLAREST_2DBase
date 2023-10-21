@@ -63,7 +63,7 @@ namespace STELLAREST_2D
         [field: SerializeField] public float Armor { get; private set; }
         [field: SerializeField] public float Dodge { get; private set; }
 
-        [field: SerializeField] public float MovementSpeed { get; private set; }
+        [field: SerializeField] public float MovementSpeed { get; set; }
         [field: SerializeField] public float CollectRange { get; private set; }
         [field: SerializeField] public float Luck { get; private set; } // -> Large Gem 드롭확률 증가, 희귀한 패시브 스킬(스탯) 등장 확률 증가
         [field: SerializeField] public float TotalExp { get; private set; }

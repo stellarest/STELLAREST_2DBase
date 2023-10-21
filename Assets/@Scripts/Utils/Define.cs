@@ -31,7 +31,8 @@ namespace STELLAREST_2D
         public enum StageType { Normal, MiddleBoss, Boss, }
         // public enum CCStatus { None, Stun, KnockBack, Poisoned, Frozen, Cursed, Confused, Silent, Max }
         public enum SkillType { None = -1, Repeat = 1, Sequence }
-        public enum CreatureState { Idle = 0, Walk = 1, Run = 2, Skill = 3, Invincible = 4, CrowdControl = 5, Dead = 9 }
+        public enum CreatureState { Idle = 0, Walk = 1, Run = 2, Skill = 3, 
+            Invincible = 4, CC_Stun = 5, CC_Slow = 6, CC_KnockBack = 7, Dead = 999 }
         //public enum InGameGrade { Normal = 1, Elite = 2, Ultimate = 3 }
         public enum CollisionLayers { Default = 0, PlayerBody = 6, PlayerAttack = 7, MonsterBody = 8, MonsterAttack = 9 }
         public enum InitialStatRatioGrade { None = 0, Low = 5, Average = 15, High = 20 }
@@ -174,7 +175,7 @@ namespace STELLAREST_2D
                 Blind = 300104,
                 Charm = 300105,
                 Flee = 300106,
-                Slee = 300107
+                Sleep = 300107,
             }
 
             public static class VFX
@@ -206,7 +207,8 @@ namespace STELLAREST_2D
                     Dodge,
                     Skull,
                     Dust,
-                    Stun, // Stun = 500100,
+                    Stun,
+                    Slow,
 
                     KnockBack,
                     WindTrail,
@@ -248,6 +250,7 @@ namespace STELLAREST_2D
                 public const string VFX_ENV_SKULL = "VFX_Env_Skull.prefab";
                 public const string VFX_ENV_DUST = "VFX_Env_Dust.prefab";
                 public const string VFX_ENV_STUN = "VFX_Env_Stun.prefab";
+                public const string VFX_ENV_SLOW = "VFX_Env_Slow.prefab";
 
                 // TEMP
                 // =====================================================================================

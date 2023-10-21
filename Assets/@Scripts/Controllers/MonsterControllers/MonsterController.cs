@@ -5,9 +5,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
-
 using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
-using UnityEditor.Build.Pipeline;
 
 namespace STELLAREST_2D
 {
@@ -15,8 +13,26 @@ namespace STELLAREST_2D
     {
         public Define.MonsterType MonsterType { get; set; } = Define.MonsterType.None;
         public MonsterAnimationController MonsterAnimController { get; private set; } = null;
-        public bool Action { get; protected set; } = false;
-        private Coroutine _coAction = null;
+        public bool OnStartAction { get; protected set; } = false;
+        private Coroutine _coIdleToAction = null;
+
+        public override float SpeedModifier 
+        { 
+            get => base.SpeedModifier;
+            set
+            {
+                //Utils.LogBreak("SET SPEED MODIFIER IN MONSTER CONTROLLER.");
+                base.SpeedModifier = value;
+                MonsterAnimController.SetAnimationSpeed(base.SpeedModifier);
+            }
+        }
+
+        public override void ResetSpeedModifier()
+        {
+            //Utils.LogBreak("RESET SPEED MODIFIER IN MONSTER CONTROLLER.");
+            base.ResetSpeedModifier();
+            MonsterAnimController.SetAnimationSpeed(base.SpeedModifier);
+        }
 
         [SerializeField] private Sprite _defaultHead = null;
         public Sprite DefaultHead => _defaultHead;
@@ -56,7 +72,10 @@ namespace STELLAREST_2D
             this.RendererController.StartGame();
             InitCreatureStat(templateID);
             ResetAllHitFrom();
-            _coAction = StartCoroutine(CoStartAction());
+
+            if (_coIdleToAction != null)
+                StopCoroutine(CoIdleToAction());
+            _coIdleToAction = StartCoroutine(CoIdleToAction());
 
             if (Managers.Game.Player != null)
             {
@@ -68,25 +87,34 @@ namespace STELLAREST_2D
                 Utils.Log("InValid MainTarget.");
         }
 
-        
-
-        protected virtual IEnumerator CoStartAction()
+        protected IEnumerator CoIdleToAction(bool isOnActiveImmediately = false)
         {
-            Action = false;
+            OnStartAction = false;
             CreatureState = Define.CreatureState.Idle;
 
             this.RigidBody.simulated = true;
             this.HitCollider.enabled = true;
+            if (isOnActiveImmediately)
+            {
+                if (CreatureState == Define.CreatureState.CC_Stun)
+                    yield break;
+
+                Utils.Log("IS ON ACTIVE IMMEDIATELY.");
+                StartAction();
+                yield break;
+            }
 
             float delta = 0f;
-            float desiredTime = LoadActionTime();
+            float desiredTime = LoadIdleToActionTime();
             while (true)
             {
+                if (CreatureState == Define.CreatureState.CC_Stun)
+                    yield break;
+
                 delta += Time.deltaTime;
                 float percent = delta / desiredTime;
                 if (percent > 1f)
                 {
-                    Action = true;
                     StartAction();
                     yield break;
                 }
@@ -95,30 +123,46 @@ namespace STELLAREST_2D
             }
         }
 
+        public void StartIdleToAction(bool isOnActiveImmediately = false)
+        {
+            if (_coIdleToAction != null)
+                StopCoroutine(_coIdleToAction);
+
+            _coIdleToAction = StartCoroutine(CoIdleToAction(isOnActiveImmediately));
+        }
+
         protected virtual void StartAction() { }
 
         // TEMP
         public void Stop()
         {
             this.CreatureState = Define.CreatureState.Idle;
-            StartCoroutine(CoStartAction());
+            //StartCoroutine(CoStartAction());
+        }
+
+        /*
+            public enum CreatureState { Idle = 0, Walk = 1, Run = 2, Skill = 3, 
+            Invincible = 4, CC_Stun = 5, CC_Slow = 6, CC_KnockBack = 7, Dead = 999 }
+        */
+
+        private bool CanEnterRunState()
+        {
+            if (this.OnStartAction == false)
+                return false;
+
+            if (IsIdleState || IsSkillState || IsCCStunState || IsDeadState)
+                return false;
+
+            return true;
         }
 
         private void FixedUpdate()
         {
+            if (this.CanEnterRunState() == false)
+                return;
+
             if (this.MainTarget != null)
-            {
-                if (this.IsDeadState)
-                    return;
-
-                if (this.Action == false)
-                    return;
-
-                if (this.CreatureState != Define.CreatureState.Run)
-                    return;
-                else if (this.MainTarget != null && this.MainTarget.IsPlayer())
-                    MoveToTarget(MainTarget, this.Stat.CollectRange * this.Stat.CollectRange);
-            }
+                MoveToTarget(MainTarget, this.Stat.CollectRange * this.Stat.CollectRange);
         }
 
         public void StartMovementToRandomPoint()
@@ -156,7 +200,7 @@ namespace STELLAREST_2D
             if (this.LockFlip == false)
                 Flip(toTargetDir.x > 0 ? -1 : 1);
 
-            Vector3 toTargetMovement = this.transform.position + (toTargetDir.normalized * Stat.MovementSpeed * Time.deltaTime);
+            Vector3 toTargetMovement = this.transform.position + (toTargetDir.normalized * (Stat.MovementSpeed * this.SpeedModifier) * Time.deltaTime);
             this.RigidBody.MovePosition(toTargetMovement);
             if (Utils.IsArriveToTarget(this.Center, this.MainTarget.transform, minDistance))
             {
@@ -200,10 +244,14 @@ namespace STELLAREST_2D
                     RunSkill();
                     break;
 
-                case Define.CreatureState.CrowdControl:
+                case Define.CreatureState.CC_Stun:
                     this.SkillBook.DeactivateAll();
                     MonsterAnimController.Idle();
                     RendererController.MonsterHead.sprite = this.DeadHead;
+                    break;
+
+                case Define.CreatureState.CC_Slow:
+                    MonsterAnimController.SetAnimationSpeed(0.25f);
                     break;
 
                 case Define.CreatureState.Dead:
@@ -212,7 +260,7 @@ namespace STELLAREST_2D
             }
         }
 
-        protected virtual float LoadActionTime() => -1f;
+        protected virtual float LoadIdleToActionTime() => 1f;
 
         public void CoStartReadyToAction(bool isSpawned = true)
                 => StartCoroutine(CoReadyToAction(isSpawned));
@@ -263,12 +311,13 @@ namespace STELLAREST_2D
 
         public override void OnDamaged(CreatureController attacker, SkillBase from)
         {
-            if (this.Action == false)
-            {
-                StopCoroutine(_coAction);
-                _coAction = null;
-                StartAction();
-            }
+            // 한대 맞았을 때 바로 움직이게 했던 것임
+            // if (this.OnStartAction == false)
+            // {
+            //     StopCoroutine(_coIdleToAction);
+            //     _coIdleToAction = null;
+            //     StartAction();
+            // }
 
             base.OnDamaged(attacker, from);
         }
@@ -302,6 +351,18 @@ namespace STELLAREST_2D
 
 // -------------------------------------------------------------------------------------
 // -------------------------------------------------------------------------------------
+// if (this.IsDeadState)
+//     return;
+
+// if (this.OnStartAction == false)
+//     return;
+
+// // TEMP : this.CreatureState != Define.CreatureState.CC_Slow
+// if (this.CreatureState != Define.CreatureState.Run)
+//     return;
+// else if (this.MainTarget != null && this.MainTarget.IsPlayer())
+//     MoveToTarget(MainTarget, this.Stat.CollectRange * this.Stat.CollectRange);
+
 // public bool IsThrowingStarHit { get; set; } = false;
 // public bool IsLazerBoltHit { get; set; } = false;
 // Run State

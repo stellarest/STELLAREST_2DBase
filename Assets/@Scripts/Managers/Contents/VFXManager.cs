@@ -133,8 +133,15 @@ namespace STELLAREST_2D
                 case VFXMuzzle.Bow:
                     GameObject go = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_MUZZLE_BOW, null, true);
                     go.transform.position = target.FireSocketPosition;
-                    if (go.GetComponent<MovementToOwner>().Owner == null)
-                        go.GetComponent<MovementToOwner>().Owner = target;
+                    MovementToOwner movementToOwner = go.GetComponent<MovementToOwner>();
+                    movementToOwner.IsOnFireSocket = true;
+                    movementToOwner.Owner = target;
+
+                    // if (go.GetComponent<MovementToOwner>().Owner == null)
+                    // {
+                    //     go.GetComponent<MovementToOwner>().Owner = target;
+                    //     go.GetComponent<MovementToOwner>().Owner = target;
+                    // }
                     break;
             }
         }
@@ -225,6 +232,12 @@ namespace STELLAREST_2D
         public GameObject Environment(VFXEnv templateOrigin, CreatureController target)
         {
             GameObject goVFX = null;
+
+            Vector3 spawnScale = Vector3.one;
+            spawnScale = (target?.IsPlayer() == false && target.GetComponent<MonsterController>() != null)
+                        ? target.GetComponent<MonsterController>().LoadVFXEnvSpawnScale(templateOrigin)
+                        : target.GetComponent<PlayerController>().LoadVFXEnvSpawnScale(templateOrigin);            
+
             Vector3 spawnPos = Vector3.zero;
             spawnPos = (target?.IsPlayer() == false && target.GetComponent<MonsterController>() != null)
                         ? target.GetComponent<MonsterController>().LoadVFXEnvSpawnPos(templateOrigin)
@@ -234,12 +247,12 @@ namespace STELLAREST_2D
             if (spawnPos == Vector3.zero)
                 Utils.LogCritical(nameof(VFXManager), nameof(Environment), "Failed to load VFX Env Spawn Pos.");
 #endif
-
             switch (templateOrigin)
             {
                 case VFXEnv.Spawn:
                     {
                         goVFX = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_ENV_SPAWN, null, true);
+                        goVFX.transform.localScale = spawnScale;
                         goVFX.transform.position = spawnPos;
                     }
                     break;
@@ -254,6 +267,7 @@ namespace STELLAREST_2D
                 case VFXEnv.Skull:
                     {
                         goVFX = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_ENV_SKULL, null, true);
+                        goVFX.transform.localScale = spawnScale;
                         goVFX.transform.position = spawnPos;
                     }
                     break;
@@ -261,6 +275,7 @@ namespace STELLAREST_2D
                 case VFXEnv.Dust:
                     {
                         goVFX = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_ENV_DUST, null, true);
+                        goVFX.transform.localScale = spawnScale;
                         goVFX.transform.position = spawnPos;
                     }
                     break;
@@ -268,6 +283,15 @@ namespace STELLAREST_2D
                 case VFXEnv.Stun:
                     {
                         goVFX = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_ENV_STUN, null, true);
+                        goVFX.transform.localScale = spawnScale;
+                        goVFX.transform.position = spawnPos;
+                    }
+                    break;
+
+                case VFXEnv.Slow:
+                    {
+                        goVFX = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_ENV_SLOW, null, true);
+                        goVFX.transform.localScale = spawnScale;
                         goVFX.transform.position = spawnPos;
                     }
                     break;

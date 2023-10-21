@@ -22,9 +22,11 @@ namespace STELLAREST_2D
 
         protected override void StartAction()
         {
-            this.Action = true;
+            this.OnStartAction = true;
             this.CreatureState = Define.CreatureState.Run;
         }
+
+        protected override float LoadIdleToActionTime() => UnityEngine.Random.Range(2f, 3f);
 
         protected override void RunSkill()
         {
@@ -32,6 +34,24 @@ namespace STELLAREST_2D
             {
                 this.MonsterAnimController.Attack();
                 this.SkillBook.Activate(SkillTemplate.BodyAttack);
+            }
+        }
+
+        public override Vector3 LoadVFXEnvSpawnScale(VFXEnv templateOrigin)
+        {
+            switch (templateOrigin)
+            {
+                case VFXEnv.Skull:
+                    return Vector3.one * 2f;
+
+                case VFXEnv.Stun:
+                    return Vector3.one * 2.5f;
+
+                case VFXEnv.Slow:
+                    return new Vector3(1.85f, 1f, 1f);
+
+                default:
+                    return base.LoadVFXEnvSpawnScale(templateOrigin);
             }
         }
 
@@ -48,12 +68,13 @@ namespace STELLAREST_2D
                 case VFXEnv.Stun:
                     return (transform.position + (Vector3.up * 1.83f));
 
+                case VFXEnv.Slow:
+                    return (transform.position + new Vector3(0f, -0.5f, 0f));
+
                 default:
                     return base.LoadVFXEnvSpawnPos(templateOrigin);
             }
         }
-
-        protected override float LoadActionTime() => UnityEngine.Random.Range(2f, 3f);
     }
 }
 

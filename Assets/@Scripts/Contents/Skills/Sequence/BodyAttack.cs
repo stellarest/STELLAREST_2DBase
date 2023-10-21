@@ -61,7 +61,7 @@ namespace STELLAREST_2D
         private bool ReachToTarget()
         {
             _delta += Time.deltaTime;
-            float percent = _delta / DESIRED_TIME_TO_REACH;
+            float percent = (_delta / DESIRED_TIME_TO_REACH) * Owner.SpeedModifier;
             this.Owner.transform.position = Vector3.Lerp(_startReachPoint, _endReachPoint, percent);
             if (percent > 1f)
             {
@@ -78,7 +78,7 @@ namespace STELLAREST_2D
         private bool Return()
         {
             _delta += Time.deltaTime;
-            float percent = _delta / DESIRED_TIME_TO_RETURN;
+            float percent = (_delta / DESIRED_TIME_TO_RETURN)  * Owner.SpeedModifier;
             this.Owner.transform.position = Vector3.Lerp(_startReturnPoint, _endReturnPoint, percent);
             if (percent > 1f)
             {

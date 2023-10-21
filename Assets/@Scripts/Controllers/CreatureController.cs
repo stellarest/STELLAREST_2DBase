@@ -41,8 +41,12 @@ namespace STELLAREST_2D
 
         // +++ STAT +++
         [field: SerializeField] public CreatureStat Stat { get; protected set; } = null;
-        public void UpdateCreatureStat(int templateID)
+        public void UpdateCreatureStat(int templateID) 
             => this.Stat = Stat.UpgradeStat(this, Stat, templateID);
+
+        public const float ORIGIN_SPEED_MODIFIER = 1f;
+        public virtual float SpeedModifier { get; set; } = 1f;
+        public virtual void ResetSpeedModifier() => SpeedModifier = ORIGIN_SPEED_MODIFIER;
 
         // +++ SKILLS +++
         public SkillBook SkillBook { get; protected set; } = null;
@@ -126,7 +130,7 @@ namespace STELLAREST_2D
             }
         }
 
-        protected virtual void InitCreatureStat(Data.InitialCreatureData creatureData)
+        protected virtual void InitCreatureStat(Data.InitialCreatureData creatureData) 
             => Stat = new CreatureStat(this, creatureData);
 
         protected void InitCreatureStat(int templateID)
@@ -244,6 +248,8 @@ namespace STELLAREST_2D
             else
             {
                 Managers.VFX.Material(Define.MaterialType.Hit, this);
+
+                // Crowd Control (CC)
                 if (Managers.Game.TryCrowdControl(from))
                     Managers.CrowdControl.Apply(from, this);
             }
@@ -337,9 +343,16 @@ namespace STELLAREST_2D
         public virtual float ADDITIONAL_SPAWN_HEIGHT { get; protected set; } = 0f;
 
 
+        public virtual Vector3 LoadVFXEnvSpawnScale(VFXEnv templateOrigin) => Vector3.one;
         public virtual Vector3 LoadVFXEnvSpawnPos(VFXEnv templateOrigin) => this.Center.transform.position;
-        public bool IsRun => this.CreatureState == Define.CreatureState.Run;
-        public bool IsDeadState => (this.CreatureState == Define.CreatureState.Dead) && (this.Stat.Hp <= 0);
+        
+        public bool IsIdleState => this.CreatureState == Define.CreatureState.Idle && (this.Stat.Hp > 0);
+        public bool IsRunState => this.CreatureState == Define.CreatureState.Run && (this.Stat.Hp > 0);
+        public bool IsSkillState => this.CreatureState == Define.CreatureState.Skill && (this.Stat.Hp > 0);
+        public bool IsCCStunState => this.CreatureState == Define.CreatureState.CC_Stun && (this.Stat.Hp > 0);
+        public bool IsCCSlowState => this.CreatureState == Define.CreatureState.CC_Slow && (this.Stat.Hp > 0);
+        public bool IsCCKnockBackState => this.CreatureState == Define.CreatureState.CC_KnockBack && (this.Stat.Hp > 0);
+        public bool IsDeadState => this.CreatureState == Define.CreatureState.Dead && (this.Stat.Hp <= 0);
 
         public void RequestCrowdControl(CrowdControl ccType, SkillBase from)
         {
@@ -350,6 +363,10 @@ namespace STELLAREST_2D
 
                 case CrowdControl.Stun:
                     StartCoroutine(Managers.CrowdControl.CoStun(this, from));
+                    break;
+
+                case CrowdControl.Slow:
+                    StartCoroutine(Managers.CrowdControl.CoSlow(this, from));
                     break;
             }
         }
