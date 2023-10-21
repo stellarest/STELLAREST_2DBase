@@ -57,7 +57,7 @@ namespace STELLAREST_2D
         public virtual void ResetSpeedModifier() => SpeedModifier = ORIGIN_SPEED_MODIFIER;
         private const int FIRST_CROWD_CONTROL_ID = 300100;
         [SerializeField] private CrowdControlState[] _ccStates = null;
-        public bool this[CrowdControl crowdControlType]
+        public virtual bool this[CrowdControl crowdControlType]
         {
             get => _ccStates[(int)crowdControlType % FIRST_CROWD_CONTROL_ID].IsOn;
             set => _ccStates[(int)crowdControlType % FIRST_CROWD_CONTROL_ID].IsOn = value;

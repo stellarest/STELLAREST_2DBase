@@ -30,8 +30,8 @@ namespace STELLAREST_2D
             
 
             target.SetDeadHead();
-            target[CrowdControl.Stun] = true;
             GameObject goVFX = Managers.VFX.Environment(VFXEnv.Stun, target);
+            target[CrowdControl.Stun] = true;
             while (percent < 1f)
             {
                 goVFX.transform.position = target.LoadVFXEnvSpawnPos(VFXEnv.Stun);
@@ -39,8 +39,8 @@ namespace STELLAREST_2D
                 percent = delta / duration;
                 yield return null;
             }
-            Managers.Resource.Destroy(goVFX);
             target[CrowdControl.Stun] = false;
+            Managers.Resource.Destroy(goVFX);
             target.SetDefaultHead();
 
 
@@ -55,9 +55,8 @@ namespace STELLAREST_2D
             float duration = from.Data.CrowdControlDuration;
             target.SpeedModifier *= from.Data.CrowdControlIntensity;
 
-
-            target[CrowdControl.Slow] = true;
             GameObject goVFX = Managers.VFX.Environment(VFXEnv.Slow, target);
+            target[CrowdControl.Slow] = true;
             while (percent < 1f)
             {
                 goVFX.transform.position = target.LoadVFXEnvSpawnPos(VFXEnv.Slow);
@@ -65,9 +64,8 @@ namespace STELLAREST_2D
                 percent = delta / duration;
                 yield return null;
             }
-            Managers.Resource.Destroy(goVFX);
             target[CrowdControl.Slow] = false;
-
+            Managers.Resource.Destroy(goVFX);
 
             target.ResetSpeedModifier();
         }

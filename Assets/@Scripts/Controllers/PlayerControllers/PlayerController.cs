@@ -7,6 +7,7 @@ using UnityEngine.Rendering;
 
 using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
 using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
+using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
 
 namespace STELLAREST_2D
 {
@@ -42,6 +43,49 @@ namespace STELLAREST_2D
         private float _armRifleFixedAngle = 146f; // CHRISTIAN에서 빼야함
         public PlayerBody BodyParts { get; protected set; } = null;
         public PlayerAnimationController PlayerAnimController { get; private set; } = null;
+
+        public override bool this[CrowdControl crowdControlType] 
+        { 
+            get => base[crowdControlType];
+            set
+            {
+                base[crowdControlType] = value;
+                switch (crowdControlType)
+                {
+                    case CrowdControl.Stun:
+                        {
+                            if (base[crowdControlType])
+                            {
+                                this.MoveDir = Vector3.zero;
+                                SkillBook.DeactivateAll();
+                                PlayerAnimController.Stun();
+                            }
+                            else
+                            {
+                                SkillBook.ActivateAll();
+                                PlayerAnimController.Stand();
+                            }
+                        }
+                        break;
+                }
+            }
+        }
+
+        public override float SpeedModifier
+        {
+            get => base.SpeedModifier;
+            set
+            {
+                base.SpeedModifier = value;
+                PlayerAnimController.SetAnimationSpeed(base.SpeedModifier);
+            }
+        }
+
+        public override void ResetSpeedModifier()
+        {
+            base.ResetSpeedModifier();
+            PlayerAnimController.SetAnimationSpeed(base.SpeedModifier);
+        }
 
         public override void Init(int templateID)
         {
@@ -95,6 +139,9 @@ namespace STELLAREST_2D
         private void OnMoveDirChangedHandler(Vector3 moveDir)
         {
             if (this.IsDeadState)
+                return;
+
+            if (this[CrowdControl.Stun])
                 return;
 
             this.MoveDir = moveDir;
@@ -190,7 +237,7 @@ namespace STELLAREST_2D
         }
         private void MoveByJoystick()
         {
-            Vector3 dir = MoveDir.normalized * Stat.MovementSpeed * Time.deltaTime;
+            Vector3 dir = MoveDir.normalized * (Stat.MovementSpeed * this.SpeedModifier) * Time.deltaTime;
             transform.position += dir;
             if (IsMoving)
             {
@@ -243,6 +290,24 @@ namespace STELLAREST_2D
             //Debug.Log($"Find Gem : {findGems.Count} / Total Gem : {allSpawnedGems.Count}");
         }
 
+        public override Vector3 LoadVFXEnvSpawnScale(VFXEnv templateOrigin)
+        {
+            switch (templateOrigin)
+            {
+                case VFXEnv.Skull:
+                    return Vector3.one * 2f;
+
+                case VFXEnv.Stun:
+                    return Vector3.one * 2.5f;
+
+                case VFXEnv.Slow:
+                    return new Vector3(2.25f, 1f, 1f);
+
+                default:
+                    return base.LoadVFXEnvSpawnScale(templateOrigin);
+            }
+        }
+
         public override Vector3 LoadVFXEnvSpawnPos(VFXEnv templateOrigin)
         {
             switch (templateOrigin)
@@ -258,6 +323,12 @@ namespace STELLAREST_2D
 
                 case VFXEnv.Dust:
                     return this.BodyParts.LegRight.position + (Vector3.down * 0.35f);
+
+                case VFXEnv.Stun:
+                    return (transform.position + (Vector3.up * 1.83f));
+
+                case VFXEnv.Slow:
+                    return (transform.position + new Vector3(0f, -1.25f, 0f));
 
                 default:
                     return base.LoadVFXEnvSpawnPos(templateOrigin);

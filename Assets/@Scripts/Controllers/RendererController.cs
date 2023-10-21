@@ -5,6 +5,7 @@ using STELLAREST_2D.Data;
 using UnityEngine;
 
 using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
+using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
 
 namespace STELLAREST_2D
 {
@@ -344,6 +345,9 @@ namespace STELLAREST_2D
         {
             if (this.IsPlayer)
             {
+                if (this.Owner[CrowdControl.Stun])
+                    return;
+
                 CurrentFaceState = Define.FaceExpressionType.Default;
                 PlayerFaceExpressionContainer container = PlayerFaceExpressionContainerDict[Define.FaceExpressionType.Default];
                 PlayerFace.eyebrowsSPR.sprite = container.Eyebrows;
@@ -663,7 +667,7 @@ namespace STELLAREST_2D
             int legnth = Mathf.Min(BCs.Length, OwnerSPRs.Length);
             for (int i = 0; i < legnth; ++i)
                 OwnerSPRs[i].material = BCs[i].MatOrigin;
-            if (this.IsPlayer)
+            if (this.Owner[CrowdControl.Stun] == false && this.IsPlayer)
             {
                 PlayerEyesSPR.sprite = PlayerEyesSprite;
             }

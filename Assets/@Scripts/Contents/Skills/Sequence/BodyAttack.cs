@@ -13,6 +13,8 @@ namespace STELLAREST_2D
         private const float DESIRED_TIME_TO_REACH = 0.15f;
         private const float DESIRED_TIME_TO_RETURN = 0.25f;
         private const float DESIRED_TIME_TO_END_WAIT = 0.75f; // origin : 0.5f
+        //private const float DESIRED_TIME_TO_END_WAIT = 10.75f; // origin : 0.5f // SKILL DATA COOL TIME으로 하면 될텐데,,,
+
         #endregion
         private Vector3 _startReachPoint = Vector3.zero;
         private Vector3 _endReachPoint = Vector3.zero;
