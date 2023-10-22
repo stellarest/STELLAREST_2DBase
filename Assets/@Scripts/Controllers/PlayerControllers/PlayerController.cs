@@ -240,8 +240,12 @@ namespace STELLAREST_2D
         }
         private void MoveByJoystick()
         {
+            
             Vector3 dir = MoveDir.normalized * (Stat.MovementSpeed * this.SpeedModifier) * Time.deltaTime;
-            transform.position += dir;
+
+            if (this[CrowdControl.KnockBack] == false)
+                transform.position += dir;
+
             if (IsMoving)
             {
                 float degree = Mathf.Atan2(-dir.x, dir.y) * Mathf.Rad2Deg;

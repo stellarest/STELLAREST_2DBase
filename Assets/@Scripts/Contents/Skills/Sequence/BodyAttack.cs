@@ -112,6 +112,7 @@ namespace STELLAREST_2D
             if (cc?.IsValid() == false)
                 return;
 
+            HitPoint = other.ClosestPoint(this.transform.position);
             cc?.OnDamaged(this.Owner, this);
         }
     }

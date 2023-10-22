@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Authentication.ExtendedProtection;
 using Demo_Project;
 using STELLAREST_2D.Data;
 using UnityEngine;
@@ -76,6 +77,7 @@ namespace STELLAREST_2D
             target.ResetSpeedModifier();
         }
 
+        private const float GENERATE_VFX_DUST_INTERVAL_TO_PLAYER = 0.2f;
         public IEnumerator CoKnockBack(CreatureController target, SkillBase from)
         {
             float delta = 0f;
@@ -85,8 +87,18 @@ namespace STELLAREST_2D
 
             Vector3 knockBackDir = (target.Center.position - from.HitPoint).normalized;
             target[CrowdControl.KnockBack] = true;
+            float dustGenPercentage = 0.2f;
             while (percent < 1f)
             {
+                if (target.IsPlayer())
+                {
+                    if (percent > dustGenPercentage)
+                    {
+                        dustGenPercentage += GENERATE_VFX_DUST_INTERVAL_TO_PLAYER;
+                        Managers.VFX.Environment(VFXEnv.Dust, target);
+                    }
+                }
+
                 Managers.Stage.SetInLimitPos(target);
                 target.transform.position += knockBackDir * intensity;
                 delta += Time.deltaTime;

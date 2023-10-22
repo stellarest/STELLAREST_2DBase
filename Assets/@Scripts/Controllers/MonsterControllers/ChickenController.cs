@@ -65,6 +65,9 @@ namespace STELLAREST_2D
                 case VFXEnv.Damage:
                     return (transform.position + (Vector3.up * 2.5f)) - Vector3.up;
 
+                case VFXEnv.Dust:
+                    return transform.position;
+
                 case VFXEnv.Stun:
                     return (transform.position + (Vector3.up * 1.83f));
 
