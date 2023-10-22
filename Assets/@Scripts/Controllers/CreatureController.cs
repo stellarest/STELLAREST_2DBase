@@ -284,16 +284,15 @@ namespace STELLAREST_2D
             Managers.VFX.Damage(this, dmgResult, isCritical);
             Managers.VFX.ImpactHit(from.Data.VFX_ImpactHit, this, from); // --> 메모리 문제 발생시, 크리티컬 쪽에서 스폰
 
-
             if (this.Stat.Hp <= 0 && this.IsDeadState == false)
                 this.CreatureState = Define.CreatureState.Dead;
             else
             {
-                Managers.VFX.Material(Define.MaterialType.Hit, this);
-
                 // Crowd Control (CC)
                 if (Managers.Game.TryCrowdControl(from))
-                    Managers.CrowdControl.Apply(from, this);
+                    Managers.CrowdControl.Apply(this, from);
+                
+                Managers.VFX.Material(Define.MaterialType.Hit, this);
             }
         }
 
@@ -419,6 +418,15 @@ namespace STELLAREST_2D
                             StartCoroutine(Managers.CrowdControl.CoSlow(this, from));
                         else
                             Utils.Log("Already Slow,,,");
+                    }
+                    break;
+
+                case CrowdControl.KnockBack:
+                    {
+                        if (this[ccType] == false)
+                            StartCoroutine(Managers.CrowdControl.CoKnockBack(this, from));
+                        else
+                            Utils.Log("Already KnockBack,,,");
                     }
                     break;
             }

@@ -667,10 +667,9 @@ namespace STELLAREST_2D
             int legnth = Mathf.Min(BCs.Length, OwnerSPRs.Length);
             for (int i = 0; i < legnth; ++i)
                 OwnerSPRs[i].material = BCs[i].MatOrigin;
-            if (this.Owner[CrowdControl.Stun] == false && this.IsPlayer)
-            {
+
+            if (this.IsPlayer && CurrentFaceState != Define.FaceExpressionType.Dead)
                 PlayerEyesSPR.sprite = PlayerEyesSprite;
-            }
 
             // for (int i = 0; i < OwnerSPRs.Length; ++i)
             //     OwnerSPRs[i].material = BCs[i].MatOrigin;
@@ -682,7 +681,7 @@ namespace STELLAREST_2D
 
         private void ChangeMaterial(Material mat)
         {
-            if (this.IsPlayer)
+            if (this.IsPlayer && CurrentFaceState != Define.FaceExpressionType.Dead)
                 PlayerEyesSPR.sprite = null;
 
             for (int i = 0; i < OwnerSPRs.Length; ++i)

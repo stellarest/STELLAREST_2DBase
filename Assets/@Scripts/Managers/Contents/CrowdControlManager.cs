@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Demo_Project;
+using STELLAREST_2D.Data;
 using UnityEngine;
 
 using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
@@ -10,7 +11,7 @@ namespace STELLAREST_2D
 {
     public class CrowdControlManager
     {
-        public void Apply(SkillBase from, CreatureController target)
+        public void Apply(CreatureController target, SkillBase from)
         {
             if (target.IsValid() == false)
                 return;
@@ -28,12 +29,18 @@ namespace STELLAREST_2D
             float duration = from.Data.CrowdControlDuration;
             target.CreatureState = Define.CreatureState.Idle;
             
-
             target.SetDeadHead();
             GameObject goVFX = Managers.VFX.Environment(VFXEnv.Stun, target);
             target[CrowdControl.Stun] = true;
             while (percent < 1f)
             {
+                if (target.IsDeadState)
+                {
+                    target[CrowdControl.Stun] = false;
+                    Managers.Resource.Destroy(goVFX);
+                    yield break;
+                }
+
                 goVFX.transform.position = target.LoadVFXEnvSpawnPos(VFXEnv.Stun);
                 delta += Time.deltaTime;
                 percent = delta / duration;
@@ -42,7 +49,6 @@ namespace STELLAREST_2D
             target[CrowdControl.Stun] = false;
             Managers.Resource.Destroy(goVFX);
             target.SetDefaultHead();
-
 
             bool isOnActiveImmediately = true;
             target.StartIdleToAction(isOnActiveImmediately);
@@ -68,6 +74,25 @@ namespace STELLAREST_2D
             Managers.Resource.Destroy(goVFX);
 
             target.ResetSpeedModifier();
+        }
+
+        public IEnumerator CoKnockBack(CreatureController target, SkillBase from)
+        {
+            float delta = 0f;
+            float percent = 0f;
+            float duration = from.Data.CrowdControlDuration;
+            float intensity = from.Data.CrowdControlIntensity;
+
+            target[CrowdControl.KnockBack] = true;
+            while (percent < 1f)
+            {
+                Managers.Stage.SetInLimitPos(target);
+                target.transform.position += from.transform.right * intensity;
+                delta += Time.deltaTime;
+                percent = delta / duration;
+                yield return null;
+            }
+            target[CrowdControl.KnockBack] = false;
         }
     }
 }

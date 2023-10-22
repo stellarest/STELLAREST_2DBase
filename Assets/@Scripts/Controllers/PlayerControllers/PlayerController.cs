@@ -62,6 +62,9 @@ namespace STELLAREST_2D
                             }
                             else
                             {
+                                if (this.IsDeadState)
+                                    return;
+
                                 SkillBook.ActivateAll();
                                 PlayerAnimController.Stand();
                             }
