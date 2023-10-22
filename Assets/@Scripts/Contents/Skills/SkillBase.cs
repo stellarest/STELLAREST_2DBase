@@ -21,6 +21,8 @@ namespace STELLAREST_2D
         public Rigidbody2D RigidBody { get; protected set; } = null;
         public Collider2D HitCollider { get; protected set; } = null;
 
+        public Vector3 HitPoint { get; protected set; } = Vector3.zero;
+
         public virtual void InitOrigin(CreatureController owner, Data.SkillData data)
         {
             this.Owner = owner;

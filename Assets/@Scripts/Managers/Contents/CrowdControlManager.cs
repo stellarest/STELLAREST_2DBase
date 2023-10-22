@@ -83,11 +83,12 @@ namespace STELLAREST_2D
             float duration = from.Data.CrowdControlDuration;
             float intensity = from.Data.CrowdControlIntensity;
 
+            Vector3 knockBackDir = (target.Center.position - from.HitPoint).normalized;
             target[CrowdControl.KnockBack] = true;
             while (percent < 1f)
             {
                 Managers.Stage.SetInLimitPos(target);
-                target.transform.position += from.transform.right * intensity;
+                target.transform.position += knockBackDir * intensity;
                 delta += Time.deltaTime;
                 percent = delta / duration;
                 yield return null;

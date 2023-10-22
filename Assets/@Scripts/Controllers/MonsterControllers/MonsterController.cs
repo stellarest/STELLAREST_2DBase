@@ -194,13 +194,13 @@ namespace STELLAREST_2D
                 Flip(toTargetPointDir.x > 0 ? -1 : 1);
 
             Vector3 toTargetPointMovement = this.transform.position + (toTargetPointDir.normalized * Stat.MovementSpeed * Time.deltaTime);
-            // if (Utils.IsArriveToTarget(this.Center, targetPoint, minDistance))
-            //     return true;
-            // else
-            // {
-            //     this.transform.position = toTargetPointMovement;
-            //     return false;
-            // }
+            if (Utils.IsArriveToTarget(this.Center, targetPoint, minDistance))
+                return true;
+            else
+            {
+                this.transform.position = toTargetPointMovement;
+                return false;
+            }
         }
 
         public override void UpdateAnimation()
