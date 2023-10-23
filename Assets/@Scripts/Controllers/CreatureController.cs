@@ -28,7 +28,8 @@ namespace STELLAREST_2D
         public Vector3 IndicatorPosition => Indicator.transform.position;
         public Transform FireSocket { get; protected set; } = null;
         public Vector3 FireSocketPosition => FireSocket.transform.position;
-        public Vector3 ShootDir => (FireSocketPosition - IndicatorPosition).normalized;
+        public virtual Vector3 ShootDir => (FireSocketPosition - IndicatorPosition).normalized;
+
         public Transform AnimTransform { get; protected set; } = null;
         public Transform Center { get; protected set; } = null;
         public SpriteRenderer[] SPRs { get; protected set; } = null;
@@ -197,7 +198,6 @@ namespace STELLAREST_2D
 
         protected virtual void StartGame(int templateID) { }
 
-
         public bool OnStartAction { get; protected set; } = false;
         protected Coroutine _coIdleToAction = null;
         public virtual void StartIdleToAction(bool isOnActiveImmediately = false)
@@ -210,7 +210,6 @@ namespace STELLAREST_2D
         protected virtual void StartAction() { }
         protected virtual float LoadIdleToActionTime() => 1f;
         protected virtual IEnumerator CoIdleToAction(bool isOnActiveImmediately = false) { yield return null; }
-
 
         private void LoadRepeatSkills(Data.InitialCreatureData creatureData)
         {
@@ -441,6 +440,15 @@ namespace STELLAREST_2D
                             StartCoroutine(Managers.CrowdControl.CoKnockBack(this, from));
                         else
                             Utils.Log("Already KnockBack,,,");
+                    }
+                    break;
+
+                case CrowdControl.Slience:
+                    {
+                        if (this[ccType] == false)
+                            StartCoroutine(Managers.CrowdControl.CoSilence(this, from));
+                        else
+                            Utils.Log("Already Silence,,,");
                     }
                     break;
             }

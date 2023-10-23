@@ -295,6 +295,14 @@ namespace STELLAREST_2D
                         goVFX.transform.position = spawnPos;
                     }
                     break;
+
+                case VFXEnv.Silence:
+                    {
+                        goVFX = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_ENV_SILENCE, null, true);
+                        goVFX.transform.localScale = spawnScale;
+                        goVFX.transform.position = spawnPos;
+                    }
+                    break;
             }
 
             return goVFX;

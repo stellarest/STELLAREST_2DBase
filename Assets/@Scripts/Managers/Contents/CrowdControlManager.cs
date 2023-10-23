@@ -107,5 +107,33 @@ namespace STELLAREST_2D
             }
             target[CrowdControl.KnockBack] = false;
         }
+
+        public IEnumerator CoSilence(CreatureController target, SkillBase from)
+        {
+            float delta = 0f;
+            float percent = 0f;
+            float duration = from.Data.CrowdControlDuration;
+
+            target.SkillBook.DeactivateAll();
+            GameObject goVFX = Managers.VFX.Environment(VFXEnv.Silence, target);
+            target[CrowdControl.Slience] = true;
+            while (percent < 1f)
+            {
+                if (target.IsDeadState)
+                {
+                    target[CrowdControl.Slience] = false;
+                    Managers.Resource.Destroy(goVFX);
+                    yield break;
+                }
+
+                goVFX.transform.position = target.LoadVFXEnvSpawnPos(VFXEnv.Silence);
+                delta += Time.deltaTime;
+                percent = delta / duration;
+                yield return null;
+            }
+            target[CrowdControl.Slience] = false;
+            Managers.Resource.Destroy(goVFX);
+            target.SkillBook.ActivateAll();
+        }
     }
 }

@@ -40,8 +40,13 @@ namespace STELLAREST_2D
 
         private IEnumerator CoDoBodyAttack(Action callback = null)
         {
-            if (this.Owner.MainTarget == null)
+            if (CanStartAction() == false)
+            {
+                if (this.Owner.CreatureState == Define.CreatureState.Skill)
+                    this.Owner.CreatureState = Define.CreatureState.Run;
+
                 yield break;
+            }
 
             Ready();
             yield return new WaitUntil(() => ReachToTarget());
@@ -52,8 +57,20 @@ namespace STELLAREST_2D
             callback?.Invoke();
         }
 
-        private void Ready()
+        private bool CanStartAction()
         {
+            if (this.Owner.MainTarget == null)
+                return false;
+
+            if ((this.Owner.MainTarget.Center.position - this.Owner.Center.position).sqrMagnitude >
+                    this.Owner.Stat.CollectRange * this.Owner.Stat.CollectRange)
+                return false;
+
+            return true;
+        }
+
+        private void Ready()
+        {            
             _delta = 0f;
             this.HitCollider.enabled = true;
             _startReachPoint = this.Owner.transform.position;

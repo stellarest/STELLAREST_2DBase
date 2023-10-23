@@ -20,6 +20,7 @@ namespace STELLAREST_2D
         protected override void LateInit()
         {
             SkillBook.LevelUp(SkillTemplate.BodyAttack);
+            SkillBook.LevelUp(SkillTemplate.ThrowingStar);
         }
 
         protected override void StartAction()
@@ -30,6 +31,7 @@ namespace STELLAREST_2D
                 return;
             
             this.CreatureState = Define.CreatureState.Run;
+            this.SkillBook.Activate(SkillTemplate.ThrowingStar);
         }
 
         protected override float LoadIdleToActionTime() => UnityEngine.Random.Range(2f, 3f);
@@ -79,6 +81,9 @@ namespace STELLAREST_2D
 
                 case VFXEnv.Slow:
                     return (transform.position + new Vector3(0f, -0.5f, 0f));
+
+                case VFXEnv.Silence:
+                    return (Center.position + new Vector3(-1f, 1.05f, 0f));
 
                 default:
                     return base.LoadVFXEnvSpawnPos(templateOrigin);

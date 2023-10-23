@@ -7,6 +7,7 @@ using UnityEngine.Rendering;
 using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
 using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
+using TreeEditor;
 
 namespace STELLAREST_2D
 {
@@ -14,6 +15,8 @@ namespace STELLAREST_2D
     {
         public Define.MonsterType MonsterType { get; set; } = Define.MonsterType.None;
         public MonsterAnimationController MonsterAnimController { get; private set; } = null;
+        public override Vector3 ShootDir => (MainTarget != null) ? 
+                                (MainTarget.Center.position - Center.position).normalized : this.transform.right;
 
         public override float SpeedModifier 
         { 
@@ -187,7 +190,9 @@ namespace STELLAREST_2D
             this.RigidBody.MovePosition(toTargetMovement);
             if (Utils.IsArriveToTarget(this.Center, this.MainTarget.transform, minDistance))
             {
-                this.CreatureState = Define.CreatureState.Skill;
+                if (IsCCStates(CrowdControl.Slience) == false)
+                    this.CreatureState = Define.CreatureState.Skill;
+                    
                 return true;
             }
 

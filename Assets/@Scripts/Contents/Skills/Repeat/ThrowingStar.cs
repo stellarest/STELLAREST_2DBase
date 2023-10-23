@@ -5,8 +5,6 @@ namespace STELLAREST_2D
 {
     public class ThrowingStar : RepeatSkill
     {
-        private readonly float RESET_HIT_FROM_DELAY = 0.5f;
-
         public override void InitOrigin(CreatureController owner, SkillData data)
         {
             base.InitOrigin(owner, data);
@@ -41,13 +39,15 @@ namespace STELLAREST_2D
             cc.IsHitFrom_ThrowingStar = true;
         }
 
+        private readonly float RESET_HIT_FROM_DELAY = 0.5f;
         private void OnTriggerExit2D(Collider2D other)
         {
             CreatureController cc = other.GetComponent<CreatureController>();
             if (cc.IsValid() == false)
                 return;
 
-            cc.ResetHitFrom(Define.HitFromType.ThrowingStar, RESET_HIT_FROM_DELAY);
+            if (cc.IsPlayer() == false)
+                cc.ResetHitFrom(Define.HitFromType.ThrowingStar, RESET_HIT_FROM_DELAY);
         }
     }
 }

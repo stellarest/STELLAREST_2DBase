@@ -309,6 +309,9 @@ namespace STELLAREST_2D
                 case VFXEnv.Slow:
                     return new Vector3(2.25f, 1f, 1f);
 
+                case VFXEnv.Silence:
+                    return Vector3.one * 1.25f;
+
                 default:
                     return base.LoadVFXEnvSpawnScale(templateOrigin);
             }
@@ -335,6 +338,9 @@ namespace STELLAREST_2D
 
                 case VFXEnv.Slow:
                     return (transform.position + new Vector3(0f, -1.25f, 0f));
+
+                case VFXEnv.Silence:
+                    return (Center.position + new Vector3(-1.65f, 2.55f, 0f));
 
                 default:
                     return base.LoadVFXEnvSpawnPos(templateOrigin);

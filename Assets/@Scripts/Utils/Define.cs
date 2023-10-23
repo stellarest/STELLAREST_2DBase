@@ -209,6 +209,7 @@ namespace STELLAREST_2D
                     Dust,
                     Stun,
                     Slow,
+                    Silence,
 
                     KnockBack,
                     WindTrail,
@@ -251,6 +252,7 @@ namespace STELLAREST_2D
                 public const string VFX_ENV_DUST = "VFX_Env_Dust.prefab";
                 public const string VFX_ENV_STUN = "VFX_Env_Stun.prefab";
                 public const string VFX_ENV_SLOW = "VFX_Env_Slow.prefab";
+                public const string VFX_ENV_SILENCE = "VFX_Env_Silence.prefab";
 
                 // TEMP
                 // =====================================================================================
