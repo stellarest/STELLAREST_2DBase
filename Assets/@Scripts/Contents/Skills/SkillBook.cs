@@ -2,6 +2,7 @@ using System.Buffers;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Assets.HeroEditor.Common.Scripts.ExampleScripts;
 using STELLAREST_2D.Data;
 using UnityEngine;

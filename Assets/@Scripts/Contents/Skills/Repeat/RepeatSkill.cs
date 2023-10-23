@@ -1,14 +1,13 @@
 using System.Collections;
-using System.Collections.Generic;
-using Newtonsoft.Json;
-using STELLAREST_2D.Data;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace STELLAREST_2D
 {
     public abstract class RepeatSkill : SkillBase
     {
+        public System.Action OnDeactivateRepeatSkill = null;
+        public virtual void OnDeactivateRepeatSkillHandler() { }
+
         public override void Activate()
         {
             base.Activate();
@@ -166,6 +165,7 @@ namespace STELLAREST_2D
 
             if (_coSkillActivate != null)
             {
+                OnDeactivateRepeatSkill?.Invoke();
                 StopCoroutine(_coSkillActivate);
                 _coSkillActivate = null;
             }

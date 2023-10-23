@@ -20,7 +20,6 @@ namespace STELLAREST_2D
         public SpriteRenderer SR { get; protected set; } = null;
         public Rigidbody2D RigidBody { get; protected set; } = null;
         public Collider2D HitCollider { get; protected set; } = null;
-
         public Vector3 HitPoint { get; protected set; } = Vector3.zero;
 
         public virtual void InitOrigin(CreatureController owner, Data.SkillData data)
@@ -58,32 +57,74 @@ namespace STELLAREST_2D
             }
 
             SetClonedRootTargetOnParticleStopped();
+            Utils.Log("INIT CLONE,,, !!!");
             if (ownerFromOrigin?.IsPlayer() == true)
                 Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.PlayerAttack);
             else
                 Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.MonsterAttack);
         }
 
-        public virtual void SetClonedRootTargetOnParticleStopped() 
+        public virtual void SetClonedRootTargetOnParticleStopped()
         {
             Transform root = transform.root;
+            foreach (var particleStopped in root.GetComponentsInChildren<OnCustomParticleStopped>(includeInactive: true))
+            {
+                ParticleSystem particle = particleStopped.gameObject.GetComponent<ParticleSystem>();
+                if (particle == null)
+                    Utils.LogCritical(nameof(SkillBase), nameof(SetClonedRootTargetOnParticleStopped), "Failed to set root target.");
+                else
+                {
+                    if (particleStopped.SkillParticleRootTarget != null)
+                        continue; // FIND NEXT OBJECT
+
+                    var main = particle.main;
+                    main.stopAction = ParticleSystemStopAction.Callback;
+
+                    SkillBase rootTarget = particleStopped.transform.parent.GetComponent<SkillBase>();
+                    if (rootTarget == null)
+                        Utils.LogCritical(nameof(SkillBase), nameof(SetClonedRootTargetOnParticleStopped), "Failed to set root target.");
+                    else
+                    {
+                        particleStopped.SkillParticleRootTarget = rootTarget;
+                        return;
+                    }
+                }
+            }
+
             foreach (var particle in root.GetComponentsInChildren<ParticleSystem>(includeInactive: true))
             {
-                OnCustomParticleStopped particleStopped = particle.GetComponent<OnCustomParticleStopped>();
-                if (particleStopped != null && particleStopped.SkillParticleRootTarget == null)
+                if (particle != null)
                 {
-                    var main = particle.main;
-                    if (main.stopAction != ParticleSystemStopAction.Callback)
-                        main.stopAction = ParticleSystemStopAction.Callback;
+                    OnCustomParticleStopped particleStopped = particle.gameObject.GetComponent<OnCustomParticleStopped>();
+                    if (particleStopped == null)
+                        continue;
+                    else
+                    {
+                        var main = particle.main;
+                        if (main.stopAction != ParticleSystemStopAction.Callback)
+                            main.stopAction = ParticleSystemStopAction.Callback;
 
-                    //particleStopped.RootTarget = particle.transform.parent.gameObject;
-                    // Utils.LogBreak($"Particle Name : {particle.gameObject.name}");
-                    // Utils.LogBreak($"Parent Name : {particle.transform.parent.name}");
-                    particleStopped.SkillParticleRootTarget = particle.transform.parent.GetComponent<SkillBase>();
-                    return;
+                        particleStopped.SkillParticleRootTarget = particle.transform.parent.GetComponent<SkillBase>();
+                        return;
+                    }
                 }
-                else if (particleStopped != null && particleStopped.SkillParticleRootTarget != null)
-                    return;
+
+                // OnCustomParticleStopped particleStopped = particle.GetComponent<OnCustomParticleStopped>();
+                // if (particleStopped != null && particleStopped.SkillParticleRootTarget == null)
+                // {
+                //     var main = particle.main;
+                //     if (main.stopAction != ParticleSystemStopAction.Callback)
+                //         main.stopAction = ParticleSystemStopAction.Callback;
+
+                //     particleStopped.SkillParticleRootTarget = particle.transform.parent.GetComponent<SkillBase>();
+                //     Utils.Log($"RootTarget : {particleStopped.SkillParticleRootTarget}");
+                //     return;
+                // }
+                // else if (particleStopped != null && particleStopped.SkillParticleRootTarget != null)
+                // {
+                //     Utils.Log("?");
+                //     return;
+                // }
             }
         }
 
@@ -178,3 +219,28 @@ namespace STELLAREST_2D
         }
     }
 }
+
+// =========================================================================================================
+// public virtual void SetClonedRootTargetOnParticleStopped()
+// {
+//     Transform root = transform.root;
+//     foreach (var particle in root.GetComponentsInChildren<ParticleSystem>(includeInactive: true))
+//     {
+//         OnCustomParticleStopped particleStopped = particle.GetComponent<OnCustomParticleStopped>();
+//         if (particleStopped != null && particleStopped.SkillParticleRootTarget == null)
+//         {
+//             var main = particle.main;
+//             if (main.stopAction != ParticleSystemStopAction.Callback)
+//                 main.stopAction = ParticleSystemStopAction.Callback;
+
+//             particleStopped.SkillParticleRootTarget = particle.transform.parent.GetComponent<SkillBase>();
+//             Utils.Log($"RootTarget : {particleStopped.SkillParticleRootTarget}");
+//             return;
+//         }
+//         else if (particleStopped != null && particleStopped.SkillParticleRootTarget != null)
+//         {
+//             Utils.Log("?");
+//             return;
+//         }
+//     }
+// }

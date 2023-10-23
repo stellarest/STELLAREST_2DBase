@@ -25,6 +25,8 @@ namespace STELLAREST_2D
         private GameObject _childSmoke = null;
         private GameObject _childFuse = null;
 
+        private bool _isRolling = false;
+
         public override void InitOrigin(CreatureController owner, SkillData data)
         {
             base.InitOrigin(owner, data);
@@ -56,6 +58,7 @@ namespace STELLAREST_2D
                 _childFuse = transform.GetChild(2).gameObject;
 
                 base.InitClone(ownerFromOrigin, dataFromOrigin);
+                Commander.OnDeactivateRepeatSkill += this.OnDeactivateRepeatSkillHandler;
                 this.IsFirstPooling = false;
             }
 
@@ -69,7 +72,8 @@ namespace STELLAREST_2D
             while (true)
             {
                 //Utils.Log($"{this._currentCount} / {this.Data.ContinuousCount}");
-                if (this._currentCount < this.Data.ContinuousCount)
+                // this._currentCount < this.Data.ContinuousCount
+                if (this._currentCount < 2)
                 {
                     _coolTimeDelta += Time.deltaTime;
                     if (_coolTimeDelta > this.Data.CoolTime)
@@ -104,6 +108,7 @@ namespace STELLAREST_2D
             Quaternion startRot = transform.rotation;
             Quaternion targetRot = Quaternion.Euler(0 ,0, startRot.eulerAngles.z + 359f);
 
+            bombTrap._isRolling = true;
             while (percent < 1f)
             {
                 percent += (Time.deltaTime * bombTrap.Data.MovementSpeed);
@@ -120,6 +125,7 @@ namespace STELLAREST_2D
             bombTrap._childSmoke.SetActive(true);
             bombTrap._childFuse.SetActive(true);
             ++this._currentCount;
+            bombTrap._isRolling = false;
         }
 
         private void StartBombTrap()
@@ -161,5 +167,25 @@ namespace STELLAREST_2D
 
         protected override void SetSortingOrder() 
             => GetComponent<SortingGroup>().sortingOrder = (int)Define.SortingOrder.Skill;
+
+        public override void OnDeactivateRepeatSkillHandler()
+        {
+            if (_isRolling)
+            {
+                // Utils.LogBreak("BREAK.");
+                // this.RigidBody.simulated = true;
+                // this.HitCollider.enabled = true;
+
+                // this._childSmoke.SetActive(true);
+                // this._childFuse.SetActive(true);
+                // ++Commander._currentCount;
+
+                // Managers.Object.SkillCounts를 맞추려면 제거하는게 맞는 것 같음
+                Managers.Object.Despawn(this.GetComponent<SkillBase>());
+                _isRolling = false;
+            }
+            // Utils.LogBreak("BREAK.");
+            // Managers.Object.Despawn(this);
+        }
     }
 }

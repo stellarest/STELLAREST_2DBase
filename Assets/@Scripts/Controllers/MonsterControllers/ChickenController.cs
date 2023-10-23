@@ -31,7 +31,7 @@ namespace STELLAREST_2D
                 return;
             
             this.CreatureState = Define.CreatureState.Run;
-            this.SkillBook.Activate(SkillTemplate.ThrowingStar);
+            //this.SkillBook.Activate(SkillTemplate.ThrowingStar);
         }
 
         protected override float LoadIdleToActionTime() => UnityEngine.Random.Range(2f, 3f);
