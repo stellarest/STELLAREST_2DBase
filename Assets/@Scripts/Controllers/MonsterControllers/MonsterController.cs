@@ -4,8 +4,9 @@ using STELLAREST_2D.UI;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
+using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
+using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
 
 namespace STELLAREST_2D
 {
@@ -102,6 +103,12 @@ namespace STELLAREST_2D
             float desiredTime = LoadIdleToActionTime();
             while (true)
             {
+                if (IsCCStates(CrowdControl.Stun))
+                {
+                    StartAction();
+                    yield break;
+                }
+
                 delta += Time.deltaTime;
                 float percent = delta / desiredTime;
                 if (percent > 1f)

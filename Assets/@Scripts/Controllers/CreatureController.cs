@@ -63,6 +63,20 @@ namespace STELLAREST_2D
             set => _ccStates[(int)crowdControlType % FIRST_CROWD_CONTROL_ID].IsOn = value;
         }
 
+        public bool IsCCStates(params CrowdControl[] ccTypes)
+        {
+            for (int i = 0; i < ccTypes.Length; ++i)
+            {
+                if (ccTypes[i] == CrowdControl.None || ccTypes[i] == CrowdControl.MaxCount)
+                    return false;
+
+                if (this[ccTypes[i]])
+                    return true;
+            }
+
+            return false;
+        }
+
         // +++ SKILLS +++
         public SkillBook SkillBook { get; protected set; } = null;
 

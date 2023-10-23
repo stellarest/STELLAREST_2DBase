@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -144,7 +143,7 @@ namespace STELLAREST_2D
             if (this.IsDeadState)
                 return;
 
-            if (this[CrowdControl.Stun])
+            if (IsCCStates(CrowdControl.Stun))
                 return;
 
             this.MoveDir = moveDir;
@@ -243,7 +242,7 @@ namespace STELLAREST_2D
             
             Vector3 dir = MoveDir.normalized * (Stat.MovementSpeed * this.SpeedModifier) * Time.deltaTime;
 
-            if (this[CrowdControl.KnockBack] == false)
+            if (IsCCStates(CrowdControl.KnockBack) == false)
                 transform.position += dir;
 
             if (IsMoving)

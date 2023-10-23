@@ -345,8 +345,11 @@ namespace STELLAREST_2D
         {
             if (this.IsPlayer)
             {
-                if (this.Owner[CrowdControl.Stun])
+                if (this.Owner.IsCCStates(CrowdControl.Stun))
                     return;
+
+                // if (this.Owner[CrowdControl.Stun])
+                //     return;
 
                 CurrentFaceState = Define.FaceExpressionType.Default;
                 PlayerFaceExpressionContainer container = PlayerFaceExpressionContainerDict[Define.FaceExpressionType.Default];
@@ -681,6 +684,7 @@ namespace STELLAREST_2D
 
         private void ChangeMaterial(Material mat)
         {
+            // +++++ 개선 필요 +++++
             if (this.IsPlayer && CurrentFaceState != Define.FaceExpressionType.Dead)
                 PlayerEyesSPR.sprite = null;
 

@@ -5,6 +5,8 @@ using UnityEngine;
 
 using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
 using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
+using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
+using UnityEditor;
 
 namespace STELLAREST_2D
 {
@@ -23,6 +25,10 @@ namespace STELLAREST_2D
         protected override void StartAction()
         {
             this.OnStartAction = true;
+
+            if (IsCCStates(CrowdControl.Stun))
+                return;
+            
             this.CreatureState = Define.CreatureState.Run;
         }
 
