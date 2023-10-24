@@ -57,7 +57,6 @@ namespace STELLAREST_2D
             }
 
             SetClonedRootTargetOnParticleStopped();
-            Utils.Log("INIT CLONE,,, !!!");
             if (ownerFromOrigin?.IsPlayer() == true)
                 Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.PlayerAttack);
             else

@@ -4,16 +4,17 @@ using STELLAREST_2D.Data;
 using UnityEngine;
 
 using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
+using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
 
 namespace STELLAREST_2D
 {
     public class BodyAttack : SequenceSkill
     {
-        #region Temp Constant Options
+        #region Constant Options (Temp)
         private const float DESIRED_TIME_TO_REACH = 0.15f;
         private const float DESIRED_TIME_TO_RETURN = 0.25f;
         private const float DESIRED_TIME_TO_END_WAIT = 0.75f; // origin : 0.5f
-        //private const float DESIRED_TIME_TO_END_WAIT = 10.75f; // origin : 0.5f // SKILL DATA COOL TIME으로 하면 될텐데,,,
+        //private const float DESIRED_TIME_TO_END_WAIT = 5.75f; // origin : 0.5f // SKILL DATA COOL TIME으로 하면 될텐데,,,
 
         #endregion
         private Vector3 _startReachPoint = Vector3.zero;
@@ -34,21 +35,25 @@ namespace STELLAREST_2D
             StartCoroutine(CoDoBodyAttack(delegate()
             {
                 //this.Owner.SkillBook.Deactivate(SkillTemplate.BodyAttack);
-                this.Owner.SkillBook.RandomizeSequenceGroup(SkillTemplate.BodyAttack);
+                    this.Owner.SkillBook.RandomizeSequenceGroup(SkillTemplate.BodyAttack);
             }));
         }
 
         private IEnumerator CoDoBodyAttack(Action callback = null)
         {
+            Utils.Log("BODY ATTACK1.");
             if (CanStartAction() == false)
             {
                 if (this.Owner.CreatureState == Define.CreatureState.Skill)
                     this.Owner.CreatureState = Define.CreatureState.Run;
 
+                Utils.Log("Deactivate Body Attack."); // 임시 개선 사항 (Deaictvate Sequence 추가해야함, 안해도 상관 없을것같긴하지만)
+                this.Owner.SkillBook.Deactivate(SkillTemplate.BodyAttack);
                 yield break;
             }
 
             Ready();
+            Utils.Log("BODY ATTACK2.");
             yield return new WaitUntil(() => ReachToTarget());
             yield return new WaitUntil(() => Return());
             this.Owner.CreatureState = Define.CreatureState.Idle;
@@ -61,9 +66,7 @@ namespace STELLAREST_2D
         {
             if (this.Owner.MainTarget == null)
                 return false;
-
-            if ((this.Owner.MainTarget.Center.position - this.Owner.Center.position).sqrMagnitude >
-                    this.Owner.Stat.CollectRange * this.Owner.Stat.CollectRange)
+            else if ((this.Owner.MainTarget.Center.position - this.Owner.Center.position).sqrMagnitude > this.Owner.Stat.CollectRange * this.Owner.Stat.CollectRange)
                 return false;
 
             return true;
@@ -75,6 +78,7 @@ namespace STELLAREST_2D
             this.HitCollider.enabled = true;
             _startReachPoint = this.Owner.transform.position;
             _endReachPoint = this.Owner.MainTarget.Center.transform.position;
+            Utils.Log("READY BODY ATTACK.");
         }
 
         private bool ReachToTarget()

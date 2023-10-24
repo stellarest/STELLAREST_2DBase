@@ -147,8 +147,8 @@ namespace STELLAREST_2D
             if (this.CanEnterRunState() == false)
                 return;
 
-            // if (this.MainTarget != null)
-            //     MoveToTarget(MainTarget, this.Stat.CollectRange * this.Stat.CollectRange);
+            if (this.MainTarget != null)
+                MoveToTarget(MainTarget, this.Stat.CollectRange * this.Stat.CollectRange);
         }
 
         public void StartMovementToRandomPoint()
@@ -192,7 +192,9 @@ namespace STELLAREST_2D
             {
                 if (IsCCStates(CrowdControl.Slience) == false)
                     this.CreatureState = Define.CreatureState.Skill;
-                    
+                else
+                    this.CreatureState = Define.CreatureState.Idle;
+
                 return true;
             }
 
@@ -215,16 +217,22 @@ namespace STELLAREST_2D
             }
         }
 
+        private Coroutine _coIdleTick = null;
         public override void UpdateAnimation()
         {
             switch (CreatureState)
             {
                 case Define.CreatureState.Idle:
-                    MonsterAnimController.Idle();
-                    RendererController.MonsterHead.sprite = this.DefaultHead;
+                    if (_coIdleTick != null)
+                        StopCoroutine(_coIdleTick);
+                    _coIdleTick = StartCoroutine(CoIdleTick());
+
                     break;
 
                 case Define.CreatureState.Run:
+                    if (_coIdleTick != null)
+                        StopCoroutine(_coIdleTick);
+
                     MonsterAnimController.Run();
                     break;
 
@@ -237,6 +245,31 @@ namespace STELLAREST_2D
                     break;
             }
         }
+
+        protected virtual IEnumerator CoIdleTick()
+        {
+            MonsterAnimController.Idle();
+            RendererController.MonsterHead.sprite = this.DefaultHead;
+            Vector3 toTargetDir = Vector3.zero;
+            while (true)
+            {
+                if (this.MainTarget != null)
+                {
+                    toTargetDir = (MainTarget.Center.transform.position - this.Center.transform.position);
+                    if (this.LockFlip == false)
+                        Flip(toTargetDir.x > 0 ? -1 : 1);
+                }
+                
+                if (IsCCStates(CrowdControl.Slience))
+                {
+                    if (toTargetDir.sqrMagnitude > this.Stat.CollectRange * this.Stat.CollectRange)
+                        this.CreatureState = Define.CreatureState.Run;
+                }
+
+                yield return null;
+            }
+        }
+
 
         public bool LockFlip { get; set; } = false;
 

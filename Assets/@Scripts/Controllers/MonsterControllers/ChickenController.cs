@@ -12,6 +12,23 @@ namespace STELLAREST_2D
 {
     public class ChickenController : MonsterController
     {
+        public override bool this[CrowdControl crowdControlType] 
+        { 
+            get => base[crowdControlType]; 
+            set 
+            {
+                base[crowdControlType] = value;
+                if (IsCCStates(CrowdControl.Slience) == false)
+                {
+                    if (this.CreatureState == Define.CreatureState.Idle)
+                    {
+                        Utils.Log("##### RUN #####");
+                        this.CreatureState = Define.CreatureState.Run;
+                    }
+                }
+            }  
+        }
+
         public override void Init(int templateID)
         {
             base.Init(templateID);
@@ -20,7 +37,7 @@ namespace STELLAREST_2D
         protected override void LateInit()
         {
             SkillBook.LevelUp(SkillTemplate.BodyAttack);
-            SkillBook.LevelUp(SkillTemplate.ThrowingStar);
+            //SkillBook.LevelUp(SkillTemplate.ThrowingStar);
         }
 
         protected override void StartAction()

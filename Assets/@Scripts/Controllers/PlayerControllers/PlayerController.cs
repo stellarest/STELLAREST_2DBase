@@ -200,7 +200,6 @@ namespace STELLAREST_2D
                 SkillBook.ActivateAll();
             if (Input.GetKeyDown(KeyCode.L))
                 SkillBook.DeactivateAll();
-
 #endif
             MoveByJoystick();
             CollectEnv();

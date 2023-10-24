@@ -73,7 +73,7 @@ namespace STELLAREST_2D
             {
                 //Utils.Log($"{this._currentCount} / {this.Data.ContinuousCount}");
                 // this._currentCount < this.Data.ContinuousCount
-                if (this._currentCount < 2)
+                if (this._currentCount < this.Data.ContinuousCount)
                 {
                     _coolTimeDelta += Time.deltaTime;
                     if (_coolTimeDelta > this.Data.CoolTime)
@@ -184,8 +184,6 @@ namespace STELLAREST_2D
                 Managers.Object.Despawn(this.GetComponent<SkillBase>());
                 _isRolling = false;
             }
-            // Utils.LogBreak("BREAK.");
-            // Managers.Object.Despawn(this);
         }
     }
 }

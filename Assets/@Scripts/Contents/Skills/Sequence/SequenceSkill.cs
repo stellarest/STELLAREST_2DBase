@@ -14,6 +14,7 @@ namespace STELLAREST_2D
                 StopCoroutine(_coSkillActivate);
 
             IsStopped = false;
+            Utils.Log("ACTIVATE SEQUENCE.");
             _coSkillActivate = StartCoroutine((CoStartSkill()));
         }
 
@@ -30,6 +31,18 @@ namespace STELLAREST_2D
         }
 
         public abstract void DoSkillJob(System.Action callback = null); // 어차피 무조건 재정의해야되서 재정의하는 곳에서 callback 정의하면 될 듯
+
+        public override void Deactivate()
+        {
+            if (_coSkillActivate != null)
+            {
+                Utils.Log("DEACTIVATE SEQUENCE SKILL !!");
+                StopCoroutine(_coSkillActivate);
+                _coSkillActivate = null;
+            }
+
+            base.Deactivate();
+        }
     }
 }
 

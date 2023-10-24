@@ -131,6 +131,7 @@ namespace STELLAREST_2D
                 percent = delta / duration;
                 yield return null;
             }
+
             target[CrowdControl.Slience] = false;
             Managers.Resource.Destroy(goVFX);
             target.SkillBook.ActivateAll();

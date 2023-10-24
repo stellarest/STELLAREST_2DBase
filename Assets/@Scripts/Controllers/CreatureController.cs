@@ -446,7 +446,9 @@ namespace STELLAREST_2D
                 case CrowdControl.Slience:
                     {
                         if (this[ccType] == false)
+                        {
                             StartCoroutine(Managers.CrowdControl.CoSilence(this, from));
+                        }
                         else
                             Utils.Log("Already Silence,,,");
                     }
