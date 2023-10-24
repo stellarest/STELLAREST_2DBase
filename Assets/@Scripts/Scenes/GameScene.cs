@@ -92,10 +92,10 @@ namespace STELLAREST_2D
             // +++ REINA +++
             // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Creatures.Player.Reina_ArrowMaster,
             //                 Define.ObjectType.Player, isPooling: false);
-            var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Creatures.Player.Reina_ElementalArcher,
-                            Define.ObjectType.Player, isPooling: false);
-            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Creatures.Player.Reina_ForestGuardian,
-            //      Define.ObjectType.Player, isPooling: false);
+            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Creatures.Player.Reina_ElementalArcher,
+            //                 Define.ObjectType.Player, isPooling: false);
+            var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Creatures.Player.Reina_ForestGuardian,
+                 Define.ObjectType.Player, isPooling: false);
 
             var CMcam = Camera.main.GetComponent<CinemachineBrain>().ActiveVirtualCamera.VirtualCameraGameObject;
             CMcam.GetComponent<CameraController>().SetTarget(player.gameObject);

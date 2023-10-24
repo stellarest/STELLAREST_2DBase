@@ -66,6 +66,13 @@ namespace STELLAREST_2D
             target[CrowdControl.Slow] = true;
             while (percent < 1f)
             {
+                if (target.IsDeadState)
+                {
+                    target[CrowdControl.Slow] = false;
+                    Managers.Resource.Destroy(goVFX);
+                    yield break;
+                }
+
                 goVFX.transform.position = target.LoadVFXEnvSpawnPos(VFXEnv.Slow);
                 delta += Time.deltaTime;
                 percent = delta / duration;

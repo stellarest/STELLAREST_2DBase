@@ -171,7 +171,7 @@ namespace STELLAREST_2D
                 Slow = 300101,
                 KnockBack = 300102,
                 Slience = 300103,
-                Blind = 300104,
+                Blind = 300104, // ??? 뺼까
                 Charm = 300105,
                 Flee = 300106,
                 Sleep = 300107,

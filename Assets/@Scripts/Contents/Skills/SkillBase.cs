@@ -89,42 +89,6 @@ namespace STELLAREST_2D
                     }
                 }
             }
-
-            foreach (var particle in root.GetComponentsInChildren<ParticleSystem>(includeInactive: true))
-            {
-                if (particle != null)
-                {
-                    OnCustomParticleStopped particleStopped = particle.gameObject.GetComponent<OnCustomParticleStopped>();
-                    if (particleStopped == null)
-                        continue;
-                    else
-                    {
-                        var main = particle.main;
-                        if (main.stopAction != ParticleSystemStopAction.Callback)
-                            main.stopAction = ParticleSystemStopAction.Callback;
-
-                        particleStopped.SkillParticleRootTarget = particle.transform.parent.GetComponent<SkillBase>();
-                        return;
-                    }
-                }
-
-                // OnCustomParticleStopped particleStopped = particle.GetComponent<OnCustomParticleStopped>();
-                // if (particleStopped != null && particleStopped.SkillParticleRootTarget == null)
-                // {
-                //     var main = particle.main;
-                //     if (main.stopAction != ParticleSystemStopAction.Callback)
-                //         main.stopAction = ParticleSystemStopAction.Callback;
-
-                //     particleStopped.SkillParticleRootTarget = particle.transform.parent.GetComponent<SkillBase>();
-                //     Utils.Log($"RootTarget : {particleStopped.SkillParticleRootTarget}");
-                //     return;
-                // }
-                // else if (particleStopped != null && particleStopped.SkillParticleRootTarget != null)
-                // {
-                //     Utils.Log("?");
-                //     return;
-                // }
-            }
         }
 
         protected bool _isCompleteInitOrigin = false;

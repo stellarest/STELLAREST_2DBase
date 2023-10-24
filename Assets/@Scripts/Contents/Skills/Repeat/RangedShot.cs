@@ -125,7 +125,10 @@ namespace STELLAREST_2D
             else if (Utils.IsElementalArcher(this.Owner))
                 OnCollisionElementalArcherMastery(cc);
             else if (Utils.IsForestGuardian(this.Owner))
-                OnCollisionForestGuardianMastery(cc);
+            {
+                HitPoint = other.ClosestPoint(this.transform.position);
+                OnCollisionForestGuardianMastery(cc, HitPoint);
+            }
         }
 
         private void OnCollisionElementalArcherMastery(CreatureController cc)
@@ -140,7 +143,7 @@ namespace STELLAREST_2D
             }
         }
 
-        private void OnCollisionForestGuardianMastery(CreatureController cc)
+        private void OnCollisionForestGuardianMastery(CreatureController cc, Vector3 hitPoint)
         {
             cc.OnDamaged(this.Owner, this);
             if (this.Data.Grade > Define.InGameGrade.Default)
