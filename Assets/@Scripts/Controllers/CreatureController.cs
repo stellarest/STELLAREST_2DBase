@@ -4,6 +4,7 @@ using STELLAREST_2D.Data;
 using UnityEngine;
 
 using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
+using VFXImpact = STELLAREST_2D.Define.TemplateIDs.VFX.ImpactHit;
 using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
 
 namespace STELLAREST_2D
@@ -428,7 +429,10 @@ namespace STELLAREST_2D
                 case CrowdControl.Slow:
                     {
                         if (this[ccType] == false)
+                        {
                             StartCoroutine(Managers.CrowdControl.CoSlow(this, from));
+                            TryContinuousCrowControl(this, from);
+                        }
                         else
                             Utils.Log("Already Slow,,,");
                     }
@@ -454,6 +458,41 @@ namespace STELLAREST_2D
                     }
                     break;
             }
+        }
+
+        private void TryContinuousCrowControl(CreatureController target, SkillBase from)
+        {
+            if (Managers.Game.TryCrowdControl(from.Data.ContinuousCrowdControlRatio) == false)
+                return;
+
+            CrowdControl continuousCCType = from.Data.ContinuousCrowdControlType;
+            switch (continuousCCType)
+            {
+                case CrowdControl.None:
+                    return;
+
+                case CrowdControl.Slience:
+                    {
+                        if (this[continuousCCType] == false)
+                        {
+                            Managers.VFX.ImpactHit(from.Data.VFX_ImpactHit_ForContinuousCrowdControl, target, from);
+                            StartCoroutine(Managers.CrowdControl.CoSilence(this, from, true));
+                        }
+                        else
+                            Utils.Log("Already Silence,,,");
+                    }
+                    break;
+            }
+
+            // CHECK SUB CROWD CONTROL
+            // if (from.Data.ContinuousCrowdControlType != CrowdControl.None && 
+            //     Managers.Game.TryCrowdControl(from.Data.ContinuousCrowdControlRatio))
+            // {
+            //     if (this[from.Data.ContinuousCrowdControlType] == false)
+            //         StartCoroutine(Managers.CrowdControl.)
+            //     else
+            //         Utils.Log($"Already {from.Data.ContinuousCrowdControlType},,,");
+            // }
         }
 
         public void ClearCrowdControlStates()

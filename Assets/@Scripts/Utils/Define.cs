@@ -190,13 +190,15 @@ namespace STELLAREST_2D
                 {
                     None = -1,
                     Hit = 400100,
-                    Wind = 400101
+                    Leaves = 400101,
+                    Light = 400102
                 }
 
                 public enum Trail
                 {
                     None = -1,
                     Wind,
+                    Light,
                 }
 
                 public enum Environment
@@ -236,9 +238,12 @@ namespace STELLAREST_2D
 
                 // VFX_IMPACT
                 public const string VFX_IMPACT_HIT_DEFAULT = "VFX_Impact_Hit_Default.prefab";
+                public const string VFX_IMPACT_HIT_LEAVES = "VFX_Impact_Hit_Leaves.prefab";
+                public const string VFX_IMPACT_HIT_LIGHT = "VFX_Impact_Hit_Light.prefab";
 
                 // VFX Trail
                 public const string VFX_TRAIL_WIND = "VFX_Trail_Wind.prefab";
+                public const string VFX_TRAIL_LIGHT = "VFX_Trail_Light.prefab";
 
                 // VFX_ENV : Spawn, Damage, Dodge, Skull, Dust
                 public const string VFX_ENV_SPAWN = "VFX_Env_Spawn.prefab";

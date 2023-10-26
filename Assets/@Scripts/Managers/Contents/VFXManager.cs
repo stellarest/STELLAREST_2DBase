@@ -158,38 +158,62 @@ namespace STELLAREST_2D
             else
                 impactPoint = from.transform.position;
 
-            GameObject go = null;
+            // VFX_IMPACT_HIT
+            GameObject goImpactHit = null;
             switch (templateOrigin)
             {
                 case VFXImpact.None:
                     return;
 
                 case VFXImpact.Hit:
-                    go = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_IMPACT_HIT_DEFAULT, null, true);
+                    goImpactHit = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_IMPACT_HIT_DEFAULT, null, true);
+                    break;
+
+                case VFXImpact.Leaves:
+                    goImpactHit = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_IMPACT_HIT_LEAVES, null, true);
+                    break;
+
+                case VFXImpact.Light:
+                    goImpactHit = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_IMPACT_HIT_LIGHT, null, true);
                     break;
             }
             
-            go.transform.position = impactPoint;
+            goImpactHit.transform.position = impactPoint;
         }
 
-        public void Trail(VFXTrail trailType, BaseController targetInSocket, CreatureController owner)
+        public GameObject Trail(VFXTrail trailType, BaseController targetInSocket, CreatureController owner)
         {
             if (targetInSocket.TrailSocket == null)
                 Utils.LogCritical(nameof(VFXManager), nameof(Trail), "You have to set TrailSocket in advance if you want to use Trail.");
 
+            GameObject goTrail = null;
             switch (trailType)
             {
                 case VFXTrail.None:
-                    return;
+                    return goTrail;
 
                 case VFXTrail.Wind:
-                    GameObject go = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_TRAIL_WIND, null, true);
-                    TrailTarget trailTarget = go.GetComponent<TrailTarget>();
-                    trailTarget.transform.position = owner.FireSocketPosition;
-                    trailTarget.Owner = owner;
-                    trailTarget.Target = targetInSocket;
+                    {
+                        goTrail = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_TRAIL_WIND, null, true);
+                        TrailTarget trailTarget = goTrail.GetComponent<TrailTarget>();
+                        trailTarget.transform.position = owner.FireSocketPosition;
+                        trailTarget.Owner = owner;
+                        trailTarget.Target = targetInSocket;
+                    }
+                    break;
+
+                case VFXTrail.Light:
+                    {
+                        goTrail = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_TRAIL_LIGHT, null, true);
+                        TrailTarget trailTarget = goTrail.GetComponent<TrailTarget>();
+                        trailTarget.transform.position = owner.FireSocketPosition;
+                        trailTarget.Owner = owner;
+                        trailTarget.Target = targetInSocket;
+                    }
                     break;
             }
+
+            return goTrail;
         }
 
         public void Damage(CreatureController cc, float damage, bool isCritical)
@@ -205,7 +229,6 @@ namespace STELLAREST_2D
             if (spawnPos == Vector3.zero)
                 Utils.LogCritical(nameof(VFXManager), nameof(Environment), "Failed to load VFX Env Spawn Pos.");
 #endif
-
             if (cc.IsMonster()) // 현재 크티티컬은 몬스터만 받아서 필요 없을수도
             {
                 if (isCritical) 

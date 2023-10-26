@@ -32,7 +32,6 @@ namespace STELLAREST_2D
             HitPoint = other.ClosestPoint(this.transform.position);
             // Debug.DrawRay(cc.Center.position, (cc.Center.position - HitPoint).normalized * 999f, Color.magenta, -1f);
             // Utils.LogBreak("BREAK.");
-
             cc.OnDamaged(this.Owner, this);
             ChildHitCollider.enabled = false;
         }

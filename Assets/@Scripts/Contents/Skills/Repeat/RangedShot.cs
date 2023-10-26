@@ -1,6 +1,7 @@
 using Assets.HeroEditor.Common.Scripts.Common;
 using STELLAREST_2D.Data;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 
 using VFXTrail = STELLAREST_2D.Define.TemplateIDs.VFX.Trail;
@@ -10,9 +11,9 @@ namespace STELLAREST_2D
     public class RangedShot : RepeatSkill
     {
         public SpriteTrail.SpriteTrail SpriteTrail { get; private set; } = null;
-        private RangedShotChild _rangedShotChild01 = null;
-        private GameObject _child01 = null;
-        private GameObject _child02 = null;
+        private RangedShotChild _rangedShotChild = null;
+        private GameObject _goChild = null;
+        private GameObject _trail = null;
 
         public override void InitOrigin(CreatureController owner, SkillData data)
         {
@@ -59,8 +60,8 @@ namespace STELLAREST_2D
         {
             if (this.Data.Grade > Define.InGameGrade.Default)
             {
-                _rangedShotChild01 = Utils.FindChild<RangedShotChild>(gameObject);
-                _rangedShotChild01.Init(ownerFromOrigin, dataFromOrigin, this);
+                _rangedShotChild = Utils.FindChild<RangedShotChild>(gameObject);
+                _rangedShotChild.Init(ownerFromOrigin, dataFromOrigin, this);
             }
 
             if (this.Data.Grade == this.Data.MaxGrade)
@@ -69,39 +70,35 @@ namespace STELLAREST_2D
 
         private void InitForestGuardianMastery(CreatureController ownerFromOrigin, SkillData dataFromOrigin)
         {
-            if (this.Data.Grade == Define.InGameGrade.Elite)
-                _child01 = this.transform.GetChild(1).gameObject;
-            else if (this.Data.Grade == this.Data.MaxGrade)
+            if (this.Data.Grade == this.Data.MaxGrade)
             {
-                _child01 = this.transform.GetChild(1).gameObject;
-                _child02 = this.transform.GetChild(2).gameObject;
+                TrailSocket = Utils.FindChild(gameObject, "TrailSocket").transform;
+                _goChild = this.transform.GetChild(2).gameObject;
+                _goChild.transform.localScale += (Vector3.one * 0.5f);
             }
         }
 
         private void LaunchElementalArcherMastery()
         {
-            if (_rangedShotChild01 != null)
+            if (_rangedShotChild != null)
             {
-                _rangedShotChild01.ChildHitCollider.enabled = true;
+                _rangedShotChild.ChildHitCollider.enabled = true;
                 SR.enabled = true;
                 HitCollider.enabled = true;
             }
 
-            if (this.Data.Grade == this.Data.MaxGrade)
+            if (TrailSocket != null)
                 Managers.VFX.Trail(VFXTrail.Wind, this, this.Owner);
         }
 
         private void LaunchForestGuardianMastery()
         {
-            if (this.Data.Grade > Define.InGameGrade.Default)
-            {
-                SR.enabled = true;
-                if (_child01 != null)
-                    _child01.SetActive(false);
+            SR.enabled = true;
+            if (_goChild != null)
+                _goChild.SetActive(false);
 
-                if (_child02 != null)
-                    _child02.SetActive(false);
-            }
+            if (TrailSocket != null)
+                _trail = Managers.VFX.Trail(VFXTrail.Light, this, this.Owner);
         }
 
         protected override void DoSkillJob()
@@ -135,9 +132,9 @@ namespace STELLAREST_2D
         {
             if (this.Data.Grade == Define.InGameGrade.Default)
                 cc.OnDamaged(this.Owner, this);
-            else if (_rangedShotChild01 != null)
+            else if (_rangedShotChild != null)
             {
-                _rangedShotChild01.gameObject.SetActive(true);
+                _rangedShotChild.gameObject.SetActive(true);
                 SR.enabled = false;
                 //HitCollider.enabled = false;
             }
@@ -146,35 +143,30 @@ namespace STELLAREST_2D
         private void OnCollisionForestGuardianMastery(CreatureController cc, Vector3 hitPoint)
         {
             cc.OnDamaged(this.Owner, this);
-            if (this.Data.Grade > Define.InGameGrade.Default)
+            if (_goChild != null)
             {
+                _goChild.SetActive(true);
                 SR.enabled = false;
-
-                if (_child01 != null)
-                    _child01.SetActive(true);
-
-                if (_child02 != null)
-                    _child02.SetActive(true);
             }
+    
+            if (_trail != null)
+                _trail.SetActive(false);
         }
 
         private void OnDisable()
         {
             if (Utils.IsElementalArcher(this.Owner))
             {
-                if (_rangedShotChild01 != null)
-                    _rangedShotChild01.SetActive(false);
+                if (_rangedShotChild != null)
+                    _rangedShotChild.SetActive(false);
             }
             else if (Utils.IsForestGuardian(this.Owner))
             {
-                if (_child01 == null || _child02 == null)
-                    return;
-
-                if (_child01 != null)
-                    _child01.SetActive(false);
-
-                if (_child02 != null)
-                    _child02.SetActive(false);
+                if (_goChild != null)
+                    _goChild.SetActive(false);
+                    
+                if (_trail != null)
+                    _trail.SetActive(false);
             }
         }
     }

@@ -111,7 +111,7 @@ namespace STELLAREST_2D.Data
         public float[] ContinuousAngles;
         public float[] ContinuousFlipXs;
         public float[] ContinuousFlipYs;
-        public Vector3[] AdditionalLocalPositions;
+        //public Vector3[] AdditionalLocalPositions;
         public Vector3[] ScaleInterpolations;
         public bool[] IsOnlyVisibles;
         public bool IsColliderHalfRatio;
@@ -124,6 +124,13 @@ namespace STELLAREST_2D.Data
         public float CrowdControlRatio;
         public float CrowdControlDuration;
         public float CrowdControlIntensity;
+
+        public Define.TemplateIDs.CrowdControl ContinuousCrowdControlType;
+        public Define.TemplateIDs.VFX.ImpactHit VFX_ImpactHit_ForContinuousCrowdControl;
+        public float ContinuousCrowdControlRatio;
+        public float ContinuousCrowdControlDuration;
+        public float ContinuousCrowdControlIntensity;
+
         public float CoolTime;
     }
 

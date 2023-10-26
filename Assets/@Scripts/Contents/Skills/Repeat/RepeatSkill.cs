@@ -92,6 +92,10 @@ namespace STELLAREST_2D
             float[] continuousSpeedRatios = new float[continuousCount];
             float[] continuousFlipXs = new float[continuousCount];
             float[] continuousFlipYs = new float[continuousCount];
+
+            float [] addtionalLocalPositionXs = new float[continuousCount];
+            float [] addtionalLocalPositionYs = new float[continuousCount];
+
             float[] interpolateTargetScaleXs = new float[continuousCount];
             float[] interpolateTargetScaleYs = new float[continuousCount];
             bool[] isOnlyVisibles = new bool[continuousCount];

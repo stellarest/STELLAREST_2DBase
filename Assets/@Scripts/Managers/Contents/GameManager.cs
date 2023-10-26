@@ -59,6 +59,7 @@ namespace STELLAREST_2D
         }
 
         public bool TryCrowdControl(SkillBase from) => UnityEngine.Random.Range(0f, 1f) <= from.Data.CrowdControlRatio;
+        public bool TryCrowdControl(float ratio) => UnityEngine.Random.Range(0f, 1f) <= ratio;
 
         private int _gem = 0;
         public event Action<int> OnGemCountChanged;

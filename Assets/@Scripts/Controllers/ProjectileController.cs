@@ -74,6 +74,7 @@ namespace STELLAREST_2D
         private float _continuousSpeedRatio = 0f;
         private float _continuousFlipX = 0f;
         private float _continuousFlipY = 0f;
+
         private Vector3 _interpolateStartScale = Vector3.zero;
         private Vector3 _interpolateTargetScale = Vector3.zero;
         private bool _isOnReadyInterpolateScale = false;
@@ -241,9 +242,11 @@ namespace STELLAREST_2D
             float degrees = Mathf.Atan2(_shootDir.y, _shootDir.x) * Mathf.Rad2Deg;
             this.transform.rotation = Quaternion.Euler(0, 0, degrees);
             this.transform.localScale = Vector3.one;
+            float movementSpeed = _movementSpeed * _continuousSpeedRatio;
+            
             while (true)
             {
-                this.transform.position += _shootDir * this._movementSpeed * Time.deltaTime;
+                this.transform.position += _shootDir * movementSpeed * Time.deltaTime;
                 yield return null;
             }
         }
@@ -445,6 +448,10 @@ namespace STELLAREST_2D
             float delta = 0f;
             float percent = 0f;
 
+            // TEMP REINA MASTERY INTERPOLATION
+            // if (_interpolateStartScale.x < 0)
+            //     transform.rotation = Quaternion.Euler(0, 0, transform.rotation.eulerAngles.z - 180f);
+
             while (percent < 1f)
             {
                 delta += Time.deltaTime;
@@ -492,10 +499,10 @@ namespace STELLAREST_2D
 
                 case SkillTemplate.ForestGuardianMastery:
                     {
-                        if (this.Data.Grade == Define.InGameGrade.Default)
-                            Managers.Object.Despawn(this);
-                        else
+                        if (this.Data.Grade > Define.InGameGrade.Elite)
                             StopCoroutine(_coProjectile);
+                        else
+                            Managers.Object.Despawn(this);
                     }
                     break;
             }

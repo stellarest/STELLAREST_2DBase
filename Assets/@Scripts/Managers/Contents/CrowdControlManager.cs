@@ -6,6 +6,7 @@ using STELLAREST_2D.Data;
 using UnityEngine;
 
 using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
+using VFXImpact = STELLAREST_2D.Define.TemplateIDs.VFX.ImpactHit;
 using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
 
 namespace STELLAREST_2D
@@ -115,11 +116,15 @@ namespace STELLAREST_2D
             target[CrowdControl.KnockBack] = false;
         }
 
-        public IEnumerator CoSilence(CreatureController target, SkillBase from)
+        public IEnumerator CoSilence(CreatureController target, SkillBase from, bool isCalledFromContinuous = false)
         {
             float delta = 0f;
             float percent = 0f;
-            float duration = from.Data.CrowdControlDuration;
+            float duration = 0;
+            if (isCalledFromContinuous == false)
+                duration = from.Data.CrowdControlDuration;
+            else
+                duration = from.Data.ContinuousCrowdControlDuration;
 
             target.SkillBook.DeactivateAll();
             GameObject goVFX = Managers.VFX.Environment(VFXEnv.Silence, target);
