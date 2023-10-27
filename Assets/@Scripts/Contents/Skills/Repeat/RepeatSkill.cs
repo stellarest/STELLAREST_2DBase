@@ -122,9 +122,19 @@ namespace STELLAREST_2D
             int maxBounceCount = this.Data.MaxBounceCount;
             int maxPenetrationCount = this.Data.MaxPenetrationCount;
 
+            Vector3 spawnPosOnFirstPoint = (this.Data.IsOnFireSocket) ? this.Owner.FireSocketPosition : this.Owner.transform.position;
             for (int i = 0; i < continuousCount; ++i)
             {
                 Vector3 spawnPos = (this.Data.IsOnFireSocket) ? this.Owner.FireSocketPosition : this.Owner.transform.position;
+
+                if (Utils.IsMeleeSwing(this.Data.OriginalTemplate))
+                {
+                    Utils.Log("IS MELEE SWING !!");
+                    spawnPos = spawnPosOnFirstPoint;
+                }
+                else
+                    Utils.Log("IS NOT MELEE SWING,,,");
+
                 SkillBase clone = Managers.Object.Spawn<SkillBase>(spawnPos: spawnPos, templateID: this.Data.TemplateID,
                         spawnObjectType: Define.ObjectType.Skill, isPooling: true);
                 clone.InitClone(this.Owner, this.Data);

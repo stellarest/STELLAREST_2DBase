@@ -191,7 +191,7 @@ namespace STELLAREST_2D
                     None = -1,
                     Hit = 400100,
                     Leaves = 400101,
-                    Light = 400102
+                    Light = 400102,
                 }
 
                 public enum Trail

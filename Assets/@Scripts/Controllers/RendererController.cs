@@ -637,6 +637,7 @@ namespace STELLAREST_2D
                         if (nextSPRs[i].sprite != null)
                         {
                             OwnerSPRs[i].gameObject.SetActive(nextSPRs[i].gameObject.activeSelf);
+                            OwnerSPRs[i].gameObject.GetComponent<SpriteRenderer>().enabled = nextSPRs[i].gameObject.activeSelf; // 추가
                             OwnerSPRs[i].sprite = nextSPRs[i].sprite;
                             OwnerSPRs[i].color = nextSPRs[i].color;
                         }

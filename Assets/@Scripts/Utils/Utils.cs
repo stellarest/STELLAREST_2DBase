@@ -5,11 +5,8 @@ using UnityEngine;
 
 using Debug = UnityEngine.Debug;
 using STELLAREST_2D.Data;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Xml.Schema;
-using Assets.HeroEditor.InventorySystem.Scripts.Data;
-using UnityEditor.ShaderGraph;
-using UnityEngine.UIElements;
+using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
+
 //using Unity.Mathematics;
 
 public class ShowOnlyAttribute : PropertyAttribute
@@ -305,6 +302,22 @@ namespace STELLAREST_2D
         public static bool IsArrowMaster(CreatureController cc) => cc?.Stat.TemplateID == (int)Define.TemplateIDs.Creatures.Player.Reina_ArrowMaster;
         public static bool IsElementalArcher(CreatureController cc) => cc?.Stat.TemplateID == (int)Define.TemplateIDs.Creatures.Player.Reina_ElementalArcher;
         public static bool IsForestGuardian(CreatureController cc) => cc?.Stat.TemplateID == (int)Define.TemplateIDs.Creatures.Player.Reina_ForestGuardian;
+
+        public static bool IsMeleeSwing(SkillTemplate templateOrigin)
+        {
+            switch (templateOrigin)
+            {
+                case SkillTemplate.PaladinMastery:
+                case SkillTemplate.KnightMastery:
+                case SkillTemplate.PhantomKnightMastery:
+                case SkillTemplate.AssassinMastery:
+                case SkillTemplate.ThiefMastery:
+                    return true;
+
+                default:
+                    return false;
+            }
+        }
 
 #if UNITY_EDITOR
         [Conditional("UNITY_EDITOR")]

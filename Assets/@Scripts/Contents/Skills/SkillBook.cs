@@ -241,6 +241,14 @@ namespace STELLAREST_2D
         private void SetFirstSkill()
             => FirstSkill = (SkillGroupsDict.Count > 0) ? (SkillTemplate)SkillGroupsDict.First().Key : SkillTemplate.None;
 
+        public Define.InGameGrade GetFirstSkillGrade()
+        {
+            if (SkillGroupsDict.TryGetValue((int)this.FirstSkill, out SkillGroup group) == false)
+                Utils.LogCritical(nameof(SkillBook), nameof(GetFirstSkillGrade), "Failed to load Skill Group of Firs tSkill Template.");
+
+            return group.GetCanActiveSkillMember().Data.Grade;
+        }
+
         public void LevelUp(SkillTemplate templateOrigin)
         {
             SkillBase newSkill = Acquire(templateOrigin);

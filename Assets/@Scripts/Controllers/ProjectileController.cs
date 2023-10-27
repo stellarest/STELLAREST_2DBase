@@ -191,6 +191,11 @@ namespace STELLAREST_2D
                     _coProjectile = StartCoroutine(CoMeleeSwing());
                     break;
                 case SkillTemplate.ThiefMastery:
+                    StartDestroy(_lifeTime);
+                    OnSetParticleInfo?.Invoke(_indicatorAngle, _initialLookAtDir, _continuousAngle, _continuousFlipX, _continuousFlipY);
+                    //_shootDir = Quaternion.Euler(0, 0, _continuousAngle * -1) * _shootDir;
+                    _coProjectile = StartCoroutine(CoMeleeSwing());
+                    break;
                 case SkillTemplate.NinjaMastery:
                     break;
 
