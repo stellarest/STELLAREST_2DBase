@@ -197,6 +197,8 @@ namespace STELLAREST_2D
                     _coProjectile = StartCoroutine(CoMeleeSwing());
                     break;
                 case SkillTemplate.NinjaMastery:
+                    StartDestroy(_lifeTime);
+                    _coProjectile = StartCoroutine(CoRangedShot());
                     break;
 
 
@@ -517,6 +519,14 @@ namespace STELLAREST_2D
                             StopCoroutine(_coProjectile);
                         else
                             Managers.Object.Despawn(this);
+                    }
+                    break;
+
+                case SkillTemplate.NinjaMastery:
+                    if (_penetrationCount++ >= _maxPenetrationCount)
+                    {
+                        _penetrationCount = 0;
+                        Managers.Object.Despawn(this);
                     }
                     break;
             }

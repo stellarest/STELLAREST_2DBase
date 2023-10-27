@@ -126,6 +126,11 @@ namespace STELLAREST_2D
                 HitPoint = other.ClosestPoint(this.transform.position);
                 OnCollisionForestGuardianMastery(cc, HitPoint);
             }
+            else // NINJA TEMP
+            {
+                HitPoint = other.ClosestPoint(this.transform.position);
+                cc.OnDamaged(this.Owner, this);
+            }
         }
 
         private void OnCollisionElementalArcherMastery(CreatureController cc)

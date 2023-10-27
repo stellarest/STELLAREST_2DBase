@@ -98,10 +98,12 @@ namespace STELLAREST_2D
             //                 Define.ObjectType.Player, isPooling: false);
 
             // +++ KENNETH +++
-            var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Creatures.Player.Kenneth_Assassin,
-                                Define.ObjectType.Player, isPooling: false);
+            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Creatures.Player.Kenneth_Assassin,
+            //                     Define.ObjectType.Player, isPooling: false);
             // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Creatures.Player.Kenneth_Thief,
             //                     Define.ObjectType.Player, isPooling: false);
+            var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Creatures.Player.Kenneth_Ninja,
+                                Define.ObjectType.Player, isPooling: false); 
 
             var CMcam = Camera.main.GetComponent<CinemachineBrain>().ActiveVirtualCamera.VirtualCameraGameObject;
             CMcam.GetComponent<CameraController>().SetTarget(player.gameObject);

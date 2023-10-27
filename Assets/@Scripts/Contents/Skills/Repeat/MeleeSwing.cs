@@ -74,6 +74,7 @@ namespace STELLAREST_2D
             if (cc.IsValid() == false)
                 return;
 
+            HitPoint = other.ClosestPoint(this.transform.position);
             cc.OnDamaged(attacker: this.Owner, from: this);
         }
 

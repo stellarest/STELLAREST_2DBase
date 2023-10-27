@@ -93,6 +93,8 @@ namespace STELLAREST_2D
             float duration = from.Data.CrowdControlDuration;
             float intensity = from.Data.CrowdControlIntensity;
 
+            Utils.Log("KNOCK BACK START !!");
+
             Vector3 knockBackDir = (target.Center.position - from.HitPoint).normalized;
             target[CrowdControl.KnockBack] = true;
             float dustGenPercentage = 0.2f;
