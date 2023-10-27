@@ -185,6 +185,15 @@ namespace STELLAREST_2D
                     break;
 
 
+                case SkillTemplate.AssassinMastery:
+                    StartDestroy(_lifeTime);
+                    OnSetParticleInfo?.Invoke(_indicatorAngle, _initialLookAtDir, _continuousAngle, _continuousFlipX, _continuousFlipY);
+                    _coProjectile = StartCoroutine(CoMeleeSwing());
+                    break;
+                case SkillTemplate.ThiefMastery:
+                case SkillTemplate.NinjaMastery:
+                    break;
+
 
                 case SkillTemplate.ThrowingStar:
                     StartDestroy(_lifeTime);
