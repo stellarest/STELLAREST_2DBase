@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Animations;
 using UnityEngine;
 
 namespace STELLAREST_2D
@@ -8,9 +9,13 @@ namespace STELLAREST_2D
     {
         private readonly int UPPER_READY = Animator.StringToHash("ReadyMelee1H");
         private readonly int UPPER_ATTACK = Animator.StringToHash("ThrowKunai");
-        private readonly int UPPER_ATTACK_ULTIMATE = Animator.StringToHash("ThrowKunai_Ninja_Ultimate");
+        private readonly int UPPER_ATTACK_ELITE = Animator.StringToHash("ThrowKunai_Elite");
+        private readonly int UPPER_ATTACK_ULTIMATE = Animator.StringToHash("ThrowKunai_Ultimate");
+
+        private readonly int UPPER_ATTACK_MELEE_SWING = Animator.StringToHash("SlashMelee2H");
+
         private readonly int LOWER_NINJA_RUN = Animator.StringToHash("NinjaRun");
-        public override void Init(CreatureController owner) 
+        public override void Init(CreatureController owner)
         {
             base.Init(owner);
             SetMovementSpeed(2f);
@@ -20,10 +25,31 @@ namespace STELLAREST_2D
         public override void Ready() => AnimController.Play(UPPER_READY);
         public override void Attack()
         {
-            if (this.Owner.SkillBook.GetFirstSkillGrade() < Define.InGameGrade.Ultimate)
-                AnimController.Play(UPPER_ATTACK);
-            else
-                AnimController.Play(UPPER_ATTACK_ULTIMATE);
+            // CreatureController cc = Utils.GetClosestCreatureTargetFromAndRange<MonsterController>
+            //     (this.Owner.gameObject, this.Owner, this.Owner.Stat.CollectRange);
+            // if (cc != null)
+            // {
+            //     Utils.Log("CC IS VALID !!");
+            //     AnimController.Play(UPPER_ATTACK_MELEE_SWING);
+            //     return;
+            // }
+            // else
+            //     Utils.Log("NULL");
+
+            switch (this.Owner.SkillBook.GetFirstSkillGrade())
+            {
+                case Define.InGameGrade.Default:
+                    AnimController.Play(UPPER_ATTACK);
+                    break;
+
+                case Define.InGameGrade.Elite:
+                    AnimController.Play(UPPER_ATTACK_ELITE);
+                    break;
+
+                case Define.InGameGrade.Ultimate:
+                    AnimController.Play(UPPER_ATTACK_ULTIMATE);
+                    break;
+            }
         }
     }
 }

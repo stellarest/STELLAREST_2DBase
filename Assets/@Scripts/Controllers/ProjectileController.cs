@@ -543,20 +543,21 @@ namespace STELLAREST_2D
                             Managers.Object.Despawn(this);
                         else
                         {
-                            RangedShot kunaiUltimate = this.GetComponent<RangedShot>();
-                            if (kunaiUltimate.IsLaunchedFromOwner && kunaiUltimate.IsAlreadyGeneratedKunais == false)
-                            {
-                                // Stop하지말고 숨기기만하고,,
-                                // StopCoroutine(_coProjectile);
-                                //this.HitCollider.enabled = false;
-                                this.SR.enabled = false;
-                            }
-                            else if (kunaiUltimate.IsLaunchedFromOwner && kunaiUltimate.IsAlreadyGeneratedKunais)
-                            {
-                                Managers.Object.Despawn(this);
-                            }
-                            else
-                                Managers.Object.Despawn(this);
+                            Managers.Object.Despawn(this);
+
+                            // RangedShot kunaiUltimate = this.GetComponent<RangedShot>();
+                            // if (kunaiUltimate.IsLaunchedFromOwner && kunaiUltimate.IsAlreadyGeneratedKunais == false)
+                            // {
+                            //     StopCoroutine(_coProjectile);
+                            //     this.HitCollider.enabled = false;
+                            //     this.SR.enabled = false;
+                            // }
+                            // // else if (kunaiUltimate.IsLaunchedFromOwner && kunaiUltimate.IsAlreadyGeneratedKunais)
+                            // // {
+                            // //     Managers.Object.Despawn(this);
+                            // // }
+                            // else
+                            //     Managers.Object.Despawn(this);
                         }
                     }
                     break;

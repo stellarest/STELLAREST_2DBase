@@ -8,7 +8,7 @@ namespace STELLAREST_2D
     {
         private readonly int UPPER_READY = Animator.StringToHash("ReadyMelee1H");
         private readonly int UPPER_ATTACK = Animator.StringToHash("JabMelee1H");
-        private readonly int UPPER_ATTACK_ULTIMATE = Animator.StringToHash("JabMelee_Paired_Assassin_Ultimate");
+        private readonly int UPPER_ATTACK_ULTIMATE = Animator.StringToHash("JabMelee_Paired_Ultimate");
         public override void Init(CreatureController owner) => base.Init(owner);
         public override void Ready() => AnimController.Play(UPPER_READY);
         public override void Attack()

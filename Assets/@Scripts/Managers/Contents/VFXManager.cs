@@ -146,7 +146,7 @@ namespace STELLAREST_2D
             }
         }
 
-        public void ImpactHit(VFXImpact templateOrigin, CreatureController target, SkillBase from)
+        public GameObject ImpactHit(VFXImpact templateOrigin, CreatureController target, SkillBase from)
         {
             Vector3 impactPoint = Vector3.zero;
             if (from.Data.IsImpactPointOnTarget)
@@ -163,7 +163,7 @@ namespace STELLAREST_2D
             switch (templateOrigin)
             {
                 case VFXImpact.None:
-                    return;
+                    return goImpactHit;
 
                 case VFXImpact.Hit:
                     goImpactHit = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_IMPACT_HIT_DEFAULT, null, true);
@@ -183,6 +183,8 @@ namespace STELLAREST_2D
             }
             
             goImpactHit.transform.position = impactPoint;
+
+            return goImpactHit;
         }
 
         public GameObject Trail(VFXTrail trailType, BaseController targetInSocket, CreatureController owner)

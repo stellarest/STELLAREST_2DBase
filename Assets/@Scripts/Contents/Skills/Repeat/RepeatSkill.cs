@@ -126,11 +126,11 @@ namespace STELLAREST_2D
             for (int i = 0; i < continuousCount; ++i)
             {
                 Vector3 spawnPos = (this.Data.IsOnFireSocket) ? this.Owner.FireSocketPosition : this.Owner.transform.position;
-                // if (Utils.IsMeleeSwing(this.Data.OriginalTemplate))
-                // {
-                //     Utils.Log("IS MELEE SWING !!");
-                //     spawnPos = spawnPosOnFirstPoint;
-                // }
+                if (Utils.IsMeleeSwing(this.Data.OriginalTemplate))
+                {
+                    //Utils.Log("IS MELEE SWING !!");
+                    spawnPos = spawnPosOnFirstPoint;
+                }
                 // else
                 //     Utils.Log("IS NOT MELEE SWING,,,");
                 
