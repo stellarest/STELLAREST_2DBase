@@ -176,6 +176,10 @@ namespace STELLAREST_2D
                 case VFXImpact.Light:
                     goImpactHit = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_IMPACT_HIT_LIGHT, null, true);
                     break;
+
+                case VFXImpact.SmokePuff:
+                    goImpactHit = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_IMPACT_HIT_SMOKE_PUFF, null, true);
+                    break;
             }
             
             goImpactHit.transform.position = impactPoint;

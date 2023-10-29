@@ -192,6 +192,7 @@ namespace STELLAREST_2D
                     Hit = 400100,
                     Leaves = 400101,
                     Light = 400102,
+                    SmokePuff = 400103,
                 }
 
                 public enum Trail
@@ -240,6 +241,7 @@ namespace STELLAREST_2D
                 public const string VFX_IMPACT_HIT_DEFAULT = "VFX_Impact_Hit_Default.prefab";
                 public const string VFX_IMPACT_HIT_LEAVES = "VFX_Impact_Hit_Leaves.prefab";
                 public const string VFX_IMPACT_HIT_LIGHT = "VFX_Impact_Hit_Light.prefab";
+                public const string VFX_IMPACT_HIT_SMOKE_PUFF = "VFX_Impact_Hit_SmokePuff.prefab";
 
                 // VFX Trail
                 public const string VFX_TRAIL_WIND = "VFX_Trail_Wind.prefab";

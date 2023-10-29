@@ -100,6 +100,7 @@ namespace STELLAREST_2D
         private int _penetrationCount = 0;
         private int _maxPenetrationCount = 0;
         private Coroutine _coProjectile = null;
+
         public void OnProjectileLaunchInfoHandler(object sender, ProjectileLaunchInfoEventArgs e)
         {
             this._initialLookAtDir = e.LookAtDir;
@@ -136,11 +137,24 @@ namespace STELLAREST_2D
             _maxPenetrationCount = e.MaxPenetrationCount;
         }
 
+        // TEMP
+        public void SetOptionsManually(Vector3 shootDir, float movementSpeed, float lifeTime,
+                                float continuousSpeedRatio, float continuousAngle, bool isOnlyVisible, bool isColliderHalfRatio)
+        {
+            this._shootDir = shootDir;
+            this._movementSpeed = movementSpeed;
+            this._lifeTime = lifeTime;
+            this._continuousSpeedRatio = continuousSpeedRatio;
+            this._continuousAngle = continuousAngle;
+            this._isOnlyVisible = isOnlyVisible;
+            this._isColliderHalfRatio = isColliderHalfRatio;
+        }
+
         public void Launch()
         {
-            HitCollider.enabled = (_isOnlyVisible) ? false : true;
             SkillTemplate templateOrigin = this.Data.OriginalTemplate;
-
+            HitCollider.enabled = (_isOnlyVisible) ? false : true;
+            //HitCollider.enabled = (_isOnlyVisible) ? (HitCollider.enabled != false) : true;
             // _movementSpeed *= _continuousSpeedRatio;
             // Utils.Log("Movement Speed : " + _movementSpeed);
 
@@ -165,7 +179,6 @@ namespace STELLAREST_2D
                     OnSetParticleInfo?.Invoke(_indicatorAngle, _initialLookAtDir, _continuousAngle, _continuousFlipX, _continuousFlipY);
                     _coProjectile = StartCoroutine(CoMeleeSwing());
                     break;
-
 
 
                 case SkillTemplate.ArrowMasterMastery:
@@ -254,12 +267,14 @@ namespace STELLAREST_2D
 
         private IEnumerator CoRangedShot()
         {
-            _shootDir = Quaternion.Euler(0, 0, _continuousAngle) * this.Owner.ShootDir;
+            //_shootDir = Quaternion.Euler(0, 0, _continuousAngle) * this.Owner.ShootDir;
+            _shootDir = Quaternion.Euler(0, 0, _continuousAngle) * this._shootDir;
+
             float degrees = Mathf.Atan2(_shootDir.y, _shootDir.x) * Mathf.Rad2Deg;
             this.transform.rotation = Quaternion.Euler(0, 0, degrees);
             this.transform.localScale = Vector3.one;
             float movementSpeed = _movementSpeed * _continuousSpeedRatio;
-            
+
             while (true)
             {
                 this.transform.position += _shootDir * movementSpeed * Time.deltaTime;
@@ -523,14 +538,43 @@ namespace STELLAREST_2D
                     break;
 
                 case SkillTemplate.NinjaMastery:
-                    if (_penetrationCount++ >= _maxPenetrationCount)
                     {
-                        _penetrationCount = 0;
-                        Managers.Object.Despawn(this);
+                        if (this.Data.Grade < this.Data.MaxGrade)
+                            Managers.Object.Despawn(this);
+                        else
+                        {
+                            RangedShot kunaiUltimate = this.GetComponent<RangedShot>();
+                            if (kunaiUltimate.IsLaunchedFromOwner && kunaiUltimate.IsAlreadyGeneratedKunais == false)
+                            {
+                                // Stop하지말고 숨기기만하고,,
+                                // StopCoroutine(_coProjectile);
+                                //this.HitCollider.enabled = false;
+                                this.SR.enabled = false;
+                            }
+                            else if (kunaiUltimate.IsLaunchedFromOwner && kunaiUltimate.IsAlreadyGeneratedKunais)
+                            {
+                                Managers.Object.Despawn(this);
+                            }
+                            else
+                                Managers.Object.Despawn(this);
+                        }
                     }
                     break;
             }
         }
+
+        // private void OnTriggerExit2D(Collider2D other)
+        // {
+        //     if (this.Data.TemplateID ==(int)SkillTemplate.NinjaMastery + (int)this.Data.MaxGrade - 1)
+        //     {
+        //         if (this.GetComponent<RangedShot>().IsLaunchedFromOwner)
+        //         {
+        //             Utils.Log("OUT,,,");
+        //             this.HitCollider.enabled = false;
+        //             Managers.Object.Despawn(this);
+        //         }
+        //     }
+        // }
 
         private Vector3 NextBounceTarget(CreatureController cc, Define.HitFromType hitFromType = Define.HitFromType.None)
         {

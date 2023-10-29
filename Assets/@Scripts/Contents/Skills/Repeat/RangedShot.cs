@@ -1,3 +1,4 @@
+using System.Collections;
 using Assets.HeroEditor.Common.Scripts.Common;
 using STELLAREST_2D.Data;
 using Unity.VisualScripting;
@@ -15,6 +16,13 @@ namespace STELLAREST_2D
         private GameObject _goChild = null;
         private GameObject _trail = null;
 
+        private const int CLONED_KUNAI_MAX_COUNT = 3;
+        private const float CLONED_KUNAI_CONTINUOUS_ANGLE = 12f;
+        [field: SerializeField] public bool IsLaunchedFromOwner { get; private set; } = false;
+        [field: SerializeField] public bool IsAlreadyGeneratedKunais { get; private set; } = false;
+
+        private Vector3 _kunaiUltimateShootDir = Vector3.zero;
+        
         public override void InitOrigin(CreatureController owner, SkillData data)
         {
             base.InitOrigin(owner, data);
@@ -48,6 +56,8 @@ namespace STELLAREST_2D
                 LaunchElementalArcherMastery();
             else if (Utils.IsForestGuardian(ownerFromOrigin))
                 LaunchForestGuardianMastery();
+            else if (Utils.IsNinja(ownerFromOrigin) && dataFromOrigin.Grade == dataFromOrigin.MaxGrade)
+                LaunchNinjaMasteryUltimate();   
         }
 
         private void InitArrowMasterMastery(CreatureController ownerFromOrigin, SkillData dataFromOrigin)
@@ -101,6 +111,14 @@ namespace STELLAREST_2D
                 _trail = Managers.VFX.Trail(VFXTrail.Light, this, this.Owner);
         }
 
+        private void LaunchNinjaMasteryUltimate()
+        {
+            this.SR.enabled = true;
+            this.IsLaunchedFromOwner = true;
+            this.HitCollider.enabled = true;
+            _kunaiUltimateShootDir = this.Owner.ShootDir;
+        }
+
         protected override void DoSkillJob()
                 => Owner.CreatureState = Define.CreatureState.Skill;
 
@@ -128,8 +146,93 @@ namespace STELLAREST_2D
             }
             else // NINJA TEMP
             {
-                HitPoint = other.ClosestPoint(this.transform.position);
                 cc.OnDamaged(this.Owner, this);
+            }
+        }
+        /*
+                // if (this.Data.Grade < this.Data.MaxGrade)
+                //     cc.OnDamaged(this.Owner, this);
+                // else if (this.Data.Grade == this.Data.MaxGrade && this.IsLaunchedFromOwner)
+                // {
+                //     cc.OnDamaged(this.Owner, this);
+                //     if (this.IsLaunchedFromOwner)
+                //     {
+                //         //HitPoint = other.ClosestPoint(this.transform.position);
+                //         float[] continuousAngles = new float[CLONED_KUNAI_MAX_COUNT];
+                //         for (int i = 0; i < CLONED_KUNAI_MAX_COUNT; ++i)
+                //         {
+                //             if (i == 0)
+                //                 continuousAngles[i] = 0f;
+                //             else if (i == 1)
+                //                 continuousAngles[i] = i * CLONED_KUNAI_CONTINUOUS_ANGLE;
+                //             else
+                //                 continuousAngles[i] = continuousAngles[i - 1] * -1;
+                //         }
+
+                //         Vector3 firstHitPos = this.transform.position;
+                //         ProjectileController[] clonesPC = new ProjectileController[CLONED_KUNAI_MAX_COUNT];
+                //         for (int i = 0; i < CLONED_KUNAI_MAX_COUNT; ++i)
+                //         {
+                //             SkillBase clone = Managers.Object.Spawn<SkillBase>(spawnPos: firstHitPos, templateID: this.Data.TemplateID,
+                //                 spawnObjectType: Define.ObjectType.Skill, isPooling: true);
+                //             clone.InitCloneManually(this.Owner, this.Data);
+                //             clone.SR.enabled = true;
+
+                //             clone.PC.SetOptionsManually(this.Owner.ShootDir, this.Data.MovementSpeed, this.Data.Duration, 1f, continuousAngles[i], false, false);
+                //             clonesPC[i] = clone.PC;
+                //             //clone.PC.Launch();
+                //             //_coCheckIsStillHitting = StartCoroutine(this.CoCheckIsStillHitting(clone.GetComponent<RangedShot>()));
+                //         }
+
+                //         for (int i = 0; i < clonesPC.Length; ++i)
+                //         {
+                //             if (clonesPC[i] != null)
+                //                 StartCoroutine(CoLaunch(clonesPC[i]));
+                //         }
+                //     }
+                // }
+                // else if (CanClonedDamage)
+                // {
+                //     cc.OnDamaged(this.Owner, this);
+                //     this.IsDamagedFromCloned = true;
+                // }
+        */
+
+        private void OnTriggerExit2D(Collider2D other)
+        {
+            if (Utils.IsNinja(this.Owner) == false || this.Data.Grade != this.Data.MaxGrade)
+                return;
+            if (this.IsLaunchedFromOwner && IsAlreadyGeneratedKunais == false)
+            {
+                //Utils.LogBreak("OnTriggerExit2D BREAK");
+                float[] continuousAngles = new float[CLONED_KUNAI_MAX_COUNT];
+                for (int i = 0; i < CLONED_KUNAI_MAX_COUNT; ++i)
+                {
+                    if (i == 0)
+                        continuousAngles[i] = 0f;
+                    else if (i == 1)
+                        continuousAngles[i] = i * CLONED_KUNAI_CONTINUOUS_ANGLE;
+                    else
+                        continuousAngles[i] = continuousAngles[i - 1] * -1;
+                }
+
+                Vector3 outOfPos = this.transform.position;
+                //ProjectileController[] clonesPC = new ProjectileController[CLONED_KUNAI_MAX_COUNT];
+                for (int i = 0; i < CLONED_KUNAI_MAX_COUNT; ++i)
+                {
+                    SkillBase clone = Managers.Object.Spawn<SkillBase>(spawnPos: outOfPos, templateID: this.Data.TemplateID,
+                        spawnObjectType: Define.ObjectType.Skill, isPooling: true);
+                    clone.InitCloneManually(this.Owner, this.Data);
+                    clone.SR.enabled = true;
+
+                    clone.PC.SetOptionsManually(_kunaiUltimateShootDir, this.Data.MovementSpeed, this.Data.Duration, 1f, continuousAngles[i], false, false);
+                    clone.PC.Launch();
+                    //clonesPC[i] = clone.PC;
+                    //clone.PC.Launch();
+                    //_coCheckIsStillHitting = StartCoroutine(this.CoCheckIsStillHitting(clone.GetComponent<RangedShot>()));
+                }
+
+                IsAlreadyGeneratedKunais = true;
             }
         }
 
@@ -172,6 +275,14 @@ namespace STELLAREST_2D
                     
                 if (_trail != null)
                     _trail.SetActive(false);
+            }
+            else if (Utils.IsNinja(this.Owner) && this.Data.Grade == this.Data.MaxGrade)
+            {
+                if (this.HitCollider != null)
+                    this.HitCollider.enabled = false;
+
+                this.IsLaunchedFromOwner = false;
+                this.IsAlreadyGeneratedKunais = false;
             }
         }
     }

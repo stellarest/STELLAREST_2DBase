@@ -16,6 +16,7 @@ namespace STELLAREST_2D
 
         private readonly int UPPER_BODY_SPEED = Animator.StringToHash("UpperBodySpeed");
         private readonly int LOWER_BODY_SPEED = Animator.StringToHash("LowerBodySpeed");
+        private readonly int MOVEMENT_SPEED = Animator.StringToHash("MovementSpeed");
 
         public void SetAnimationSpeed(float speed)
         {
@@ -23,11 +24,13 @@ namespace STELLAREST_2D
             AnimController.SetFloat(LOWER_BODY_SPEED, speed);
         }
 
+        public void SetMovementSpeed(float speed) => AnimController.SetFloat(MOVEMENT_SPEED, speed);
+
         public virtual void Ready() { }
         public virtual void Attack() { }
 
         public void Stand() => AnimController.Play(UPPER_STAND);
-        public void Run() => AnimController.Play(LOWER_RUN);
+        public virtual void Run() => AnimController.Play(LOWER_RUN);
         public void Stun() => AnimController.Play(LOWER_STUN);
 
         //public readonly int READY = Animator.StringToHash("Ready");

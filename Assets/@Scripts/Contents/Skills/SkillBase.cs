@@ -63,6 +63,41 @@ namespace STELLAREST_2D
                 Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.MonsterAttack);
         }
 
+        public void InitCloneManually(CreatureController ownerFromOrigin, Data.SkillData dataFromOrigin)
+        {
+            if (this.IsFirstPooling)
+            {
+                this.Owner = ownerFromOrigin;
+                this.Data = dataFromOrigin;
+
+                SR = GetComponentInChildren<SpriteRenderer>();
+                RigidBody = GetComponent<Rigidbody2D>();
+                HitCollider = GetComponent<Collider2D>();
+                if (this.Data.IsProjectile)
+                {
+                    this.PC = GetComponent<ProjectileController>();
+                    this.PC.SR = this.SR;
+                    SetSortingOrder();
+
+                    this.PC.RigidBody = this.RigidBody;
+                    this.PC.HitCollider = this.HitCollider;
+
+                    this.PC.Owner = ownerFromOrigin;
+                    this.PC.Data = dataFromOrigin;
+                    this.OnProjectileLaunchInfo += this.PC.OnProjectileLaunchInfoHandler;
+                }
+
+                SetClonedRootTargetOnParticleStopped();
+                if (ownerFromOrigin?.IsPlayer() == true)
+                    Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.PlayerAttack);
+                else
+                    Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.MonsterAttack);
+
+                this.IsFirstPooling = false;
+            }
+
+        }
+
         public virtual void SetClonedRootTargetOnParticleStopped()
         {
             Transform root = transform.root;
