@@ -321,19 +321,7 @@ namespace STELLAREST_2D
 
         // +++ UTILS +++
         public bool IsPlayer() => this.ObjectType == Define.ObjectType.Player;
-        public bool IsMonster()
-        {
-            switch (this.ObjectType)
-            {
-                case Define.ObjectType.Monster:
-                case Define.ObjectType.EliteMonster:
-                case Define.ObjectType.Boss:
-                    return true;
-
-                default:
-                    return false;
-            }
-        }
+        public bool IsMonster() => this.ObjectType == Define.ObjectType.Monster;
 
         public bool IsHitFrom_ThrowingStar { get; set; } = false;
         public bool IsHitFrom_LazerBolt { get; set; } = false;

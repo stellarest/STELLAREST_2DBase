@@ -95,7 +95,6 @@ namespace STELLAREST_2D
 
                 this.IsFirstPooling = false;
             }
-
         }
 
         public virtual void SetClonedRootTargetOnParticleStopped()

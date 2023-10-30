@@ -18,7 +18,7 @@ namespace STELLAREST_2D
         public enum UIEvent { Click, Pressed, PointerDown, PointerUp, BeginDrag, Drag, EndDrag, }
         public enum Scene { Unknown, DevScene, GameScene, }
         public enum Sound { BGM, Effect, }
-        public enum ObjectType { None = -1, Player = 1, Monster, EliteMonster, Boss, Skill, Projectile, }
+        public enum ObjectType { None = -1, Player = 1, Monster, Skill, Projectile, Gem }
         public enum MonsterType { None = -1, Chicken = 1, }
 
         public enum InGameGrade { Default = 1, Elite, Ultimate }
@@ -42,6 +42,8 @@ namespace STELLAREST_2D
         //public enum ImpactHits { None, Leaves, CriticalHit, }
         public enum MaterialType { None = -1, Hit = 1, Hologram = 2, FadeOut = 3, StrongTintWhite }
         public enum FaceExpressionType { Default = 1, Battle, Dead, }
+
+        public enum GemSize { Normal = 1, Large = 2 }
 
         public static class TemplateIDs
         {
@@ -213,6 +215,8 @@ namespace STELLAREST_2D
                     Stun,
                     Slow,
                     Silence,
+                    GemGather,
+                    GemExplosion,
 
                     KnockBack,
                     WindTrail,
@@ -231,8 +235,9 @@ namespace STELLAREST_2D
         {
             public static class Prefabs
             {
-                public const string JOYSTICK = "UI_Joystick.prefab";
-                public const string EXP_GEM = "EXPGem.prefab";
+                // ENV
+                public const string UI_JOYSTICK = "UI_Joystick.prefab";
+
 
                 // VFX_MUZZLE
                 public const string VFX_MUZZLE_BOW = "VFX_Muzzle_Bow.prefab";
@@ -260,6 +265,8 @@ namespace STELLAREST_2D
                 public const string VFX_ENV_STUN = "VFX_Env_Stun.prefab";
                 public const string VFX_ENV_SLOW = "VFX_Env_Slow.prefab";
                 public const string VFX_ENV_SILENCE = "VFX_Env_Silence.prefab";
+                public const string VFX_ENV_GEM_GATHER = "VFX_Env_GemGather.prefab";
+                public const string VFX_ENV_GEM_EXPLOSION = "VFX_Env_GemExplosion.prefab";
 
                 // TEMP
                 // =====================================================================================

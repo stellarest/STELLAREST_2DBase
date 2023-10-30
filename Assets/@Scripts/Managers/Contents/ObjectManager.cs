@@ -9,6 +9,8 @@ using UnityEngine;
 using UnityEngine.Rendering; // Sorting Group
 
 using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
+using PrefabLabels = STELLAREST_2D.Define.Labels.Prefabs;
+using System.Diagnostics;
 
 // using DamageNumbersPro;
 namespace STELLAREST_2D
@@ -19,7 +21,7 @@ namespace STELLAREST_2D
         public HashSet<MonsterController> Monsters { get; } = new HashSet<MonsterController>();
         public HashSet<SkillBase> Skills { get; } = new HashSet<SkillBase>();
         public HashSet<GemController> Gems { get; } = new HashSet<GemController>();
-        // EnvCont는 나중에 추가하던지
+        // EnvController는 필요하게 되면 추가할 것.
         public GridController GridController { get; private set; } = null;
         public void OnPlayerDeadHandler() 
         {
@@ -33,7 +35,7 @@ namespace STELLAREST_2D
             Managers.Game.OnPlayerIsDead += OnPlayerDeadHandler;
         }
 
-        public T Spawn<T>(Vector3 spawnPos, int templateID, Define.ObjectType spawnObjectType, bool isPooling = false) where T : BaseController
+        public T Spawn<T>(Vector3 spawnPos, int templateID = -1, Define.ObjectType spawnObjectType = Define.ObjectType.None, bool isPooling = false) where T : BaseController
         {
             switch (spawnObjectType)
             {
@@ -76,14 +78,15 @@ namespace STELLAREST_2D
 
                                     return chicken as T;
                                 }
+
                             default:
-                                return Managers.Resource.Instantiate(Managers.Data.CreaturesDict[templateID].PrimaryLabel, pooling: isPooling) as T;
+                                return null;
                         }
                 }
 
-                // --------------------------------------------------------------------------------------------------
-                // ***** Projectile is must be a skill. But, sometimes skill is not a projectile. It's just a skill. *****
-                // --------------------------------------------------------------------------------------------------
+                // ---------------------------------------------------------------------------
+                // Projectiles are must be skills. But, sometimes skills are not projectiles.
+                // ---------------------------------------------------------------------------
                 case Define.ObjectType.Skill:
                     {
                         GameObject go = Managers.Resource.Instantiate(Managers.Data.SkillsDict[templateID].PrimaryLabel, pooling: isPooling);
@@ -94,6 +97,21 @@ namespace STELLAREST_2D
 
                         Skills.Add(skill);
                         return skill as T;
+                    }
+
+                case Define.ObjectType.Gem:
+                    {
+                        GameObject go = Managers.Resource.Instantiate(PrefabLabels.GEM, pooling: isPooling);
+                        go.transform.position = spawnPos;
+
+                        GemController gem = go.GetComponent<GemController>();
+                        gem.ObjectType = spawnObjectType;
+                        gem.Init();
+
+                        Gems.Add(gem);
+                        GridController.Add(gem.gameObject);
+
+                        return gem as T;
                     }
             }
 

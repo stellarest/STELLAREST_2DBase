@@ -62,7 +62,7 @@ namespace STELLAREST_2D
         public bool TryCrowdControl(float ratio) => UnityEngine.Random.Range(0f, 1f) <= ratio;
 
         private int _gem = 0;
-        public event Action<int> OnGemCountChanged;
+        public event Action<int> OnGemCountChanged = null;
         public int Gem 
         { 
             get => _gem; 

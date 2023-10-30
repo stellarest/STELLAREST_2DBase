@@ -37,7 +37,7 @@ namespace STELLAREST_2D
 
     public class PlayerController : CreatureController
     {
-        private readonly float ENV_COLLECTION_FIXED_DIST = 5f; // +++ NO DATE SHEET +++
+        private readonly float GEM_COLLECTION_FIXED_DIST = 5f; // +++ NO DATE SHEET +++
         protected float _armBowFixedAngle = 110f; // REINA에서 뺴야함
         private float _armRifleFixedAngle = 146f; // CHRISTIAN에서 빼야함
         public PlayerBody BodyParts { get; protected set; } = null;
@@ -238,9 +238,7 @@ namespace STELLAREST_2D
         }
         private void MoveByJoystick()
         {
-            
             Vector3 dir = MoveDir.normalized * (Stat.MovementSpeed * this.SpeedModifier) * Time.deltaTime;
-
             if (IsCCStates(CrowdControl.KnockBack) == false)
                 transform.position += dir;
 
@@ -270,25 +268,16 @@ namespace STELLAREST_2D
         }
         private void CollectEnv()
         {
-            // float sqrCollectDist = EnvCollectDist * EnvCollectDist;
             float sqrCollectDist = Stat.CollectRange * Stat.CollectRange;
-
             // var allSpawnedGems = Managers.Object.Gems.ToList();
-            var findGems = Managers.Object.GridController.
-                            GatherObjects(transform.position, ENV_COLLECTION_FIXED_DIST).ToList();
-
-            foreach (var findGem in findGems)
+            //var findGems = Managers.Object.GridController.GatherObjects(transform.position, GEM_COLLECTION_FIXED_DIST).ToList();
+            var findGems = Managers.Object.GridController.GatherObjects(this.Center.position, GEM_COLLECTION_FIXED_DIST).ToList();
+            foreach (var gem in findGems)
             {
-                GemController gc = findGem.GetComponent<GemController>();
-                // gc.Alive = true;
-
-                Vector3 dir = findGem.transform.position - transform.position;
+                GemController gc = gem.GetComponent<GemController>();
+                Vector3 dir = gem.transform.position - transform.position;
                 if (dir.sqrMagnitude <= sqrCollectDist)
                 {
-                    //Managers.Game.Gem += 1;
-                    // Debug.Log("GEM SIZE : " + gc.GemSize);
-                    // Managers.Game.Gem += (int)gc.GemSize;
-                    // Managers.Game.Gem = (int)gc.GemSize;
                     gc.GetGem();
                 }
             }
@@ -639,6 +628,43 @@ namespace STELLAREST_2D
 // }
 
 /*
+Paladin
+> Shield
+> Heaven's of judgement
+
+Knight : Second Wind
+> Second Wind
+> 
+
+Phantom Knight
+> Soul Eater
+> King of Darkness
+
+Arrow Master
+> Leg Shot
+> Arrow Time
+
+Elemental Archer
+> Elemental Spikes
+> Elemental Charge
+
+Forest Guardian
+> ???
+> Summon : Black Panther
+
+Assassin
+> Shadow Step
+> ???
+
+Thief
+> Let's Sweep
+> Lucky Strike
+
+Ninja 
+> Ninja Slash
+> Cloned Technique
+
+
             캐릭터 별로, 하는것이 좋을 것 같음.
             Gary (캐릭터 공용 스킬)
             - Endurance

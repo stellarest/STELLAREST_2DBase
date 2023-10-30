@@ -3,38 +3,54 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
+using SpriteLabels = STELLAREST_2D.Define.Labels.Sprites;
+using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
+
 namespace STELLAREST_2D
 {
-    public enum GemSize { Normal = 1, Large = 2 }
-
     public class GemController : BaseController
     {
-        public bool Alive = false;
-        private float _countTime = 0f;
-        private float _selfDespawnTime = 10f;
-        private Coroutine _coGemDestroy;
+        private const float GEM_NORMAL_SCALE_RATIO = 0.85f;
+        private const float GEM_LARGE_SCALE_RATIO = 1.1f;
+        private SpriteRenderer _sr = null;
 
-        private GemSize _gemSize;
-        public GemSize GemSize
+        public void Init()
+        {
+            if (this.IsFirstPooling)
+            {
+                _sr = GetComponent<SpriteRenderer>();
+                _sr.sortingOrder = (int)Define.SortingOrder.Item;
+                this.IsFirstPooling = false;
+            }
+
+            if (Managers.Game.Player != null)
+            {
+                float luck = Managers.Game.Player.Stat.Luck;
+                if (UnityEngine.Random.Range(0f, 1f) <= luck)
+                    GemSize = Define.GemSize.Large;
+                else
+                    GemSize = Define.GemSize.Normal;
+            }
+            else
+                GemSize = Define.GemSize.Normal;
+        }
+
+        private Define.GemSize _gemSize;
+        public Define.GemSize GemSize
         {
             get => _gemSize;
             set
             {
                 _gemSize = value;
-
-                SpriteRenderer spr = GetComponent<SpriteRenderer>();
-                spr.sortingOrder = (int)Define.SortingOrder.Item;
-
-                if (_gemSize == GemSize.Normal)
+                if (_gemSize == Define.GemSize.Normal)
                 {
-                    transform.localScale = Vector2.one * 0.85f;
-                    spr.sprite = Managers.Resource.Load<Sprite>(Define.Labels.Sprites.GEM_NORMAL);
+                    transform.localScale = Vector3.one * GEM_NORMAL_SCALE_RATIO;
+                    _sr.sprite = Managers.Resource.Load<Sprite>(SpriteLabels.GEM_NORMAL);
                 }
                 else
                 {
-                    // transform.localScale = new Vector2(1.25f, 1.25f);
-                    transform.localScale = Vector2.one;
-                    spr.sprite = Managers.Resource.Load<Sprite>(Define.Labels.Sprites.GEM_LARGE);
+                    transform.localScale = Vector3.one * GEM_LARGE_SCALE_RATIO;
+                    _sr.sprite = Managers.Resource.Load<Sprite>(SpriteLabels.GEM_LARGE);
                 }
             }
         }
@@ -43,13 +59,13 @@ namespace STELLAREST_2D
         public void GetGem()
         {
             //Managers.Effect.ShowGemGather(this);
+            Managers.VFX.Environment(VFXEnv.GemGather, this.transform.position);
             Managers.Object.GridController.Remove(gameObject);
-            // IsVaild is isActiveAndEnabled
             if (this.IsValid() && _coMoveToPlayer == null)
             {
                 Sequence seq = DOTween.Sequence();
-                Vector3 dir = (transform.position - Managers.Game.Player.transform.position).normalized;
-                Vector3 target = gameObject.transform.position + dir * 1.5f;
+                Vector3 dir = (transform.position - Managers.Game.Player.Center.position).normalized;
+                Vector3 target = gameObject.transform.position + (dir * 1.5f);
                 seq.Append(transform.DOMove(target, 0.15f).SetEase(Ease.Linear)).OnComplete(() =>
                 {
                     _coMoveToPlayer = StartCoroutine(CoMoveToPlayer());
@@ -72,55 +88,27 @@ namespace STELLAREST_2D
         {
             while (true)
             {
-                Vector3 dir = transform.position - Managers.Game.Player.transform.position;
+                //Vector3 dir = transform.position - Managers.Game.Player.transform.position;
+                Vector3 dir = transform.position - Managers.Game.Player.Center.position;
                 float distance = dir.magnitude;
 
                 float t = Mathf.Clamp01(Time.time / 0.5f);
                 float speed = Mathf.Lerp(_minSpeed, _maxSpeed, t);
 
-                transform.position = Vector3.MoveTowards(transform.position, Managers.Game.Player.transform.position,
+                transform.position = Vector3.MoveTowards(transform.position, Managers.Game.Player.Center.position,
                     Time.deltaTime * speed);
 
                 if (distance < 0.3f)
                 {
-                    Managers.Game.Gem = (int)this.GemSize;
+                    //Managers.Game.Gem = (int)this.GemSize;
                     //Managers.Effect.ShowGemExplosion(this);
+                    //Managers.VFX.Environment(VFXEnv.GemExplosion, this.transform.position);
+                    Managers.Game.Gem += (int)this.GemSize;
+                    Managers.VFX.Environment(VFXEnv.GemExplosion, Managers.Game.Player.Center.position);
                     Managers.Object.Despawn(this);
                     yield break;
                 }
 
-                yield return null;
-            }
-        }
-
-        private void OnEnable()
-        {
-            // _coGemDestroy = StartCoroutine(CoDestroy());
-        }
-
-        private IEnumerator CoDestroy()
-        {
-            while (true)
-            {
-                if (Alive) // 이 사이에 다시 Alive가 될 수도 있다.
-                {
-                    _countTime = 0f;
-                    // Debug.Log("<color=white> Still Alive.. </color>");
-                }
-
-                yield return new WaitUntil(() => (Alive == false));
-
-                _countTime += Time.deltaTime;
-                if (_countTime >= _selfDespawnTime)
-                {
-                    // Debug.Log("<color=red> Despawn Gem </color>");
-                    if (this.IsValid()) // 2중으로 체크
-                    {
-                        Managers.Object.Despawn(this);
-                        yield break;
-                    }
-                }
-                // Debug.LogWarning("Gem will be dead");
                 yield return null;
             }
         }

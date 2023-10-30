@@ -7,6 +7,9 @@ using Cinemachine;
 using STELLAREST_2D.UI; // 이 스크립트에서 UI 스크립트 사용중을 간편하게 확인할 수 있어서 .UI의 네임을 추가해주었다
 using DG.Tweening;
 
+using PrefabLabels = STELLAREST_2D.Define.Labels.Prefabs;
+using PlayerTemplateID = STELLAREST_2D.Define.TemplateIDs.Creatures.Player;
+
 namespace STELLAREST_2D
 {
     public class GameScene : MonoBehaviour
@@ -58,69 +61,27 @@ namespace STELLAREST_2D
             
             Managers.Data.Init();
             Managers.VFX.Init();
+            Managers.Collision.Init();
 
-            // foreach (KeyValuePair<int, Data.BonusStatData> bonusStat in Managers.Data.BonusStatDict)
-            // {
-            //     Debug.Log("TemplateID : " + bonusStat.Key);
-            //     Debug.Log("Name : " + bonusStat.Value.Name);
-            // }
-            // Debug.Break();
+            PlayerController player = this.SpawnPlayer(PlayerTemplateID.Gary_Paladin);
+            var CMcam = Camera.main.GetComponent<CinemachineBrain>().ActiveVirtualCamera.VirtualCameraGameObject;
+            CMcam.GetComponent<CameraController>().SetTarget(player.gameObject);
+
+            // Joystick
+            var joystick = Managers.Resource.Instantiate(PrefabLabels.UI_JOYSTICK);
+            joystick.name = "@Joystick"; // UI_Joystick라고 하기엔 좀 애매함
+
+            // Spawning Pool
+            _spawningPool = gameObject.AddComponent<SpawningPool>();
+
+            Managers.Game.OnKillCountChanged -= this.OnKillCountChangedHandler;
+            Managers.Game.OnGemCountChanged += this.OnGemCountChangedHandler;
 
             // Managers.UI.ShowFixedSceneUI<UI_GameScene>();
             // Managers.Game.OnKillCountChanged -= OnKillCountChangedHandler;
             // Managers.Game.OnKillCountChanged += OnKillCountChangedHandler;
             // Managers.Game.OnGemCountChanged -= OnGemCountChangedHandler;
             // Managers.Game.OnGemCountChanged += OnGemCountChangedHandler;
-
-            // Spawn Test Map
-            // var testMap = Managers.Resource.Instantiate(Define.PrefabLabels.TEST_MAP);
-            // var testMap = Managers.Resource.Instantiate(TempPrefabKeyLoader.TEST_MAP);
-            // testMap.name = "@TestMap";
-
-            // Camera.main.GetComponent<CameraController>().Target = player.gameObject;
-            // GameObject.Find("CMcam").GetComponent<CameraController>().SetTarget(player.gameObject);
-
-            // Spawn Player
-            // +++ GARY +++
-            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Creatures.Player.Gary_Paladin, 
-            //             Define.ObjectType.Player, isPooling: false);
-            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Creatures.Player.Gary_Knight,
-            //             Define.ObjectType.Player, isPooling: false);
-            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Creatures.Player.Gary_PhantomKnight,
-            //             Define.ObjectType.Player, isPooling: false);
-
-            // +++ REINA +++
-            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Creatures.Player.Reina_ArrowMaster,
-            //                 Define.ObjectType.Player, isPooling: false);
-            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Creatures.Player.Reina_ElementalArcher,
-            //                 Define.ObjectType.Player, isPooling: false);
-            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Creatures.Player.Reina_ForestGuardian,
-            //                 Define.ObjectType.Player, isPooling: false);
-
-            // +++ KENNETH +++
-            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Creatures.Player.Kenneth_Assassin,
-            //                     Define.ObjectType.Player, isPooling: false);
-            // var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Creatures.Player.Kenneth_Thief,
-            //                     Define.ObjectType.Player, isPooling: false);
-            var player = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)Define.TemplateIDs.Creatures.Player.Kenneth_Ninja,
-                                Define.ObjectType.Player, isPooling: false); 
-
-            var CMcam = Camera.main.GetComponent<CinemachineBrain>().ActiveVirtualCamera.VirtualCameraGameObject;
-            CMcam.GetComponent<CameraController>().SetTarget(player.gameObject);
-
-            // Spawn Joystick
-            var joystick = Managers.Resource.Instantiate(Define.Labels.Prefabs.JOYSTICK);
-            joystick.name = "@Joystick"; // UI_Joystick라고 하기엔 좀 애매함
-
-            // Create Spawning Pool
-            _spawningPool = gameObject.AddComponent<SpawningPool>();
-            
-            // Set Collision Layers
-            Managers.Collision.InitCollisionLayers();
-
-            // Managers.Collision.SetCollisionLayers(Define.CollisionLayers.PlayerAttack, Define.CollisionLayers.MonsterBody, true);
-            // Managers.Collision.SetCollisionLayers(Define.CollisionLayers.PlayerBody, Define.CollisionLayers.MonsterAttack, true);
-            // Managers.Collision.SetCollisionLayers(Define.CollisionLayers.MonsterBody, Define.CollisionLayers.MonsterBody, true);
 
             // Test Gem Spawn
             // for (int i = 0; i < 30; ++i)
@@ -146,22 +107,13 @@ namespace STELLAREST_2D
             }
         }
 
-        // private IEnumerator CoIncomingBoss()
-        // {
-        //     yield return new WaitForSeconds(1.0f);
-        //     Managers.Object.DespawnAllMonsters(); // 죽이자마자 전부 DespawnAllMonster해서 IsVaild() == false에 걸렸었던것
-        //     Vector2 spawnPos = Utils.GetRandomPosition(Managers.Object.Player.transform.position, 5f, 10f);
-        //     //Managers.Object.Spawn<MonsterController>(spawnPos, (int)Define.TemplateIDs.Boss.Gnoll); // 3 is BOSS_ID
-        //     //Managers.Object.Spawn<BossController>(spawnPos, 3);
-        // }
-
         private int _collectedGemCount = 0;
         // private int _remainingTotalGemCount = 10;
         public void OnGemCountChangedHandler(int gemCount)
         {
             //_collectedGemCount++;
-            _collectedGemCount += gemCount;
-
+            _collectedGemCount = gemCount;
+            Utils.Log("MY GEM COUNT : " + _collectedGemCount.ToString());
             // if (_collectedGemCount == _remainingTotalGemCount)
             // {
             //     // Managers.UI.ShowPopup<UI_SkillSelectPopup>();
@@ -169,10 +121,50 @@ namespace STELLAREST_2D
             //     _remainingTotalGemCount *= 2;
             // }
 
-            Utils.Log("MY GEM COUNT : " + _collectedGemCount.ToString());
-
             // *** 인자 둘 중 하나는 무조건 float
             // Managers.UI.GetFixedSceneUI<UI_GameScene>().SetGemCountRatio(_collectedGemCount / (float)_remainingTotalGemCount);
+        }
+
+        private PlayerController SpawnPlayer(PlayerTemplateID templateOrigin)
+        {
+            PlayerController pc = null;
+            switch (templateOrigin)
+            {
+                case PlayerTemplateID.Gary_Paladin:
+                    pc = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)PlayerTemplateID.Gary_Paladin, Define.ObjectType.Player, isPooling: false);
+                    return pc;
+                case PlayerTemplateID.Gary_Knight:
+                    pc = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)PlayerTemplateID.Gary_Knight, Define.ObjectType.Player, isPooling: false);
+                    return pc;
+                case PlayerTemplateID.Gary_PhantomKnight:
+                    pc = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)PlayerTemplateID.Gary_PhantomKnight, Define.ObjectType.Player, isPooling: false);
+                    return pc;
+
+                
+                case PlayerTemplateID.Reina_ArrowMaster:
+                    pc = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)PlayerTemplateID.Reina_ArrowMaster, Define.ObjectType.Player, isPooling: false);
+                    return pc;
+                case PlayerTemplateID.Reina_ElementalArcher:
+                    pc = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)PlayerTemplateID.Reina_ElementalArcher, Define.ObjectType.Player, isPooling: false);
+                    return pc;
+                case PlayerTemplateID.Reina_ForestGuardian:
+                    pc = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)PlayerTemplateID.Reina_ForestGuardian, Define.ObjectType.Player, isPooling: false);
+                    return pc;
+
+
+                case PlayerTemplateID.Kenneth_Assassin:
+                    pc = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)PlayerTemplateID.Kenneth_Assassin, Define.ObjectType.Player, isPooling: false);
+                    return pc;
+                case PlayerTemplateID.Kenneth_Thief:
+                    pc = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)PlayerTemplateID.Kenneth_Thief, Define.ObjectType.Player, isPooling: false);
+                    return pc;
+                case PlayerTemplateID.Kenneth_Ninja:
+                    pc = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)PlayerTemplateID.Kenneth_Ninja, Define.ObjectType.Player, isPooling: false);
+                    return pc;
+
+                default:
+                    return null;
+            }
         }
 
         private void OnDestroy()
@@ -180,29 +172,15 @@ namespace STELLAREST_2D
             if (Managers.Game != null)
                 Managers.Game.OnGemCountChanged -= OnGemCountChangedHandler;
         }
-
-        // private void StartLoaded2() // LEGACY
-        // {
-        //     // Managers.ResourceManager.LoadAsync<GameObjecT>("Snake_01", (go =>
-        //     // {
-        //     // }));
-        //     // Managers.ResourceManager.LoadAsync<GameObject>("Snake_01", (delegate(GameObject go)
-        //     // {
-        //     //     // TODO
-        //     // }));
-        //     // GameObject go = new GameObject() { name = "@Monsters" };
-
-        //     // var player = Managers.Resource.Instantiate("Slime_01.prefab");
-        //     // player.AddComponent<PlayerController>();
-
-        //     // var snake = Managers.Resource.Instantiate("Snake_01.prefab");
-        //     // var goblin = Managers.Resource.Instantiate("Goblin_01.prefab");
-        //     // var joystick = Managers.Resource.Instantiate("UI_Joystick.prefab");
-        //     // joystick.name = "@UI_Joystick";
-
-        //     // var map = Managers.Resource.Instantiate("Map.prefab");
-        //     // map.name = "@Map";
-        //     // Camera.main.GetComponent<CameraController>().Target = player;
-        // }
     }
 }
+
+// ==============================================================================================================
+// private IEnumerator CoIncomingBoss()
+// {
+//     yield return new WaitForSeconds(1.0f);
+//     Managers.Object.DespawnAllMonsters(); // 죽이자마자 전부 DespawnAllMonster해서 IsVaild() == false에 걸렸었던것
+//     Vector2 spawnPos = Utils.GetRandomPosition(Managers.Object.Player.transform.position, 5f, 10f);
+//     //Managers.Object.Spawn<MonsterController>(spawnPos, (int)Define.TemplateIDs.Boss.Gnoll); // 3 is BOSS_ID
+//     //Managers.Object.Spawn<BossController>(spawnPos, 3);
+// }

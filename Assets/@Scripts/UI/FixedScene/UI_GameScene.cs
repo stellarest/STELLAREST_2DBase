@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine.UI;
 using UnityEngine;
-using TMPro;
 
 namespace STELLAREST_2D.UI
 {
@@ -23,14 +23,18 @@ namespace STELLAREST_2D.UI
 
         public void SetKillCount(int killCount)
         {
-            _killCountText.text = $"{killCount.ToString()}";
+            //_killCountText.text = $"{killCount.ToString()}";
+            _killCountText.text = $"{killCount}";
         }
 
         // 규모가 커지면 아래와 같은 방식으로 바꿔야함
+        // UI의 대표적인 정보를 들고있으면,
         // public void SetInfo()
         // {
+            // 여기서 정보가 바뀌면 RefreshUI
         // }
 
+        // 하나의 정보가 바뀌면 다른 정보도 체크해서 그 정보들도 Refresh 시킨다.
         // public void RefreshUI()
         // {
         // }

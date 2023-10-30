@@ -336,6 +336,29 @@ namespace STELLAREST_2D
 
             return goVFX;
         }
+
+        public GameObject Environment(VFXEnv templateOrigin, Vector3 spawnPos)
+        {
+            GameObject goVFX = null;
+            switch (templateOrigin)
+            {
+                case VFXEnv.GemGather:
+                    {
+                        goVFX = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_ENV_GEM_GATHER, null, true);
+                        goVFX.transform.position = spawnPos;
+                    }
+                    break;
+
+                case VFXEnv.GemExplosion:
+                    {
+                        goVFX = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_ENV_GEM_EXPLOSION, null, true);
+                        goVFX.transform.position = spawnPos;
+                    }
+                    break;
+            }
+
+            return goVFX;
+        }
     }
 }
 

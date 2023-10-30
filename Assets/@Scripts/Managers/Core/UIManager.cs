@@ -8,8 +8,10 @@ namespace STELLAREST_2D
 {
     public class UIManager
     {
-        private UI_Base _fixedSceneUI;
-        private Stack<UI_Base> _uiPopupStack = new Stack<UI_Base>(); // *** 가장 마지막으로 켜진 팝업이 끌 때는 가장 먼저 꺼져야함
+        private UI_Base _fixedSceneUI; // 고정된 UI
+        public T GetFixedSceneUI<T>() where T : UI_Base => _fixedSceneUI as T;
+
+        private Stack<UI_Base> _uiPopupStack = new Stack<UI_Base>(); // 가장 마지막으로 켜진 팝업이 끌 때는 가장 먼저 꺼져야함
 
         public T ShowFixedSceneUI<T>() where T : UI_Base
         {
@@ -23,14 +25,11 @@ namespace STELLAREST_2D
             return ui;
         }
 
-        public T GetFixedSceneUI<T>() where T : UI_Base
-        {
-            return _fixedSceneUI as T;
-        }
 
         public T ShowPopup<T>() where T : UI_Base
         {
             string key = typeof(T).Name + ".prefab";
+            // 껏키를 하지 않더라도, 코드로 pooling을 사용하면 껏키와 똑같은 효과를 볼 수 있음.
             T ui = Managers.Resource.Instantiate(key, pooling: true).GetOrAddComponent<T>();
             _uiPopupStack.Push(ui);
             RefreshTimeScale();
@@ -41,7 +40,7 @@ namespace STELLAREST_2D
         {
             if (_uiPopupStack.Count == 0)
             {
-                Debug.LogError("@@@ Current ui stack count is zero @@@");
+                Utils.LogCritical(nameof(UIManager), nameof(ClosePopup), "UI stack count is zero.");
                 return;
             }
 

@@ -401,7 +401,7 @@ namespace STELLAREST_2D
         public void ShowGemExplosion(GemController gc)
         {
             GameObject go = null;
-            if (gc.GemSize == GemSize.Normal)
+            if (gc.GemSize == Define.GemSize.Normal)
                 go = Managers.Resource.Instantiate(Define.Labels.Prefabs.GEM_EXPLOSION_NORMAL, pooling: true);
             else
                 go = Managers.Resource.Instantiate(Define.Labels.Prefabs.GEM_EXPLOSION_LARGE, pooling: true);

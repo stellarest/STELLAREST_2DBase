@@ -6,7 +6,7 @@ namespace STELLAREST_2D
 {
     public class CollisionManager
     {
-        public void InitCollisionLayers()
+        public void Init()
         {
             SetCollisionLayers(Define.CollisionLayers.PlayerAttack, Define.CollisionLayers.MonsterBody, true);
             SetCollisionLayers(Define.CollisionLayers.MonsterBody, Define.CollisionLayers.MonsterBody, true);

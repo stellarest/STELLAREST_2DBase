@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace STELLAREST_2D
 {
+    // TODO : Monster Find Utils Code도 Grid로 응용해보기
     public class Cell
     {
         public HashSet<GameObject> Objects { get; } = new HashSet<GameObject>();
@@ -11,17 +12,17 @@ namespace STELLAREST_2D
 
     public class GridController : BaseController
     {
-        private Grid _grid;
+        private Grid _grid = null;
+
+        // Grid 마다 Cell을 배치하기 위함
         private Dictionary<Vector3Int, Cell> _cells = new Dictionary<Vector3Int, Cell>();
 
-        private void Awake() 
-                => _grid = gameObject.GetOrAddComponent<Grid>();
+        private void Awake() => _grid = gameObject.GetOrAddComponent<Grid>();
 
         public void Add(GameObject go)
         {
             Vector3Int cellPos = _grid.WorldToCell(go.transform.position);
-            
-            Cell cell = this.GetCell(cellPos);
+            Cell cell = GetCell(cellPos); // Add to Dictionary
             if (cell == null)
                 return;
             
@@ -31,8 +32,7 @@ namespace STELLAREST_2D
         public void Remove(GameObject go)
         {
             Vector3Int cellPos = _grid.WorldToCell(go.transform.position);
-
-            Cell cell = this.GetCell(cellPos);
+            Cell cell = GetCell(cellPos);
             if (cell == null)
                 return;
 
@@ -55,10 +55,10 @@ namespace STELLAREST_2D
         {
             List<GameObject> objects = new List<GameObject>();
 
-            Vector3Int left = _grid.WorldToCell(worldPos + new Vector3(-range, 0));
-            Vector3Int right = _grid.WorldToCell(worldPos + new Vector3(range, 0));
-            Vector3Int bottom = _grid.WorldToCell(worldPos + new Vector3(0, -range));
-            Vector3Int top = _grid.WorldToCell(worldPos + new Vector3(0, range));
+            Vector3Int left = _grid.WorldToCell(worldPos + new Vector3(-range, 0, 0));
+            Vector3Int right = _grid.WorldToCell(worldPos + new Vector3(range, 0, 0));
+            Vector3Int bottom = _grid.WorldToCell(worldPos + new Vector3(0, -range, 0));
+            Vector3Int top = _grid.WorldToCell(worldPos + new Vector3(0, range, 0));
 
             int minX = left.x;
             int maxX = right.x;

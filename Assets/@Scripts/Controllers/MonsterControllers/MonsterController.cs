@@ -147,8 +147,8 @@ namespace STELLAREST_2D
             if (this.CanEnterRunState() == false)
                 return;
 
-            if (this.MainTarget != null)
-                MoveToTarget(MainTarget, this.Stat.CollectRange * this.Stat.CollectRange);
+            // if (this.MainTarget != null)
+            //     MoveToTarget(MainTarget, this.Stat.CollectRange * this.Stat.CollectRange);
         }
 
         public void StartMovementToRandomPoint()
@@ -309,6 +309,10 @@ namespace STELLAREST_2D
             Managers.VFX.Environment(VFXEnv.Skull, this);
             this.RendererController.MonsterHead.sprite = this.DeadHead;
             MonsterAnimController.Dead();
+
+            GemController spawnedGem = Managers.Object.Spawn<GemController>(this.Center.position, 
+                                            spawnObjectType: Define.ObjectType.Gem, isPooling: true);
+
             StartCoroutine(CoDespawn());
         }
 
