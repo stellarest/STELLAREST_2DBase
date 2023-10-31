@@ -126,19 +126,18 @@ namespace STELLAREST_2D
 
         public override void Activate()
         {
+            IsStopped = false;
             gameObject.SetActive(true);
             _spears = new Spear[(int)SpearDirection.Max];
             for (int i = 0; i < (int)SpearDirection.Max; ++i)
-            {
                 CreateSpears(i);
-                // Utils.Log($"{_spears[i].gameObject.name} is created.");
-            }
 
             this.DoSkillJob();
         }
 
         public override void Deactivate()
         {
+            IsStopped = true;
             gameObject.SetActive(false);
             if (this._spears == null)
                 return;
@@ -146,10 +145,7 @@ namespace STELLAREST_2D
             for (int i = 0; i < (int)SpearDirection.Max; ++i)
             {
                 if (_spears[i].IsValid())
-                {
-                    // Utils.Log($"{_spears[i].gameObject.name} is destroyed.");
                     Managers.Resource.Destroy(_spears[i].gameObject);
-                }
             }
         }
 

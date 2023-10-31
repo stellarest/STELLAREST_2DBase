@@ -35,13 +35,14 @@ namespace STELLAREST_2D
             StartCoroutine(CoDoBodyAttack(delegate()
             {
                 //this.Owner.SkillBook.Deactivate(SkillTemplate.BodyAttack);
-                    this.Owner.SkillBook.RandomizeSequenceGroup(SkillTemplate.BodyAttack);
+                //this.Owner.SkillBook.ReserveNextSequence((SkillTemplate.BodyAttack);
+                //this.Owner.SkillBook.ReserveNextSequence(currentEnd: SkillTemplate.BodyAttack);
+                this.Owner.SkillBook.RandomizeSequenceGroup(SkillTemplate.BodyAttack);
             }));
         }
 
         private IEnumerator CoDoBodyAttack(Action callback = null)
         {
-            Utils.Log("BODY ATTACK1.");
             if (CanStartAction() == false)
             {
                 if (this.Owner.CreatureState == Define.CreatureState.Skill)
@@ -53,7 +54,6 @@ namespace STELLAREST_2D
             }
 
             Ready();
-            Utils.Log("BODY ATTACK2.");
             yield return new WaitUntil(() => ReachToTarget());
             yield return new WaitUntil(() => Return());
             this.Owner.CreatureState = Define.CreatureState.Idle;

@@ -45,9 +45,11 @@ namespace STELLAREST_2D
         [SerializeField] private List<TKey> _keys = new List<TKey>();
         [SerializeField] private List<TValue> _values = new List<TValue>();
 
+
         private Dictionary<int, List<int>> _numberGroups = new Dictionary<int, List<int>>();
-        public List<int> GetGroupNumbers(int keyOrigin)
-            => _numberGroups.TryGetValue(keyOrigin, out List<int> value) ? value : null;
+        // public List<int> GetGroupNumbers(int keyOrigin)
+        //     => _numberGroups.TryGetValue(keyOrigin, out List<int> value) ? value : null;
+
 
         public void AddGroup(int key, TValue value)
         {

@@ -19,10 +19,7 @@ namespace STELLAREST_2D
                 Managers.VFX.Muzzle(VFXMuzzle.Bow, this);
         }
 
-        protected override void RunSkill()
-        {
-            PlayerAnimController.Attack();
-        }
+        protected override void RunSkill() => PlayerAnimController.RunSkill();
     }
 }
 

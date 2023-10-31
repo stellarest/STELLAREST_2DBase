@@ -27,7 +27,7 @@ namespace STELLAREST_2D
         public void SetMovementSpeed(float speed) => AnimController.SetFloat(MOVEMENT_SPEED, speed);
 
         public virtual void Ready() { }
-        public virtual void Attack() { }
+        public virtual void RunSkill() { }
 
         public void Stand() => AnimController.Play(UPPER_STAND);
         public virtual void Run() => AnimController.Play(LOWER_RUN);

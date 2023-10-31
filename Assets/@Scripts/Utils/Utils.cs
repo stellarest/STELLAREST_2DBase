@@ -303,6 +303,7 @@ namespace STELLAREST_2D
         public static bool IsElementalArcher(CreatureController cc) => cc?.Stat.TemplateID == (int)Define.TemplateIDs.Creatures.Player.Reina_ElementalArcher;
         public static bool IsForestGuardian(CreatureController cc) => cc?.Stat.TemplateID == (int)Define.TemplateIDs.Creatures.Player.Reina_ForestGuardian;
 
+        public static bool IsThief(CreatureController cc) => cc?.Stat.TemplateID == (int)Define.TemplateIDs.Creatures.Player.Kenneth_Thief;
         public static bool IsNinja(CreatureController cc) => cc?.Stat.TemplateID == (int)Define.TemplateIDs.Creatures.Player.Kenneth_Ninja;
 
         public static bool IsMeleeSwing(SkillTemplate templateOrigin)

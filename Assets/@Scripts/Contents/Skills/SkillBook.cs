@@ -2,11 +2,8 @@ using System.Buffers;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
-using Assets.HeroEditor.Common.Scripts.ExampleScripts;
 using STELLAREST_2D.Data;
 using UnityEngine;
-using UnityEngine.UIElements;
 using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 
 namespace STELLAREST_2D
@@ -94,16 +91,20 @@ namespace STELLAREST_2D
             {
                 if (Members[i].IsLearned == false)
                 {
-                    // FIRST SKILL
-                    if (i == 0)
+                    if (i == 0) // 있어야하는게 맞음
                     {
                         SkillBase unlockSkill = Members[0].Unlock();
-                        if (unlockSkill.Data.HasEventHandler)
+                        if (unlockSkill.Data.HasEventHandler) // HasEventHandler : Exclusive Skill
                         {
                             if (unlockSkill.Data.SkillType == Define.SkillType.Repeat)
                             {
-                                unlockSkill.Owner.AnimCallback.OnCloneRepeatSkill += unlockSkill.GetComponent<RepeatSkill>().OnCloneRepeatSkillHandler;
-                                Utils.Log($"Add Event : {unlockSkill.Data.Name}");
+                                unlockSkill.Owner.AnimCallback.OnActiveRepeatSkill += unlockSkill.GetComponent<RepeatSkill>().OnActiveRepeatSkillHandler;
+                                Utils.Log($"Add Event(OnActiveRepeatSkill) : {unlockSkill.Data.Name}");
+                            }
+                            else if (unlockSkill.Data.SkillType == Define.SkillType.Sequence)
+                            {
+                                unlockSkill.Owner.AnimCallback.OnActiveSequenceSkill += unlockSkill.GetComponent<SequenceSkill>().OnActiveSequenceSkillHandler;
+                                Utils.Log($"Release Event(OnActiveSequenceSkill) : {unlockSkill.Data.Name}");
                             }
                         }
 
@@ -111,13 +112,19 @@ namespace STELLAREST_2D
                     }
                     else // REST OF SKILLS
                     {
+                        // RELEASE EVENT
                         SkillBase deactiveSkill = Members[i - 1].DeactiveForce();
                         if (deactiveSkill.Data.HasEventHandler)
                         {
                             if (deactiveSkill.Data.SkillType == Define.SkillType.Repeat)
                             {
-                                deactiveSkill.Owner.AnimCallback.OnCloneRepeatSkill -= deactiveSkill.GetComponent<RepeatSkill>().OnCloneRepeatSkillHandler;
-                                Utils.Log($"Release Event : {deactiveSkill.Data.Name}");
+                                deactiveSkill.Owner.AnimCallback.OnActiveRepeatSkill -= deactiveSkill.GetComponent<RepeatSkill>().OnActiveRepeatSkillHandler;
+                                Utils.Log($"Release Event(OnActiveRepeatSkill) : {deactiveSkill.Data.Name}");
+                            }
+                            else if (deactiveSkill.Data.SkillType == Define.SkillType.Sequence)
+                            {
+                                deactiveSkill.Owner.AnimCallback.OnActiveSequenceSkill -= deactiveSkill.GetComponent<SequenceSkill>().OnActiveSequenceSkillHandler;
+                                Utils.Log($"Release Event(OnActiveSequenceSkill) : {deactiveSkill.Data.Name}");
                             }
                         }
 
@@ -126,8 +133,13 @@ namespace STELLAREST_2D
                         {
                             if (unlockSkill.Data.SkillType == Define.SkillType.Repeat)
                             {
-                                unlockSkill.Owner.AnimCallback.OnCloneRepeatSkill += unlockSkill.GetComponent<RepeatSkill>().OnCloneRepeatSkillHandler;
-                                Utils.Log($"Add Event : {unlockSkill.Data.Name}");
+                                unlockSkill.Owner.AnimCallback.OnActiveRepeatSkill += unlockSkill.GetComponent<RepeatSkill>().OnActiveRepeatSkillHandler;
+                                Utils.Log($"Add Event(OnActiveRepeatSkill) : {unlockSkill.Data.Name}");
+                            }
+                            else if (unlockSkill.Data.SkillType == Define.SkillType.Sequence)
+                            {
+                                unlockSkill.Owner.AnimCallback.OnActiveSequenceSkill += unlockSkill.GetComponent<SequenceSkill>().OnActiveSequenceSkillHandler;
+                                Utils.Log($"Add Event(OnActiveSequenceSkill) : {unlockSkill.Data.Name}");
                             }
                         }
 
@@ -136,6 +148,7 @@ namespace STELLAREST_2D
                 }
                 else if (i == MemberCount - 1)
                 {
+                    // MAX LEVEL
                     Utils.Log(nameof(SkillGroup), nameof(Unlock), Members[i].Name, "is <color=yellow>MAX LEVEL</color> in this group.");
                     return Members[i].SkillOrigin;
                 }
@@ -217,13 +230,16 @@ namespace STELLAREST_2D
     public class SkillBook : MonoBehaviour
     {
         public CreatureController Owner { get; set; }
-        public SkillTemplate FirstSkill { get; private set; } = SkillTemplate.None;
+        public SkillTemplate FirstSkill { get; private set; } = SkillTemplate.None; // REPEAT OR SEQUENCE
+        public SkillTemplate SecondSequenceSkill { get; private set; } = SkillTemplate.None; // MUST BE SEQUENCE
+        public SkillTemplate LastSequenceSkill { get; private set; } = SkillTemplate.None; // MUST BE SEQUENCE
+
         // +++ Key(int) : Skill Origin Template, Value : SkillGroup +++
         [System.Serializable] public class SkillGroupDictionary : SerializableGroupDictionary<int, SkillGroup> { }
         [field: SerializeField] public SkillGroupDictionary SkillGroupsDict { get; private set; } = new SkillGroupDictionary();
 
-        [field: SerializeField] public List<SequenceSkill> SequenceSkills { get; private set; } = new List<SequenceSkill>();
         public int SequenceIdx { get; set; } = 0;
+        [field: SerializeField] public List<SequenceSkill> SequenceSkills { get; private set; } = new List<SequenceSkill>();
 
         public void LateInit()
         {
@@ -236,6 +252,35 @@ namespace STELLAREST_2D
                         SequenceSkills.Add(group.Value.Members[i].SkillOrigin as SequenceSkill);
                 }
             }
+
+            if (this.Owner?.IsPlayer() == true)
+            {
+                SetSequenceSkills();
+                if (this.SecondSequenceSkill != SkillTemplate.None)
+                    Utils.Log($"SECOND SEQUENCE SKILL TEMPLATE : {SecondSequenceSkill}");
+                else
+                    Utils.Log("INVALID SECOND SEQUENCE SKILL YET.");
+                
+                if (this.LastSequenceSkill != SkillTemplate.None)
+                    Utils.Log($"LAST SEQUENCE SKILL TEMPLATE : {LastSequenceSkill}");
+                else
+                    Utils.Log("INVALID LAST SEQUENCE SKILL YET.");
+            }
+        }
+
+        private void SetSequenceSkills()
+        {
+            for (int i = 0; i < SequenceSkills.Count; ++i)
+            {
+                if (i == 0)
+                    SecondSequenceSkill = SequenceSkills[i].Data.OriginalTemplate;
+                else
+                    LastSequenceSkill = SequenceSkills[i].Data.OriginalTemplate;
+            }
+        }
+
+        public void ReserveNextSequence(SkillTemplate currentEnd)
+        {
         }
 
         private void SetFirstSkill()
@@ -251,14 +296,14 @@ namespace STELLAREST_2D
 
         public void LevelUp(SkillTemplate templateOrigin)
         {
-            SkillBase newSkill = Acquire(templateOrigin);
+            SkillBase newSkill = Unlock(templateOrigin);
             // DO SOMETHING // 
         }
 
-        private SkillBase Acquire(SkillTemplate templateOrigin)
+        private SkillBase Unlock(SkillTemplate templateOrigin)
         {
             if (SkillGroupsDict.TryGetValue((int)templateOrigin, out SkillGroup group) == false)
-                Utils.LogCritical(nameof(SkillBook), nameof(Acquire), $"Check TemplateID : {templateOrigin}");
+                Utils.LogCritical(nameof(SkillBook), nameof(Unlock), $"Check TemplateID : {templateOrigin}");
 
             return group.Unlock();
         }
@@ -266,7 +311,7 @@ namespace STELLAREST_2D
         public void Activate(SkillTemplate templateOrigin)
         {
             if (SkillGroupsDict.TryGetValue((int)templateOrigin, out SkillGroup group) == false)
-                Utils.LogCritical(nameof(SkillBook), nameof(Acquire), $"Check TemplateID : {templateOrigin}");
+                Utils.LogCritical(nameof(SkillBook), nameof(Activate), $"Check TemplateID : {templateOrigin}");
 
             group.Activate();
         }
@@ -280,7 +325,7 @@ namespace STELLAREST_2D
         public void Deactivate(SkillTemplate templateOrigin)
         {
             if (SkillGroupsDict.TryGetValue((int)templateOrigin, out SkillGroup group) == false)
-                Utils.LogCritical(nameof(SkillBook), nameof(Acquire), $"Check TemplateID : {templateOrigin}");
+                Utils.LogCritical(nameof(SkillBook), nameof(Deactivate), $"Check TemplateID : {templateOrigin}");
 
             group.Deactivate();
         }
@@ -294,7 +339,7 @@ namespace STELLAREST_2D
         public SkillBase GetCanActiveSkillMember(SkillTemplate templateOrigin)
         {
             if (SkillGroupsDict.TryGetValue((int)templateOrigin, out SkillGroup group) == false)
-                Utils.LogCritical(nameof(SkillBook), nameof(Acquire), $"Check TemplateID : {templateOrigin}");
+                Utils.LogCritical(nameof(SkillBook), nameof(GetCanActiveSkillMember), $"Check TemplateID : {templateOrigin}");
 
             SkillBase skill = group.GetCanActiveSkillMember();
             if (skill == null)
@@ -347,9 +392,9 @@ namespace STELLAREST_2D
                     {
                         if (skillOrigin.Data.SkillType == Define.SkillType.Repeat)
                         {
-                            if (skillOrigin.Owner.AnimCallback.OnCloneRepeatSkill != null)
+                            if (skillOrigin.Owner.AnimCallback.OnActiveRepeatSkill != null)
                             {
-                                skillOrigin.Owner.AnimCallback.OnCloneRepeatSkill -= skillOrigin.GetComponent<RepeatSkill>().OnCloneRepeatSkillHandler;
+                                skillOrigin.Owner.AnimCallback.OnActiveRepeatSkill -= skillOrigin.GetComponent<RepeatSkill>().OnActiveRepeatSkillHandler;
                                 Utils.Log($"{skillOrigin.Data.Name}, Release Events");
                             }
                         }
@@ -373,3 +418,77 @@ namespace STELLAREST_2D
 //             SequenceSkills[i].Activate();
 //     }
 // }
+
+// UNLOCK IN SKILL GROUP
+// public SkillBase Unlock() // JUST UNLOCK
+//         {
+//             for (int i = 0; i < MemberCount; ++i)
+//             {
+//                 if (Members[i].IsLearned == false)
+//                 {
+//                     if (i == 0)
+//                     {
+//                         Utils.Log("!!!!!");
+//                         SkillBase unlockSkill = Members[0].Unlock();
+//                         if (unlockSkill.Data.HasEventHandler) // HasEventHandler : Exclusive Skill
+//                         {
+//                             if (unlockSkill.Data.SkillType == Define.SkillType.Repeat)
+//                             {
+//                                 unlockSkill.Owner.AnimCallback.OnActiveRepeatSkill += unlockSkill.GetComponent<RepeatSkill>().OnActiveRepeatSkillHandler;
+//                                 Utils.Log($"Add Event(OnActiveRepeatSkill) : {unlockSkill.Data.Name}");
+//                             }
+//                             else if (unlockSkill.Data.SkillType == Define.SkillType.Sequence)
+//                             {
+//                                 unlockSkill.Owner.AnimCallback.OnActiveSequenceSkill += unlockSkill.GetComponent<SequenceSkill>().OnActiveSequenceSkillHandler;
+//                                 Utils.Log($"Release Event(OnActiveSequenceSkill) : {unlockSkill.Data.Name}");
+//                             }
+//                         }
+
+//                         return unlockSkill;
+//                     }
+//                     else // REST OF SKILLS
+//                     {
+//                         // RELEASE EVENT
+//                         SkillBase deactiveSkill = Members[i - 1].DeactiveForce();
+//                         if (deactiveSkill.Data.HasEventHandler)
+//                         {
+//                             if (deactiveSkill.Data.SkillType == Define.SkillType.Repeat)
+//                             {
+//                                 deactiveSkill.Owner.AnimCallback.OnActiveRepeatSkill -= deactiveSkill.GetComponent<RepeatSkill>().OnActiveRepeatSkillHandler;
+//                                 Utils.Log($"Release Event(OnActiveRepeatSkill) : {deactiveSkill.Data.Name}");
+//                             }
+//                             else if (deactiveSkill.Data.SkillType == Define.SkillType.Sequence)
+//                             {
+//                                 deactiveSkill.Owner.AnimCallback.OnActiveSequenceSkill -= deactiveSkill.GetComponent<SequenceSkill>().OnActiveSequenceSkillHandler;
+//                                 Utils.Log($"Release Event(OnActiveSequenceSkill) : {deactiveSkill.Data.Name}");
+//                             }
+//                         }
+
+//                         SkillBase unlockSkill = Members[i].Unlock();
+//                         if (unlockSkill.Data.HasEventHandler)
+//                         {
+//                             if (unlockSkill.Data.SkillType == Define.SkillType.Repeat)
+//                             {
+//                                 unlockSkill.Owner.AnimCallback.OnActiveRepeatSkill += unlockSkill.GetComponent<RepeatSkill>().OnActiveRepeatSkillHandler;
+//                                 Utils.Log($"Add Event(OnActiveRepeatSkill) : {unlockSkill.Data.Name}");
+//                             }
+//                             else if (unlockSkill.Data.SkillType == Define.SkillType.Sequence)
+//                             {
+//                                 unlockSkill.Owner.AnimCallback.OnActiveSequenceSkill += unlockSkill.GetComponent<SequenceSkill>().OnActiveSequenceSkillHandler;
+//                                 Utils.Log($"Add Event(OnActiveSequenceSkill) : {unlockSkill.Data.Name}");
+//                             }
+//                         }
+
+//                         return unlockSkill;
+//                     }
+//                 }
+//                 else if (i == MemberCount - 1)
+//                 {
+//                     // MAX LEVEL
+//                     Utils.Log(nameof(SkillGroup), nameof(Unlock), Members[i].Name, "is <color=yellow>MAX LEVEL</color> in this group.");
+//                     return Members[i].SkillOrigin;
+//                 }
+//             }
+
+//             return null;
+//         }

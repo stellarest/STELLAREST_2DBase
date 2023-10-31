@@ -121,7 +121,10 @@ namespace STELLAREST_2D
         }
 
         protected override void DoSkillJob()
-                => Owner.CreatureState = Define.CreatureState.Skill;
+        {
+            Owner.ReserveSkillAnimationType(Define.SkillAnimationType.ExclusiveRepeat);
+            Owner.CreatureState = Define.CreatureState.Skill;
+        }
 
         protected override void SetSortingOrder()
         {

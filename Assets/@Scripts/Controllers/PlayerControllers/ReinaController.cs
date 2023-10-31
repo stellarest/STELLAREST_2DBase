@@ -8,15 +8,8 @@ namespace STELLAREST_2D
 {
     public class ReinaController : PlayerController
     {
-        public override void Init(int templateID)
-        {
-            base.Init(templateID);
-        }
-
-        public override void ShowMuzzle()
-        {
-            Managers.VFX.Muzzle(VFXMuzzle.Bow, this);
-        }
+        public override void Init(int templateID) => base.Init(templateID);
+        public override void ShowMuzzle() => Managers.VFX.Muzzle(VFXMuzzle.Bow, this);
 
         private void LateUpdate()
         {
@@ -27,9 +20,6 @@ namespace STELLAREST_2D
             BodyParts.ArmLeft.localRotation = Quaternion.Euler(0, 0, modifiedAngle);
         }
         
-        protected override void RunSkill()
-        {
-            PlayerAnimController.Attack();
-        }
+        protected override void RunSkill() => PlayerAnimController.RunSkill();
     }
 }

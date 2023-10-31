@@ -88,6 +88,11 @@ namespace STELLAREST_2D
         {
             while (true)
             {
+                if (Managers.Game.Player == null)
+                    yield break;
+                else if (Managers.Game.Player.IsDeadState)
+                    yield break;
+
                 //Vector3 dir = transform.position - Managers.Game.Player.transform.position;
                 Vector3 dir = transform.position - Managers.Game.Player.Center.position;
                 float distance = dir.magnitude;

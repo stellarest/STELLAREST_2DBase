@@ -9,8 +9,26 @@ namespace STELLAREST_2D
     {
         private readonly int UPPER_READY = Animator.StringToHash("ReadyMelee1H");
         private readonly int UPPER_ATTACK = Animator.StringToHash("SlashMelee1H");
+
+        private readonly int UPPER_ELITE_SEQUENCE = Animator.StringToHash("UseShield");
+
         public override void Init(CreatureController owner) => base.Init(owner);
         public override void Ready() => AnimController.Play(UPPER_READY);
-        public override void Attack() => AnimController.Play(UPPER_ATTACK);
+        public override void RunSkill()
+        {
+            switch (this.Owner.SkillAnimationType)
+            {
+                case Define.SkillAnimationType.ExclusiveRepeat:
+                    AnimController.Play(UPPER_ATTACK);
+                    break;
+
+                case Define.SkillAnimationType.EliteSequence:
+                    AnimController.Play(UPPER_ELITE_SEQUENCE);
+                    break;
+
+                case Define.SkillAnimationType.UltimateSequence:
+                    break;
+            }
+        }
     }
 }

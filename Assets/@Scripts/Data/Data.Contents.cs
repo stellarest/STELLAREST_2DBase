@@ -119,7 +119,8 @@ namespace STELLAREST_2D.Data
         public int MaxPenetrationCount;
         public Define.TemplateIDs.VFX.ImpactHit VFX_ImpactHit;
         public bool IsImpactPointOnTarget;
-        public Define.TemplateIDs.Status.Skill UnlockSkillTemplate;
+        //public Define.TemplateIDs.Status.Skill UnlockSkillTemplate;
+        public Define.SkillAnimationType AnimationType;
         public Define.TemplateIDs.CrowdControl CrowdControlType;
         public float CrowdControlRatio;
         public float CrowdControlDuration;

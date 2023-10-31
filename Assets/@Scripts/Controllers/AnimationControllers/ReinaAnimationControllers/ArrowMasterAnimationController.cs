@@ -10,7 +10,7 @@ namespace STELLAREST_2D
         private readonly int UPPER_ATTACK = Animator.StringToHash("RangedShot");
         public override void Init(CreatureController owner) => base.Init(owner);
         public override void Ready() => AnimController.Play(UPPER_READY);
-        public override void Attack()
+        public override void RunSkill()
         {
             AnimController.Play(UPPER_ATTACK);
         }

@@ -46,8 +46,11 @@ namespace STELLAREST_2D
         protected override void SetSortingOrder()
                 => GetComponent<SortingGroup>().sortingOrder = (int)Define.SortingOrder.Skill;
 
-        protected override void DoSkillJob() 
-                => Owner.CreatureState = Define.CreatureState.Skill;
+        protected override void DoSkillJob()
+        {
+            Owner.ReserveSkillAnimationType(Define.SkillAnimationType.ExclusiveRepeat);
+            Owner.CreatureState = Define.CreatureState.Skill;
+        }
 
         protected override IEnumerator CoCloneSkill() 
                 => base.CoCloneSkill();

@@ -5,7 +5,7 @@ namespace STELLAREST_2D
 {
     public abstract class RepeatSkill : SkillBase
     {
-        public System.Action OnDeactivateRepeatSkill = null;
+        public System.Action OnDeactivateRepeatSkill = null; // USE THIS WHEN YOU NEED,, (OPTIONAL)
         public virtual void OnDeactivateRepeatSkillHandler() { }
 
         public override void Activate()
@@ -63,7 +63,7 @@ namespace STELLAREST_2D
             }
         }
 
-        public void OnCloneRepeatSkillHandler()
+        public void OnActiveRepeatSkillHandler()
         {
             if (IsStopped)
                 return;
@@ -126,11 +126,14 @@ namespace STELLAREST_2D
             for (int i = 0; i < continuousCount; ++i)
             {
                 Vector3 spawnPos = (this.Data.IsOnFireSocket) ? this.Owner.FireSocketPosition : this.Owner.transform.position;
-                if (Utils.IsMeleeSwing(this.Data.OriginalTemplate))
-                {
-                    //Utils.Log("IS MELEE SWING !!");
+                if (Utils.IsThief(this.Owner))
                     spawnPos = spawnPosOnFirstPoint;
-                }
+                
+                // if (Utils.IsMeleeSwing(this.Data.OriginalTemplate))
+                // {
+                //     //Utils.Log("IS MELEE SWING !!");
+                //     spawnPos = spawnPosOnFirstPoint;
+                // }
                 // else
                 //     Utils.Log("IS NOT MELEE SWING,,,");
                 

@@ -81,6 +81,8 @@ namespace STELLAREST_2D
 
         // +++ SKILLS +++
         public SkillBook SkillBook { get; protected set; } = null;
+        public Define.SkillAnimationType SkillAnimationType { get; protected set; } = Define.SkillAnimationType.None;
+        public void ReserveSkillAnimationType(Define.SkillAnimationType animType) => this.SkillAnimationType = animType;
 
         // +++ RENDERERS +++
         public RendererController RendererController { get; protected set; } = null;

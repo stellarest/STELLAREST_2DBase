@@ -44,6 +44,7 @@ namespace STELLAREST_2D
         public enum FaceExpressionType { Default = 1, Battle, Dead, }
 
         public enum GemSize { Normal = 1, Large = 2 }
+        public enum SkillAnimationType { None = -1, ExclusiveRepeat = 1, EliteSequence = 2, UltimateSequence = 3 }
 
         public static class TemplateIDs
         {
@@ -160,6 +161,7 @@ namespace STELLAREST_2D
                     // BombTrap = 200316,
 
                     BodyAttack = 201100,
+                    Shield = 201101
                     // HeavensJudgment,
                     // GuardiansShield,
                     // Concentration,

@@ -10,6 +10,6 @@ namespace STELLAREST_2D
         private readonly int UPPER_ATTACK = Animator.StringToHash("SlashMeleePaired");
         public override void Init(CreatureController owner) => base.Init(owner);
         public override void Ready() => AnimController.Play(UPPER_READY);
-        public override void Attack() => AnimController.Play(UPPER_ATTACK);
+        public override void RunSkill() => AnimController.Play(UPPER_ATTACK);
     }
 }

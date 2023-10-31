@@ -11,10 +11,7 @@ namespace STELLAREST_2D
             base.Init(templateID);
         }
 
-        protected override void RunSkill()
-        {
-            PlayerAnimController.Attack();
-        }
+        protected override void RunSkill() => PlayerAnimController.RunSkill();
     }
 }
 

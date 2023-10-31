@@ -7,6 +7,7 @@ using UnityEngine.Rendering;
 using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
 using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
+using System.Collections.Generic;
 
 namespace STELLAREST_2D
 {
@@ -180,6 +181,18 @@ namespace STELLAREST_2D
             DEV_CLEAR_LOG();
             if (Input.GetKeyDown(KeyCode.Alpha1))
                 SkillFlag(SkillBook.FirstSkill);
+
+            if (Input.GetKeyDown(KeyCode.Q))
+            {
+                SkillFlag(SkillBook.SecondSequenceSkill);
+                // PRINT ONLY ORIGIN SKILL TEMPLATES,,,
+                // foreach (KeyValuePair<int, SkillGroup> pair in SkillBook.SkillGroupsDict)
+                //     Utils.Log($"CHECK KEY : {pair.Key}");
+                // Utils.LogBreak("BREAK.");
+            }
+
+            // if (Input.GetKeyDown(KeyCode.W)) // ERROR
+            //     SkillFlag(SkillBook.LastSequenceSkill);
 
             if (Input.GetKeyDown(KeyCode.Alpha2))
                 SkillFlag(SkillTemplate.ThrowingStar);

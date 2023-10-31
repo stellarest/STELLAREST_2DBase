@@ -23,7 +23,7 @@ namespace STELLAREST_2D
 
         public override void Run() => AnimController.Play(LOWER_NINJA_RUN);
         public override void Ready() => AnimController.Play(UPPER_READY);
-        public override void Attack()
+        public override void RunSkill()
         {
             // if (this.Owner.SkillBook.GetFirstSkillGrade() > Define.InGameGrade.Default)
             // {
@@ -37,19 +37,22 @@ namespace STELLAREST_2D
             //     }
             // }
 
-            switch (this.Owner.SkillBook.GetFirstSkillGrade())
+            if (this.Owner.SkillAnimationType == Define.SkillAnimationType.ExclusiveRepeat)
             {
-                case Define.InGameGrade.Default:
-                    AnimController.Play(UPPER_ATTACK);
-                    break;
+                switch (this.Owner.SkillBook.GetFirstSkillGrade())
+                {
+                    case Define.InGameGrade.Default:
+                        AnimController.Play(UPPER_ATTACK);
+                        break;
 
-                case Define.InGameGrade.Elite:
-                    AnimController.Play(UPPER_ATTACK_ELITE);
-                    break;
+                    case Define.InGameGrade.Elite:
+                        AnimController.Play(UPPER_ATTACK_ELITE);
+                        break;
 
-                case Define.InGameGrade.Ultimate:
-                    AnimController.Play(UPPER_ATTACK_ULTIMATE);
-                    break;
+                    case Define.InGameGrade.Ultimate:
+                        AnimController.Play(UPPER_ATTACK_ULTIMATE);
+                        break;
+                }
             }
         }
     }
