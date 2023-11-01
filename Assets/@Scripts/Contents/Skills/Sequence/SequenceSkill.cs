@@ -32,11 +32,8 @@ namespace STELLAREST_2D
 
         public abstract void DoSkillJob(System.Action callback = null); // 어차피 무조건 재정의해야되서 재정의하는 곳에서 callback 정의하면 될 듯
 
-        public virtual void OnActiveSequenceSkillHandler()
-        {
-            if (this.IsStopped)
-                return;
-        }
+        public virtual void OnActiveSequenceSkillHandler() { }
+        
 
         public override void Deactivate()
         {

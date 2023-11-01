@@ -7,7 +7,6 @@ using UnityEngine.Rendering;
 using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
 using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
-using System.Collections.Generic;
 
 namespace STELLAREST_2D
 {
@@ -183,13 +182,7 @@ namespace STELLAREST_2D
                 SkillFlag(SkillBook.FirstSkill);
 
             if (Input.GetKeyDown(KeyCode.Q))
-            {
                 SkillFlag(SkillBook.SecondSequenceSkill);
-                // PRINT ONLY ORIGIN SKILL TEMPLATES,,,
-                // foreach (KeyValuePair<int, SkillGroup> pair in SkillBook.SkillGroupsDict)
-                //     Utils.Log($"CHECK KEY : {pair.Key}");
-                // Utils.LogBreak("BREAK.");
-            }
 
             // if (Input.GetKeyDown(KeyCode.W)) // ERROR
             //     SkillFlag(SkillBook.LastSequenceSkill);
@@ -926,4 +919,21 @@ Ninja
 //     }
 //     else
 //         Utils.LogStrong("OOPS !!");
+// }
+
+
+
+// TEMP
+// if (Input.GetKeyDown(KeyCode.O))
+// {
+//     Shield shield = SkillBook.GetCanActiveSkillMember(SkillTemplate.Shield).GetComponent<Shield>();
+//     shield.Hit();
+//     // SkillBase shield = SkillBook.GetCanActiveSkillMember(SkillTemplate.Shield);
+//     // shield.GetComponent<Shield>().OnShield();
+// }
+
+// if (Input.GetKeyDown(KeyCode.P))
+// {
+//     SkillBase shield = SkillBook.GetCanActiveSkillMember(SkillTemplate.Shield);
+//     shield.GetComponent<Shield>().OffShield();
 // }

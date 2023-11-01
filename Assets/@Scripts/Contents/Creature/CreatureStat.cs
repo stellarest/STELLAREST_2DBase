@@ -1,5 +1,7 @@
 using UnityEngine;
 
+using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
+
 namespace STELLAREST_2D
 {
     [System.Serializable] 
@@ -37,20 +39,22 @@ namespace STELLAREST_2D
         [field: SerializeField] public string Name { get; private set; }
         [field: SerializeField] public string Description { get; private set; }
 
-        [SerializeField] private float _shieldHp; // TEMP : SerializeField
-        public float ShieldHp
-        {
-            get => _shieldHp;
-            set
-            {
-                _shieldHp = value;
-                if (_shieldHp <= 0f)
-                {
-                    _shieldHp = 0f;
-                    //this.Owner.Buff.GetComponent<GuardiansShield>().Stop();
-                }
-            }
-        }
+        [field: SerializeField] public float ShieldHp { get; set; } = 0f;
+        // [SerializeField] private float _shieldHp; // TEMP : SerializeField
+        // public float ShieldHp
+        // {
+        //     get => _shieldHp;
+        //     set
+        //     {
+        //         _shieldHp = value;
+        //         if (_shieldHp <= 0f)
+        //         {
+        //             _shieldHp = 0f;
+        //             //this.Owner.SkillBook.GetCachedSkill<Shield>(SkillTemplate.Shield).OffShield();
+        //             //this.Owner.Buff.GetComponent<GuardiansShield>().Stop();
+        //         }
+        //     }
+        // }
 
         [field: SerializeField] public float MaxHp { get; private set; }
         [field: SerializeField] public float Hp { get; set; }

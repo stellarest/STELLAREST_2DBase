@@ -13,7 +13,6 @@ namespace STELLAREST_2D
 
         public void Init(CreatureController owner) => this._owner = owner;
         public void OnActiveRepeatSkillHandler() => OnActiveRepeatSkill?.Invoke();
-
         public void OnActiveSequenceSkillHandler() => OnActiveSequenceSkill?.Invoke();
 
         public void OnFaceBattleHandler() => this._owner.RendererController.OnFaceBattleHandler();

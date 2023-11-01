@@ -6,6 +6,8 @@ using UnityEngine;
 using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
 using VFXImpact = STELLAREST_2D.Define.TemplateIDs.VFX.ImpactHit;
 using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
+using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
+using STELLAREST_2D.UI;
 
 namespace STELLAREST_2D
 {
@@ -52,6 +54,9 @@ namespace STELLAREST_2D
         [field: SerializeField] public CreatureStat Stat { get; protected set; } = null;
         public void UpdateCreatureStat(int templateID) 
             => this.Stat = Stat.UpgradeStat(this, Stat, templateID);
+
+        public bool IsOnShield => (this.SkillBook.GetCachedSkill<Shield>(SkillTemplate.Shield) != null) ? 
+                                    this.SkillBook.GetCachedSkill<Shield>(SkillTemplate.Shield).IsOnShield : false;
 
         // +++ CROWD CONTROL +++
         public const float ORIGIN_SPEED_MODIFIER = 1f;
@@ -296,8 +301,18 @@ namespace STELLAREST_2D
                 return;
             }
 
-            this.Stat.Hp -= dmgResult;
-            Managers.VFX.Damage(this, dmgResult, isCritical);
+            // CHECK SHIELD OR NOT
+            if (this.IsOnShield)
+            {
+                this.Stat.ShieldHp -= dmgResult;
+                if (this.Stat.ShieldHp < 0f)
+                    this.SkillBook.GetCachedSkill<Shield>(SkillTemplate.Shield).OffShield();
+                    
+                this.SkillBook.GetCachedSkill<Shield>(SkillTemplate.Shield).Hit();
+            }
+            else
+                this.Stat.Hp -= dmgResult;
+            Managers.VFX.Damage(this, dmgResult, isCritical, this.IsOnShield);
             Managers.VFX.ImpactHit(from.Data.VFX_ImpactHit, this, from); // --> 메모리 문제 발생시, 크리티컬 쪽에서 스폰
 
             if (this.Stat.Hp <= 0 && this.IsDeadState == false)
@@ -308,7 +323,8 @@ namespace STELLAREST_2D
                 if (Managers.Game.TryCrowdControl(from))
                     Managers.CrowdControl.Apply(this, from);
                 
-                Managers.VFX.Material(Define.MaterialType.Hit, this);
+                if (this.IsOnShield == false)
+                    Managers.VFX.Material(Define.MaterialType.Hit, this);
             }
         }
 

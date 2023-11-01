@@ -6,6 +6,7 @@ using VFXMuzzle = STELLAREST_2D.Define.TemplateIDs.VFX.Muzzle;
 using VFXImpact = STELLAREST_2D.Define.TemplateIDs.VFX.ImpactHit;
 using VFXTrail = STELLAREST_2D.Define.TemplateIDs.VFX.Trail;
 using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
+using PrefabLabels = STELLAREST_2D.Define.Labels.Prefabs;
 
 namespace STELLAREST_2D
 {
@@ -67,7 +68,7 @@ namespace STELLAREST_2D
         public IEnumerator CoClonedMaterial(Define.MaterialType matType, BaseController bc, SpriteRenderer spr, float desiredTime, System.Action callback)
         {
             if (bc.IsValid() == false)
-                yield break;;
+                yield break; ;
 
             Material matOrigin = spr.material;
             Material clonedStrongTintWhiteMat = null;
@@ -181,7 +182,7 @@ namespace STELLAREST_2D
                     goImpactHit = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_IMPACT_HIT_SMOKE_PUFF, null, true);
                     break;
             }
-            
+
             goImpactHit.transform.position = impactPoint;
 
             return goImpactHit;
@@ -222,7 +223,7 @@ namespace STELLAREST_2D
             return goTrail;
         }
 
-        public void Damage(CreatureController cc, float damage, bool isCritical)
+        public void Damage(CreatureController cc, float damage, bool isCritical, bool isOnShield = false)
         {
             if (cc.IsValid() == false)
                 return;
@@ -237,24 +238,32 @@ namespace STELLAREST_2D
 #endif
             if (cc.IsMonster()) // 현재 크티티컬은 몬스터만 받아서 필요 없을수도
             {
-                if (isCritical) 
+                if (isCritical)
                 {
-                    Managers.Resource.Load<GameObject>(Define.Labels.Prefabs.VFX_ENV_DAMAGE_TO_MONSTER_CRITICAL_FONT)
+                    Managers.Resource.Load<GameObject>(PrefabLabels.VFX_ENV_DAMAGE_TO_MONSTER_CRITICAL_FONT)
                                      .GetComponent<DamageNumber>().Spawn(spawnPos);
 
-                    Managers.Resource.Load<GameObject>(Define.Labels.Prefabs.VFX_ENV_DAMAGE_TO_MONSTER_CRITICAL)
+                    Managers.Resource.Load<GameObject>(PrefabLabels.VFX_ENV_DAMAGE_TO_MONSTER_CRITICAL)
                                      .GetComponent<DamageNumber>().Spawn(spawnPos, damage);
                 }
                 else
                 {
-                    Managers.Resource.Load<GameObject>(Define.Labels.Prefabs.VFX_ENV_DAMAGE_TO_MONSTER)
+                    Managers.Resource.Load<GameObject>(PrefabLabels.VFX_ENV_DAMAGE_TO_MONSTER)
                                      .GetComponent<DamageNumber>().Spawn(spawnPos, damage);
                 }
             }
-            else
+            else // Damage to Player
             {
-                Managers.Resource.Load<GameObject>(Define.Labels.Prefabs.VFX_ENV_DAMAGE_TO_PLAYER)
-                                 .GetComponent<DamageNumber>().Spawn(spawnPos, damage);
+                if (isOnShield == false)
+                {
+                    Managers.Resource.Load<GameObject>(PrefabLabels.VFX_ENV_DAMAGE_TO_PLAYER)
+                                    .GetComponent<DamageNumber>().Spawn(spawnPos, damage);
+                }
+                else
+                {
+                    Managers.Resource.Load<GameObject>(PrefabLabels.VFX_ENV_DAMAGE_TO_PLAYER_SHIELD)
+                                     .GetComponent<DamageNumber>().Spawn(spawnPos, damage);
+                }
             }
         }
 
@@ -265,7 +274,7 @@ namespace STELLAREST_2D
             Vector3 spawnScale = Vector3.one;
             spawnScale = (target?.IsPlayer() == false && target.GetComponent<MonsterController>() != null)
                         ? target.GetComponent<MonsterController>().LoadVFXEnvSpawnScale(templateOrigin)
-                        : target.GetComponent<PlayerController>().LoadVFXEnvSpawnScale(templateOrigin);            
+                        : target.GetComponent<PlayerController>().LoadVFXEnvSpawnScale(templateOrigin);
 
             Vector3 spawnPos = Vector3.zero;
             spawnPos = (target?.IsPlayer() == false && target.GetComponent<MonsterController>() != null)

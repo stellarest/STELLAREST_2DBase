@@ -241,6 +241,8 @@ namespace STELLAREST_2D
         public int SequenceIdx { get; set; } = 0;
         [field: SerializeField] public List<SequenceSkill> SequenceSkills { get; private set; } = new List<SequenceSkill>();
 
+        public Shield CachedShield { get; private set; } = null;
+
         public void LateInit()
         {
             this.SetFirstSkill();
@@ -314,6 +316,8 @@ namespace STELLAREST_2D
                 Utils.LogCritical(nameof(SkillBook), nameof(Activate), $"Check TemplateID : {templateOrigin}");
 
             group.Activate();
+            if (this.CachedShield == null && templateOrigin == SkillTemplate.Shield)
+                this.CachedShield = this.GetCanActiveSkillMember(SkillTemplate.Shield).GetComponent<Shield>();
         }
 
         public void ActivateAll()
@@ -346,6 +350,17 @@ namespace STELLAREST_2D
                 Utils.LogStrong(nameof(SkillGroup), nameof(GetCanActiveSkillMember), "You need to unlock first skill.");
 
             return skill;
+        }
+
+        public T GetCachedSkill<T>(SkillTemplate templateOrigin) where T : SkillBase
+        {
+            switch (templateOrigin)
+            {
+                case SkillTemplate.Shield:
+                    return CachedShield as T;
+            }
+
+            return null;
         }
 
         // public void ActivateAll()
@@ -395,7 +410,15 @@ namespace STELLAREST_2D
                             if (skillOrigin.Owner.AnimCallback.OnActiveRepeatSkill != null)
                             {
                                 skillOrigin.Owner.AnimCallback.OnActiveRepeatSkill -= skillOrigin.GetComponent<RepeatSkill>().OnActiveRepeatSkillHandler;
-                                Utils.Log($"{skillOrigin.Data.Name}, Release Events");
+                                Utils.Log($"{skillOrigin.Data.Name}, Release Events(OnActiveRepeatSkill)");
+                            }
+                        }
+                        else if (skillOrigin.Data.SkillType == Define.SkillType.Sequence)
+                        {
+                            if (skillOrigin.Owner.AnimCallback.OnActiveSequenceSkill != null)
+                            {
+                                skillOrigin.Owner.AnimCallback.OnActiveSequenceSkill -= skillOrigin.GetComponent<SequenceSkill>().OnActiveSequenceSkillHandler;
+                                Utils.Log($"{skillOrigin.Data.Name}, Release Events(OnActiveSequenceSkill)");
                             }
                         }
                     }
