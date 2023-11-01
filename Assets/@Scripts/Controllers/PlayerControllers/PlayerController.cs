@@ -187,6 +187,19 @@ namespace STELLAREST_2D
             // if (Input.GetKeyDown(KeyCode.W))
             //     SkillFlag(SkillBook.LastSequenceSkill);
 
+            if (Input.GetKey(KeyCode.I))
+            {
+                SecondWind secondWind = SkillBook.GetCanActiveSkillMember(SkillTemplate.SecondWind).GetComponent<SecondWind>();
+                secondWind.Wait();
+            }
+
+            if (Input.GetKeyDown(KeyCode.O))
+            {
+                //StartCoroutine(CoPercentageTemp());
+                SecondWind secondWind = SkillBook.GetCanActiveSkillMember(SkillTemplate.SecondWind).GetComponent<SecondWind>();
+                secondWind.On();
+            }
+
             if (Input.GetKeyDown(KeyCode.Alpha2))
                 SkillFlag(SkillTemplate.ThrowingStar);
 
@@ -209,6 +222,26 @@ namespace STELLAREST_2D
 #endif
             MoveByJoystick();
             CollectEnv();
+        }
+
+        private IEnumerator CoPercentageTemp()
+        {
+            float delta = 0f;
+            float desiredTime = 2f;
+
+            float percentage = 0f;
+            int percent = 0;
+            while (percentage < 1f)
+            {
+                delta += Time.deltaTime;
+                percentage = delta / desiredTime;
+
+                percent = Mathf.FloorToInt(percentage * 100);
+
+                // SkillTemplate으로 빼서 관리하는게 좋을듯
+                //Managers.VFX.Percentage(VFXEnv.Font_Percentage, this, percent);
+                yield return null;
+            }
         }
 
         public override void UpdateAnimation()
@@ -335,6 +368,9 @@ namespace STELLAREST_2D
 
                 case VFXEnv.Silence:
                     return (Center.position + new Vector3(-1.65f, 2.55f, 0f));
+
+                case VFXEnv.Invincible:
+                    return (transform.position + (Vector3.up * 2.95f));
 
                 default:
                     return base.LoadVFXEnvSpawnPos(templateOrigin);

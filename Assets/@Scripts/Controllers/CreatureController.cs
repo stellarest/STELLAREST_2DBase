@@ -58,6 +58,8 @@ namespace STELLAREST_2D
         public bool IsOnShield => (this.SkillBook.GetCachedSkill<Shield>(SkillTemplate.Shield) != null) ? 
                                     this.SkillBook.GetCachedSkill<Shield>(SkillTemplate.Shield).IsOnShield : false;
 
+        public bool IsInvincible { get; set; } = false;
+
         // +++ CROWD CONTROL +++
         public const float ORIGIN_SPEED_MODIFIER = 1f;
         public virtual float SpeedModifier { get; set; } = 1f;
@@ -290,6 +292,12 @@ namespace STELLAREST_2D
         {
             if (this.IsValid() == false)
                 return;
+
+            if (this.IsInvincible)
+            {
+                Managers.VFX.Environment(VFXEnv.Invincible, this);
+                return;
+            }
 
             // TUPLE
             (float dmgResult, bool isCritical) = Managers.Game.TakeDamage(this, attacker, from);

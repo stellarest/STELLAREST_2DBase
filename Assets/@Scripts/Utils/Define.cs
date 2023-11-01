@@ -213,6 +213,8 @@ namespace STELLAREST_2D
                     Spawn,
                     Damage,
                     Dodge,
+
+
                     Skull,
                     Dust,
                     Stun,
@@ -220,6 +222,10 @@ namespace STELLAREST_2D
                     Silence,
                     GemGather,
                     GemExplosion,
+                    Font_Percentage,
+                    Invincible,
+
+
 
                     KnockBack,
                     WindTrail,
@@ -270,6 +276,9 @@ namespace STELLAREST_2D
                 public const string VFX_ENV_SILENCE = "VFX_Env_Silence.prefab";
                 public const string VFX_ENV_GEM_GATHER = "VFX_Env_GemGather.prefab";
                 public const string VFX_ENV_GEM_EXPLOSION = "VFX_Env_GemExplosion.prefab";
+                public const string VFX_ENV_FONT_PERCENTAGE = "VFX_Env_Font_Percentage.prefab";
+                public const string VFX_ENV_DAMAGE_TO_PLAYER_INVINCIBLE_FONT = "VFX_Env_Damage_To_Player_Invincible_Font.prefab";
+
 
                 // TEMP
                 // =====================================================================================

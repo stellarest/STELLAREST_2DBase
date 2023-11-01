@@ -228,6 +228,9 @@ namespace STELLAREST_2D
             if (cc.IsValid() == false)
                 return;
 
+            if (damage <= 0f)
+                return;
+
             Vector3 spawnPos = (cc?.IsPlayer() == false && cc.GetComponent<MonsterController>() != null)
                                 ? cc.GetComponent<MonsterController>().LoadVFXEnvSpawnPos(VFXEnv.Damage)
                                 : cc.GetComponent<PlayerController>().LoadVFXEnvSpawnPos(VFXEnv.Damage);
@@ -265,6 +268,17 @@ namespace STELLAREST_2D
                                      .GetComponent<DamageNumber>().Spawn(spawnPos, damage);
                 }
             }
+        }
+
+        public void Percentage(CreatureController target, int percent)
+        {
+            Vector3 spawnPos = target.Center.transform.position + (Vector3.up * 3.5f);
+            DamageNumber dmgNumber = Managers.Resource.Load<GameObject>(PrefabLabels.VFX_ENV_FONT_PERCENTAGE)
+                 .GetComponent<DamageNumber>().Spawn(spawnPos, percent);
+            if (percent < 100)
+                dmgNumber.lifetime = 0.15f;
+            else
+                dmgNumber.lifetime = 0.5f;
         }
 
         public GameObject Environment(VFXEnv templateOrigin, CreatureController target)
@@ -339,6 +353,13 @@ namespace STELLAREST_2D
                         goVFX = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_ENV_SILENCE, null, true);
                         goVFX.transform.localScale = spawnScale;
                         goVFX.transform.position = spawnPos;
+                    }
+                    break;
+
+                case VFXEnv.Invincible:
+                    {
+                        Managers.Resource.Load<GameObject>(Define.Labels.Prefabs.VFX_ENV_DAMAGE_TO_PLAYER_INVINCIBLE_FONT)
+                                         .GetComponent<DamageNumber>().Spawn(spawnPos);
                     }
                     break;
             }

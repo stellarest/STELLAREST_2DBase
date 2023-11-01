@@ -63,7 +63,7 @@ namespace STELLAREST_2D
             Managers.VFX.Init();
             Managers.Collision.Init();
 
-            PlayerController player = this.SpawnPlayer(PlayerTemplateID.Gary_Paladin);
+            PlayerController player = this.SpawnPlayer(PlayerTemplateID.Gary_Knight);
             var CMcam = Camera.main.GetComponent<CinemachineBrain>().ActiveVirtualCamera.VirtualCameraGameObject;
             CMcam.GetComponent<CameraController>().SetTarget(player.gameObject);
 
