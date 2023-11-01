@@ -11,9 +11,10 @@ namespace STELLAREST_2D
         private readonly int UPPER_ATTACK = Animator.StringToHash("ThrowKunai");
         private readonly int UPPER_ATTACK_ELITE = Animator.StringToHash("ThrowKunai_Elite");
         private readonly int UPPER_ATTACK_ULTIMATE = Animator.StringToHash("ThrowKunai_Ultimate");
+        private readonly int UPPER_ELITE_SEQUENCE = Animator.StringToHash("");
+
 
         private readonly int UPPER_ATTACK_MELEE = Animator.StringToHash("NinjaMelee2H");
-
         private readonly int LOWER_NINJA_RUN = Animator.StringToHash("NinjaRun");
         public override void Init(CreatureController owner)
         {
@@ -25,6 +26,7 @@ namespace STELLAREST_2D
         public override void Ready() => AnimController.Play(UPPER_READY);
         public override void RunSkill()
         {
+            // NINJA MELEE SLASH TEMP
             // if (this.Owner.SkillBook.GetFirstSkillGrade() > Define.InGameGrade.Default)
             // {
             //     CreatureController cc = Utils.GetClosestCreatureTargetFromAndRange<MonsterController>
@@ -37,22 +39,28 @@ namespace STELLAREST_2D
             //     }
             // }
 
-            if (this.Owner.SkillAnimationType == Define.SkillAnimationType.ExclusiveRepeat)
+            switch (this.Owner.SkillAnimationType)
             {
-                switch (this.Owner.SkillBook.GetFirstSkillGrade())
-                {
-                    case Define.InGameGrade.Default:
-                        AnimController.Play(UPPER_ATTACK);
-                        break;
+                case Define.SkillAnimationType.ExclusiveRepeat:
+                    {
+                        if (this.Owner.SkillBook.GetFirstSkillGrade() == Define.InGameGrade.Default)
+                            AnimController.Play(UPPER_ATTACK);
+                        else if (this.Owner.SkillBook.GetFirstSkillGrade() == Define.InGameGrade.Elite)
+                            AnimController.Play(UPPER_ATTACK_ELITE);
+                        else
+                            AnimController.Play(UPPER_ATTACK_ULTIMATE);
+                    }
+                    break;
 
-                    case Define.InGameGrade.Elite:
-                        AnimController.Play(UPPER_ATTACK_ELITE);
-                        break;
+                case Define.SkillAnimationType.EliteSequence:
+                    {
+                        AnimController.StopPlayback();
+                        AnimController.Play(UPPER_ELITE_SEQUENCE);
+                    }
+                    break;
 
-                    case Define.InGameGrade.Ultimate:
-                        AnimController.Play(UPPER_ATTACK_ULTIMATE);
-                        break;
-                }
+                case Define.SkillAnimationType.UltimateSequence:
+                    break;
             }
         }
     }

@@ -184,7 +184,7 @@ namespace STELLAREST_2D
             if (Input.GetKeyDown(KeyCode.Q))
                 SkillFlag(SkillBook.SecondSequenceSkill);
 
-            // if (Input.GetKeyDown(KeyCode.W)) // ERROR
+            // if (Input.GetKeyDown(KeyCode.W))
             //     SkillFlag(SkillBook.LastSequenceSkill);
 
             if (Input.GetKeyDown(KeyCode.Alpha2))

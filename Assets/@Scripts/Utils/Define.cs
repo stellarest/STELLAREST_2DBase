@@ -161,7 +161,8 @@ namespace STELLAREST_2D
                     // BombTrap = 200316,
 
                     BodyAttack = 201100,
-                    Shield = 201101
+                    Shield = 201101,
+                    SecondWind = 201102
                     // HeavensJudgment,
                     // GuardiansShield,
                     // Concentration,

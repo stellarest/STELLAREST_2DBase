@@ -122,7 +122,7 @@ namespace STELLAREST_2D
 
         protected override void DoSkillJob()
         {
-            Owner.ReserveSkillAnimationType(Define.SkillAnimationType.ExclusiveRepeat);
+            Owner.ReserveSkillAnimationType(this.Data.AnimationType);
             Owner.CreatureState = Define.CreatureState.Skill;
         }
 
