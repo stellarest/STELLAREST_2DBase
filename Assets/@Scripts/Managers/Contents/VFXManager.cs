@@ -167,19 +167,23 @@ namespace STELLAREST_2D
                     return goImpactHit;
 
                 case VFXImpact.Hit:
-                    goImpactHit = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_IMPACT_HIT_DEFAULT, null, true);
+                    goImpactHit = Managers.Resource.Instantiate(PrefabLabels.VFX_IMPACT_HIT_DEFAULT, null, true);
                     break;
 
                 case VFXImpact.Leaves:
-                    goImpactHit = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_IMPACT_HIT_LEAVES, null, true);
+                    goImpactHit = Managers.Resource.Instantiate(PrefabLabels.VFX_IMPACT_HIT_LEAVES, null, true);
                     break;
 
                 case VFXImpact.Light:
-                    goImpactHit = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_IMPACT_HIT_LIGHT, null, true);
+                    goImpactHit = Managers.Resource.Instantiate(PrefabLabels.VFX_IMPACT_HIT_LIGHT, null, true);
                     break;
 
                 case VFXImpact.SmokePuff:
-                    goImpactHit = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_IMPACT_HIT_SMOKE_PUFF, null, true);
+                    goImpactHit = Managers.Resource.Instantiate(PrefabLabels.VFX_IMPACT_HIT_SMOKE_PUFF, null, true);
+                    break;
+
+                case VFXImpact.Incinvible:
+                    goImpactHit = Managers.Resource.Instantiate(PrefabLabels.VFX_IMPACT_HIT_INVINCIBLE, null, true);
                     break;
             }
 
@@ -223,7 +227,7 @@ namespace STELLAREST_2D
             return goTrail;
         }
 
-        public void Damage(CreatureController cc, float damage, bool isCritical, bool isOnShield = false)
+        public void Damage(CreatureController cc, float damage, bool isCritical)
         {
             if (cc.IsValid() == false)
                 return;
@@ -257,7 +261,7 @@ namespace STELLAREST_2D
             }
             else // Damage to Player
             {
-                if (isOnShield == false)
+                if (cc.SkillBook.IsOnShield == false)
                 {
                     Managers.Resource.Load<GameObject>(PrefabLabels.VFX_ENV_DAMAGE_TO_PLAYER)
                                     .GetComponent<DamageNumber>().Spawn(spawnPos, damage);
@@ -278,7 +282,9 @@ namespace STELLAREST_2D
             if (percent < 100)
                 dmgNumber.lifetime = 0.15f;
             else
-                dmgNumber.lifetime = 0.5f;
+            {
+                dmgNumber.lifetime = 0.75f;
+            }
         }
 
         public GameObject Environment(VFXEnv templateOrigin, CreatureController target)
@@ -353,13 +359,6 @@ namespace STELLAREST_2D
                         goVFX = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_ENV_SILENCE, null, true);
                         goVFX.transform.localScale = spawnScale;
                         goVFX.transform.position = spawnPos;
-                    }
-                    break;
-
-                case VFXEnv.Invincible:
-                    {
-                        Managers.Resource.Load<GameObject>(Define.Labels.Prefabs.VFX_ENV_DAMAGE_TO_PLAYER_INVINCIBLE_FONT)
-                                         .GetComponent<DamageNumber>().Spawn(spawnPos);
                     }
                     break;
             }

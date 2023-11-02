@@ -242,6 +242,7 @@ namespace STELLAREST_2D
         [field: SerializeField] public List<SequenceSkill> SequenceSkills { get; private set; } = new List<SequenceSkill>();
 
         public Shield CachedShield { get; private set; } = null;
+        public SecondWind CachedSecondWind { get; private set; } = null;
 
         public void LateInit()
         {
@@ -256,28 +257,37 @@ namespace STELLAREST_2D
             }
 
             if (this.Owner?.IsPlayer() == true)
-            {
                 SetSequenceSkills();
-                if (this.SecondSequenceSkill != SkillTemplate.None)
-                    Utils.Log($"SECOND SEQUENCE SKILL TEMPLATE : {SecondSequenceSkill}");
-                else
-                    Utils.Log("INVALID SECOND SEQUENCE SKILL YET.");
-                
-                if (this.LastSequenceSkill != SkillTemplate.None)
-                    Utils.Log($"LAST SEQUENCE SKILL TEMPLATE : {LastSequenceSkill}");
-                else
-                    Utils.Log("INVALID LAST SEQUENCE SKILL YET.");
-            }
         }
 
         private void SetSequenceSkills()
         {
             for (int i = 0; i < SequenceSkills.Count; ++i)
             {
-                if (i == 0)
+                if (SequenceSkills[i].Data.OriginalTemplate == SkillTemplate.Shield)
+                {
                     SecondSequenceSkill = SequenceSkills[i].Data.OriginalTemplate;
-                else
-                    LastSequenceSkill = SequenceSkills[i].Data.OriginalTemplate;
+                    if (this.CachedShield == null)
+                    {
+                        this.CachedShield = SequenceSkills[i].GetComponent<Shield>();
+                        Utils.Log("Success Init Cache : Shield");
+                    }
+                }
+
+                if (SequenceSkills[i].Data.OriginalTemplate == SkillTemplate.SecondWind)
+                {
+                    SecondSequenceSkill = SequenceSkills[i].Data.OriginalTemplate;
+                    if (this.CachedSecondWind == null)
+                    {
+                        this.CachedSecondWind = SequenceSkills[i].GetComponent<SecondWind>();
+                        Utils.Log("Success Init Cache : Second Wind");
+                    }
+                }
+
+                // if (i == 0)
+                //     SecondSequenceSkill = SequenceSkills[i].Data.OriginalTemplate;
+                // else
+                //     LastSequenceSkill = SequenceSkills[i].Data.OriginalTemplate;
             }
         }
 
@@ -316,8 +326,10 @@ namespace STELLAREST_2D
                 Utils.LogCritical(nameof(SkillBook), nameof(Activate), $"Check TemplateID : {templateOrigin}");
 
             group.Activate();
-            if (this.CachedShield == null && templateOrigin == SkillTemplate.Shield)
-                this.CachedShield = this.GetCanActiveSkillMember(SkillTemplate.Shield).GetComponent<Shield>();
+            // if (this.CachedShield == null && templateOrigin == SkillTemplate.Shield)
+            //     this.CachedShield = this.GetCanActiveSkillMember(SkillTemplate.Shield).GetComponent<Shield>();
+            // if (this.CachedSecondWind == null && templateOrigin == SkillTemplate.SecondWind)
+            //     this.CachedSecondWind = this.GetCanActiveSkillMember(SkillTemplate.SecondWind).GetComponent<SecondWind>();
         }
 
         public void ActivateAll()
@@ -352,16 +364,18 @@ namespace STELLAREST_2D
             return skill;
         }
 
-        public T GetCachedSkill<T>(SkillTemplate templateOrigin) where T : SkillBase
-        {
-            switch (templateOrigin)
-            {
-                case SkillTemplate.Shield:
-                    return CachedShield as T;
-            }
 
-            return null;
-        }
+
+        // private T GetCachedSkill<T>(SkillTemplate templateOrigin) where T : SkillBase
+        // {
+        //     switch (templateOrigin)
+        //     {
+        //         case SkillTemplate.Shield:
+        //             return CachedShield as T;
+        //     }
+
+        //     return null;
+        // }
 
         // public void ActivateAll()
         // {
@@ -395,6 +409,29 @@ namespace STELLAREST_2D
         //         }
         //     }
         // }
+        public bool IsOnShield => (this.CachedShield != null) ? this.CachedShield.IsOnShield : false;
+        public void HitShield() => this.CachedShield.Hit();
+        public void OffSheild() => this.CachedShield.OffShield();
+
+        public bool IsReadySecondWind => (this.CachedSecondWind != null) ? this.CachedSecondWind.IsReady : false;
+        public void OnSecondWind() => this.CachedSecondWind.On();
+
+        public T CachedSkill<T>() where T : SkillBase
+        {
+            System.Type type = typeof(T);
+            if (type == typeof(Shield))
+            {
+                if (CachedShield != null)
+                    return CachedShield as T;
+            }
+            else if (type == typeof(SecondWind))
+            {
+                if (CachedSecondWind != null)
+                    return CachedSecondWind as T;
+            }
+
+            return null;
+        }
 
         private void OnDestroy()
         {

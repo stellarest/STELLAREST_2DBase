@@ -187,12 +187,6 @@ namespace STELLAREST_2D
             // if (Input.GetKeyDown(KeyCode.W))
             //     SkillFlag(SkillBook.LastSequenceSkill);
 
-            if (Input.GetKey(KeyCode.I))
-            {
-                SecondWind secondWind = SkillBook.GetCanActiveSkillMember(SkillTemplate.SecondWind).GetComponent<SecondWind>();
-                secondWind.Wait();
-            }
-
             if (Input.GetKeyDown(KeyCode.O))
             {
                 //StartCoroutine(CoPercentageTemp());
@@ -368,9 +362,6 @@ namespace STELLAREST_2D
 
                 case VFXEnv.Silence:
                     return (Center.position + new Vector3(-1.65f, 2.55f, 0f));
-
-                case VFXEnv.Invincible:
-                    return (transform.position + (Vector3.up * 2.95f));
 
                 default:
                     return base.LoadVFXEnvSpawnPos(templateOrigin);

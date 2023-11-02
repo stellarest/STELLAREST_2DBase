@@ -198,6 +198,7 @@ namespace STELLAREST_2D
                     Leaves = 400101,
                     Light = 400102,
                     SmokePuff = 400103,
+                    Incinvible = 400104,
                 }
 
                 public enum Trail
@@ -223,7 +224,6 @@ namespace STELLAREST_2D
                     GemGather,
                     GemExplosion,
                     Font_Percentage,
-                    Invincible,
 
 
 
@@ -256,6 +256,7 @@ namespace STELLAREST_2D
                 public const string VFX_IMPACT_HIT_LEAVES = "VFX_Impact_Hit_Leaves.prefab";
                 public const string VFX_IMPACT_HIT_LIGHT = "VFX_Impact_Hit_Light.prefab";
                 public const string VFX_IMPACT_HIT_SMOKE_PUFF = "VFX_Impact_Hit_SmokePuff.prefab";
+                public const string VFX_IMPACT_HIT_INVINCIBLE = "VFX_Impact_Hit_Invincible.prefab";
 
                 // VFX Trail
                 public const string VFX_TRAIL_WIND = "VFX_Trail_Wind.prefab";
@@ -277,8 +278,6 @@ namespace STELLAREST_2D
                 public const string VFX_ENV_GEM_GATHER = "VFX_Env_GemGather.prefab";
                 public const string VFX_ENV_GEM_EXPLOSION = "VFX_Env_GemExplosion.prefab";
                 public const string VFX_ENV_FONT_PERCENTAGE = "VFX_Env_Font_Percentage.prefab";
-                public const string VFX_ENV_DAMAGE_TO_PLAYER_INVINCIBLE_FONT = "VFX_Env_Damage_To_Player_Invincible_Font.prefab";
-
 
                 // TEMP
                 // =====================================================================================

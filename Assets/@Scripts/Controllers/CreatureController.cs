@@ -54,10 +54,6 @@ namespace STELLAREST_2D
         [field: SerializeField] public CreatureStat Stat { get; protected set; } = null;
         public void UpdateCreatureStat(int templateID) 
             => this.Stat = Stat.UpgradeStat(this, Stat, templateID);
-
-        public bool IsOnShield => (this.SkillBook.GetCachedSkill<Shield>(SkillTemplate.Shield) != null) ? 
-                                    this.SkillBook.GetCachedSkill<Shield>(SkillTemplate.Shield).IsOnShield : false;
-
         public bool IsInvincible { get; set; } = false;
 
         // +++ CROWD CONTROL +++
@@ -295,7 +291,7 @@ namespace STELLAREST_2D
 
             if (this.IsInvincible)
             {
-                Managers.VFX.Environment(VFXEnv.Invincible, this);
+                Managers.VFX.ImpactHit(VFXImpact.Incinvible, this, from); // --> 메모리 문제 발생시, 크리티컬 쪽에서 스폰
                 return;
             }
 
@@ -310,28 +306,36 @@ namespace STELLAREST_2D
             }
 
             // CHECK SHIELD OR NOT
-            if (this.IsOnShield)
+            if (this.SkillBook.IsOnShield)
             {
                 this.Stat.ShieldHp -= dmgResult;
                 if (this.Stat.ShieldHp < 0f)
-                    this.SkillBook.GetCachedSkill<Shield>(SkillTemplate.Shield).OffShield();
+                    this.SkillBook.OffSheild();
                     
-                this.SkillBook.GetCachedSkill<Shield>(SkillTemplate.Shield).Hit();
+                this.SkillBook.HitShield();
             }
             else
                 this.Stat.Hp -= dmgResult;
-            Managers.VFX.Damage(this, dmgResult, isCritical, this.IsOnShield);
+            Managers.VFX.Damage(this, dmgResult, isCritical);
             Managers.VFX.ImpactHit(from.Data.VFX_ImpactHit, this, from); // --> 메모리 문제 발생시, 크리티컬 쪽에서 스폰
 
             if (this.Stat.Hp <= 0 && this.IsDeadState == false)
-                this.CreatureState = Define.CreatureState.Dead;
+            {
+                if (this.SkillBook.IsReadySecondWind)
+                {
+                    this.IsInvincible = true;
+                    this.SkillBook.OnSecondWind();
+                }
+                else
+                    this.CreatureState = Define.CreatureState.Dead;
+            }
             else
             {
                 // Crowd Control (CC)
                 if (Managers.Game.TryCrowdControl(from))
                     Managers.CrowdControl.Apply(this, from);
                 
-                if (this.IsOnShield == false)
+                if (this.SkillBook.IsOnShield == false)
                     Managers.VFX.Material(Define.MaterialType.Hit, this);
             }
         }
@@ -434,7 +438,10 @@ namespace STELLAREST_2D
                 case CrowdControl.Stun:
                     {
                         if (this[ccType] == false)
+                        {
                             StartCoroutine(Managers.CrowdControl.CoStun(this, from));
+                            TryContinuousCrowControl(this, from);
+                        }
                         else
                             Utils.Log("Already Stun,,,");
                     }
@@ -494,6 +501,17 @@ namespace STELLAREST_2D
                         }
                         else
                             Utils.Log("Already Silence,,,");
+                    }
+                    break;
+
+                case CrowdControl.KnockBack:
+                    {
+                        if (this[continuousCCType] == false)
+                        {
+                            StartCoroutine(Managers.CrowdControl.CoKnockBack(this, from, true));
+                        }
+                        else
+                            Utils.Log("Already KnockBack,,,");
                     }
                     break;
             }

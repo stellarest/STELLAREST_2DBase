@@ -78,7 +78,6 @@ namespace STELLAREST_2D
             this.HitCollider.enabled = true;
             _startReachPoint = this.Owner.transform.position;
             _endReachPoint = this.Owner.MainTarget.Center.transform.position;
-            Utils.Log("READY BODY ATTACK.");
         }
 
         private bool ReachToTarget()

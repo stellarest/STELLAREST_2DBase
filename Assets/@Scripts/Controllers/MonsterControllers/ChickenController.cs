@@ -26,6 +26,13 @@ namespace STELLAREST_2D
                         this.CreatureState = Define.CreatureState.Run;
                     }
                 }
+
+                if (IsCCStates(CrowdControl.Stun))
+                {
+                    this.SkillBook.DeactivateAll();
+                    MonsterAnimController.AnimController.StopPlayback();
+                    MonsterAnimController.Idle();
+                }
             }  
         }
 

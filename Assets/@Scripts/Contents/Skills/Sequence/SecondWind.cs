@@ -5,21 +5,24 @@ using System.Globalization;
 using STELLAREST_2D.Data;
 using UnityEngine;
 
+using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
+
 namespace STELLAREST_2D
 {
     public class SecondWind : SequenceSkill
     {
-        private ParticleSystem _waitLoop = null;
+        private ParticleSystem _readyLoop = null;
         private ParticleSystem[] _onGroup = null;
         private ParticleSystem[] _burstGroup = null;
+        [field: SerializeField] public bool IsReady { get; private set; } = false;
 
         public override void InitOrigin(CreatureController owner, SkillData data)
         {
             base.InitOrigin(owner, data);
 
-            _waitLoop = transform.GetChild(0).GetComponent<ParticleSystem>();
-            _waitLoop.transform.localPosition = Vector3.up;
-            _waitLoop.gameObject.SetActive(false);
+            _readyLoop = transform.GetChild(0).GetComponent<ParticleSystem>();
+            _readyLoop.transform.localPosition = Vector3.up;
+            _readyLoop.gameObject.SetActive(false);
 
             _onGroup = transform.GetChild(1).GetComponentsInChildren<ParticleSystem>(includeInactive: true);
             for (int i = 0; i < _onGroup.Length; ++i)
@@ -33,18 +36,21 @@ namespace STELLAREST_2D
 
         public override void DoSkillJob(Action callback = null)
         {
-            Utils.Log("!!! ACTIVATE SECOND WIND !!!");
+            this.Ready();
         }
 
-        public void Wait()
+        public void Ready()
         {
-            _waitLoop.gameObject.SetActive(true);
-            _waitLoop.Play();
+            IsReady = true;
+            _readyLoop.gameObject.SetActive(true);
+            _readyLoop.Play();
         }
 
         public void On()
         {
-            this.Owner.IsInvincible = true;
+            this.Owner.SkillBook.Deactivate(SkillTemplate.KnightMastery);
+            this.Owner.ReserveSkillAnimationType(this.Data.AnimationType);
+            Owner.CreatureState = Define.CreatureState.Skill;
 
             for (int i = 0; i < _onGroup.Length; ++i)
             {
@@ -56,7 +62,7 @@ namespace STELLAREST_2D
         }
 
         //private const float DESIRED_RECOVERY_TIME = 2.5f;
-        private const float DESIRED_RECOVERY_TIME = 5f;
+        private const float DESIRED_RECOVERY_TIME = 2f;
 
         private IEnumerator CoOnSecondWind()
         {
@@ -69,20 +75,27 @@ namespace STELLAREST_2D
                 delta += Time.deltaTime;
                 percentage = delta / DESIRED_RECOVERY_TIME;
                 percent = Mathf.FloorToInt(percentage * 100);
-                if (percent < percent + 1)
-                {
-                    Managers.VFX.Percentage(this.Owner, percent);
-                }
+                this.Owner.Stat.Hp = Recovery(percent);
+                Managers.VFX.Percentage(this.Owner, percent);
 
                 yield return null;
             }
 
+            this.Owner.Stat.Hp = this.Owner.Stat.MaxHp;
             Burst();            
+        }
+
+        private float Recovery(int percent)
+        {
+            float maxHp = this.Owner.Stat.MaxHp;
+            float recoveryPercentage = percent / 100f;
+            float recoveryAmount = maxHp * recoveryPercentage;
+            return recoveryAmount;
         }
 
         public void Burst()
         {
-            _waitLoop.gameObject.SetActive(false);
+            _readyLoop.gameObject.SetActive(false);
             for (int i = 0; i < _onGroup.Length; ++i)
                 _onGroup[i].gameObject.SetActive(false);
 
@@ -93,6 +106,9 @@ namespace STELLAREST_2D
             }
 
             this.Owner.IsInvincible = false;
+            IsReady = false;
+
+            this.Owner.SkillBook.Activate(SkillTemplate.KnightMastery);
         }
     }
 }

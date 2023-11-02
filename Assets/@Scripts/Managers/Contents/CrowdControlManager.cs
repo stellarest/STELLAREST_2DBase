@@ -86,14 +86,17 @@ namespace STELLAREST_2D
         }
 
         private const float GENERATE_VFX_DUST_INTERVAL_TO_PLAYER = 0.2f;
-        public IEnumerator CoKnockBack(CreatureController target, SkillBase from)
+        public IEnumerator CoKnockBack(CreatureController target, SkillBase from, bool isCalledFromContinuous = false)
         {
             float delta = 0f;
             float percent = 0f;
             float duration = from.Data.CrowdControlDuration;
-            float intensity = from.Data.CrowdControlIntensity;
+            if (isCalledFromContinuous)
+                duration = from.Data.ContinuousCrowdControlDuration;
 
-            Utils.Log("KNOCK BACK START !!");
+            float intensity = from.Data.CrowdControlIntensity;
+            if (isCalledFromContinuous)
+                intensity = from.Data.ContinuousCrowdControlIntensity;
 
             Vector3 knockBackDir = (target.Center.position - from.HitPoint).normalized;
             target[CrowdControl.KnockBack] = true;

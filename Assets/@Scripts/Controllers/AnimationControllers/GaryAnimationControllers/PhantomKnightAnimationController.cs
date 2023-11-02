@@ -17,7 +17,6 @@ namespace STELLAREST_2D
             switch (this.Owner.SkillAnimationType)
             {
                 case Define.SkillAnimationType.ExclusiveRepeat:
-                    Utils.Log("PLAY PHANTOM KNIGHT ANIM,,,");
                     AnimController.Play(UPPER_ATTACK);
                     break;
 

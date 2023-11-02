@@ -136,7 +136,7 @@ namespace STELLAREST_2D
             if (this.OnStartAction == false)
                 return false;
 
-            if (IsIdleState || IsSkillState || IsDeadState)
+            if (IsIdleState || IsSkillState || IsDeadState || this[CrowdControl.Stun])
                 return false;
 
             return true;
@@ -226,7 +226,6 @@ namespace STELLAREST_2D
                     if (_coIdleTick != null)
                         StopCoroutine(_coIdleTick);
                     _coIdleTick = StartCoroutine(CoIdleTick());
-
                     break;
 
                 case Define.CreatureState.Run:

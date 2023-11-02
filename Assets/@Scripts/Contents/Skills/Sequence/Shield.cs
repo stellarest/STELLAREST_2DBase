@@ -79,7 +79,8 @@ namespace STELLAREST_2D
                 _onShields[i].Play();
             }
 
-            StartCoroutine(CoIsPlayingOnShield());
+            this.Owner.SkillBook.Activate(SkillTemplate.PaladinMastery);
+            //StartCoroutine(CoIsPlayingOnShield());
         }
 
         private IEnumerator CoIsPlayingOnShield()

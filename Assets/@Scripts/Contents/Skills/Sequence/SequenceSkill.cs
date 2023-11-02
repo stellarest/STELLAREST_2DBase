@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
+
 namespace STELLAREST_2D
 {
     public abstract class SequenceSkill : SkillBase
@@ -14,7 +16,6 @@ namespace STELLAREST_2D
                 StopCoroutine(_coSkillActivate);
 
             IsStopped = false;
-            Utils.Log("ACTIVATE SEQUENCE.");
             _coSkillActivate = StartCoroutine((CoStartSkill()));
         }
 
@@ -39,7 +40,6 @@ namespace STELLAREST_2D
         {
             if (_coSkillActivate != null)
             {
-                Utils.Log("DEACTIVATE SEQUENCE SKILL !!");
                 StopCoroutine(_coSkillActivate);
                 _coSkillActivate = null;
             }
