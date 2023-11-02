@@ -93,7 +93,36 @@ namespace STELLAREST_2D
         // +++ FIELD, PROPERTY, METHODS +++
         [SerializeField] private Define.CreatureState _cretureState = Define.CreatureState.Idle;
         public Define.CreatureState CreatureState { get => _cretureState; set { _cretureState = value; UpdateAnimation(); } }
+        
         public virtual void UpdateAnimation() { }
+
+        // FSM : IDLE
+        protected virtual void UpdateIdle() { }
+        protected Coroutine _coIdleTick = null;
+        protected virtual IEnumerator CoIdleTick() { yield return null; }
+        public void StopIdleTick()
+        {
+            if (_coIdleTick != null)
+                StopCoroutine(_coIdleTick);
+
+            _coIdleTick = null;
+        }
+
+        // FSM : RUN
+        protected virtual void UpdateRun() { }
+
+        // FSM : SKILL
+        protected virtual void UpdateSkill() { }
+        //protected virtual void RunSkill() { }
+
+        // FSM : DEAD
+        protected virtual void OnDead()
+        {
+            this.HitCollider.enabled = false;
+            this.RigidBody.simulated = false;
+            this.Stat.Hp = 0f;
+            this.SkillBook.DeactivateAll();
+        }
 
         private Vector3 _moveDir = Vector3.zero;
         public Vector3 MoveDir { get => _moveDir; protected set { _moveDir = value.normalized; } }
@@ -202,20 +231,18 @@ namespace STELLAREST_2D
             this.SkillBook.LateInit();
         }
 
-        protected virtual void StartGame(int templateID) { }
-
-        public bool OnStartAction { get; protected set; } = false;
-        protected Coroutine _coIdleToAction = null;
-        public virtual void StartIdleToAction(bool isOnActiveImmediately = false)
+        protected virtual void LateInit() { }
+        protected virtual void EnterInGame(int templateID) { }
+        public bool IsCompleteReadyToAction { get; protected set; } = false;
+        protected Coroutine _coReadyToAction = null;
+        public virtual void ReadyToAction(bool onStartImmediately = false)
         {
-            if (_coIdleToAction != null)
-                StopCoroutine(_coIdleToAction);
+            if (_coReadyToAction != null)
+                StopCoroutine(_coReadyToAction);
 
-            _coIdleToAction = StartCoroutine(CoIdleToAction(isOnActiveImmediately));
+            _coReadyToAction = StartCoroutine(CoReadyToAction(onStartImmediately));
         }
-        protected virtual void StartAction() { }
-        protected virtual float LoadIdleToActionTime() => 1f;
-        protected virtual IEnumerator CoIdleToAction(bool isOnActiveImmediately = false) { yield return null; }
+        protected virtual IEnumerator CoReadyToAction(bool onStartImmediately = false) { yield return null; }
 
         private void LoadRepeatSkills(Data.InitialCreatureData creatureData)
         {
@@ -282,7 +309,6 @@ namespace STELLAREST_2D
         }
 
         public virtual void ShowMuzzle() { }
-        protected virtual void RunSkill() { }
 
         public virtual void OnDamaged(CreatureController attacker, SkillBase from)
         {
@@ -338,15 +364,6 @@ namespace STELLAREST_2D
                 if (this.SkillBook.IsOnShield == false)
                     Managers.VFX.Material(Define.MaterialType.Hit, this);
             }
-        }
-
-        protected virtual void OnVFX_Hit() { }
-        protected virtual void OnDead()
-        { 
-            this.HitCollider.enabled = false;
-            this.RigidBody.simulated = false;
-            this.Stat.Hp = 0f;
-            this.SkillBook.DeactivateAll();
         }
 
         // +++ UTILS +++
@@ -411,11 +428,10 @@ namespace STELLAREST_2D
         public bool IsInLimitMaxPosY => Mathf.Abs(transform.position.y - Managers.Stage.RightTop.y) < Mathf.Epsilon ||
                                         Mathf.Abs(transform.position.y - Managers.Stage.LeftBottom.y) < Mathf.Epsilon;
 
-
         public virtual float ADDITIONAL_SPAWN_WIDTH { get; protected set; } = 0f;
         public virtual float ADDITIONAL_SPAWN_HEIGHT { get; protected set; } = 0f;
 
-
+        protected virtual float ReadyToActionCompleteTime() => 1f;
         public virtual Vector3 LoadVFXEnvSpawnScale(VFXEnv templateOrigin) => Vector3.one;
         public virtual Vector3 LoadVFXEnvSpawnPos(VFXEnv templateOrigin) => this.Center.transform.position;
         
@@ -424,8 +440,9 @@ namespace STELLAREST_2D
         public bool IsSkillState => this.CreatureState == Define.CreatureState.Skill && (this.Stat.Hp > 0);
         public bool IsDeadState => this.CreatureState == Define.CreatureState.Dead && (this.Stat.Hp <= 0);
 
-        public void SetDeadHead() => this.RendererController.OnFaceDeadHandler();
         public void SetDefaultHead() => this.RendererController.OnFaceDefaultHandler();
+        public void SetBattleHead() => this.RendererController.OnFaceBattleHandler();
+        public void SetDeadHead() => this.RendererController.OnFaceDeadHandler();
 
         public void RequestCrowdControl(SkillBase from)
         {

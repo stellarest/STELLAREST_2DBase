@@ -6,40 +6,67 @@ using UnityEngine;
 using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
 using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
-using UnityEditor;
 
 namespace STELLAREST_2D
 {
     public class ChickenController : MonsterController
     {
-        public override bool this[CrowdControl crowdControlType] 
-        { 
-            get => base[crowdControlType]; 
-            set 
+        public override bool this[CrowdControl crowdControlType]
+        {
+            get => base[crowdControlType];
+            set
             {
                 base[crowdControlType] = value;
-                if (IsCCStates(CrowdControl.Slience) == false)
+                switch (crowdControlType)
                 {
-                    if (this.CreatureState == Define.CreatureState.Idle)
-                    {
-                        Utils.Log("##### RUN #####");
-                        this.CreatureState = Define.CreatureState.Run;
-                    }
+                    case CrowdControl.Stun:
+                        {
+                            if (this[CrowdControl.Stun])
+                            {
+                                this.SetDeadHead();
+                                this.SkillBook.DeactivateAll();
+                                // 왜 자꾸 가끔 Run인 녀석이 있는것임 ?????
+                                // 잘 되는 것 같은디. 근데 스턴 걸린 녀석이 Run인 녀석한테 밀려버리는 것은 막아야함.
+                                this.CreatureState = Define.CreatureState.Idle;
+                            }
+                            else if (this[CrowdControl.Stun] == false)
+                            {
+                                this.SetDefaultHead();
+                                ReadyToAction(onStartImmediately: true); // true or false로 기믹을 줘도될것같긴한데 일단 그냥 즉시 움직이도록
+                                //ReadyToAction(onStartImmediately: false);
+                            }
+                        }
+                        break;
+
+                    case CrowdControl.Slience:
+                        {
+                            if (IsCCStates(CrowdControl.Slience) == false)
+                            {
+                                if (this.CreatureState == Define.CreatureState.Idle)
+                                {
+                                    Utils.Log("##### RUN AGAIN #####");
+                                    this.CreatureState = Define.CreatureState.Run;
+                                }
+                            }
+                        }
+                        break;
                 }
 
-                if (IsCCStates(CrowdControl.Stun))
-                {
-                    this.SkillBook.DeactivateAll();
-                    MonsterAnimController.AnimController.StopPlayback();
-                    MonsterAnimController.Idle();
-                }
-            }  
+                // if (IsCCStates(CrowdControl.Stun))
+                // {
+                //     Utils.Log("STUN IN !!");
+                //     this.SkillBook.DeactivateAll();
+                //     MonsterAnimController.AnimController.StopPlayback();
+                //     MonsterAnimController.Idle();
+                // }
+                // else if (IsCCStates(CrowdControl.Stun) == false)
+                // {
+                //     Utils.LogBreak("STUN OUT");
+                // }
+            }
         }
 
-        public override void Init(int templateID)
-        {
-            base.Init(templateID);
-        }
+        public override void Init(int templateID) => base.Init(templateID);
 
         protected override void LateInit()
         {
@@ -47,20 +74,82 @@ namespace STELLAREST_2D
             //SkillBook.LevelUp(SkillTemplate.ThrowingStar);
         }
 
-        protected override void StartAction()
+        protected override IEnumerator CoReadyToAction(bool onStartImmediately = false) // 파라미터로 NextState를 넣는다면? 괜찮을듯
         {
-            this.OnStartAction = true;
+            this.CreatureState = Define.CreatureState.Idle;
+            this.RigidBody.simulated = true;
+            this.HitCollider.enabled = true;
 
-            if (IsCCStates(CrowdControl.Stun))
-                return;
-            
+            if (onStartImmediately)
+            {
+                IsCompleteReadyToAction = true;
+                this.CreatureState = Define.CreatureState.Run;
+                yield break;
+            }
+
+            float delta = 0f;
+            float desiredTime = this.ReadyToActionCompleteTime();
+            float percent = 0f;
+            while (percent < 1f)
+            {
+                delta += Time.deltaTime;
+                percent = delta / desiredTime;
+                yield return null;
+            }
+
+            IsCompleteReadyToAction = true;
             this.CreatureState = Define.CreatureState.Run;
-            //this.SkillBook.Activate(SkillTemplate.ThrowingStar);
         }
 
-        protected override float LoadIdleToActionTime() => UnityEngine.Random.Range(2f, 3f);
+        protected override float ReadyToActionCompleteTime() => UnityEngine.Random.Range(2f, 3f);
 
-        protected override void RunSkill()
+        protected override void UpdateIdle()
+        {
+            MonsterAnimController.Idle();
+            RigidBody.velocity = Vector2.zero;
+
+            // if (_coIdleTick != null)
+            //     StopCoroutine(_coIdleTick);
+
+            // 이미 Idle 틱이 재생중일 때는 다시 한번 탈 수 없음
+            if (_coIdleTick != null)
+                return;
+
+            _coIdleTick = StartCoroutine(CoIdleTick());
+        }
+
+        protected override IEnumerator CoIdleTick()
+        {
+            Vector3 toTargetDir = Vector3.zero;
+            while (true)
+            {
+                RigidBody.velocity = Vector2.zero;
+                // if (this.IsCCStates(CrowdControl.Stun))
+                //     continue;
+
+                if (this.MainTarget != null)
+                {
+                    toTargetDir = (MainTarget.Center.position - this.Center.position);
+                    if (this.IsCCStates(CrowdControl.Stun) == false && this.LockFlip == false)
+                        Flip(toTargetDir.x > 0 ? -1 : 1);
+                }
+
+                if (this.IsCCStates(CrowdControl.Slience))
+                {
+                    if (toTargetDir.sqrMagnitude > this.Stat.CollectRange * this.Stat.CollectRange)
+                        this.CreatureState = Define.CreatureState.Run;
+                }
+
+                yield return null;
+            }
+        }
+
+        protected override void UpdateRun()
+        {
+            MonsterAnimController.Run();
+        }
+
+        protected override void UpdateSkill()
         {
             if (this.SkillBook != null)
             {

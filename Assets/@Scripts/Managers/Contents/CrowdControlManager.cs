@@ -29,9 +29,7 @@ namespace STELLAREST_2D
             float delta = 0f;
             float percent = 0f;
             float duration = from.Data.CrowdControlDuration;
-            target.CreatureState = Define.CreatureState.Idle;
-            
-            target.SetDeadHead();
+
             GameObject goVFX = Managers.VFX.Environment(VFXEnv.Stun, target);
             target[CrowdControl.Stun] = true;
             while (percent < 1f)
@@ -50,11 +48,39 @@ namespace STELLAREST_2D
             }
             target[CrowdControl.Stun] = false;
             Managers.Resource.Destroy(goVFX);
-            target.SetDefaultHead();
-
-            bool isOnActiveImmediately = true;
-            target.StartIdleToAction(isOnActiveImmediately);
         }
+
+        // public IEnumerator CoStun(CreatureController target, SkillBase from)
+        // {
+        //     float delta = 0f;
+        //     float percent = 0f;
+        //     float duration = from.Data.CrowdControlDuration;
+        //     target.CreatureState = Define.CreatureState.Idle;
+            
+        //     target.SetDeadHead();
+        //     GameObject goVFX = Managers.VFX.Environment(VFXEnv.Stun, target);
+        //     target[CrowdControl.Stun] = true;
+        //     while (percent < 1f)
+        //     {
+        //         if (target.IsDeadState)
+        //         {
+        //             target[CrowdControl.Stun] = false;
+        //             Managers.Resource.Destroy(goVFX);
+        //             yield break;
+        //         }
+
+        //         goVFX.transform.position = target.LoadVFXEnvSpawnPos(VFXEnv.Stun);
+        //         delta += Time.deltaTime;
+        //         percent = delta / duration;
+        //         yield return null;
+        //     }
+        //     target[CrowdControl.Stun] = false;
+        //     Managers.Resource.Destroy(goVFX);
+        //     target.SetDefaultHead();
+
+        //     bool isOnActiveImmediately = true;
+        //     target.StartIdleToAction(isOnActiveImmediately);
+        // }
 
         public IEnumerator CoSlow(CreatureController target, SkillBase from)
         {

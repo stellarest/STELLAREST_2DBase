@@ -56,7 +56,7 @@ namespace STELLAREST_2D
                 this.IsFirstPooling = false;
             }
             
-            StartGame(templateID);
+            EnterInGame(templateID);
         }
 
         protected override void InitChildObject()
@@ -65,78 +65,62 @@ namespace STELLAREST_2D
             Center = Utils.FindChild<Transform>(AnimTransform.gameObject, "Body", true);
         }
 
-        protected virtual void LateInit() { }
-
-        protected override void StartGame(int templateID)
+        protected override void EnterInGame(int templateID)
         {
-            this.RendererController.StartGame();
+            this.RendererController.EnterInGame();
             InitCreatureStat(templateID);
             ClearCrowdControlStates();
             ClearHitFroms();
+            ReadyToAction(false);
 
-            StartIdleToAction();
-            // if (_coIdleToAction != null)
-            //     StopCoroutine(CoIdleToAction());
-            // _coIdleToAction = StartCoroutine(CoIdleToAction());
-
+            // MainTarget은 중간에 바뀔수도 있긴함 (ex) Forest Guardian : Black Panther
             if (Managers.Game.Player != null)
-            {
-                // MainTarget은 중간에 바뀔수도 있긴함 (ex) Forest Guardian : Black Panther
                 this.MainTarget = Managers.Game.Player;
-                Utils.Log("Set MainTarget");
-            }
-            else
-                Utils.Log("InValid MainTarget.");
         }
 
-        protected override IEnumerator CoIdleToAction(bool isOnActiveImmediately = false)
-        {
-            OnStartAction = false;
-            CreatureState = Define.CreatureState.Idle;
-
-            this.RigidBody.simulated = true;
-            this.HitCollider.enabled = true;
-            if (isOnActiveImmediately)
-            {
-                StartAction();
-                yield break;
-            }
-
-            float delta = 0f;
-            float desiredTime = LoadIdleToActionTime();
-            while (true)
-            {
-                if (IsCCStates(CrowdControl.Stun))
-                {
-                    StartAction();
-                    yield break;
-                }
-
-                delta += Time.deltaTime;
-                float percent = delta / desiredTime;
-                if (percent > 1f)
-                {
-                    StartAction();
-                    yield break;
-                }
-
-                yield return null;
-            }
-        }
-
-        // TEMP
-        // public void Stop()
+        // protected override IEnumerator CoReadyToAction(bool isOnActiveImmediately = false)
         // {
-        //     this.CreatureState = Define.CreatureState.Idle;
-        //     //StartCoroutine(CoStartAction());
+        //     // IsCompleteStartAction = false;
+        //     // CreatureState = Define.CreatureState.Idle;
+
+        //     // this.RigidBody.simulated = true;
+        //     // this.HitCollider.enabled = true;
+        //     // if (isOnActiveImmediately)
+        //     // {
+        //     //     //StartAction();
+        //     //     yield break;
+        //     // }
+
+        //     // float delta = 0f;
+        //     // float desiredTime = LoadIdleToActionTime();
+        //     // while (true)
+        //     // {
+        //     //     if (IsCCStates(CrowdControl.Stun))
+        //     //     {
+        //     //         //StartAction();
+        //     //         yield break;
+        //     //     }
+
+        //     //     delta += Time.deltaTime;
+        //     //     float percent = delta / desiredTime;
+        //     //     if (percent > 1f)
+        //     //     {
+        //     //         //StartAction();
+        //     //         yield break;
+        //     //     }
+
+        //     //     yield return null;
+        //     // }
+
+        //     yield return null;
         // }
 
         private bool CanEnterRunState()
         {
-            if (this.OnStartAction == false)
+            if (this.IsCompleteReadyToAction == false)
                 return false;
 
-            if (IsIdleState || IsSkillState || IsDeadState || this[CrowdControl.Stun])
+            if (IsIdleState || IsSkillState || IsDeadState || this.IsCCStates(CrowdControl.Stun))
                 return false;
 
             return true;
@@ -217,35 +201,36 @@ namespace STELLAREST_2D
             }
         }
 
-        private Coroutine _coIdleTick = null;
         public override void UpdateAnimation()
         {
             switch (CreatureState)
             {
                 case Define.CreatureState.Idle:
-                    if (_coIdleTick != null)
-                        StopCoroutine(_coIdleTick);
-                    _coIdleTick = StartCoroutine(CoIdleTick());
+                    UpdateIdle();
+                    //MonsterAnimController.Idle();
+                    // if (_coIdleTick != null)
+                    //     StopCoroutine(_coIdleTick);
+                    // _coIdleTick = StartCoroutine(CoIdleTick());
                     break;
 
                 case Define.CreatureState.Run:
-                    if (_coIdleTick != null)
-                        StopCoroutine(_coIdleTick);
-
-                    MonsterAnimController.Run();
+                    StopIdleTick();
+                    UpdateRun();
                     break;
 
                 case Define.CreatureState.Skill:
-                    RunSkill();
+                    StopIdleTick();
+                    UpdateSkill();
                     break;
 
                 case Define.CreatureState.Dead:
+                    StopIdleTick();
                     OnDead();
                     break;
             }
         }
 
-        protected virtual IEnumerator CoIdleTick()
+        protected override IEnumerator CoIdleTick()
         {
             MonsterAnimController.Idle();
             RendererController.MonsterHead.sprite = this.DefaultHead;

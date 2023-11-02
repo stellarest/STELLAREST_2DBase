@@ -350,7 +350,6 @@ namespace STELLAREST_2D
 
                 // if (this.Owner[CrowdControl.Stun])
                 //     return;
-
                 CurrentFaceState = Define.FaceExpressionType.Default;
                 PlayerFaceExpressionContainer container = PlayerFaceExpressionContainerDict[Define.FaceExpressionType.Default];
                 PlayerFace.eyebrowsSPR.sprite = container.Eyebrows;
@@ -366,7 +365,7 @@ namespace STELLAREST_2D
                     OnFaceDeadHandler();
             }
             else
-                MonsterHead.sprite = OwnerAsMonsterController.AngryHead;
+                MonsterHead.sprite = OwnerAsMonsterController.DefaultHead;
         }
 
         public void OnFaceDeadHandler() // +++ Remove Animation Event. Called from OnDead +++
@@ -526,7 +525,7 @@ namespace STELLAREST_2D
             OwnerAsMonsterController = this.Owner as MonsterController;
         }
 
-        public void StartGame()
+        public void EnterInGame()
         {
             ResetMaterial();
             if (this.IsPlayer == false)

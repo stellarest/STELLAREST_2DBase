@@ -11,7 +11,7 @@ namespace STELLAREST_2D
             base.Init(templateID);
         }
 
-        protected override void RunSkill() => PlayerAnimController.RunSkill();
+        protected override void UpdateSkill() => PlayerAnimController.RunSkill();
     }
 }
 

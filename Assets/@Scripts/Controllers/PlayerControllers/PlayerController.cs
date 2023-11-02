@@ -252,7 +252,7 @@ namespace STELLAREST_2D
 
                 case Define.CreatureState.Skill:
                     //PlayerAnimController.Attack();
-                    RunSkill();
+                    UpdateSkill();
                     // 메서드로 따로 빼도 될지
                     // if (this.IsDeadState && this.RendererController.CurrentFaceState != Define.FaceExpressionType.Dead)
                     //     this.RendererController.OnFaceDeadHandler();

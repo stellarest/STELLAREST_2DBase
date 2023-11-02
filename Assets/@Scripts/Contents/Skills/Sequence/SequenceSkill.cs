@@ -2,8 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
-
 namespace STELLAREST_2D
 {
     public abstract class SequenceSkill : SkillBase

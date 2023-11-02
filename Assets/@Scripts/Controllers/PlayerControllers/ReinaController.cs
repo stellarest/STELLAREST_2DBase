@@ -20,6 +20,6 @@ namespace STELLAREST_2D
             BodyParts.ArmLeft.localRotation = Quaternion.Euler(0, 0, modifiedAngle);
         }
         
-        protected override void RunSkill() => PlayerAnimController.RunSkill();
+        protected override void UpdateSkill() => PlayerAnimController.RunSkill();
     }
 }

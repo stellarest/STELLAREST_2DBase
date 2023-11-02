@@ -37,6 +37,7 @@ namespace STELLAREST_2D
                 //this.Owner.SkillBook.Deactivate(SkillTemplate.BodyAttack);
                 //this.Owner.SkillBook.ReserveNextSequence((SkillTemplate.BodyAttack);
                 //this.Owner.SkillBook.ReserveNextSequence(currentEnd: SkillTemplate.BodyAttack);
+                this.Owner.SetDefaultHead();
                 this.Owner.SkillBook.RandomizeSequenceGroup(SkillTemplate.BodyAttack);
             }));
         }
@@ -78,6 +79,7 @@ namespace STELLAREST_2D
             this.HitCollider.enabled = true;
             _startReachPoint = this.Owner.transform.position;
             _endReachPoint = this.Owner.MainTarget.Center.transform.position;
+            this.Owner.SetBattleHead();
         }
 
         private bool ReachToTarget()
