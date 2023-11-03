@@ -29,7 +29,8 @@ namespace STELLAREST_2D
                 _onGroup[i].gameObject.SetActive(false);
 
             _burstGroup = transform.GetChild(2).GetComponentsInChildren<ParticleSystem>(includeInactive: true);
-            transform.GetChild(2).GetComponent<SecondWindChild>().Init(owner, data, null);
+            transform.GetChild(2).GetComponent<SecondWindChild>().Init(owner, data);
+            
             for (int i = 0; i < _burstGroup.Length; ++i)
                 _burstGroup[i].gameObject.SetActive(false);
         }
@@ -62,7 +63,7 @@ namespace STELLAREST_2D
         }
 
         //private const float DESIRED_RECOVERY_TIME = 2.5f;
-        private const float DESIRED_RECOVERY_TIME = 2f;
+        private const float DESIRED_RECOVERY_TIME = 5f;
 
         private IEnumerator CoOnSecondWind()
         {

@@ -83,7 +83,11 @@ namespace STELLAREST_2D
             if (onStartImmediately)
             {
                 IsCompleteReadyToAction = true;
-                this.CreatureState = Define.CreatureState.Run;
+                if (this.IsCCStates(CrowdControl.Stun)) // CHECK THIS
+                    this.CreatureState = Define.CreatureState.Idle;
+                else
+                    this.CreatureState = Define.CreatureState.Run;
+
                 yield break;
             }
 
@@ -98,7 +102,10 @@ namespace STELLAREST_2D
             }
 
             IsCompleteReadyToAction = true;
-            this.CreatureState = Define.CreatureState.Run;
+            if (this.IsCCStates(CrowdControl.Stun))
+                this.CreatureState = Define.CreatureState.Idle;
+            else
+                this.CreatureState = Define.CreatureState.Run;
         }
 
         protected override float ReadyToActionCompleteTime() => UnityEngine.Random.Range(2f, 3f);

@@ -7,7 +7,7 @@ namespace STELLAREST_2D
 {
     public class SecondWindChild : SecondWind
     {
-        public void Init(CreatureController owner, Data.SkillData data, RangedShot parent)
+        public void Init(CreatureController owner, Data.SkillData data)
         {
             this.Owner = owner;
             this.Data = data;
