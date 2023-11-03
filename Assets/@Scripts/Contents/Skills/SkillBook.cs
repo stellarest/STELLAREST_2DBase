@@ -411,7 +411,8 @@ namespace STELLAREST_2D
         // }
         public bool IsOnShield => (this.CachedShield != null) ? this.CachedShield.IsOnShield : false;
         public void HitShield() => this.CachedShield.Hit();
-        public void OffSheild() => this.CachedShield.OffShield();
+        //public void OffSheild() => this.CachedShield.OffShield();
+        public void OffSheild() => this.CachedShield.IsOnShield = false;
 
         public bool IsReadySecondWind => (this.CachedSecondWind != null) ? this.CachedSecondWind.IsReady : false;
         public void OnSecondWind() => this.CachedSecondWind.On();

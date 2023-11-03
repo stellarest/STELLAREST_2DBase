@@ -17,18 +17,42 @@ namespace STELLAREST_2D
         private ParticleSystem _hitBurst = null;
         private const string INIT_HIT_BURST = "Hit_Burst";
         private const int ON_SHIELDS_ENTER_COUNT = 5;
+        private float _shieldMaxHp = 0f;
 
         private bool _isOnShield = false;
         public bool IsOnShield 
         {
             get => _isOnShield;
-            private set
+            set
             {
                 this._isOnShield = value;
                 if (_isOnShield)
-                    this.Owner.Stat.ShieldHp = (this.Owner.Stat.MaxHp * 0.8f);
+                    OnShield();
                 else
-                    this.Owner.Stat.ShieldHp = 0f;
+                {
+                    OffShield();
+                }
+            }
+        }
+
+        private Coroutine _coRecoveryShield = null;
+        private const float RECOVERY_INTERVAL = 1.25f;
+        private IEnumerator CoRecoveryShield()
+        {
+            float delta = 0f;
+            while (this.IsOnShield)
+            {
+                delta += Time.deltaTime;
+                if (delta >= RECOVERY_INTERVAL)
+                {
+                    this.Owner.Stat.ShieldHp++;
+                    if (this.Owner.Stat.ShieldHp >= _shieldMaxHp)
+                        this.Owner.Stat.ShieldHp = _shieldMaxHp;
+
+                    delta = 0f;
+                }
+
+                yield return null;
             }
         }
 
@@ -53,7 +77,8 @@ namespace STELLAREST_2D
             for (int i = 0; i < _offShields.Length; ++i)
                 _offShields[i].gameObject.SetActive(false);
 
-            IsOnShield = false;
+            //IsOnShield = false;
+            _isOnShield = false;
         }
 
         public override void DoSkillJob(Action callback = null)
@@ -63,13 +88,14 @@ namespace STELLAREST_2D
             Owner.CreatureState = Define.CreatureState.Skill;
         }
 
-        public override void OnActiveSequenceSkillHandler() => OnShield();
+        public override void OnActiveSequenceSkillHandler() => this.IsOnShield = true;
         public void Hit() => _hitBurst.Play();
+        public void Recovery() { }
 
-        public void OnShield()
+        private const float SHIELD_MAX_HP_RATIO = 0.5f;
+        private void OnShield()
         {
-            this.IsOnShield = true;
-
+            //this.IsOnShield = true;
             for (int i = 0; i < _offShields.Length; ++i)
                 _offShields[i].gameObject.SetActive(false);
 
@@ -79,37 +105,23 @@ namespace STELLAREST_2D
                 _onShields[i].Play();
             }
 
+            _shieldMaxHp = (this.Owner.Stat.MaxHp * SHIELD_MAX_HP_RATIO);
+            this.Owner.Stat.ShieldHp = _shieldMaxHp;
+
+            if (_coRecoveryShield != null)
+                StopCoroutine(_coRecoveryShield);
+            _coRecoveryShield = StartCoroutine(CoRecoveryShield());
             this.Owner.SkillBook.Activate(SkillTemplate.PaladinMastery);
-            //StartCoroutine(CoIsPlayingOnShield());
         }
 
-        private IEnumerator CoIsPlayingOnShield()
+        private void OffShield()
         {
-            bool isPlaying = true;
-            while (isPlaying)
+            if (_coRecoveryShield != null)
             {
-                bool isAnyPlaying = false;
-                for (int i = 0; i < _onShieldsEnter.Length; ++i)
-                {
-                    if (_onShieldsEnter[i].isPlaying)
-                    {
-                        isAnyPlaying = true;
-                        break;
-                    }
-                }
-
-                if (isAnyPlaying == false)
-                    isPlaying = false;
-
-                yield return null;
+                StopCoroutine(_coRecoveryShield);
+                _coRecoveryShield = null;
             }
-
-            this.Owner.SkillBook.Activate(SkillTemplate.PaladinMastery);
-        }
-
-        public void OffShield()
-        {
-            this.IsOnShield = false;
+            this.Owner.Stat.ShieldHp = 0f;
 
             for (int i = 0; i < _onShields.Length; ++i)
                 _onShields[i].gameObject.SetActive(false);
@@ -119,11 +131,13 @@ namespace STELLAREST_2D
                 _offShields[i].gameObject.SetActive(true);
                 _offShields[i].Play();
             }
+
+            StartCoroutine(CoIsPlayingOffShield());
         }
 
         private IEnumerator CoIsPlayingOffShield()
         {
-            OffShield();
+            //OffShield();
             bool isPlaying = true;
             while (isPlaying)
             {
@@ -143,18 +157,40 @@ namespace STELLAREST_2D
                 yield return null;
             }
 
-            base.Deactivate();
+            for (int i = 0; i < _offShields.Length; ++i)
+                _offShields[i].gameObject.SetActive(false);
+
+            this.Owner.SkillBook.Deactivate(SkillTemplate.Shield);
+            //base.Deactivate();
         }
 
-        public override void Deactivate()
-        {
-            if (this.IsOnShield == false)
-            {
-                base.Deactivate();
-                return;
-            }
-
-            StartCoroutine(CoIsPlayingOffShield());
-        }
+        public override void Deactivate() => base.Deactivate();
     }
 }
+
+// ==================================================
+/*
+// private IEnumerator CoIsPlayingOnShield()
+        // {
+        //     bool isPlaying = true;
+        //     while (isPlaying)
+        //     {
+        //         bool isAnyPlaying = false;
+        //         for (int i = 0; i < _onShieldsEnter.Length; ++i)
+        //         {
+        //             if (_onShieldsEnter[i].isPlaying)
+        //             {
+        //                 isAnyPlaying = true;
+        //                 break;
+        //             }
+        //         }
+
+        //         if (isAnyPlaying == false)
+        //             isPlaying = false;
+
+        //         yield return null;
+        //     }
+
+        //     this.Owner.SkillBook.Activate(SkillTemplate.PaladinMastery);
+        // }
+*/

@@ -62,9 +62,7 @@ namespace STELLAREST_2D
             StartCoroutine(CoOnSecondWind());
         }
 
-        //private const float DESIRED_RECOVERY_TIME = 2.5f;
-        private const float DESIRED_RECOVERY_TIME = 5f;
-
+        private const float DESIRED_RECOVERY_TIME = 2.5f;
         private IEnumerator CoOnSecondWind()
         {
             float delta = 0f;

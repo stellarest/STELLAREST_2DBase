@@ -336,7 +336,10 @@ namespace STELLAREST_2D
             {
                 this.Stat.ShieldHp -= dmgResult;
                 if (this.Stat.ShieldHp < 0f)
+                {
                     this.SkillBook.OffSheild();
+                    //this.SkillBook.Deactivate(SkillTemplate.Shield);
+                }
                     
                 this.SkillBook.HitShield();
             }

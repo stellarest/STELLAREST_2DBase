@@ -33,7 +33,6 @@ namespace STELLAREST_2D
 
         public virtual void OnActiveSequenceSkillHandler() { }
         
-
         public override void Deactivate()
         {
             if (_coSkillActivate != null)
