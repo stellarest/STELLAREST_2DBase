@@ -18,7 +18,7 @@ namespace STELLAREST_2D
         public enum UIEvent { Click, Pressed, PointerDown, PointerUp, BeginDrag, Drag, EndDrag, }
         public enum Scene { Unknown, DevScene, GameScene, }
         public enum Sound { BGM, Effect, }
-        public enum ObjectType { None = -1, Player = 1, Monster, Skill, Projectile, Gem }
+        public enum ObjectType { None = -1, Player = 1, Monster, Skill, Projectile, Gem, Soul }
         public enum MonsterType { None = -1, Chicken = 1, }
 
         public enum InGameGrade { Default = 1, Elite, Ultimate }
@@ -161,8 +161,10 @@ namespace STELLAREST_2D
                     // BombTrap = 200316,
 
                     BodyAttack = 201100,
-                    Shield = 201101,
-                    SecondWind = 201102
+                    Shield_Elite = 201101,
+                    SecondWind_Elite = 201102,
+                    Phantom_Elite = 201103,
+                    Phantom_Elite_Child = 201104
                     // HeavensJudgment,
                     // GuardiansShield,
                     // Concentration,
@@ -279,19 +281,24 @@ namespace STELLAREST_2D
                 public const string VFX_ENV_GEM_EXPLOSION = "VFX_Env_GemExplosion.prefab";
                 public const string VFX_ENV_FONT_PERCENTAGE = "VFX_Env_Font_Percentage.prefab";
 
+                // ENV
+                public const string ENV_GEM = "Env_Gem.prefab";
+                public const string ENV_SOUL = "Env_Soul.prefab";
+
+
                 // TEMP
                 // =====================================================================================
                 // =====================================================================================
                 // =====================================================================================
                 public const string STUN_EFFECT = "StunEffect.prefab";
+                public const string GEM_GATHER = "GemGather.prefab";
+                public const string GEM_EXPLOSION_NORMAL = "GemExplosion_Normal.prefab";
+                public const string GEM_EXPLOSION_LARGE = "GemExplosion_Large.prefab";
                 public const string CURSED_TEXT_EFFECT = "CursedTextEffect.prefab";
                 public const string ARROW_SHOT_MUZZLE_EFFECT = "ArrowShotMuzzleEffect.prefab";
                 public const string ARROW_SHOT_LEGENDARY_TRAIL_EFFECT = "ArrowShotLegendaryTrailEffect.prefab";
 
-                public const string GEM = "Gem.prefab";
-                public const string GEM_GATHER = "GemGather.prefab";
-                public const string GEM_EXPLOSION_NORMAL = "GemExplosion_Normal.prefab";
-                public const string GEM_EXPLOSION_LARGE = "GemExplosion_Large.prefab";
+
                 public const string DEATH_CLAW_SLASH = "DeathClawSlash.prefab";
                 public const string DEATH_CLAW_SLASH_LEGENDARY = "DeathClawSlash_Legendary.prefab";
                 public const string IMPACT_BLOODY_EFFECT = "ImpactBloodyEffect.prefab";

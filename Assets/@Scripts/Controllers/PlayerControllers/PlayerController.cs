@@ -89,6 +89,7 @@ namespace STELLAREST_2D
             PlayerAnimController.SetAnimationSpeed(base.SpeedModifier);
         }
 
+        private Define.LookAtDirection _prevLookAtDir = Define.LookAtDirection.Right;
         public override void Init(int templateID)
         {
             if (this.IsFirstPooling)
@@ -109,6 +110,9 @@ namespace STELLAREST_2D
 
             CreatureState = Define.CreatureState.Idle;
             PlayerAnimController.Ready();
+
+            this.LookAtDir = Define.LookAtDirection.Right;
+            _prevLookAtDir = this.LookAtDir;
         }
 
         protected override void InitChildObject()
@@ -169,6 +173,7 @@ namespace STELLAREST_2D
 
         public int TestMonsterCount = 0;
         public int TestSkillCount = 0;
+        public MonsterController spawnSoulTarget = null;
         private void Update()
         {
             if (this.IsDeadState)
@@ -190,8 +195,19 @@ namespace STELLAREST_2D
             if (Input.GetKeyDown(KeyCode.O))
             {
                 //StartCoroutine(CoPercentageTemp());
-                SecondWind secondWind = SkillBook.GetCanActiveSkillMember(SkillTemplate.SecondWind).GetComponent<SecondWind>();
-                secondWind.On();
+                // SecondWind secondWind = SkillBook.GetCanActiveSkillMember(SkillTemplate.SecondWind).GetComponent<SecondWind>();
+                // secondWind.On();
+                // for (int i = 0; i < 2; ++i)
+                // {
+                //     SoulController sc = Managers.Object.Spawn<SoulController>(spawnSoulTarget.Center.position, spawnObjectType: Define.ObjectType.Soul, isPooling: true);
+                //     if (i == 0)
+                //         sc.Run(i + 1);
+                //     else
+                //         sc.Run(i * -1);
+                // }
+                SoulController sc = Managers.Object.Spawn<SoulController>(spawnSoulTarget.Center.position, spawnObjectType: Define.ObjectType.Soul, isPooling: true);
+                sc.Run();
+
             }
 
             if (Input.GetKeyDown(KeyCode.Alpha2))
@@ -284,16 +300,27 @@ namespace STELLAREST_2D
                 Managers.Stage.SetInLimitPos(this);
             }
         }
+
         private void Turn(float angle)
         {
             if (Mathf.Sign(angle) < 0)
             {
                 LookAtDir = Define.LookAtDirection.Right;
+                if (_prevLookAtDir != LookAtDir)
+                {
+                    this.OnLookAtDirChanged?.Invoke(this.LookAtDir);
+                    _prevLookAtDir = LookAtDir;
+                }
                 _armBowFixedAngle = 110f;
             }
             else
             {
                 LookAtDir = Define.LookAtDirection.Left;
+                if (_prevLookAtDir != LookAtDir)
+                {
+                    this.OnLookAtDirChanged?.Invoke(this.LookAtDir);
+                    _prevLookAtDir = LookAtDir;
+                }
                 _armBowFixedAngle = -110f;
             }
 
@@ -819,6 +846,12 @@ Ninja
             > 랜덤한 쿨타임(5초 ~ 20초)에 불안정한 추가 데미지를 입힘(1 ~ 99)
             > 검기의 모양이 불안정하게 변경(최대 3회 추가 타격)
             > "Soul Eater" 적을 처치하면 최대 체력의 1~3% 회복 (랜덤) / 1% ~ 2% (60%), 2% ~ 3% (40%)
+            >>> "Phantom Blade" 매 쿨타임, 지속시간마다 랜덤한 확률의 추가 데미지 적용
+            >>> 아니면 때릴때마다 소울을 흡수하고 이 소울이 20개 이상 모이면 검이 반짝거림
+            >>> 이때 지속시간동안 적을 처치하면 적 하나당 1~3%의 체력 흡수
+            >>> 이상태에서 적을 처치하면 소울이 적 뒤로 갔다가 랜덤한 JumpDir 방향으로 플레이에어게 접근
+            >>> 매우 빠르게 접근해야 되려나
+
             > 얼티밋 팬텀 나이트, "공포의 군주" 궁극기 활성화 (V)
 
             Arrow Master Mastery
@@ -867,7 +900,7 @@ Ninja
 
             Paladin - "Guardian's Sheild"
             Knight - "BUCKLE UP" (재정비)
-            Phantom Knight - "Soul Eater" 적을 처치하면 최대 체력의 1~3% 회복 (랜덤) / 1% ~ 2% (60%), 2% ~ 3% (40%)
+            Phantom Knight - "Soul Eater" 적을 처치하면 최대 체력의 1~3% 회복 (랜덤) /  1% ~ 2% (60%), 2% ~ 3% (40%)
 
             Arrow Master - "Concentration"
             Elemental Archer - "Rainning Cloud"

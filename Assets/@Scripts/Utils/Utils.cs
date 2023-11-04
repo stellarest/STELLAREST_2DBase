@@ -17,6 +17,9 @@ namespace STELLAREST_2D
 {
     public class Utils
     {
+        public static float CREATURES_FIXED_SHAKE_DURATION = 0.75f;
+        public static float CREATURES_FIXED_SHAKE_POWER = 0.5f;
+
         public static T GetOrAddComponent<T>(GameObject go) where T : UnityEngine.Component
         {
             T component = go.GetComponent<T>();

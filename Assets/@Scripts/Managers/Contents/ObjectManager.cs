@@ -11,6 +11,7 @@ using UnityEngine.Rendering; // Sorting Group
 using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
 using PrefabLabels = STELLAREST_2D.Define.Labels.Prefabs;
 using System.Diagnostics;
+using UnityEditor;
 
 // using DamageNumbersPro;
 namespace STELLAREST_2D
@@ -101,7 +102,7 @@ namespace STELLAREST_2D
 
                 case Define.ObjectType.Gem:
                     {
-                        GameObject go = Managers.Resource.Instantiate(PrefabLabels.GEM, pooling: isPooling);
+                        GameObject go = Managers.Resource.Instantiate(PrefabLabels.ENV_GEM, pooling: isPooling);
                         go.transform.position = spawnPos;
 
                         GemController gem = go.GetComponent<GemController>();
@@ -112,6 +113,18 @@ namespace STELLAREST_2D
                         GridController.Add(gem.gameObject);
 
                         return gem as T;
+                    }
+
+                case Define.ObjectType.Soul:
+                    {
+                        GameObject go = Managers.Resource.Instantiate(PrefabLabels.ENV_SOUL, pooling: isPooling);
+                        go.transform.position = spawnPos;
+
+                        SoulController soul = go.GetComponent<SoulController>();
+                        soul.ObjectType = spawnObjectType;
+                        soul.Init();
+
+                        return soul as T;
                     }
             }
 

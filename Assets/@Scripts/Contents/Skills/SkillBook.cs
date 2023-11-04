@@ -264,7 +264,7 @@ namespace STELLAREST_2D
         {
             for (int i = 0; i < SequenceSkills.Count; ++i)
             {
-                if (SequenceSkills[i].Data.OriginalTemplate == SkillTemplate.Shield)
+                if (SequenceSkills[i].Data.OriginalTemplate == SkillTemplate.Shield_Elite)
                 {
                     SecondSequenceSkill = SequenceSkills[i].Data.OriginalTemplate;
                     if (this.CachedShield == null)
@@ -274,7 +274,7 @@ namespace STELLAREST_2D
                     }
                 }
 
-                if (SequenceSkills[i].Data.OriginalTemplate == SkillTemplate.SecondWind)
+                if (SequenceSkills[i].Data.OriginalTemplate == SkillTemplate.SecondWind_Elite)
                 {
                     SecondSequenceSkill = SequenceSkills[i].Data.OriginalTemplate;
                     if (this.CachedSecondWind == null)
@@ -283,6 +283,9 @@ namespace STELLAREST_2D
                         Utils.Log("Success Init Cache : Second Wind");
                     }
                 }
+
+                if (SequenceSkills[i].Data.OriginalTemplate == SkillTemplate.Phantom_Elite)
+                      SecondSequenceSkill = SequenceSkills[i].Data.OriginalTemplate;
 
                 // if (i == 0)
                 //     SecondSequenceSkill = SequenceSkills[i].Data.OriginalTemplate;

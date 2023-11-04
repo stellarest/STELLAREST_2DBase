@@ -15,11 +15,11 @@ namespace STELLAREST_2D
     {
         public Define.MonsterType MonsterType { get; set; } = Define.MonsterType.None;
         public MonsterAnimationController MonsterAnimController { get; private set; } = null;
-        public override Vector3 ShootDir => (MainTarget != null) ? 
+        public override Vector3 ShootDir => (MainTarget != null) ?
                                 (MainTarget.Center.position - Center.position).normalized : this.transform.right;
 
-        public override float SpeedModifier 
-        { 
+        public override float SpeedModifier
+        {
             get => base.SpeedModifier;
             set
             {
@@ -55,7 +55,7 @@ namespace STELLAREST_2D
                 Utils.Log("Add Event : OnPlayerIsDeadHandler");
                 this.IsFirstPooling = false;
             }
-            
+
             EnterInGame(templateID);
         }
 
@@ -71,49 +71,14 @@ namespace STELLAREST_2D
             InitCreatureStat(templateID);
             ClearCrowdControlStates();
             ClearHitFroms();
+
+            IsCompleteReadyToAction = false;
             ReadyToAction(false);
 
             // MainTarget은 중간에 바뀔수도 있긴함 (ex) Forest Guardian : Black Panther
             if (Managers.Game.Player != null)
                 this.MainTarget = Managers.Game.Player;
         }
-
-        // protected override IEnumerator CoReadyToAction(bool isOnActiveImmediately = false)
-        // {
-        //     // IsCompleteStartAction = false;
-        //     // CreatureState = Define.CreatureState.Idle;
-
-        //     // this.RigidBody.simulated = true;
-        //     // this.HitCollider.enabled = true;
-        //     // if (isOnActiveImmediately)
-        //     // {
-        //     //     //StartAction();
-        //     //     yield break;
-        //     // }
-
-        //     // float delta = 0f;
-        //     // float desiredTime = LoadIdleToActionTime();
-        //     // while (true)
-        //     // {
-        //     //     if (IsCCStates(CrowdControl.Stun))
-        //     //     {
-        //     //         //StartAction();
-        //     //         yield break;
-        //     //     }
-
-        //     //     delta += Time.deltaTime;
-        //     //     float percent = delta / desiredTime;
-        //     //     if (percent > 1f)
-        //     //     {
-        //     //         //StartAction();
-        //     //         yield break;
-        //     //     }
-
-        //     //     yield return null;
-        //     // }
-
-        //     yield return null;
-        // }
 
         private bool CanEnterRunState()
         {
@@ -243,7 +208,7 @@ namespace STELLAREST_2D
                     if (this.LockFlip == false)
                         Flip(toTargetDir.x > 0 ? -1 : 1);
                 }
-                
+
                 if (IsCCStates(CrowdControl.Slience))
                 {
                     if (toTargetDir.sqrMagnitude > this.Stat.CollectRange * this.Stat.CollectRange)
@@ -294,7 +259,7 @@ namespace STELLAREST_2D
             this.RendererController.MonsterHead.sprite = this.DeadHead;
             MonsterAnimController.Dead();
 
-            GemController spawnedGem = Managers.Object.Spawn<GemController>(this.Center.position, 
+            GemController spawnedGem = Managers.Object.Spawn<GemController>(this.Center.position,
                                             spawnObjectType: Define.ObjectType.Gem, isPooling: true);
 
             StartCoroutine(CoDespawn());
@@ -450,4 +415,41 @@ namespace STELLAREST_2D
 //         default:
 //             return false;
 //     }
+// }
+
+// protected override IEnumerator CoReadyToAction(bool isOnActiveImmediately = false)
+// {
+//     // IsCompleteStartAction = false;
+//     // CreatureState = Define.CreatureState.Idle;
+
+//     // this.RigidBody.simulated = true;
+//     // this.HitCollider.enabled = true;
+//     // if (isOnActiveImmediately)
+//     // {
+//     //     //StartAction();
+//     //     yield break;
+//     // }
+
+//     // float delta = 0f;
+//     // float desiredTime = LoadIdleToActionTime();
+//     // while (true)
+//     // {
+//     //     if (IsCCStates(CrowdControl.Stun))
+//     //     {
+//     //         //StartAction();
+//     //         yield break;
+//     //     }
+
+//     //     delta += Time.deltaTime;
+//     //     float percent = delta / desiredTime;
+//     //     if (percent > 1f)
+//     //     {
+//     //         //StartAction();
+//     //         yield break;
+//     //     }
+
+//     //     yield return null;
+//     // }
+
+//     yield return null;
 // }

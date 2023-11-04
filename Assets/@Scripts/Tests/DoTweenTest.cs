@@ -17,7 +17,6 @@ namespace STELLAREST_2D.Test
             // mat.DOFade(0f, 5f);
             
             // RectTransform rt = GetComponent<RectTransform>();
-            // Ease.In : 시작할때 적용, Ease.Out : 끝에 적용, Ease.InOut : 둘다
             // rt.DOAnchorPosY(0, 5).SetDelay(5f).SetEase(Ease.OutElastic);
             // rt.DOAnchorPosY(0, 5).SetDelay(5f).SetEase(Ease.OutBounce);
             // rt.DOAnchorPosY(0, 5).SetDelay(5f).SetEase(Ease.InBounce);

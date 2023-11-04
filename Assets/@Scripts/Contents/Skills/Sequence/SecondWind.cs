@@ -9,6 +9,13 @@ using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 
 namespace STELLAREST_2D
 {
+    /*
+        > Ability Info <
+        lv.1 : Stun : 2f
+        lv.2 : Stun : 3f 
+        lv.3 : Stun : 5f
+    */
+
     public class SecondWind : SequenceSkill
     {
         private ParticleSystem _readyLoop = null;

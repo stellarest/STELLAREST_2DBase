@@ -8,6 +8,13 @@ using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 
 namespace STELLAREST_2D
 {
+    /*
+        > Ability Info <
+        lv.1 : Shield Hp = Max Hp 50%
+        lv.2 : Shield Hp = Max Hp 60%
+        lv.3 : Shield Hp = Max Hp 90%
+    */
+
     public class Shield : SequenceSkill
     {
         private ParticleSystem[] _onShields = null;
@@ -90,8 +97,6 @@ namespace STELLAREST_2D
 
         public override void OnActiveSequenceSkillHandler() => this.IsOnShield = true;
         public void Hit() => _hitBurst.Play();
-        public void Recovery() { }
-
         private const float SHIELD_MAX_HP_RATIO = 0.5f;
         private void OnShield()
         {
@@ -160,7 +165,7 @@ namespace STELLAREST_2D
             for (int i = 0; i < _offShields.Length; ++i)
                 _offShields[i].gameObject.SetActive(false);
 
-            this.Owner.SkillBook.Deactivate(SkillTemplate.Shield);
+            this.Owner.SkillBook.Deactivate(SkillTemplate.Shield_Elite);
             //base.Deactivate();
         }
 

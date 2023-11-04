@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
+using DG.Tweening;
 
 using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
 using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
@@ -25,15 +25,15 @@ namespace STELLAREST_2D
                             {
                                 this.SetDeadHead();
                                 this.SkillBook.DeactivateAll();
-                                // 왜 자꾸 가끔 Run인 녀석이 있는것임 ?????
-                                // 잘 되는 것 같은디. 근데 스턴 걸린 녀석이 Run인 녀석한테 밀려버리는 것은 막아야함.
                                 this.CreatureState = Define.CreatureState.Idle;
+
+                                transform.DOShakePosition(Utils.CREATURES_FIXED_SHAKE_DURATION, Utils.CREATURES_FIXED_SHAKE_POWER);
+                                transform.DOShakeScale(Utils.CREATURES_FIXED_SHAKE_DURATION, Utils.CREATURES_FIXED_SHAKE_POWER);
                             }
                             else if (this[CrowdControl.Stun] == false)
                             {
                                 this.SetDefaultHead();
                                 ReadyToAction(onStartImmediately: true); // true or false로 기믹을 줘도될것같긴한데 일단 그냥 즉시 움직이도록
-                                //ReadyToAction(onStartImmediately: false);
                             }
                         }
                         break;

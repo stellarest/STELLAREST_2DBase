@@ -43,6 +43,7 @@ namespace STELLAREST_2D
         }
         //public bool IsFacingRight => (LocalScale.x != LocalScale.x * -1f) ? true : false;
         public bool IsFacingRight => this.LookAtDir == Define.LookAtDirection.Right;
+        public System.Action<Define.LookAtDirection> OnLookAtDirChanged = null;
 
         // +++ BASE COMPONENTS +++
         public AnimationCallback AnimCallback { get; protected set; } = null;
