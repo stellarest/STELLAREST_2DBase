@@ -114,6 +114,20 @@ namespace STELLAREST_2D
             this.Owner.IsInvincible = false;
             IsReady = false;
 
+            this.Owner.CreatureState = Define.CreatureState.Idle;
+            // this.Owner.ReserveSkillAnimationType(Define.SkillAnimationType.ExclusiveRepeat);
+            // this.Owner.SkillBook.Activate(SkillTemplate.KnightMastery);
+            StartCoroutine(CoEndSecondWind());
+        }
+
+        private IEnumerator CoEndSecondWind()
+        {
+            this.Owner.CreatureState = Define.CreatureState.Idle;
+            //yield return new WaitForSeconds(0.25f);
+            this.Owner.AnimController.GetComponent<PlayerAnimationController>().EnterNextState();
+            yield return new WaitForSeconds(1f);
+            this.Owner.ReserveSkillAnimationType(Define.SkillAnimationType.ExclusiveRepeat);
+            this.Owner.CreatureState = Define.CreatureState.Skill;
             this.Owner.SkillBook.Activate(SkillTemplate.KnightMastery);
         }
     }

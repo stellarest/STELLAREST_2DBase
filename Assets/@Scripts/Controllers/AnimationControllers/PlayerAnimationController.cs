@@ -18,6 +18,11 @@ namespace STELLAREST_2D
         private readonly int LOWER_BODY_SPEED = Animator.StringToHash("LowerBodySpeed");
         private readonly int MOVEMENT_SPEED = Animator.StringToHash("MovementSpeed");
 
+
+        private readonly int ENTER_NEXT_STATE = Animator.StringToHash("EnterNextState");
+        public void EnterNextState() => AnimController.SetTrigger(ENTER_NEXT_STATE);
+
+
         public void SetAnimationSpeed(float speed)
         {
             AnimController.SetFloat(UPPER_BODY_SPEED, speed);

@@ -2,6 +2,7 @@ using System.Buffers;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using STELLAREST_2D.Data;
 using UnityEngine;
 using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
@@ -284,7 +285,7 @@ namespace STELLAREST_2D
                     }
                 }
 
-                if (SequenceSkills[i].Data.OriginalTemplate == SkillTemplate.Phantom_Elite)
+                if (SequenceSkills[i].Data.OriginalTemplate == SkillTemplate.PhantomSoul_Elite)
                       SecondSequenceSkill = SequenceSkills[i].Data.OriginalTemplate;
 
                 // if (i == 0)
@@ -367,6 +368,19 @@ namespace STELLAREST_2D
             return skill;
         }
 
+        public SkillBase ForceGetSkillMember(SkillTemplate templateOrigin, int idxOfGroupMember)
+        {
+            if (SkillGroupsDict.TryGetValue((int)templateOrigin, out SkillGroup group) == false)
+                Utils.LogCritical(nameof(SkillBook), nameof(ForceGetSkillMember), $"Check TemplateID : {templateOrigin}");
+
+            for (int i = 0; i < group.MemberCount; ++i)
+            {
+                if (idxOfGroupMember == i)
+                    return group.Members[i].SkillOrigin;
+            }
+
+            return null;
+        }
 
 
         // private T GetCachedSkill<T>(SkillTemplate templateOrigin) where T : SkillBase

@@ -163,8 +163,7 @@ namespace STELLAREST_2D
                     BodyAttack = 201100,
                     Shield_Elite = 201101,
                     SecondWind_Elite = 201102,
-                    Phantom_Elite = 201103,
-                    Phantom_Elite_Child = 201104
+                    PhantomSoul_Elite = 201103,
                     // HeavensJudgment,
                     // GuardiansShield,
                     // Concentration,

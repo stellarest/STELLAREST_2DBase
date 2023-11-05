@@ -180,7 +180,6 @@ namespace STELLAREST_2D
                     _coProjectile = StartCoroutine(CoMeleeSwing());
                     break;
 
-
                 case SkillTemplate.ArrowMasterMastery:
                     StartDestroy(_lifeTime);
                     _coProjectile = StartCoroutine(CoRangedShot());
