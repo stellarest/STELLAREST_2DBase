@@ -6,6 +6,7 @@ using DG.Tweening;
 using STELLAREST_2D.Data;
 using Unity.VisualScripting;
 using UnityEngine;
+using System.Linq;
 
 using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 
@@ -79,8 +80,58 @@ namespace STELLAREST_2D
             this.transform.DOScale(endValue: this.transform.localScale * 1.5f, 1f).SetEase(Ease.InOutSine).
                 SetLoops(-1, LoopType.Yoyo);
 
+            List<MonsterController> toMonsters = Managers.Object.Monsters.ToList();
+            Target = toMonsters[0].gameObject;
+
             StartCoroutine(CoTickPhantomSoul());
-            StartCoroutine(CoActivatePhantomSoulChild_Temp()); // TEMP
+            // StartCoroutine(CoActivatePhantomSoulChild_Temp()); // TEMP
+        }
+
+        public LineRenderer lineRenderer = null;
+        public LineRenderer lineRenderer2 = null;
+        public int LineCount = 20;
+
+        // y축 한 번 발사할 때 마다 6, 9, 12, 15, 18, 21
+        [Header("Point1")]
+        public GameObject CurvePoint1 = null;
+        //public Vector3 ControlPoint1 = new Vector3(0, 3, 0);
+        public Vector3 ControlPoint1 = new Vector3(-9f, 6f, 0);
+
+
+        // [Header("Point2")]
+        // public GameObject CurvePoint2 = null;
+        // public Vector3 ControlPoint2 = new Vector3(0, 3, 0);
+        [Header("Point2")]
+        public GameObject CurvePoint2 = null;
+        public Vector3 ControlPoint2 = Vector3.zero;
+
+
+        [Header("Point3")]
+        public GameObject CurvePoint3 = null;
+        //public Vector3 ControlPoint3 = new Vector3(0, -3, 0);
+        public Vector3 ControlPoint3 = new Vector3(-9f, -6f, 0);
+
+
+        // [Header("Point4")]
+        // public GameObject CurvePoint4 = null;
+        // public Vector3 ControlPoint4 = new Vector3(0, -3, 0);
+        [Header("Point4")]
+        public GameObject CurvePoint4 = null;
+        public Vector3 ControlPoint4 = Vector3.zero;
+
+        [Header("Target")]
+        public GameObject Target = null;
+
+        public Vector3 GetBezierCurves(Vector3 Point1, Vector3 Point2, Vector3 Point3, Vector3 Point4, float t)
+        {
+            Vector3 M1 = Vector3.Lerp(Point1, Point2, t);
+            Vector3 M2 = Vector3.Lerp(Point2, Point3, t);
+            Vector3 M3 = Vector3.Lerp(Point3, Point4, t);
+
+            Vector3 B1 = Vector3.Lerp(M1, M2, t);
+            Vector3 B2 = Vector3.Lerp(M2, M3, t);
+
+            return Vector3.Lerp(B1, B2, t);
         }
 
         private IEnumerator CoActivatePhantomSoulChild_Temp()
@@ -100,6 +151,38 @@ namespace STELLAREST_2D
         {
             while (true)
             {
+                if (Input.GetKeyDown(KeyCode.M))
+                {
+                    ControlPoint1 += new Vector3(-3f, 3f, 0f);
+                    ControlPoint3 += new Vector3(-3f, -3f, 0f);
+                }
+
+                lineRenderer.positionCount = LineCount;
+                lineRenderer2.positionCount = LineCount;
+
+                CurvePoint1.transform.position = this.transform.position + ControlPoint1;
+                //CurvePoint2.transform.position = Target.transform.position + ControlPoint2;
+                CurvePoint2.transform.position = Target.GetComponent<CreatureController>().Center.position;
+
+                CurvePoint3.transform.position = this.transform.position + ControlPoint3;
+                // CurvePoint4.transform.position = Target.transform.position + ControlPoint4;
+                CurvePoint4.transform.position = Target.transform.position + ControlPoint4;
+                CurvePoint2.transform.position = Target.GetComponent<CreatureController>().Center.position;
+
+                for (int i = 0; i < LineCount; ++i)
+                {
+                    float t = 0f;
+                    if (i == 0)
+                        t = 0;
+                    else
+                        t = (float)i / (LineCount - 1);
+
+                    lineRenderer.SetPosition(i, this.GetBezierCurves(this.transform.position,
+                        CurvePoint1.transform.position, CurvePoint2.transform.position, Target.transform.position, t));
+                    lineRenderer2.SetPosition(i, this.GetBezierCurves(this.transform.position,
+                         CurvePoint3.transform.position, CurvePoint4.transform.position, Target.transform.position, t));
+                }
+
                 this.Owner.FireSocket.position = this.transform.position;
                 yield return null;
             }

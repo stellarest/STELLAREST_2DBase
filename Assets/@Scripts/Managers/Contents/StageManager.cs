@@ -14,6 +14,9 @@ namespace STELLAREST_2D
             GameObject go = UnityEngine.GameObject.Find("Map_01_Forest");
             LeftBottom = Utils.FindChild(go, "LeftBottom").transform.position;
             RightTop = Utils.FindChild(go, "RightTop").transform.position;
+
+            // TEMP
+            go.SetActive(false);
         }
 
         public Vector2Int MinimumPosition
