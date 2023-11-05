@@ -78,7 +78,10 @@ namespace STELLAREST_2D
         private Vector3 _interpolateStartScale = Vector3.zero;
         private Vector3 _interpolateTargetScale = Vector3.zero;
         private bool _isOnReadyInterpolateScale = false;
+
         private bool _isOnlyVisible = false;
+        public void SetIsOnlyVisible(bool isOnlyVisible) => this._isOnlyVisible = isOnlyVisible;
+
         private bool _isColliderHalfRatio = false;
         private bool _isOffParticle = false;
         private int _bounceCount = 0;
@@ -196,7 +199,6 @@ namespace STELLAREST_2D
                     _coProjectile = StartCoroutine(CoRangedShot());
                     break;
 
-
                 case SkillTemplate.AssassinMastery:
                     StartDestroy(_lifeTime);
                     OnSetParticleInfo?.Invoke(_indicatorAngle, _initialLookAtDir, _continuousAngle, _continuousFlipX, _continuousFlipY);
@@ -213,12 +215,10 @@ namespace STELLAREST_2D
                     _coProjectile = StartCoroutine(CoRangedShot());
                     break;
 
-
                 case SkillTemplate.ThrowingStar:
                     StartDestroy(_lifeTime);
                     _coProjectile = StartCoroutine(CoThrowingStar());
                     break;
-
                 case SkillTemplate.Boomerang:
                     if (Data.Grade < Data.MaxGrade)
                     {
@@ -228,6 +228,12 @@ namespace STELLAREST_2D
                     else
                         _coProjectile = StartCoroutine(CoBoomerangUltimate());
                     break;
+
+                case SkillTemplate.PhantomSoul_Elite_Child:
+                    StartDestroy(_lifeTime);
+                    _coProjectile = StartCoroutine(CoPhantomSoulChild());
+                    break;
+
             }
 
             if (_isOnReadyInterpolateScale)
@@ -473,6 +479,15 @@ namespace STELLAREST_2D
             return false;
         }
 
+        private IEnumerator CoPhantomSoulChild()
+        {
+            while (true)
+            {
+                this.transform.position += (this.Owner.FireSocketPosition - this.Owner.Center.position).normalized * _movementSpeed * Time.deltaTime;
+                yield return null;
+            }
+        }
+
         private IEnumerator CoInterpolateScale()
         {
             float delta = 0f;
@@ -559,6 +574,10 @@ namespace STELLAREST_2D
                             //     Managers.Object.Despawn(this);
                         }
                     }
+                    break;
+
+                case SkillTemplate.PhantomSoul_Elite_Child:
+                    Managers.Object.Despawn(this);
                     break;
             }
         }

@@ -164,6 +164,7 @@ namespace STELLAREST_2D
                     Shield_Elite = 201101,
                     SecondWind_Elite = 201102,
                     PhantomSoul_Elite = 201103,
+                    PhantomSoul_Elite_Child = 201104
                     // HeavensJudgment,
                     // GuardiansShield,
                     // Concentration,

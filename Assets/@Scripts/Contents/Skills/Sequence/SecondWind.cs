@@ -56,6 +56,7 @@ namespace STELLAREST_2D
 
         public void On()
         {
+            this.Owner.RendererController.OnFaceBattleHandler();
             this.Owner.SkillBook.Deactivate(SkillTemplate.KnightMastery);
             this.Owner.ReserveSkillAnimationType(this.Data.AnimationType);
             Owner.CreatureState = Define.CreatureState.Skill;
@@ -114,7 +115,7 @@ namespace STELLAREST_2D
             this.Owner.IsInvincible = false;
             IsReady = false;
 
-            this.Owner.CreatureState = Define.CreatureState.Idle;
+            // this.Owner.CreatureState = Define.CreatureState.Idle;
             // this.Owner.ReserveSkillAnimationType(Define.SkillAnimationType.ExclusiveRepeat);
             // this.Owner.SkillBook.Activate(SkillTemplate.KnightMastery);
             StartCoroutine(CoEndSecondWind());
@@ -122,10 +123,11 @@ namespace STELLAREST_2D
 
         private IEnumerator CoEndSecondWind()
         {
-            this.Owner.CreatureState = Define.CreatureState.Idle;
-            //yield return new WaitForSeconds(0.25f);
-            this.Owner.AnimController.GetComponent<PlayerAnimationController>().EnterNextState();
+            KnightAnimationController anim = this.Owner.AnimController.GetComponent<KnightAnimationController>();
+            anim.EnterNextState();
             yield return new WaitForSeconds(1f);
+            anim.Ready();
+
             this.Owner.ReserveSkillAnimationType(Define.SkillAnimationType.ExclusiveRepeat);
             this.Owner.CreatureState = Define.CreatureState.Skill;
             this.Owner.SkillBook.Activate(SkillTemplate.KnightMastery);

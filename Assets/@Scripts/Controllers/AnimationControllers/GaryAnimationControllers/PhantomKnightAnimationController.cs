@@ -8,7 +8,7 @@ namespace STELLAREST_2D
     {
         private readonly int UPPER_READY = Animator.StringToHash("ReadyMelee1H");
         private readonly int UPPER_ATTACK = Animator.StringToHash("SlashMelee1H");
-        private readonly int UPPER_ELITE_SEQUENCE = Animator.StringToHash("UsePhantom");
+        private readonly int UPPER_ELITE_SEQUENCE = Animator.StringToHash("UsePhantomSoul");
 
         public override void Init(CreatureController owner) => base.Init(owner);
         public override void Ready() => AnimController.Play(UPPER_READY);
