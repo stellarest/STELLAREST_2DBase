@@ -63,7 +63,10 @@ namespace STELLAREST_2D
             Managers.VFX.Init();
             Managers.Collision.Init();
 
-            PlayerController player = this.SpawnPlayer(PlayerTemplateID.Gary_Paladin);
+            PlayerController player = this.SpawnPlayer(PlayerTemplateID.Gary_PhantomKnight);
+            //Managers.Game.OnGameStart += player.OnGameStartHandler;
+            //Utils.Log("Add Event : Managers.Game.OnGameStart += player.OnGameStartHandler");
+
             var CMcam = Camera.main.GetComponent<CinemachineBrain>().ActiveVirtualCamera.VirtualCameraGameObject;
             CMcam.GetComponent<CameraController>().SetTarget(player.gameObject);
 
@@ -170,7 +173,9 @@ namespace STELLAREST_2D
         private void OnDestroy()
         {
             if (Managers.Game != null)
+            {
                 Managers.Game.OnGemCountChanged -= OnGemCountChangedHandler;
+            }
         }
     }
 }

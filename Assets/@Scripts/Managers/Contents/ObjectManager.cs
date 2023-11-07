@@ -26,6 +26,15 @@ namespace STELLAREST_2D
         public GridController GridController { get; private set; } = null;
         public void OnPlayerDeadHandler() 
         {
+            if (Managers.Game != null)
+            {
+                Managers.Game.OnMoveDirChanged -= this.Player.OnMoveDirChangedHandler;
+                Utils.Log("Release Event : Managers.Game.OnGameStart -= Player.OnMoveDirChangedHandler");
+
+                Managers.Game.OnGameStart -= this.Player.OnGameStartHandler;
+                Utils.Log("Release Event : Managers.Game.OnGameStart -= Player.OnGameStartHandler");
+            }
+
             this.Player = null;
             Managers.Game.GAME_OVER();
         }

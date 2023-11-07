@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace STELLAREST_2D
 {
-    public class DeathClaw : RepeatSkill
+    public class DeathClaw : DefaultSkill
     {
 
         // public override void SetParticleInfo(Vector3 startAngle, Define.LookAtDirection lookAtDir, float continuousAngle, float continuousFlipX, float continuousFlipY)

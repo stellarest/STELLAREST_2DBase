@@ -17,7 +17,7 @@ namespace STELLAREST_2D
         CoolTime : Generate Time
     +++++++++++++++++++++++++++++++++++++++++++
     */
-    public class BombTrap : RepeatSkill
+    public class BombTrap : DefaultSkill
     {
         public BombTrap Commander { get; private set; } = null;
 

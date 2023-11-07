@@ -48,22 +48,29 @@ namespace STELLAREST_2D
 
         public static class TemplateIDs
         {
+            // Player, Monster -> CreaturesDict : Do not add same key in dict
             public static class Creatures
             {
                 public enum Player
                 {
                     Gary_Paladin = 100100,
-                    Gary_Knight = 100101,
-                    Gary_PhantomKnight = 100102,
+                    Gary_Knight = 100200,
+                    Gary_PhantomKnight = 100300,
 
-                    Reina_ArrowMaster = 100103,
-                    Reina_ElementalArcher = 100104,
-                    Reina_ForestGuardian = 100105,
+                    Reina_ArrowMaster = 200100,
+                    Reina_ElementalArcher = 200200,
+                    Reina_ForestGuardian = 200300,
 
-                    Kenneth_Assassin = 100106,
-                    Kenneth_Thief = 100107,
-                    Kenneth_Ninja = 100108,
-
+                    Kenneth_Assassin = 300100,
+                    Kenneth_Ninja = 300200,
+                    // ====================================
+                    // ====================================
+                    // ====================================
+                    // 일단 Mastery Skill은 Thief까지는 Set해놓음
+                    Kenneth_Thief = 300300,
+                    // ====================================
+                    // ====================================
+                    // ====================================
                     Lionel_Warrior = 100109,
                     Lionel_Barbarian = 100110,
                     Lionel_Berserker = 100111,
@@ -85,7 +92,7 @@ namespace STELLAREST_2D
 
                 public enum Monster
                 {
-                    Chicken = 100200,
+                    Chicken = 900100,
                 }
             }
 
@@ -95,32 +102,37 @@ namespace STELLAREST_2D
                 {
                     None = -1,
 
-                    // +++ GARY +++
-                    PaladinMastery = 200100,
-                    Shield_Elite_Solo = 200103,
-                    JudgementOfHeaven_Ultimate_Solo = 200104,
+                    // +++ PALADIN +++
+                    PaladinMastery = 100100,
+                    Shield_Elite_Solo = 100103,
+                    JudgementOfHeaven_Ultimate_Solo = 100104,
 
+                    // +++ KNIGHT +++
+                    KnightMastery = 100200,
+                    SecondWind_Elite_Solo = 100203,
+                    DanceOfSwords_Ultimate_Solo = 100204,
 
-                    KnightMastery = 9200103,
-                    SecondWind_Elite_Solo = 201102,
-                    DanceOfSwords_Ultimate_Solo = 201102 + 999,
-
-
-                    PhantomKnightMastery = 200106,
-                    VoidSoul_Elite_Solo = 201103 + 999,
-                    RiseOfDarkness_Ultimate_Solo = 201104 + 999,
+                    // +++ PHANTOM KNIGHT +++
+                    PhantomKnightMastery = 100300,
+                    VoidSoul_Elite_Solo = 100303,
+                    VoidSoul_Elite_Child_Solo = 100304,
+                    RiseOfDarkness_Ultimate_Solo = 100305,
+                    DarknessEneryBolt_Solo = 100306,
+                    SunOfDarkness_Solo = 100307,
+                    // ...
                     // ====================================
                     // ====================================
                     // ====================================
-                    // +++ REINA +++
-                    ArrowMasterMastery = 200209,
-                    ElementalArcherMastery = 200212,
-                    ForestGuardianMastery = 200215,
+                    // +++ ARROW MASTERY +++
+                    // ...
+                    ArrowMasterMastery = 200100,
+                    ElementalArcherMastery = 200200,
+                    ForestGuardianMastery = 200300,
 
-                    // +++ KENNETH +++
-                    AssassinMastery = 200218,
-                    ThiefMastery = 200221,
-                    NinjaMastery = 200224,
+                    // +++ ASSASSIN MASTERY +++
+                    AssassinMastery = 300100,
+                    NinjaMastery = 300200,
+                    ThiefMastery = 300300,
 
                     // +++ LIONEL +++
                     // WarriorMeleeSwing = 200236,
@@ -145,23 +157,17 @@ namespace STELLAREST_2D
                     // // +++ ELEANOR +++
                     // QueenMeleeSwing = 200284,
 
-                    // Public Skills (+ Monster)
-                    ThrowingStar = 200300,
-                    Boomerang = 200303,
-                    LazerBolt = 200306,
-                    Spear = 200309,
-                    BombTrap = 200312,
-                    // LazerBolt = 200304,
-                    // Boomerang = 200308,
-                    // Spear = 200312,
-                    // BombTrap = 200316,
-
-                    BodyAttack_Solo = 201100,
+                    ThrowingStar = 900100,
+                    Boomerang = 900103,
+                    LazerBolt = 900106,
+                    Spear = 900109,
+                    BombTrap = 900112,
 
 
-
-                    PhantomSoul_Elite_Solo = 201103,
-                    PhantomSoul_Elite_Solo_Child = 201104
+                    // +++ ETC +++
+                    BodyAttack_Solo = 901100
+                    // PhantomSoul_Elite_Solo = 201103,
+                    // PhantomSoul_Elite_Solo_Child = 201104
                     // HeavensJudgment,
                     // GuardiansShield,
                     // Concentration,

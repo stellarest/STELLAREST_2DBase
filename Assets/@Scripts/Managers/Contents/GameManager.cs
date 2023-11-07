@@ -5,6 +5,7 @@ namespace STELLAREST_2D
 {
     public class GameManager
     {
+        public System.Action OnGameStart = null;
         private bool _isGameStart = false;
         public void GAME_START() => IsGameStart = true;
         public bool IsGameStart 
@@ -14,7 +15,11 @@ namespace STELLAREST_2D
             {
                 _isGameStart = value;
                 if (_isGameStart)
+                {
+                    Utils.Log("##### <color=cyan> GAME START </color> #####");
+                    OnGameStart?.Invoke();
                     IsGameOver = false;
+                }
             }
         }
 

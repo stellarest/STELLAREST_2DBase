@@ -8,7 +8,7 @@ using UnityEngine.Rendering;
 
 namespace STELLAREST_2D
 {
-    public class LazerBolt : RepeatSkill
+    public class LazerBolt : DefaultSkill
     {
         public override void InitOrigin(CreatureController owner, SkillData data)
         {

@@ -228,7 +228,7 @@ namespace STELLAREST_2D
                         _coProjectile = StartCoroutine(CoBoomerangUltimate());
                     break;
 
-                case SkillTemplate.PhantomSoul_Elite_Solo_Child:
+                case SkillTemplate.VoidSoul_Elite_Child_Solo:
                     StartDestroy(_lifeTime);
                     _coProjectile = StartCoroutine(CoPhantomSoulChild());
                     break;
@@ -575,7 +575,7 @@ namespace STELLAREST_2D
                     }
                     break;
 
-                case SkillTemplate.PhantomSoul_Elite_Solo_Child:
+                case SkillTemplate.VoidSoul_Elite_Child_Solo:
                     Managers.Object.Despawn(this);
                     break;
             }

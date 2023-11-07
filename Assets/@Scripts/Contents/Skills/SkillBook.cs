@@ -1,10 +1,6 @@
-using System.Buffers;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
-using STELLAREST_2D.Data;
-using Unity.VisualScripting;
 using UnityEngine;
 using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 
@@ -103,12 +99,12 @@ namespace STELLAREST_2D
                             if (unlockSkill.Data.OriginalTemplate == Book.MasteryActionTemplate)
                             {
                                 unlockSkill.Owner.AnimCallback.OnActiveMasteryAction += unlockSkill.GetComponent<ActionSkill>().OnActiveMasteryActionHandler;
-                                Utils.Log($"Add Event(OnActiveMasteryAction) : {unlockSkill.Data.Name}");
+                                Utils.Log($"Add Event : AnimCallback.OnActiveMasteryAction += {unlockSkill.Data.Name}");
                             }
                             else if (unlockSkill.Data.OriginalTemplate == Book.EliteActionTemplate)
                             {
                                 unlockSkill.Owner.AnimCallback.OnActiveEliteAction += unlockSkill.GetComponent<ActionSkill>().OnActiveEliteActionHandler;
-                                Utils.Log($"Add Event(OnActiveEliteAction) : {unlockSkill.Data.Name}");
+                                Utils.Log($"Add Event : AnimCallback.OnActiveEliteAction += {unlockSkill.Data.Name}");
                             }
                         }
 
@@ -123,12 +119,12 @@ namespace STELLAREST_2D
                             if (deactiveSkill.Data.OriginalTemplate == Book.MasteryActionTemplate)
                             {
                                 deactiveSkill.Owner.AnimCallback.OnActiveMasteryAction -= deactiveSkill.GetComponent<ActionSkill>().OnActiveMasteryActionHandler;
-                                Utils.Log($"Release Event(OnActiveMasteryAction) : {deactiveSkill.Data.Name}");
+                                Utils.Log($"Release Event : AnimCallback.OnActiveMasteryAction -= {deactiveSkill.Data.Name}");
                             }
                             else if (deactiveSkill.Data.OriginalTemplate == Book.EliteActionTemplate)
                             {
                                 deactiveSkill.Owner.AnimCallback.OnActiveEliteAction -= deactiveSkill.GetComponent<ActionSkill>().OnActiveEliteActionHandler;
-                                Utils.Log($"Release Event(OnActiveEliteAction) : {deactiveSkill.Data.Name}");
+                                Utils.Log($"Release Event : AnimCallback.OnActiveEliteAction -= {deactiveSkill.Data.Name}");
                             }
                         }
 
@@ -139,12 +135,12 @@ namespace STELLAREST_2D
                             if (unlockSkill.Data.OriginalTemplate == Book.MasteryActionTemplate)
                             {
                                 unlockSkill.Owner.AnimCallback.OnActiveMasteryAction += unlockSkill.GetComponent<ActionSkill>().OnActiveMasteryActionHandler;
-                                Utils.Log($"Add Event(OnActiveMasteryAction) : {unlockSkill.Data.Name}");
+                                Utils.Log($"Add Event : AnimCallback.OnActiveMasteryAction += {unlockSkill.Data.Name}");
                             }
                             else if (unlockSkill.Data.OriginalTemplate == Book.EliteActionTemplate)
                             {
                                 unlockSkill.Owner.AnimCallback.OnActiveEliteAction += unlockSkill.GetComponent<ActionSkill>().OnActiveEliteActionHandler;
-                                Utils.Log($"Add Event(OnActiveEliteAction) : {unlockSkill.Data.Name}");
+                                Utils.Log($"Add Event : AnimCallback.OnActiveEliteAction += {unlockSkill.Data.Name}");
                             }
                         }
 
@@ -268,6 +264,14 @@ namespace STELLAREST_2D
                             case SkillTemplate.PaladinMastery:
                             case SkillTemplate.KnightMastery:
                             case SkillTemplate.PhantomKnightMastery:
+
+                            case SkillTemplate.ArrowMasterMastery:
+                            case SkillTemplate.ElementalArcherMastery:
+                            case SkillTemplate.ForestGuardianMastery:
+
+                            case SkillTemplate.AssassinMastery:
+                            case SkillTemplate.NinjaMastery:
+                            case SkillTemplate.ThiefMastery:
                                 this.MasteryActionTemplate = skill.Data.OriginalTemplate;
                                 break;
 
@@ -312,7 +316,7 @@ namespace STELLAREST_2D
         public Define.InGameGrade GetCurrentSkillGrade(SkillTemplate skillTemplate)
         {
             if (SkillGroupsDict.TryGetValue((int)skillTemplate, out SkillGroup group) == false)
-                Utils.LogCritical(nameof(SkillBook), nameof(GetCurrentSkillGrade), "Failed to load Skill Group of Firs tSkill Template.");
+                Utils.LogCritical(nameof(SkillBook), nameof(GetCurrentSkillGrade), "Failed to load Skill Template.");
 
             return group.GetCanActiveSkillMember().Data.Grade;
         }
@@ -433,12 +437,12 @@ namespace STELLAREST_2D
                             if (skillOrigin.Owner.AnimCallback.OnActiveMasteryAction != null)
                             {
                                 skillOrigin.Owner.AnimCallback.OnActiveMasteryAction -= skillOrigin.GetComponent<ActionSkill>().OnActiveMasteryActionHandler;
-                                Utils.Log($"Release Event(OnActiveMasteryAction) : {skillOrigin.Data.Name}");
+                                Utils.Log($"Release Event : AnimCallback.OnActiveMasteryAction -= {skillOrigin.Data.Name}");
                             }
                             else if (skillOrigin.Owner.AnimCallback.OnActiveEliteAction != null)
                             {
                                 skillOrigin.Owner.AnimCallback.OnActiveEliteAction -= skillOrigin.GetComponent<ActionSkill>().OnActiveEliteActionHandler;
-                                Utils.Log($"Release Event(OnActiveEliteAction) : {skillOrigin.Data.Name}");
+                                Utils.Log($"Release Event : AnimCallback.OnActiveEliteAction -= {skillOrigin.Data.Name}");
                             }
                         }
                     }

@@ -227,7 +227,7 @@ namespace STELLAREST_2D
                 SkillBook.Owner = this;
             }
 
-            LoadRepeatSkills(creatureData);
+            LoadDefaultSkills(creatureData);
             LoadActionSkills(creatureData);
             this.SkillBook.LateInit();
         }
@@ -245,40 +245,40 @@ namespace STELLAREST_2D
         }
         protected virtual IEnumerator CoReadyToAction(bool onStartImmediately = false) { yield return null; }
 
-        private void LoadRepeatSkills(Data.InitialCreatureData creatureData)
+        private void LoadDefaultSkills(Data.InitialCreatureData creatureData)
         {
-            GameObject goRepeatSkills = new GameObject { name = "@RepeatSkills " };
-            goRepeatSkills.transform.SetParent(SkillBook.transform);
-            goRepeatSkills.transform.localPosition = Vector3.zero;
-            goRepeatSkills.transform.localScale = Vector3.one;
-            foreach (Define.TemplateIDs.Status.Skill templateOrigin in creatureData.RepeatSkillList)
+            GameObject goDefaultSkills = new GameObject { name = "@DefaultSkills " };
+            goDefaultSkills.transform.SetParent(SkillBook.transform);
+            goDefaultSkills.transform.localPosition = Vector3.zero;
+            goDefaultSkills.transform.localScale = Vector3.one;
+            foreach (Define.TemplateIDs.Status.Skill templateOrigin in creatureData.DefaultSkillList)
             {
                 int templateID = (int)templateOrigin;
                 if (Managers.Data.SkillsDict.TryGetValue(templateID, out Data.SkillData dataOrigin) == false)
-                    Utils.LogCritical(nameof(CreatureController), nameof(LoadRepeatSkills), $"TemplateID : {templateID}");
+                    Utils.LogCritical(nameof(CreatureController), nameof(LoadDefaultSkills), $"TemplateID : {templateID}");
 
                 for (int i = templateID; i < templateID + (int)dataOrigin.MaxGrade; ++i)
                 {
                     SkillData data = Managers.Data.SkillsDict[i];
                     GameObject go = Managers.Resource.Instantiate(data.PrimaryLabel);
-                    go.transform.SetParent(goRepeatSkills.transform);
+                    go.transform.SetParent(goDefaultSkills.transform);
                     go.transform.localPosition = Vector3.zero;
                     go.transform.localScale = Vector3.one;
 
-                    RepeatSkill repeatSkill = go.GetComponent<RepeatSkill>();
-                    repeatSkill.InitOrigin(this, data);
-                    SkillBook.SkillGroupsDict.AddGroup(i, new SkillGroup(repeatSkill));
+                    DefaultSkill defaultSkill = go.GetComponent<DefaultSkill>();
+                    defaultSkill.InitOrigin(this, data);
+                    SkillBook.SkillGroupsDict.AddGroup(i, new SkillGroup(defaultSkill));
                 }
             }
         }
 
         private void LoadActionSkills(Data.InitialCreatureData creatureData)
         {
-            GameObject goSequenceSkills = new GameObject { name = "@SequenceSkills" };
-            goSequenceSkills.transform.SetParent(SkillBook.transform);
-            goSequenceSkills.transform.localPosition = Vector3.zero;
-            goSequenceSkills.transform.localScale = Vector3.one;
-            foreach (Define.TemplateIDs.Status.Skill templateOrigin in creatureData.SequenceSkillList)
+            GameObject goActionSkills = new GameObject { name = "@ActionSkills" };
+            goActionSkills.transform.SetParent(SkillBook.transform);
+            goActionSkills.transform.localPosition = Vector3.zero;
+            goActionSkills.transform.localScale = Vector3.one;
+            foreach (Define.TemplateIDs.Status.Skill templateOrigin in creatureData.ActionSkillList)
             {
                 int templateID = (int)templateOrigin;
                 if (Managers.Data.SkillsDict.TryGetValue(templateID, out SkillData dataOrigin) == false)
@@ -288,13 +288,13 @@ namespace STELLAREST_2D
                 {
                     SkillData data = Managers.Data.SkillsDict[i];
                     GameObject go = Managers.Resource.Instantiate(data.PrimaryLabel);
-                    go.transform.SetParent(goSequenceSkills.transform);
+                    go.transform.SetParent(goActionSkills.transform);
                     go.transform.localPosition = Vector3.zero;
                     go.transform.localScale = Vector3.one;
 
-                    ActionSkill sequenceSkill = go.GetComponent<ActionSkill>();
-                    sequenceSkill.InitOrigin(this, data);
-                    SkillBook.SkillGroupsDict.AddGroup(templateID, new SkillGroup(sequenceSkill));
+                    ActionSkill actionSkill = go.GetComponent<ActionSkill>();
+                    actionSkill.InitOrigin(this, data);
+                    SkillBook.SkillGroupsDict.AddGroup(templateID, new SkillGroup(actionSkill));
                 }
             }
         }

@@ -134,16 +134,28 @@ namespace STELLAREST_2D
         private void AddCallbacks()
         {
             if (Managers.Game != null)
+            {
                 Managers.Game.OnMoveDirChanged += OnMoveDirChangedHandler;
+                Utils.Log("Add Event : Managers.Game.OnMoveDirChanged += OnMoveDirChangedHandler");
+
+                Managers.Game.OnGameStart += OnGameStartHandler;
+                Utils.Log("Add Event : Managers.Game.OnGameStart += OnGameStartHandler");
+            }
         }
 
         private void RemoveCallbacks()
         {
             if (Managers.Game != null)
+            {
                 Managers.Game.OnMoveDirChanged -= OnMoveDirChangedHandler;
+                Utils.Log("Release Event : Managers.Game.OnMoveDirChanged -= OnMoveDirChangedHandler;");
+
+                Managers.Game.OnGameStart -= OnGameStartHandler;
+                Utils.Log("Release Event : Managers.Game.OnGameStart -= OnGameStartHandler");
+            }
         }
 
-        private void OnMoveDirChangedHandler(Vector3 moveDir)
+        public void OnMoveDirChangedHandler(Vector3 moveDir)
         {
             if (this.IsDeadState)
                 return;
@@ -156,6 +168,16 @@ namespace STELLAREST_2D
                 CreatureState = Define.CreatureState.Idle;
             else
                 CreatureState = Define.CreatureState.Run;
+        }
+
+        public void OnGameStartHandler() => StartCoroutine(CoPlayerGameStart());
+
+        private const float PLAYER_GAME_START_TIME = 1.75f;
+        private IEnumerator CoPlayerGameStart()
+        {
+            yield return new WaitForSeconds(PLAYER_GAME_START_TIME);
+            SkillBook.LevelUp(SkillBook.MasteryActionTemplate);
+            SkillBook.Activate(SkillBook.MasteryActionTemplate);
         }
 
         [Conditional("UNITY_EDITOR")]

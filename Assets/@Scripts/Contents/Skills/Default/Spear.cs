@@ -9,7 +9,7 @@ namespace STELLAREST_2D
     // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     // +++ Spear is a actually commander for controlling spears[LEFT, RIGHT] +++
     // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    public class Spear : RepeatSkill
+    public class Spear : DefaultSkill
     {
         private enum SpearDirection { Left, Right, Max }
         #region Utilities

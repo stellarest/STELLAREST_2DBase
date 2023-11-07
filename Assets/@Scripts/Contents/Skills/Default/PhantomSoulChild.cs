@@ -1,79 +1,47 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+
+using STELLAREST_2D.Data;
 
 namespace STELLAREST_2D
 {
-    public abstract class RepeatSkill : SkillBase
+    public class PhantomSoulChild : DefaultSkill
     {
-        public System.Action OnDeactivateRepeatSkill = null; // USE THIS WHEN YOU NEED,, (OPTIONAL)
-        public virtual void OnDeactivateRepeatSkillHandler() { }
+        private PhantomSoul _parent = null;
+        public void SetParent(PhantomSoul parent) => this._parent = parent;
 
-        public override void Activate()
+        public override void InitOrigin(CreatureController owner, SkillData data)
         {
-            base.Activate();
-
-            if (_coSkillActivate != null)
-                StopCoroutine(_coSkillActivate);
-
-            IsStopped = false;
-            _coSkillActivate = StartCoroutine(CoStartSkill());
-        }
-
-        protected virtual IEnumerator CoStartSkill()
-        {
-            WaitForSeconds wait = new WaitForSeconds(Data.CoolTime);
-            while (true)
+            base.InitOrigin(owner, data);
+            GetComponent<Collider2D>().enabled = false;
+            foreach (var particle in GetComponentsInChildren<ParticleSystem>())
             {
-                DoSkillJob();
-                yield return wait;
+                var emission = particle.emission;
+                emission.enabled = false;
             }
         }
 
-        protected virtual void DoSkillJob()
+        public override void InitClone(CreatureController ownerFromOrigin, SkillData dataFromOrigin)
         {
-            Owner.AttackStartPoint = transform.position; // -->> CHECK THIS AFTER
-            StartCoroutine(CoCloneSkill());
-        }
+            if (this.IsFirstPooling)
+            {
+                HitCollider = GetComponent<Collider2D>();
+                base.InitClone(ownerFromOrigin, dataFromOrigin);
 
-        public virtual void DoSkillJobManually(SkillBase caller, float delay) 
-        {
-            if (this.IsStopped && _coSkillActivate != null)
-            {
-                StopCoroutine(_coSkillActivate);
-                _coSkillActivate = null;
-                StartDestroy(1f);
-                return;
-            }
+                foreach (var psRenderer in GetComponentsInChildren<ParticleSystemRenderer>())
+                {
+                    if (psRenderer.gameObject.name.Contains("Trail"))
+                        psRenderer.sortingOrder = (int)Define.SortingOrder.Player - 1;
+                    else
+                        psRenderer.sortingOrder = (int)Define.SortingOrder.Skill;
+                }
 
-            _coSkillActivate = StartCoroutine(CoDoSkillJobManually(caller, delay));
-        }
-        
-        protected virtual IEnumerator CoDoSkillJobManually(SkillBase caller, float delay)
-        {
-            if (delay > 0f)
-            {
-                yield return new WaitForSeconds(delay);
-                this.DoSkillJob();
-                Managers.Object.Despawn<SkillBase>(caller);
-            }
-            else
-            {
-                this.DoSkillJob();
-                Managers.Object.Despawn<SkillBase>(caller);
+                this.IsFirstPooling = false;
             }
         }
 
-        public void OnActiveRepeatSkillHandler()
-        {
-            if (IsStopped)
-                return;
-
-            Owner.AttackStartPoint = transform.position;
-            this.Owner.ShowMuzzle();
-            StartCoroutine(this.CoCloneSkill());
-        }
-
-        protected virtual IEnumerator CoCloneSkill() // FROM DoSkillJob
+        protected override IEnumerator CoCloneSkill()
         {
             int continuousCount = this.Data.ContinuousCount;
             Define.LookAtDirection lootAtDir = Owner.LookAtDir;
@@ -85,7 +53,6 @@ namespace STELLAREST_2D
             float movementSpeed = this.Data.MovementSpeed;
             float rotationSpeed = this.Data.RotationSpeed;
             float lifeTime = this.Data.Duration;
-            //float colliderPreDisableLifeRatio = this.Data.ColliderPreDisableLifeRatio;
             bool isColliderHalfRatio = this.Data.IsColliderHalfRatio;
 
             float[] continuousAngles = new float[continuousCount];
@@ -128,14 +95,8 @@ namespace STELLAREST_2D
                 Vector3 spawnPos = (this.Data.IsOnFireSocket) ? this.Owner.FireSocketPosition : this.Owner.transform.position;
                 if (Utils.IsThief(this.Owner))
                     spawnPos = spawnPosOnFirstPoint;
-                // if (Utils.IsMeleeSwing(this.Data.OriginalTemplate))
-                // {
-                //     //Utils.Log("IS MELEE SWING !!");
-                //     spawnPos = spawnPosOnFirstPoint;
-                // }
-                // else
-                //     Utils.Log("IS NOT MELEE SWING,,,");
                 
+                this._parent.PlayBursts();
                 SkillBase clone = Managers.Object.Spawn<SkillBase>(spawnPos: spawnPos, templateID: this.Data.TemplateID,
                         spawnObjectType: Define.ObjectType.Skill, isPooling: true);
                 clone.InitClone(this.Owner, this.Data);
@@ -149,7 +110,6 @@ namespace STELLAREST_2D
                         movementSpeed: movementSpeed,
                         rotationSpeed: rotationSpeed,
                         lifeTime: lifeTime,
-                        //colliderPreDisableLifeRatio: colliderPreDisableLifeRatio,
                         continuousAngle: continuousAngles[i],
                         continuousSpeedRatio: continuousSpeedRatios[i],
                         continuousFlipX: continuousFlipXs[i],
@@ -171,20 +131,14 @@ namespace STELLAREST_2D
             Owner.AttackEndPoint = transform.position;
         }
 
-        // +++ FIXED BOOKMARKS +++
-        public override void Deactivate()
+        private void OnTriggerEnter2D(Collider2D other)
         {
-            if (IsStopped)
+            CreatureController cc = other.GetComponent<CreatureController>();
+            if (cc.IsValid())
                 return;
 
-            if (_coSkillActivate != null)
-            {
-                OnDeactivateRepeatSkill?.Invoke();
-                StopCoroutine(_coSkillActivate);
-                _coSkillActivate = null;
-            }
-
-            base.Deactivate();
+            cc.OnDamaged(this.Owner, this);
         }
+
     }
 }

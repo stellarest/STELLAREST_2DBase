@@ -5,10 +5,6 @@ using UnityEngine.Rendering;
 
 namespace STELLAREST_2D
 {
-    // Skill Type
-    // - Default
-    // - Active
-
     public class MeleeSwing : ActionSkill
     {
         private ParticleSystem[] _particles = null;
@@ -74,18 +70,6 @@ namespace STELLAREST_2D
             Owner.AttackStartPoint = transform.position;
             StartCoroutine(this.CoGenerateProjectile());
         }
-
-        // public override void OnActiveActionSkillHandler()
-        // {
-        //     if (IsStopped)
-        //         return;
-
-        //     Owner.AttackStartPoint = transform.position;
-        //     StartCoroutine(this.CoGenerateProjectile());
-        // }
-
-        // protected override IEnumerator CoCloneSkill() 
-        //         => base.CoCloneSkill();
 
         public void OnSetSwingParticleInfoHandler(Vector3 indicatorAngle, Define.LookAtDirection lookAtDir, float continuousAngle, float continuousFlipX, float continuousFlipY)
         {

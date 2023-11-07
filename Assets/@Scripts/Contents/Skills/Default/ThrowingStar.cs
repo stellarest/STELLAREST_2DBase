@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace STELLAREST_2D
 {
-    public class ThrowingStar : RepeatSkill
+    public class ThrowingStar : DefaultSkill
     {
         public override void InitOrigin(CreatureController owner, SkillData data)
         {
