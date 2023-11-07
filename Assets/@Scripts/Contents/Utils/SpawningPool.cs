@@ -8,7 +8,7 @@ namespace STELLAREST_2D
     public class  SpawningPool : MonoBehaviour
     {
         private float _spawnInterval = 1f; // 이것도 나중에 데이터 시트로 뺴야함. 무조건.
-        private const int MAX_MONSTER_COUNT = 1; // 나중에 데이터 시트로 빼야함
+        private const int MAX_MONSTER_COUNT = 5; // 나중에 데이터 시트로 빼야함
 
         private Coroutine _coUpdateSpawningPool;
         public bool Stopped { get; set; } = false;
@@ -53,7 +53,6 @@ namespace STELLAREST_2D
             
             Vector3 randPos = Utils.GetRandomPosition(Managers.Game.Player.transform.position, 5f, 20f);
             MonsterController mc = Managers.Object.Spawn<MonsterController>(randPos, (int)Define.TemplateIDs.Creatures.Monster.Chicken, Define.ObjectType.Monster, true);
-            Managers.Game.Player.spawnSoulTarget = mc;
             //MonsterController mc = Managers.Object.Spawn<MonsterController>(randPos, (int)Define.TemplateIDs.Monster.Chicken);
             // 개선 요망
             // randPos = new Vector3(15, 2, 0);

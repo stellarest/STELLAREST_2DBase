@@ -16,7 +16,7 @@ namespace STELLAREST_2D
         lv.3 : Stun : 5f
     */
 
-    public class SecondWind : SequenceSkill
+    public class SecondWind : ActionSkill
     {
         private ParticleSystem _readyLoop = null;
         private ParticleSystem[] _onGroup = null;
@@ -42,7 +42,13 @@ namespace STELLAREST_2D
                 _burstGroup[i].gameObject.SetActive(false);
         }
 
-        public override void DoSkillJob(Action callback = null)
+        protected override IEnumerator CoStartSkill()
+        {
+            DoSkillJob();
+            yield return null;
+        }
+
+        protected override void DoSkillJob(Action callback = null)
         {
             this.Ready();
         }
@@ -128,7 +134,7 @@ namespace STELLAREST_2D
             yield return new WaitForSeconds(1f);
             anim.Ready();
 
-            this.Owner.ReserveSkillAnimationType(Define.SkillAnimationType.ExclusiveRepeat);
+            this.Owner.ReserveSkillAnimationType(Define.SkillAnimationType.MasteryAction);
             this.Owner.CreatureState = Define.CreatureState.Skill;
             this.Owner.SkillBook.Activate(SkillTemplate.KnightMastery);
         }

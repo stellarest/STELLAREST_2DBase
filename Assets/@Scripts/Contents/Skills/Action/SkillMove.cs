@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace STELLAREST_2D
 {
-    public class SkillMove : SequenceSkill
+    public class SkillMove : ActionSkill
     {
         private Rigidbody2D _rigidBody;
         private Coroutine _corouine;
@@ -14,7 +14,13 @@ namespace STELLAREST_2D
         {
         }
 
-        public override void DoSkillJob(Action callback = null)
+        protected override IEnumerator CoStartSkill()
+        {
+            DoSkillJob();
+            yield return null;
+        }
+
+        protected override void DoSkillJob(Action callback = null)
         {
             if (_corouine != null)
                 StopCoroutine(_corouine);

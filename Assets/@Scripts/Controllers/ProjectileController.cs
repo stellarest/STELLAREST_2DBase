@@ -44,7 +44,6 @@ namespace STELLAREST_2D
         public float MovementSpeed { get; private set; } = 0f;
         public float RotationSpeed { get; private set; } = 0f;
         public float LifeTime { get; private set; } = 0f;
-        //public float ColliderPreDisableLifeRatio { get; private set; } = 0f;
         public float ContinuousAngle { get; private set; } = 0f;
         public float ContinuousSpeedRatio { get; private set; } = 0f;
         public float ContinuousFlipX { get; private set; } = 0f;
@@ -60,7 +59,7 @@ namespace STELLAREST_2D
 
 
     // --------------------------------------------------------------------------------------------------
-    // ***** Projectile is must be skill. But, skill is not sometimes projectil. It's just a skill. *****
+    // ***** Projectile is must be skill. But, skill is not sometimes a projectil. It's just a skill. *****
     // --------------------------------------------------------------------------------------------------
     public class ProjectileController : SkillBase
     {
@@ -229,7 +228,7 @@ namespace STELLAREST_2D
                         _coProjectile = StartCoroutine(CoBoomerangUltimate());
                     break;
 
-                case SkillTemplate.PhantomSoul_Elite_Child:
+                case SkillTemplate.PhantomSoul_Elite_Solo_Child:
                     StartDestroy(_lifeTime);
                     _coProjectile = StartCoroutine(CoPhantomSoulChild());
                     break;
@@ -576,7 +575,7 @@ namespace STELLAREST_2D
                     }
                     break;
 
-                case SkillTemplate.PhantomSoul_Elite_Child:
+                case SkillTemplate.PhantomSoul_Elite_Solo_Child:
                     Managers.Object.Despawn(this);
                     break;
             }

@@ -16,7 +16,7 @@ namespace STELLAREST_2D
             RightTop = Utils.FindChild(go, "RightTop").transform.position;
 
             // TEMP
-            go.SetActive(false);
+            // go.SetActive(false);
         }
 
         public Vector2Int MinimumPosition

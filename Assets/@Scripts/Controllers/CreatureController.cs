@@ -148,7 +148,7 @@ namespace STELLAREST_2D
             InitCrowdControlStates();
 
             InitCreatureStat(creatureData);
-            InitCreatureSkill(creatureData);
+            InitCreatureSkills(creatureData);
             InitCreatureRenderer(creatureData);
             _baseRootLocalScale = transform.localScale;
 
@@ -219,7 +219,7 @@ namespace STELLAREST_2D
             this.Stat = new CreatureStat(this, creatureData);
         }
 
-        protected virtual void InitCreatureSkill(Data.InitialCreatureData creatureData)
+        protected virtual void InitCreatureSkills(Data.InitialCreatureData creatureData)
         {
             if (SkillBook == null)
             {
@@ -228,7 +228,7 @@ namespace STELLAREST_2D
             }
 
             LoadRepeatSkills(creatureData);
-            LoadSequenceSkills(creatureData);
+            LoadActionSkills(creatureData);
             this.SkillBook.LateInit();
         }
 
@@ -272,7 +272,7 @@ namespace STELLAREST_2D
             }
         }
 
-        private void LoadSequenceSkills(Data.InitialCreatureData creatureData)
+        private void LoadActionSkills(Data.InitialCreatureData creatureData)
         {
             GameObject goSequenceSkills = new GameObject { name = "@SequenceSkills" };
             goSequenceSkills.transform.SetParent(SkillBook.transform);
@@ -282,7 +282,7 @@ namespace STELLAREST_2D
             {
                 int templateID = (int)templateOrigin;
                 if (Managers.Data.SkillsDict.TryGetValue(templateID, out SkillData dataOrigin) == false)
-                    Utils.LogCritical(nameof(CreatureController), nameof(LoadRepeatSkills), $"TemplateID : {templateID}");
+                    Utils.LogCritical(nameof(CreatureController), nameof(LoadActionSkills), $"TemplateID : {templateID}");
 
                 for (int i = templateID; i < templateID + (int)dataOrigin.MaxGrade; ++i)
                 {
@@ -292,7 +292,7 @@ namespace STELLAREST_2D
                     go.transform.localPosition = Vector3.zero;
                     go.transform.localScale = Vector3.one;
 
-                    SequenceSkill sequenceSkill = go.GetComponent<SequenceSkill>();
+                    ActionSkill sequenceSkill = go.GetComponent<ActionSkill>();
                     sequenceSkill.InitOrigin(this, data);
                     SkillBook.SkillGroupsDict.AddGroup(templateID, new SkillGroup(sequenceSkill));
                 }

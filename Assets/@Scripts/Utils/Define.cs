@@ -30,7 +30,7 @@ namespace STELLAREST_2D
         public enum SortingOrder { Map = 100, Player = 200, Item = 209, Monster = 210, Skill = 230, EnvEffect = 255 }
         public enum StageType { Normal, MiddleBoss, Boss, }
         // public enum CCStatus { None, Stun, KnockBack, Poisoned, Frozen, Cursed, Confused, Silent, Max }
-        public enum SkillType { None = -1, Repeat = 1, Sequence }
+        public enum SkillType { None = -1, Default = 1, Action }
         public enum CreatureState { Idle = 0, Walk = 1, Run = 2, Skill = 3, Invincible = 4, Dead = 999 }
         //public enum InGameGrade { Normal = 1, Elite = 2, Ultimate = 3 }
         public enum CollisionLayers { Default = 0, PlayerBody = 6, PlayerAttack = 7, MonsterBody = 8, MonsterAttack = 9 }
@@ -44,7 +44,7 @@ namespace STELLAREST_2D
         public enum FaceExpressionType { Default = 1, Battle, Dead, }
 
         public enum GemSize { Normal = 1, Large = 2 }
-        public enum SkillAnimationType { None = -1, ExclusiveRepeat = 1, EliteSequence = 2, UltimateSequence = 3 }
+        public enum SkillAnimationType { None = -1, MasteryAction = 1, EliteAction = 2, UltimateAction = 3 }
 
         public static class TemplateIDs
         {
@@ -91,31 +91,27 @@ namespace STELLAREST_2D
 
             public static class Status
             {
-                public enum Stat
-                {
-                    None = -1,
-
-                    MaxHpUp_Normal = 200100,
-                    MaxHpUp_Rare = 200101,
-                    MaxHpUp_Epic = 200102,
-                    MaxHpUp_Legendary = 200103,
-
-                    ArmorUp_Normal = 200160,
-                    ArmorUp_Rare = 200161,
-                    ArmorUp_Epic = 200162,
-                    ArmorUp_Legendary = 200163,
-                }
-
                 public enum Skill
                 {
                     None = -1,
 
-                    // Exclusive Skills
                     // +++ GARY +++
-                    PaladinMastery = 200200,
-                    KnightMastery = 200203,
-                    PhantomKnightMastery = 200206,
+                    PaladinMastery = 200100,
+                    Shield_Elite_Solo = 200103,
+                    JudgementOfHeaven_Ultimate_Solo = 200104,
 
+
+                    KnightMastery = 9200103,
+                    SecondWind_Elite_Solo = 201102,
+                    DanceOfSwords_Ultimate_Solo = 201102 + 999,
+
+
+                    PhantomKnightMastery = 200106,
+                    VoidSoul_Elite_Solo = 201103 + 999,
+                    RiseOfDarkness_Ultimate_Solo = 201104 + 999,
+                    // ====================================
+                    // ====================================
+                    // ====================================
                     // +++ REINA +++
                     ArrowMasterMastery = 200209,
                     ElementalArcherMastery = 200212,
@@ -160,14 +156,30 @@ namespace STELLAREST_2D
                     // Spear = 200312,
                     // BombTrap = 200316,
 
-                    BodyAttack = 201100,
-                    Shield_Elite = 201101,
-                    SecondWind_Elite = 201102,
-                    PhantomSoul_Elite = 201103,
-                    PhantomSoul_Elite_Child = 201104
+                    BodyAttack_Solo = 201100,
+
+
+
+                    PhantomSoul_Elite_Solo = 201103,
+                    PhantomSoul_Elite_Solo_Child = 201104
                     // HeavensJudgment,
                     // GuardiansShield,
                     // Concentration,
+                }
+
+                public enum Stat
+                {
+                    None = -1,
+
+                    MaxHpUp_Normal = 300100,
+                    MaxHpUp_Rare = 300101,
+                    MaxHpUp_Epic = 300102,
+                    MaxHpUp_Legendary = 300103,
+
+                    ArmorUp_Normal = 300160,
+                    ArmorUp_Rare = 300161,
+                    ArmorUp_Epic = 300162,
+                    ArmorUp_Legendary = 300163,
                 }            
             }
 
@@ -178,7 +190,7 @@ namespace STELLAREST_2D
                 Slow = 300101,
                 KnockBack = 300102,
                 Slience = 300103,
-                Blind = 300104, // ??? 뺼까
+                Blind = 300104,
                 Charm = 300105,
                 Flee = 300106,
                 Sleep = 300107,

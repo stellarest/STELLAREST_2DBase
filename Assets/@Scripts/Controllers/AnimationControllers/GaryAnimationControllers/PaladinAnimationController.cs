@@ -18,18 +18,18 @@ namespace STELLAREST_2D
         {
             switch (this.Owner.SkillAnimationType)
             {
-                case Define.SkillAnimationType.ExclusiveRepeat:
+                case Define.SkillAnimationType.MasteryAction:
                     AnimController.Play(UPPER_ATTACK);
                     break;
 
-                case Define.SkillAnimationType.EliteSequence:
+                case Define.SkillAnimationType.EliteAction:
                     {
                         AnimController.StopPlayback(); // FORCE DEACTIVATE ANIMATION AGAIN.
                         AnimController.Play(UPPER_ELITE_SEQUENCE);
                     }
                     break;
 
-                case Define.SkillAnimationType.UltimateSequence:
+                case Define.SkillAnimationType.UltimateAction:
                     break;
             }
         }

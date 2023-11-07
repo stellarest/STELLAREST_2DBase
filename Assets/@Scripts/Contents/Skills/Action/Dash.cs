@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace STELLAREST_2D
 {
-    public class Dash : SequenceSkill
+    public class Dash : ActionSkill
     {
         private Rigidbody2D _rigidBody;
         private Coroutine _coroutine;
@@ -18,7 +18,13 @@ namespace STELLAREST_2D
         public float DashSpeed { get; } = 10f;
         public string AnimationName { get; } = "Charge";
 
-        public override void DoSkillJob(Action callback = null)
+        protected override IEnumerator CoStartSkill()
+        {
+            DoSkillJob();
+            yield return null;
+        }
+
+        protected override void DoSkillJob(Action callback = null)
         {
             if (_coroutine != null)
                 StopCoroutine(_coroutine);

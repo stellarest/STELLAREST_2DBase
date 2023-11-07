@@ -7,6 +7,7 @@ using UnityEngine.Rendering;
 using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
 using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
+using System.Diagnostics;
 
 namespace STELLAREST_2D
 {
@@ -157,73 +158,42 @@ namespace STELLAREST_2D
                 CreatureState = Define.CreatureState.Run;
         }
 
-#if UNITY_EDITOR
-        private void SkillFlag(SkillTemplate templateOrigin)
+        [Conditional("UNITY_EDITOR")]
+        private void DevSkillFlag(SkillTemplate skillTemplate)
         {
-            SkillBook.LevelUp(templateOrigin);
-            SkillBook.Activate(templateOrigin);
+            SkillBook.LevelUp(skillTemplate);
+            SkillBook.Activate(skillTemplate);
 
-            if (templateOrigin == SkillBook.FirstSkill)
+            if (skillTemplate == SkillBook.MasteryActionTemplate)
             {
-                SkillBase skill = SkillBook.GetCanActiveSkillMember(templateOrigin);
+                SkillBase skill = SkillBook.GetCanActiveSkillMember(skillTemplate);
                 if (skill.Data.Grade > Define.InGameGrade.Default)
                     this.RendererController.Upgrade(skill.Data.Grade);
             }
         }
 
-        public int TestMonsterCount = 0;
-        public int TestSkillCount = 0;
-        public MonsterController spawnSoulTarget = null;
         private void Update()
         {
             if (this.IsDeadState)
                 return;
 
-            TestMonsterCount = Managers.Object.Monsters.Count;
-            TestSkillCount = Managers.Object.Skills.Count;
-
+#if UNITY_EDITOR
             DEV_CLEAR_LOG();
-            if (Input.GetKeyDown(KeyCode.Alpha1))
-                SkillFlag(SkillBook.FirstSkill);
-
             if (Input.GetKeyDown(KeyCode.Q))
-                SkillFlag(SkillBook.SecondSequenceSkill);
+                DevSkillFlag(SkillBook.MasteryActionTemplate);
+            if (Input.GetKeyDown(KeyCode.W))
+                DevSkillFlag(SkillBook.EliteActionTemplate);
 
-            // if (Input.GetKeyDown(KeyCode.W))
-            //     SkillFlag(SkillBook.LastSequenceSkill);
-
-            if (Input.GetKeyDown(KeyCode.O))
-            {
-                //StartCoroutine(CoPercentageTemp());
-                // SecondWind secondWind = SkillBook.GetCanActiveSkillMember(SkillTemplate.SecondWind).GetComponent<SecondWind>();
-                // secondWind.On();
-                // for (int i = 0; i < 2; ++i)
-                // {
-                //     SoulController sc = Managers.Object.Spawn<SoulController>(spawnSoulTarget.Center.position, spawnObjectType: Define.ObjectType.Soul, isPooling: true);
-                //     if (i == 0)
-                //         sc.Run(i + 1);
-                //     else
-                //         sc.Run(i * -1);
-                // }
-                SoulController sc = Managers.Object.Spawn<SoulController>(spawnSoulTarget.Center.position, spawnObjectType: Define.ObjectType.Soul, isPooling: true);
-                sc.Run();
-
-            }
-
+            if (Input.GetKeyDown(KeyCode.Alpha1))
+                DevSkillFlag(SkillTemplate.ThrowingStar);
             if (Input.GetKeyDown(KeyCode.Alpha2))
-                SkillFlag(SkillTemplate.ThrowingStar);
-
+                DevSkillFlag(SkillTemplate.Boomerang);
             if (Input.GetKeyDown(KeyCode.Alpha3))
-                SkillFlag(SkillTemplate.Boomerang);
-
+                DevSkillFlag(SkillTemplate.LazerBolt);
             if (Input.GetKeyDown(KeyCode.Alpha4))
-                SkillFlag(SkillTemplate.LazerBolt);
-
+                DevSkillFlag(SkillTemplate.Spear);
             if (Input.GetKeyDown(KeyCode.Alpha5))
-                SkillFlag(SkillTemplate.Spear);
-
-            if (Input.GetKeyDown(KeyCode.Alpha6))
-                SkillFlag(SkillTemplate.BombTrap);
+                DevSkillFlag(SkillTemplate.BombTrap);
 
             if (Input.GetKeyDown(KeyCode.K))
                 SkillBook.ActivateAll();

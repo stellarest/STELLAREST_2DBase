@@ -1,13 +1,10 @@
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
-
-using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 
 namespace STELLAREST_2D
 {
+    // Default Type Skill
+    // Action Type Skill
     [System.Serializable]
     public class SkillBase : BaseController
     {

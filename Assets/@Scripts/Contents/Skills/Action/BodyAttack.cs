@@ -8,7 +8,7 @@ using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
 
 namespace STELLAREST_2D
 {
-    public class BodyAttack : SequenceSkill
+    public class BodyAttack : ActionSkill
     {
         #region Constant Options (Temp)
         private const float DESIRED_TIME_TO_REACH = 0.15f;
@@ -30,7 +30,13 @@ namespace STELLAREST_2D
             InitBodyColliderInfo();
         }
 
-        public override void DoSkillJob(Action callback = null)
+        protected override IEnumerator CoStartSkill()
+        {
+            DoSkillJob();
+            yield return null;
+        }
+
+        protected override void DoSkillJob(Action callback = null)
         {
             StartCoroutine(CoDoBodyAttack(delegate()
             {
@@ -38,7 +44,7 @@ namespace STELLAREST_2D
                 //this.Owner.SkillBook.ReserveNextSequence((SkillTemplate.BodyAttack);
                 //this.Owner.SkillBook.ReserveNextSequence(currentEnd: SkillTemplate.BodyAttack);
                 this.Owner.SetDefaultHead();
-                this.Owner.SkillBook.RandomizeSequenceGroup(SkillTemplate.BodyAttack);
+                this.Owner.SkillBook.RandomizeSequenceGroup(SkillTemplate.BodyAttack_Solo);
             }));
         }
 
@@ -50,7 +56,7 @@ namespace STELLAREST_2D
                     this.Owner.CreatureState = Define.CreatureState.Run;
 
                 Utils.Log("Deactivate Body Attack."); // 임시 개선 사항 (Deaictvate Sequence 추가해야함, 안해도 상관 없을것같긴하지만)
-                this.Owner.SkillBook.Deactivate(SkillTemplate.BodyAttack);
+                this.Owner.SkillBook.Deactivate(SkillTemplate.BodyAttack_Solo);
                 yield break;
             }
 

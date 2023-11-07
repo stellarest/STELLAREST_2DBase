@@ -5,7 +5,11 @@ using UnityEngine.Rendering;
 
 namespace STELLAREST_2D
 {
-    public class MeleeSwing : RepeatSkill
+    // Skill Type
+    // - Default
+    // - Active
+
+    public class MeleeSwing : ActionSkill
     {
         private ParticleSystem[] _particles = null;
         private ParticleSystemRenderer[] _particleSystemRenderers = null;
@@ -46,14 +50,42 @@ namespace STELLAREST_2D
         protected override void SetSortingOrder()
                 => GetComponent<SortingGroup>().sortingOrder = (int)Define.SortingOrder.Skill;
 
-        protected override void DoSkillJob()
+        protected override IEnumerator CoStartSkill()
+        {
+            WaitForSeconds wait = new WaitForSeconds(this.Data.CoolTime);
+            while (true)
+            {
+                DoSkillJob();
+                yield return wait;
+            }
+        }
+
+        protected override void DoSkillJob(System.Action callback = null)
         {
             Owner.ReserveSkillAnimationType(this.Data.AnimationType);
             Owner.CreatureState = Define.CreatureState.Skill;
         }
 
-        protected override IEnumerator CoCloneSkill() 
-                => base.CoCloneSkill();
+        public override void OnActiveMasteryActionHandler()
+        {
+            if (IsStopped)
+                return;
+
+            Owner.AttackStartPoint = transform.position;
+            StartCoroutine(this.CoGenerateProjectile());
+        }
+
+        // public override void OnActiveActionSkillHandler()
+        // {
+        //     if (IsStopped)
+        //         return;
+
+        //     Owner.AttackStartPoint = transform.position;
+        //     StartCoroutine(this.CoGenerateProjectile());
+        // }
+
+        // protected override IEnumerator CoCloneSkill() 
+        //         => base.CoCloneSkill();
 
         public void OnSetSwingParticleInfoHandler(Vector3 indicatorAngle, Define.LookAtDirection lookAtDir, float continuousAngle, float continuousFlipX, float continuousFlipY)
         {

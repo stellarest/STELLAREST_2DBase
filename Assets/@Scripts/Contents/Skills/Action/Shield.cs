@@ -15,7 +15,7 @@ namespace STELLAREST_2D
         lv.3 : Shield Hp = Max Hp 90%
     */
 
-    public class Shield : SequenceSkill
+    public class Shield : ActionSkill
     {
         private ParticleSystem[] _onShields = null;
         private ParticleSystem[] _onShieldsEnter = null;
@@ -88,14 +88,20 @@ namespace STELLAREST_2D
             _isOnShield = false;
         }
 
-        public override void DoSkillJob(Action callback = null)
+        protected override IEnumerator CoStartSkill()
+        {
+            DoSkillJob();
+            yield return null;
+        }
+
+        protected override void DoSkillJob(Action callback = null)
         {
             this.Owner.SkillBook.Deactivate(SkillTemplate.PaladinMastery);
             this.Owner.ReserveSkillAnimationType(this.Data.AnimationType);
             Owner.CreatureState = Define.CreatureState.Skill;
         }
 
-        public override void OnActiveSequenceSkillHandler() => this.IsOnShield = true;
+        public override void OnActiveEliteActionHandler() => this.IsOnShield = true;
         public void Hit() => _hitBurst.Play();
         private const float SHIELD_MAX_HP_RATIO = 0.5f;
         private void OnShield()
@@ -165,7 +171,7 @@ namespace STELLAREST_2D
             for (int i = 0; i < _offShields.Length; ++i)
                 _offShields[i].gameObject.SetActive(false);
 
-            this.Owner.SkillBook.Deactivate(SkillTemplate.Shield_Elite);
+            this.Owner.SkillBook.Deactivate(SkillTemplate.Shield_Elite_Solo);
             //base.Deactivate();
         }
 

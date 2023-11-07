@@ -12,7 +12,7 @@ using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 
 namespace STELLAREST_2D
 {
-    public class PhantomSoul : SequenceSkill
+    public class PhantomSoul : ActionSkill
     {
         private ParticleSystem[] _particles = null;
         private const float INITIAL_LOCAL_POS_X = 3.5f;
@@ -55,15 +55,21 @@ namespace STELLAREST_2D
 
             // HitCollider = GetComponent<CircleCollider2D>();
             // HitCollider.enabled = false;
-            _child = this.Owner.SkillBook.ForceGetSkillMember(SkillTemplate.PhantomSoul_Elite_Child, 0).GetComponent<PhantomSoulChild>();
+            _child = this.Owner.SkillBook.ForceGetSkillMember(SkillTemplate.PhantomSoul_Elite_Solo_Child, 0).GetComponent<PhantomSoulChild>();
             _child.SetParent(this);
-            this.Owner.SkillBook.LevelUp(SkillTemplate.PhantomSoul_Elite_Child);
+            this.Owner.SkillBook.LevelUp(SkillTemplate.PhantomSoul_Elite_Solo_Child);
 
             this.Owner.OnLookAtDirChanged += this.OnLookAtDirChangedHandler;
             Utils.Log("ADD EVENT : this.OnLookAtDirChangedHandler");
         }
 
-        public override void DoSkillJob(Action callback = null)
+        protected override IEnumerator CoStartSkill()
+        {
+            DoSkillJob();
+            yield return null;
+        }
+
+        protected override void DoSkillJob(Action callback = null)
         {
             this.Owner.SkillBook.Deactivate(SkillTemplate.PhantomKnightMastery);
             this.transform.localPosition = new Vector3(INITIAL_LOCAL_POS_X * (int)this.Owner.LookAtDir, INITIAL_LOCAL_POS_Y, 0f);
@@ -72,7 +78,7 @@ namespace STELLAREST_2D
             Owner.CreatureState = Define.CreatureState.Skill;
         }
 
-        public override void OnActiveSequenceSkillHandler()
+        public override void OnActiveEliteActionHandler()
         {
             for (int i = 0; i < _particles.Length; ++i)
                 _particles[i].gameObject.SetActive(true);
@@ -137,7 +143,7 @@ namespace STELLAREST_2D
         private IEnumerator CoActivatePhantomSoulChild_Temp()
         {
             yield return new WaitForSeconds(3f);
-            this.Owner.SkillBook.Activate(SkillTemplate.PhantomSoul_Elite_Child);
+            this.Owner.SkillBook.Activate(SkillTemplate.PhantomSoul_Elite_Solo_Child);
             yield return null;
         }
 

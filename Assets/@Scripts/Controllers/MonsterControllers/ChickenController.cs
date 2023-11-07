@@ -70,7 +70,7 @@ namespace STELLAREST_2D
 
         protected override void LateInit()
         {
-            SkillBook.LevelUp(SkillTemplate.BodyAttack);
+            SkillBook.LevelUp(SkillTemplate.BodyAttack_Solo);
             //SkillBook.LevelUp(SkillTemplate.ThrowingStar);
         }
 
@@ -161,7 +161,7 @@ namespace STELLAREST_2D
             if (this.SkillBook != null)
             {
                 this.MonsterAnimController.Attack();
-                this.SkillBook.Activate(SkillTemplate.BodyAttack);
+                this.SkillBook.Activate(SkillTemplate.BodyAttack_Solo);
             }
         }
 

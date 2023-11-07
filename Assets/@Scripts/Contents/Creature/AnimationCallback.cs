@@ -8,12 +8,14 @@ namespace STELLAREST_2D
     public class AnimationCallback : MonoBehaviour
     {
         private CreatureController _owner = null;
-        public System.Action OnActiveRepeatSkill = null;
-        public System.Action OnActiveSequenceSkill = null;
+        public System.Action OnActiveMasteryAction = null;
+        public System.Action OnActiveEliteAction = null;
 
         public void Init(CreatureController owner) => this._owner = owner;
-        public void OnActiveRepeatSkillHandler() => OnActiveRepeatSkill?.Invoke();
-        public void OnActiveSequenceSkillHandler() => OnActiveSequenceSkill?.Invoke();
+
+        public void OnActiveMasteryActionHandler() => OnActiveMasteryAction?.Invoke();
+        public void OnActiveEliteActionHandler() => OnActiveEliteAction?.Invoke();
+        public void OnActiveUltimateActionHandler() { }
 
         public void OnFaceBattleHandler() => this._owner.RendererController.OnFaceBattleHandler();
         public void OnFaceDefaultHandler() => this._owner.RendererController.OnFaceDefaultHandler();
