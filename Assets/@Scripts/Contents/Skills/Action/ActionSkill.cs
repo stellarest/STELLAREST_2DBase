@@ -110,7 +110,7 @@ namespace STELLAREST_2D
 
         public virtual void OnActiveMasteryActionHandler() { }
         public virtual void OnActiveEliteActionHandler() { }
-
+        public virtual void OnActiveUltimateActionHandler() { }
 
         public override void Deactivate()
         {

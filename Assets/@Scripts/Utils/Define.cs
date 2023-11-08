@@ -102,38 +102,74 @@ namespace STELLAREST_2D
                 {
                     None = -1,
 
+
                     // +++ PALADIN +++
                     PaladinMastery = 100100,
                     Shield_Elite_Solo = 100103,
                     JudgementOfHeaven_Ultimate_Solo = 100104,
 
+
                     // +++ KNIGHT +++
                     KnightMastery = 100200,
                     SecondWind_Elite_Solo = 100203,
-                    DanceOfSwords_Ultimate_Solo = 100204,
+                    StormBlade_Ultimate_Solo = 100204,
+
 
                     // +++ PHANTOM KNIGHT +++
                     PhantomKnightMastery = 100300,
-                    VoidSoul_Elite_Solo = 100303,
-                    VoidSoul_Elite_Child_Solo = 100304,
-                    RiseOfDarkness_Ultimate_Solo = 100305,
-                    DarknessEneryBolt_Solo = 100306,
-                    SunOfDarkness_Solo = 100307,
-                    // ...
-                    // ====================================
-                    // ====================================
-                    // ====================================
+                    PhantomSoul_Elite_Solo = 100303,
+                    PhantomSoul_Elite_Child_Solo = 100304,
+                    Metamorphosis_Ultimate_Solo = 100305,
+
+
                     // +++ ARROW MASTERY +++
-                    // ...
                     ArrowMasterMastery = 200100,
+                    Targeting_Elite_Solo = 200103,
+                    ArrowShower_Ultimate_Solo = 200104,
+
+
+                    // +++ ELEMENTAL ARCHER +++
                     ElementalArcherMastery = 200200,
+                    ElementalSpikes_Elite_Solo = 200203,
+                    LightningCharge_Ultimate_Solo = 200204,
+
+
+                    // +++ FOREST GUARDIAN +++
                     ForestGuardianMastery = 200300,
+                    ForestBarrier_Elite_Solo = 200303,
+                    SummonBlackPanther_Ultimate_Solo = 200304,
 
-                    // +++ ASSASSIN MASTERY +++
+                    
+                    // +++ ASSASSIN +++
                     AssassinMastery = 300100,
-                    NinjaMastery = 300200,
-                    ThiefMastery = 300300,
+                    ShadowDagger_Elite_Solo = 300103,
+                    CounterStrike_Ultimate_Solo = 300104,
 
+                    // +++ NINJA +++
+                    NinjaMastery = 300200,
+                    Cloaking_Elite_Solo = 300203,
+                    CloneTechnique_Ultimate_Solo = 300204,
+
+                    // +++ THIEF +++
+                    ThiefMastery = 300300,
+                    SmokeBomb_Elite_Solo = 300303,
+                    LetsSweep_Ultimate_Solo = 300304,
+
+                    // +++ DEFAULT +++
+                    ThrowingStar = 900100,
+                    Boomerang = 900103,
+                    LazerBolt = 900106,
+                    Spear = 900109,
+                    BombTrap = 900112,
+
+                    // +++ ETC +++
+                    BodyAttack_Solo = 901100
+
+                    // ...
+                    // ===============================
+                    // ===============================
+                    // ===============================
+                    // ...
                     // +++ LIONEL +++
                     // WarriorMeleeSwing = 200236,
                     // BarbarianRangedShot = 200240,
@@ -157,15 +193,8 @@ namespace STELLAREST_2D
                     // // +++ ELEANOR +++
                     // QueenMeleeSwing = 200284,
 
-                    ThrowingStar = 900100,
-                    Boomerang = 900103,
-                    LazerBolt = 900106,
-                    Spear = 900109,
-                    BombTrap = 900112,
-
 
                     // +++ ETC +++
-                    BodyAttack_Solo = 901100
                     // PhantomSoul_Elite_Solo = 201103,
                     // PhantomSoul_Elite_Solo_Child = 201104
                     // HeavensJudgment,

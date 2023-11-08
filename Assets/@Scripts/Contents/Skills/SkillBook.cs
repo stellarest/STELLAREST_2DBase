@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using STELLAREST_2D.Data;
 using UnityEngine;
 using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 
@@ -276,29 +277,38 @@ namespace STELLAREST_2D
                                 break;
 
                             case SkillTemplate.Shield_Elite_Solo:
-                                {
-                                    if (this.CachedShield == null)
-                                        this.CachedShield = skill.GetComponent<Shield>();
-
-                                    this.EliteActionTemplate = skill.Data.OriginalTemplate;
-                                }
-                                break;
-
                             case SkillTemplate.SecondWind_Elite_Solo:
+                            case SkillTemplate.PhantomSoul_Elite_Solo:
+
+                            case SkillTemplate.Targeting_Elite_Solo:
+                            case SkillTemplate.ElementalSpikes_Elite_Solo:
+                            case SkillTemplate.ForestBarrier_Elite_Solo:
+
+                            case SkillTemplate.ShadowDagger_Elite_Solo:
+                            case SkillTemplate.Cloaking_Elite_Solo:
+                            case SkillTemplate.SmokeBomb_Elite_Solo:
                                 {
-                                    if (this.CachedSecondWind == null)
+                                    if (skill.Data.OriginalTemplate == SkillTemplate.Shield_Elite_Solo)
+                                        this.CachedShield = skill.GetComponent<Shield>();
+                                    else if (skill.Data.OriginalTemplate == SkillTemplate.SecondWind_Elite_Solo)
                                         this.CachedSecondWind = skill.GetComponent<SecondWind>();
 
                                     this.EliteActionTemplate = skill.Data.OriginalTemplate;
                                 }
                                 break;
-                            case SkillTemplate.VoidSoul_Elite_Solo:
-                                this.EliteActionTemplate = skill.Data.OriginalTemplate;
-                                break;
+
 
                             case SkillTemplate.JudgementOfHeaven_Ultimate_Solo:
-                            case SkillTemplate.DanceOfSwords_Ultimate_Solo:
-                            case SkillTemplate.RiseOfDarkness_Ultimate_Solo:
+                            case SkillTemplate.StormBlade_Ultimate_Solo:
+                            case SkillTemplate.Metamorphosis_Ultimate_Solo:
+
+                            case SkillTemplate.ArrowShower_Ultimate_Solo:
+                            case SkillTemplate.LightningCharge_Ultimate_Solo:
+                            case SkillTemplate.SummonBlackPanther_Ultimate_Solo:
+
+                            case SkillTemplate.CounterStrike_Ultimate_Solo:
+                            case SkillTemplate.CloneTechnique_Ultimate_Solo:
+                            case SkillTemplate.LetsSweep_Ultimate_Solo:
                                 this.UltimateActionTemplate = skill.Data.OriginalTemplate;
                                 break;
                         }
@@ -599,3 +609,25 @@ namespace STELLAREST_2D
 //         //       SecondSequenceSkill = SequenceSkills[i].Data.OriginalTemplate;
 //     }
 // }
+
+// case SkillTemplate.Shield_Elite_Solo:
+//     {
+//         if (this.CachedShield == null)
+//             this.CachedShield = skill.GetComponent<Shield>();
+
+//         this.EliteActionTemplate = skill.Data.OriginalTemplate;
+//     }
+//     break;
+
+// case SkillTemplate.SecondWind_Elite_Solo:
+//     {
+//         if (this.CachedSecondWind == null)
+//             this.CachedSecondWind = skill.GetComponent<SecondWind>();
+
+//         this.EliteActionTemplate = skill.Data.OriginalTemplate;
+//     }
+//     break;
+
+// case SkillTemplate.PhantomSoul_Elite_Solo:
+//     this.EliteActionTemplate = skill.Data.OriginalTemplate;
+//     break;

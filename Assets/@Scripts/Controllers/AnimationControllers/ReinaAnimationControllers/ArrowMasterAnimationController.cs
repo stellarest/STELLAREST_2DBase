@@ -2,13 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// 26 RIO
+// 31 RIO (last henshin)
+// 57 RIO
 namespace STELLAREST_2D
 {
     public class ArrowMasterAnimationController : PlayerAnimationController
     {
         private readonly int UPPER_READY = Animator.StringToHash("ReadyBow");
         private readonly int UPPER_ATTACK = Animator.StringToHash("RangedShot");
-        private readonly int UPPER_ELITE_SEQUENCE = Animator.StringToHash("");
+        private readonly int UPPER_ELITE_ACTION = Animator.StringToHash("UseTargeting");
 
         public override void Init(CreatureController owner) => base.Init(owner);
         public override void Ready() => AnimController.Play(UPPER_READY);
@@ -23,7 +26,7 @@ namespace STELLAREST_2D
                 case Define.SkillAnimationType.EliteAction:
                     {
                         AnimController.StopPlayback();
-                        AnimController.Play(UPPER_ELITE_SEQUENCE);
+                        AnimController.Play(UPPER_ELITE_ACTION);
                     }
                     break;
 

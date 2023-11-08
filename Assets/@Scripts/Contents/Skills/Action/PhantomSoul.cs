@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using DG.Tweening;
 using STELLAREST_2D.Data;
-using Unity.VisualScripting;
 using UnityEngine;
 using System.Linq;
 
@@ -12,6 +11,8 @@ using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 
 namespace STELLAREST_2D
 {
+    // Phantom Soul 그대로 사용
+    // 베지에 곡선 적용
     public class PhantomSoul : ActionSkill
     {
         private ParticleSystem[] _particles = null;
@@ -55,9 +56,9 @@ namespace STELLAREST_2D
 
             // HitCollider = GetComponent<CircleCollider2D>();
             // HitCollider.enabled = false;
-            _child = this.Owner.SkillBook.ForceGetSkillMember(SkillTemplate.VoidSoul_Elite_Child_Solo, 0).GetComponent<PhantomSoulChild>();
+            _child = this.Owner.SkillBook.ForceGetSkillMember(SkillTemplate.PhantomSoul_Elite_Child_Solo, 0).GetComponent<PhantomSoulChild>();
             _child.SetParent(this);
-            this.Owner.SkillBook.LevelUp(SkillTemplate.VoidSoul_Elite_Child_Solo);
+            this.Owner.SkillBook.LevelUp(SkillTemplate.PhantomSoul_Elite_Child_Solo);
 
             this.Owner.OnLookAtDirChanged += this.OnLookAtDirChangedHandler;
             Utils.Log("ADD EVENT : this.OnLookAtDirChangedHandler");
@@ -143,7 +144,7 @@ namespace STELLAREST_2D
         private IEnumerator CoActivatePhantomSoulChild_Temp()
         {
             yield return new WaitForSeconds(3f);
-            this.Owner.SkillBook.Activate(SkillTemplate.VoidSoul_Elite_Child_Solo);
+            this.Owner.SkillBook.Activate(SkillTemplate.PhantomSoul_Elite_Child_Solo);
             yield return null;
         }
 

@@ -20,8 +20,8 @@ namespace STELLAREST_2D
     [System.Serializable]
     public class CrowdControlState
     {
-        [field:SerializeField] public string Tag { get; set; } = string.Empty;
-        [field:SerializeField] public bool IsOn { get; set; } = false;
+        [field: SerializeField] public string Tag { get; set; } = string.Empty;
+        [field: SerializeField] public bool IsOn { get; set; } = false;
     }
 
     public class CreatureController : BaseController, IHitFrom
@@ -53,7 +53,7 @@ namespace STELLAREST_2D
 
         // +++ STAT +++
         [field: SerializeField] public CreatureStat Stat { get; protected set; } = null;
-        public void UpdateCreatureStat(int templateID) 
+        public void UpdateCreatureStat(int templateID)
             => this.Stat = Stat.UpgradeStat(this, Stat, templateID);
         public bool IsInvincible { get; set; } = false;
 
@@ -94,7 +94,7 @@ namespace STELLAREST_2D
         // +++ FIELD, PROPERTY, METHODS +++
         [SerializeField] private Define.CreatureState _cretureState = Define.CreatureState.Idle;
         public Define.CreatureState CreatureState { get => _cretureState; set { _cretureState = value; UpdateAnimation(); } }
-        
+
         public virtual void UpdateAnimation() { }
 
         // FSM : IDLE
@@ -227,8 +227,8 @@ namespace STELLAREST_2D
                 SkillBook.Owner = this;
             }
 
-            LoadDefaultSkills(creatureData);
             LoadActionSkills(creatureData);
+            LoadDefaultSkills(creatureData);
             this.SkillBook.LateInit();
         }
 
@@ -244,33 +244,6 @@ namespace STELLAREST_2D
             _coReadyToAction = StartCoroutine(CoReadyToAction(onStartImmediately));
         }
         protected virtual IEnumerator CoReadyToAction(bool onStartImmediately = false) { yield return null; }
-
-        private void LoadDefaultSkills(Data.InitialCreatureData creatureData)
-        {
-            GameObject goDefaultSkills = new GameObject { name = "@DefaultSkills " };
-            goDefaultSkills.transform.SetParent(SkillBook.transform);
-            goDefaultSkills.transform.localPosition = Vector3.zero;
-            goDefaultSkills.transform.localScale = Vector3.one;
-            foreach (Define.TemplateIDs.Status.Skill templateOrigin in creatureData.DefaultSkillList)
-            {
-                int templateID = (int)templateOrigin;
-                if (Managers.Data.SkillsDict.TryGetValue(templateID, out Data.SkillData dataOrigin) == false)
-                    Utils.LogCritical(nameof(CreatureController), nameof(LoadDefaultSkills), $"TemplateID : {templateID}");
-
-                for (int i = templateID; i < templateID + (int)dataOrigin.MaxGrade; ++i)
-                {
-                    SkillData data = Managers.Data.SkillsDict[i];
-                    GameObject go = Managers.Resource.Instantiate(data.PrimaryLabel);
-                    go.transform.SetParent(goDefaultSkills.transform);
-                    go.transform.localPosition = Vector3.zero;
-                    go.transform.localScale = Vector3.one;
-
-                    DefaultSkill defaultSkill = go.GetComponent<DefaultSkill>();
-                    defaultSkill.InitOrigin(this, data);
-                    SkillBook.SkillGroupsDict.AddGroup(i, new SkillGroup(defaultSkill));
-                }
-            }
-        }
 
         private void LoadActionSkills(Data.InitialCreatureData creatureData)
         {
@@ -295,6 +268,33 @@ namespace STELLAREST_2D
                     ActionSkill actionSkill = go.GetComponent<ActionSkill>();
                     actionSkill.InitOrigin(this, data);
                     SkillBook.SkillGroupsDict.AddGroup(templateID, new SkillGroup(actionSkill));
+                }
+            }
+        }
+
+        private void LoadDefaultSkills(Data.InitialCreatureData creatureData)
+        {
+            GameObject goDefaultSkills = new GameObject { name = "@DefaultSkills " };
+            goDefaultSkills.transform.SetParent(SkillBook.transform);
+            goDefaultSkills.transform.localPosition = Vector3.zero;
+            goDefaultSkills.transform.localScale = Vector3.one;
+            foreach (Define.TemplateIDs.Status.Skill templateOrigin in creatureData.DefaultSkillList)
+            {
+                int templateID = (int)templateOrigin;
+                if (Managers.Data.SkillsDict.TryGetValue(templateID, out Data.SkillData dataOrigin) == false)
+                    Utils.LogCritical(nameof(CreatureController), nameof(LoadDefaultSkills), $"TemplateID : {templateID}");
+
+                for (int i = templateID; i < templateID + (int)dataOrigin.MaxGrade; ++i)
+                {
+                    SkillData data = Managers.Data.SkillsDict[i];
+                    GameObject go = Managers.Resource.Instantiate(data.PrimaryLabel);
+                    go.transform.SetParent(goDefaultSkills.transform);
+                    go.transform.localPosition = Vector3.zero;
+                    go.transform.localScale = Vector3.one;
+
+                    DefaultSkill defaultSkill = go.GetComponent<DefaultSkill>();
+                    defaultSkill.InitOrigin(this, data);
+                    SkillBook.SkillGroupsDict.AddGroup(i, new SkillGroup(defaultSkill));
                 }
             }
         }
@@ -341,7 +341,7 @@ namespace STELLAREST_2D
                     this.SkillBook.OffSheild();
                     //this.SkillBook.Deactivate(SkillTemplate.Shield);
                 }
-                    
+
                 this.SkillBook.HitShield();
             }
             else
@@ -364,7 +364,7 @@ namespace STELLAREST_2D
                 // Crowd Control (CC)
                 if (Managers.Game.TryCrowdControl(from))
                     Managers.CrowdControl.Apply(this, from);
-                
+
                 if (this.SkillBook.IsOnShield == false)
                     Managers.VFX.Material(Define.MaterialType.Hit, this);
             }
@@ -438,7 +438,7 @@ namespace STELLAREST_2D
         protected virtual float ReadyToActionCompleteTime() => 1f;
         public virtual Vector3 LoadVFXEnvSpawnScale(VFXEnv templateOrigin) => Vector3.one;
         public virtual Vector3 LoadVFXEnvSpawnPos(VFXEnv templateOrigin) => this.Center.transform.position;
-        
+
         public bool IsIdleState => this.CreatureState == Define.CreatureState.Idle && (this.Stat.Hp > 0);
         public bool IsRunState => this.CreatureState == Define.CreatureState.Run && (this.Stat.Hp > 0);
         public bool IsSkillState => this.CreatureState == Define.CreatureState.Skill && (this.Stat.Hp > 0);

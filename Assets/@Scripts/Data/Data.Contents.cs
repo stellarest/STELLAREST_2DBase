@@ -26,8 +26,8 @@ namespace STELLAREST_2D.Data
         public float Luck;
         public float TotalExp;
         public int OtherExclusiveSkillSocket;
-        public List<int> DefaultSkillList;
         public List<int> ActionSkillList;
+        public List<int> DefaultSkillList;
         public PlayerFaceExpressionLoader[] PlayerFaceExpressionsLoader;
     }
 
