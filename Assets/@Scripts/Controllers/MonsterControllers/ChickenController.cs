@@ -51,18 +51,6 @@ namespace STELLAREST_2D
                         }
                         break;
                 }
-
-                // if (IsCCStates(CrowdControl.Stun))
-                // {
-                //     Utils.Log("STUN IN !!");
-                //     this.SkillBook.DeactivateAll();
-                //     MonsterAnimController.AnimController.StopPlayback();
-                //     MonsterAnimController.Idle();
-                // }
-                // else if (IsCCStates(CrowdControl.Stun) == false)
-                // {
-                //     Utils.LogBreak("STUN OUT");
-                // }
             }
         }
 
@@ -204,6 +192,12 @@ namespace STELLAREST_2D
 
                 case VFXEnv.Silence:
                     return (Center.position + new Vector3(-1f, 1.05f, 0f));
+
+                // case VFXEnv.Targeted:
+                //     return (Center.position + new Vector3(-0.11f, 1.45f, 0f));
+
+                case VFXEnv.Targeted:
+                    return Center.position;
 
                 default:
                     return base.LoadVFXEnvSpawnPos(templateOrigin);

@@ -11,7 +11,7 @@ using TreeEditor;
 
 namespace STELLAREST_2D
 {
-    public class MonsterController : CreatureController //, IHitStatus
+    public class MonsterController : CreatureController, IEquatable<MonsterController> //, IHitStatus
     {
         public Define.MonsterType MonsterType { get; set; } = Define.MonsterType.None;
         public MonsterAnimationController MonsterAnimController { get; private set; } = null;
@@ -279,6 +279,15 @@ namespace STELLAREST_2D
                 Utils.Log("Release Event : OnPlayerIsDeadHandler");
                 Managers.Game.OnPlayerIsDead -= OnPlayerIsDeadHandler;
             }
+        }
+
+        // +++ Inherit from IEquatable<T>
+        // 자주 사용하는 제네릭 컬렉션에 대해서는 필수적으로 사용하는것을 권장
+        // 제네릭 컬렉션의 Contains와 같은 메서드에서 자동으로 감지하게 됨. 굉장히 중요함.
+
+        public bool Equals(MonsterController other)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -229,7 +229,8 @@ namespace STELLAREST_2D
                 Charm = 300105,
                 Flee = 300106,
                 Sleep = 300107,
-                MaxCount = 8
+                Targeted = 300108,
+                MaxCount = 9
             }
 
             public static class VFX
@@ -270,11 +271,11 @@ namespace STELLAREST_2D
                     Stun,
                     Slow,
                     Silence,
+                    Targeted,
+
                     GemGather,
                     GemExplosion,
                     Font_Percentage,
-
-
 
                     KnockBack,
                     WindTrail,
@@ -327,6 +328,8 @@ namespace STELLAREST_2D
                 public const string VFX_ENV_GEM_GATHER = "VFX_Env_GemGather.prefab";
                 public const string VFX_ENV_GEM_EXPLOSION = "VFX_Env_GemExplosion.prefab";
                 public const string VFX_ENV_FONT_PERCENTAGE = "VFX_Env_Font_Percentage.prefab";
+                public const string VFX_ENV_TARGETED = "VFX_Env_Targeted.prefab";
+                public const string VFX_ENV_FONT_HIT = "VFX_Env_Font_Hit.prefab";
 
                 // ENV
                 public const string ENV_GEM = "Env_Gem.prefab";

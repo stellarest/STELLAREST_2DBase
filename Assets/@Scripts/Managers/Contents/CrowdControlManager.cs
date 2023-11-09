@@ -1,7 +1,6 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
-using System.Security.Authentication.ExtendedProtection;
-using Demo_Project;
 using STELLAREST_2D.Data;
 using UnityEngine;
 
@@ -49,38 +48,6 @@ namespace STELLAREST_2D
             target[CrowdControl.Stun] = false;
             Managers.Resource.Destroy(goVFX);
         }
-
-        // public IEnumerator CoStun(CreatureController target, SkillBase from)
-        // {
-        //     float delta = 0f;
-        //     float percent = 0f;
-        //     float duration = from.Data.CrowdControlDuration;
-        //     target.CreatureState = Define.CreatureState.Idle;
-            
-        //     target.SetDeadHead();
-        //     GameObject goVFX = Managers.VFX.Environment(VFXEnv.Stun, target);
-        //     target[CrowdControl.Stun] = true;
-        //     while (percent < 1f)
-        //     {
-        //         if (target.IsDeadState)
-        //         {
-        //             target[CrowdControl.Stun] = false;
-        //             Managers.Resource.Destroy(goVFX);
-        //             yield break;
-        //         }
-
-        //         goVFX.transform.position = target.LoadVFXEnvSpawnPos(VFXEnv.Stun);
-        //         delta += Time.deltaTime;
-        //         percent = delta / duration;
-        //         yield return null;
-        //     }
-        //     target[CrowdControl.Stun] = false;
-        //     Managers.Resource.Destroy(goVFX);
-        //     target.SetDefaultHead();
-
-        //     bool isOnActiveImmediately = true;
-        //     target.StartIdleToAction(isOnActiveImmediately);
-        // }
 
         public IEnumerator CoSlow(CreatureController target, SkillBase from)
         {
@@ -178,6 +145,38 @@ namespace STELLAREST_2D
             target[CrowdControl.Slience] = false;
             Managers.Resource.Destroy(goVFX);
             target.SkillBook.ActivateAll();
+        }
+
+        public IEnumerator CoTargeted(CreatureController target, SkillBase from, bool isCalledFromContinuous = false)
+        {
+            float delta = 0f;
+            float duration = from.Data.CrowdControlDuration;
+            float percent = 0f;
+            float intensity = from.Data.CrowdControlIntensity;
+
+            GameObject goVFX = Managers.VFX.Environment(VFXEnv.Targeted, target);
+            goVFX.transform.DORotate(new Vector3(0f, 0f, 360f), 1.5f, RotateMode.FastBeyond360).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo);
+            goVFX.transform.DOScale(Vector3.one * 2.5f, 1f).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo);
+
+            target[CrowdControl.Targeted] = true;
+            while (percent < 1f)
+            {
+                if (target.IsDeadState)
+                {
+                    target[CrowdControl.Targeted] = false;
+                    Managers.Resource.Destroy(goVFX);
+                    yield break;
+                }
+
+                goVFX.transform.position = target.LoadVFXEnvSpawnPos(VFXEnv.Targeted);
+                delta += Time.deltaTime;
+                percent = delta / duration;
+                yield return null;
+            }
+            target[CrowdControl.Targeted] = false;
+
+            goVFX.transform.DOKill();
+            Managers.Resource.Destroy(goVFX);
         }
     }
 }

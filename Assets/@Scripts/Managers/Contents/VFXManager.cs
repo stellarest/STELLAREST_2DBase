@@ -7,6 +7,7 @@ using VFXImpact = STELLAREST_2D.Define.TemplateIDs.VFX.ImpactHit;
 using VFXTrail = STELLAREST_2D.Define.TemplateIDs.VFX.Trail;
 using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
 using PrefabLabels = STELLAREST_2D.Define.Labels.Prefabs;
+using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
 
 namespace STELLAREST_2D
 {
@@ -357,6 +358,14 @@ namespace STELLAREST_2D
                 case VFXEnv.Silence:
                     {
                         goVFX = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_ENV_SILENCE, null, true);
+                        goVFX.transform.localScale = spawnScale;
+                        goVFX.transform.position = spawnPos;
+                    }
+                    break;
+
+                case VFXEnv.Targeted:
+                    {
+                        goVFX = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_ENV_TARGETED, null, true);
                         goVFX.transform.localScale = spawnScale;
                         goVFX.transform.position = spawnPos;
                     }

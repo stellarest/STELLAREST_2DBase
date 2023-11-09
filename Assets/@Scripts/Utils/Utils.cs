@@ -126,7 +126,7 @@ namespace STELLAREST_2D
             System.Type type = typeof(T);
             if (type == typeof(MonsterController))
             {
-                List<MonsterController> toList = MakeToList_Monsters();
+                List<MonsterController> toList = MakeMonsterList();
                 if (toList.Count > 0)
                 {
                     float closestDist = float.MaxValue;
@@ -156,7 +156,7 @@ namespace STELLAREST_2D
             System.Type type = typeof(T);
             if (type == typeof(MonsterController))
             {
-                List<MonsterController> toList = MakeToList_Monsters(hitFromType);
+                List<MonsterController> toList = MakeMonsterList(hitFromType);
                 if (toList.Count > 0)
                 {
                     List<MonsterController> filteredList = new List<MonsterController>();
@@ -188,7 +188,7 @@ namespace STELLAREST_2D
             System.Type type = typeof(T);
             if (owner?.IsPlayer() == true)
             {
-                List<MonsterController> toList = MakeToList_Monsters();
+                List<MonsterController> toList = MakeMonsterList();
                 Vector3 fromPos = from.transform.position;
                 float closestDist = float.MaxValue;
                 for (int i = 0; i < toList.Count; ++i)
@@ -220,7 +220,7 @@ namespace STELLAREST_2D
             System.Type type = typeof(T);
             if (type == typeof(MonsterController))
             {
-                List<MonsterController> toList = MakeToList_Monsters();
+                List<MonsterController> toList = MakeMonsterList();
                 Vector3 fromPos = from.transform.position;
                 float closestDist = float.MaxValue;
                 for (int i = 0; i < toList.Count; ++i)
@@ -251,7 +251,7 @@ namespace STELLAREST_2D
             System.Type type = typeof(T);
             if (type == typeof(MonsterController))
             {
-                List<MonsterController> toList = MakeToList_Monsters(hitFromType);
+                List<MonsterController> toList = MakeMonsterList(hitFromType);
                 Vector3 fromPos = from.Center.position;
                 float closestDist = float.MaxValue;
                 for (int i = 0; i < toList.Count; ++i)
@@ -274,7 +274,7 @@ namespace STELLAREST_2D
             return nextDir.normalized;
         }
 
-        private static List<MonsterController> MakeToList_Monsters(Define.HitFromType hitFromType = Define.HitFromType.None)
+        public static List<MonsterController> MakeMonsterList(Define.HitFromType hitFromType = Define.HitFromType.None)
         {
             List<MonsterController> toList = new List<MonsterController>();
             foreach (var mon in Managers.Object.Monsters)

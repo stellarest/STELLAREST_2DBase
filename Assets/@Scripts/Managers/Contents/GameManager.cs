@@ -1,6 +1,8 @@
 using System;
 using UnityEngine;
 
+using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
+
 namespace STELLAREST_2D
 {
     public class GameManager
@@ -52,7 +54,7 @@ namespace STELLAREST_2D
             bool isCritical = false;
             float dmgSkill = UnityEngine.Random.Range(from.Data.MinDamage, from.Data.MaxDamage);
             float dmgResult = dmgSkill + (dmgSkill * attacker.Stat.Damage);
-            if (UnityEngine.Random.Range(0f, 1f) <= attacker.Stat.Critical)
+            if (UnityEngine.Random.Range(0f, 1f) <= attacker.Stat.Critical || target[CrowdControl.Targeted])
             {
                 isCritical = true;
                 float criticalRatio = UnityEngine.Random.Range(MIN_CRITICAL_RATIO, MAX_CRITICAL_RATIO);

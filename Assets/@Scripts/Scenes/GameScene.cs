@@ -85,7 +85,6 @@ namespace STELLAREST_2D
             // Managers.Game.OnKillCountChanged += OnKillCountChangedHandler;
             // Managers.Game.OnGemCountChanged -= OnGemCountChangedHandler;
             // Managers.Game.OnGemCountChanged += OnGemCountChangedHandler;
-
             // Test Gem Spawn
             // for (int i = 0; i < 30; ++i)
             // {

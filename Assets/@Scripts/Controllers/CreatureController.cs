@@ -346,6 +346,7 @@ namespace STELLAREST_2D
             }
             else
                 this.Stat.Hp -= dmgResult;
+
             Managers.VFX.Damage(this, dmgResult, isCritical);
             Managers.VFX.ImpactHit(from.Data.VFX_ImpactHit, this, from); // --> 메모리 문제 발생시, 크리티컬 쪽에서 스폰
 
@@ -497,6 +498,15 @@ namespace STELLAREST_2D
                         }
                         else
                             Utils.Log("Already Silence,,,");
+                    }
+                    break;
+
+                case CrowdControl.Targeted:
+                    {
+                        if (this[ccType] == false)
+                            StartCoroutine(Managers.CrowdControl.CoTargeted(this, from));
+                        else
+                            Utils.Log("Already Targeted,,,");
                     }
                     break;
             }
