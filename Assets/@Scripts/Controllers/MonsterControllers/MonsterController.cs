@@ -281,14 +281,22 @@ namespace STELLAREST_2D
             }
         }
 
-        // +++ Inherit from IEquatable<T>
-        // 자주 사용하는 제네릭 컬렉션에 대해서는 필수적으로 사용하는것을 권장
-        // 제네릭 컬렉션의 Contains와 같은 메서드에서 자동으로 감지하게 됨. 굉장히 중요함.
-
         public bool Equals(MonsterController other)
         {
-            throw new NotImplementedException();
+            if (other == null)
+                return false;
+
+            if (ReferenceEquals(this, other) == false)
+                return false;
+
+            if (this.GetType() != other.GetType())
+                return false;
+
+            return true;
         }
+
+        public override bool Equals(object other) => base.Equals(other);
+        public override int GetHashCode() => base.GetHashCode();
     }
 }
 

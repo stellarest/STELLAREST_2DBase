@@ -8,6 +8,7 @@ using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
 using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
 using System.Diagnostics;
+using Debug = UnityEngine.Debug;
 
 namespace STELLAREST_2D
 {
@@ -38,7 +39,9 @@ namespace STELLAREST_2D
 
     public class PlayerController : CreatureController
     {
-        private readonly float GEM_COLLECTION_FIXED_DIST = 5f; // +++ NO DATE SHEET +++
+        //private readonly float GEM_COLLECTION_FIXED_DIST = 5f; // +++ NO DATE SHEET +++
+        private readonly float FIXED_MINIMUM_COLLECT_RANGE = 5f;
+
         protected float _armBowFixedAngle = 110f; // REINA에서 뺴야함
         private float _armRifleFixedAngle = 146f; // CHRISTIAN에서 빼야함
         public PlayerBody BodyParts { get; protected set; } = null;
@@ -223,7 +226,12 @@ namespace STELLAREST_2D
                 SkillBook.DeactivateAll();
 #endif
             MoveByJoystick();
-            CollectEnv();
+            CollectGems();
+
+            foreach (var mon in Utils.GetMonstersInRange(this, 11f))
+            {
+                Debug.DrawLine(this.Center.position, mon.Center.position, Color.magenta, -1f);
+            }
         }
 
         private IEnumerator CoPercentageTemp()
@@ -277,6 +285,7 @@ namespace STELLAREST_2D
         {
             Managers.Sprite.PlayerExpressionController.Expression(Testxpression);
         }
+
         private void MoveByJoystick()
         {
             Vector3 dir = MoveDir.normalized * (Stat.MovementSpeed * this.SpeedModifier) * Time.deltaTime;
@@ -318,12 +327,12 @@ namespace STELLAREST_2D
 
             LocalScale = new Vector3((int)LookAtDir * Define.PLAYER_LOCAL_SCALE_X * -1f, Define.PLAYER_LOCAL_SCALE_Y, 1);
         }
-        private void CollectEnv()
+        private void CollectGems()
         {
             float sqrCollectDist = Stat.CollectRange * Stat.CollectRange;
             // var allSpawnedGems = Managers.Object.Gems.ToList();
             //var findGems = Managers.Object.GridController.GatherObjects(transform.position, GEM_COLLECTION_FIXED_DIST).ToList();
-            var findGems = Managers.Object.GridController.GatherObjects(this.Center.position, GEM_COLLECTION_FIXED_DIST).ToList();
+            var findGems = Managers.Object.GridController.Gather(Define.ObjectType.Gem, this.Center.position, FIXED_MINIMUM_COLLECT_RANGE).ToList();
             foreach (var gem in findGems)
             {
                 GemController gc = gem.GetComponent<GemController>();

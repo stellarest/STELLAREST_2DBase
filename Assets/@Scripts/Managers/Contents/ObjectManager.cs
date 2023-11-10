@@ -119,7 +119,7 @@ namespace STELLAREST_2D
                         gem.Init();
 
                         Gems.Add(gem);
-                        GridController.Add(gem.gameObject);
+                        GridController.Add(spawnObjectType, gem.gameObject);
 
                         return gem as T;
                     }
@@ -158,7 +158,7 @@ namespace STELLAREST_2D
             {
                 Gems.Remove(obj as GemController);
                 Managers.Resource.Destroy(obj.gameObject);
-                GridController.Remove(obj.gameObject);
+                GridController.Remove(Define.ObjectType.Gem, obj.gameObject);
             }
             else if (type == typeof(SkillBase) || type == typeof(ProjectileController))
             {

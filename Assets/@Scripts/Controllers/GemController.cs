@@ -60,7 +60,7 @@ namespace STELLAREST_2D
         {
             //Managers.Effect.ShowGemGather(this);
             Managers.VFX.Environment(VFXEnv.GemGather, this.transform.position);
-            Managers.Object.GridController.Remove(gameObject);
+            Managers.Object.GridController.Remove(this.ObjectType, gameObject);
             if (this.IsValid() && _coMoveToPlayer == null)
             {
                 Sequence seq = DOTween.Sequence();

@@ -124,7 +124,7 @@ namespace STELLAREST_2D
 
                     // +++ ARROW MASTERY +++
                     ArrowMasterMastery = 200100,
-                    Targeting_Elite_Solo = 200103,
+                    Concentration_Elite_Solo = 200103,
                     ArrowShower_Ultimate_Solo = 200104,
 
 

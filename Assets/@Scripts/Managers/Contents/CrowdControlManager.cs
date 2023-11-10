@@ -149,34 +149,31 @@ namespace STELLAREST_2D
 
         public IEnumerator CoTargeted(CreatureController target, SkillBase from, bool isCalledFromContinuous = false)
         {
-            float delta = 0f;
-            float duration = from.Data.CrowdControlDuration;
-            float percent = 0f;
-            float intensity = from.Data.CrowdControlIntensity;
-
             GameObject goVFX = Managers.VFX.Environment(VFXEnv.Targeted, target);
             goVFX.transform.DORotate(new Vector3(0f, 0f, 360f), 1.5f, RotateMode.FastBeyond360).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo);
             goVFX.transform.DOScale(Vector3.one * 2.5f, 1f).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo);
 
             target[CrowdControl.Targeted] = true;
-            while (percent < 1f)
+            yield return new WaitUntil(delegate ()
             {
                 if (target.IsDeadState)
                 {
                     target[CrowdControl.Targeted] = false;
                     Managers.Resource.Destroy(goVFX);
-                    yield break;
+                    goVFX = null;
+                    return true;
                 }
 
                 goVFX.transform.position = target.LoadVFXEnvSpawnPos(VFXEnv.Targeted);
-                delta += Time.deltaTime;
-                percent = delta / duration;
-                yield return null;
-            }
-            target[CrowdControl.Targeted] = false;
+                return from.IsStopped;
+            });
 
-            goVFX.transform.DOKill();
-            Managers.Resource.Destroy(goVFX);
+            if (goVFX != null)
+            {
+                target[CrowdControl.Targeted] = false;
+                goVFX.transform.DOKill();
+                Managers.Resource.Destroy(goVFX);
+            }
         }
     }
 }

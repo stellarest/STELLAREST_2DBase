@@ -280,7 +280,7 @@ namespace STELLAREST_2D
                             case SkillTemplate.SecondWind_Elite_Solo:
                             case SkillTemplate.PhantomSoul_Elite_Solo:
 
-                            case SkillTemplate.Targeting_Elite_Solo:
+                            case SkillTemplate.Concentration_Elite_Solo:
                             case SkillTemplate.ElementalSpikes_Elite_Solo:
                             case SkillTemplate.ForestBarrier_Elite_Solo:
 

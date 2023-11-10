@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Linq;
 using UnityEngine;
 
 using Debug = UnityEngine.Debug;
@@ -94,12 +95,24 @@ namespace STELLAREST_2D
             return fromPos;
         }
 
+        public static List<MonsterController> GetMonstersInRange(CreatureController from, float range)
+        {
+            List<MonsterController> monsters = MakeMonsterList();
+            List<MonsterController> targets = new List<MonsterController>();
+            for (int i = 0; i < monsters.Count; ++i)
+            {
+                if (monsters[i].IsValid())
+                {
+                    if ((from.Center.position - monsters[i].Center.position).sqrMagnitude <= range * range)
+                        targets.Add(monsters[i]);
+                }
+            }
+
+            return targets;
+        }
+
         public static bool IsArriveToTarget(Transform from, Transform target, float minDistance = 1f)
         {
-            // Because of Chicken's Skill Bug
-            // if (Managers.Stage.IsOutOfPos(from.position))
-            //     return true;
-
             if (Managers.Stage.IsOutOfPos(from.position))
                 return false;
 
@@ -207,36 +220,6 @@ namespace STELLAREST_2D
                             closestDist = distFrom;
                             target = toList[i];
                         }
-                    }
-                }
-            }
-
-            return target;
-        }
-
-        public static GameObject GetClosestTargetFromAndRange_TEMP<T>(GameObject from, float range)
-        {
-            GameObject target = null;
-            System.Type type = typeof(T);
-            if (type == typeof(MonsterController))
-            {
-                List<MonsterController> toList = MakeMonsterList();
-                Vector3 fromPos = from.transform.position;
-                float closestDist = float.MaxValue;
-                for (int i = 0; i < toList.Count; ++i)
-                {
-                    if (toList[i] == from)
-                        continue;
-
-                    if (toList[i].IsValid() == false)
-                        continue;
-
-                    float distFrom = (toList[i].Center.position - fromPos).sqrMagnitude;
-                    if (distFrom < range * range && distFrom < closestDist)
-                    {
-                        closestDist = distFrom;
-                        target = toList[i].gameObject;
-                        //target = toList[i].AnimTransform.gameObject;
                     }
                 }
             }
@@ -432,3 +415,33 @@ namespace STELLAREST_2D
 #endif
     }
 }
+
+// public static GameObject GetClosestTargetFromAndRange_TEMP<T>(GameObject from, float range)
+// {
+//     GameObject target = null;
+//     System.Type type = typeof(T);
+//     if (type == typeof(MonsterController))
+//     {
+//         List<MonsterController> toList = MakeMonsterList();
+//         Vector3 fromPos = from.transform.position;
+//         float closestDist = float.MaxValue;
+//         for (int i = 0; i < toList.Count; ++i)
+//         {
+//             if (toList[i] == from)
+//                 continue;
+
+//             if (toList[i].IsValid() == false)
+//                 continue;
+
+//             float distFrom = (toList[i].Center.position - fromPos).sqrMagnitude;
+//             if (distFrom < range * range && distFrom < closestDist)
+//             {
+//                 closestDist = distFrom;
+//                 target = toList[i].gameObject;
+//                 //target = toList[i].AnimTransform.gameObject;
+//             }
+//         }
+//     }
+
+//     return target;
+// }
