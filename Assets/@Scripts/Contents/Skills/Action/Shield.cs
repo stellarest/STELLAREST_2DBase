@@ -9,10 +9,15 @@ using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 namespace STELLAREST_2D
 {
     /*
-        > Ability Info <
-        lv.1 : Shield Hp = Max Hp 50%
-        lv.2 : Shield Hp = Max Hp 60%
-        lv.3 : Shield Hp = Max Hp 90%
+        [ Ability Info : Shield (Elite Action, Paladin) ]
+        (Currently Temped Set : lv.3)
+
+        lv.1 : 매 웨이브마다 최대 체력의 50%에 해당하는 쉴드 획득. 
+            (쉴드가 활성화 되어 있을 때, 1.5초 마다 1%의 쉴드 회복)
+        lv.2 : 매 웨이브마다 최대 체력의 60%에 해당하는 쉴드 획득. 
+            (쉴드가 활성화 되어 있을 때, 1.25초 마다 1%의 쉴드 회복)
+        lv.3 : 매 웨이브마다 최대 체력의 90%에 해당하는 쉴드 획득.
+            (쉴드가 활성화 되어 있을 때, 0.75초 마다 1%의 쉴드 회복)
     */
 
     public class Shield : ActionSkill
@@ -43,25 +48,54 @@ namespace STELLAREST_2D
         }
 
         private Coroutine _coRecoveryShield = null;
-        private const float RECOVERY_INTERVAL = 1.25f;
+        //private const float RECOVERY_INTERVAL = 1.25f;
+        private const float FIXED_RECOVERY_INTERVAL = 0.75f;
+        private const float FIXED_RECOVERY_RATIO = 0.01f;
+
         private IEnumerator CoRecoveryShield()
         {
             float delta = 0f;
             while (this.IsOnShield)
             {
                 delta += Time.deltaTime;
-                if (delta >= RECOVERY_INTERVAL)
+                if (delta >= FIXED_RECOVERY_INTERVAL)
                 {
-                    this.Owner.Stat.ShieldHp++;
-                    if (this.Owner.Stat.ShieldHp >= _shieldMaxHp)
-                        this.Owner.Stat.ShieldHp = _shieldMaxHp;
+                    // Mathf.CeilToInt(3.5f) : 올림, 4
+                    // Mathf.RoundToInt(3.5f) : 반올림, 4
+                    // Mathf.FloorToInt(3.5f) : 내림, 3
+                    int recoveryCount = Mathf.FloorToInt(delta / FIXED_RECOVERY_INTERVAL);
+                    for (int i = 0; i < recoveryCount; ++i)
+                    {
+                        this.Owner.Stat.ShieldHp += (_shieldMaxHp * FIXED_RECOVERY_RATIO);
+                        if (this.Owner.Stat.ShieldHp >= _shieldMaxHp)
+                            this.Owner.Stat.ShieldHp = _shieldMaxHp;
+                    }
 
-                    delta = 0f;
+                    delta %= FIXED_RECOVERY_INTERVAL;
                 }
 
                 yield return null;
             }
         }
+
+        // private IEnumerator CoRecoveryShield_PREV()
+        // {
+        //     float delta = 0f;
+        //     while (this.IsOnShield)
+        //     {
+        //         delta += Time.deltaTime;
+        //         if (delta >= FIXED_RECOVERY_INTERVAL)
+        //         {
+        //             this.Owner.Stat.ShieldHp += (_shieldMaxHp * FIXED_RECOVERY_RATIO);
+        //             if (this.Owner.Stat.ShieldHp >= _shieldMaxHp)
+        //                 this.Owner.Stat.ShieldHp = _shieldMaxHp;
+
+        //             delta = 0f;
+        //         }
+
+        //         yield return null;
+        //     }
+        // }
 
         public override void InitOrigin(CreatureController owner, SkillData data)
         {
@@ -103,7 +137,7 @@ namespace STELLAREST_2D
 
         public override void OnActiveEliteActionHandler() => this.IsOnShield = true;
         public void Hit() => _hitBurst.Play();
-        private const float SHIELD_MAX_HP_RATIO = 0.5f;
+        private const float SHIELD_MAX_HP_RATIO = 0.9f;
         private void OnShield()
         {
             //this.IsOnShield = true;

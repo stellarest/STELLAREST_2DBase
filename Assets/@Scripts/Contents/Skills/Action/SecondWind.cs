@@ -10,10 +10,18 @@ using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 namespace STELLAREST_2D
 {
     /*
-        > Ability Info <
-        lv.1 : Stun : 2f
-        lv.2 : Stun : 3f 
-        lv.3 : Stun : 5f
+        [ Ability Info : Second Wind (Elite Action, Knight) ]
+        (Currently Temped Set : lv.3)
+
+        lv.1 : 죽음의 위기에서 2.5초 동안 무적 상태가 되고 100%의 체력을 회복한다. (1회)
+            회복이 완료된 이후, 주변에 있는 적에게 충격파를 날려 적을 넉백하고 2초간 기절상태를 부여한다.
+            이후, Knight의 방어력이 영구적으로 5% 증가한다.
+        lv.2 : 죽음의 위기에서 2.5초에 동안 무적 상태가 되고 100%의 체력을 회복한다. (1회)
+            회복이 완료된 이후, 주변에 있는 적에게 충격파를 날려 적을 넉백하고 3초간 기절상태를 부여한다.
+            이후, Knight의 방어력이 영구적으로 8% 증가한다.
+        lv.3 : 죽음의 위기에서 2.5초에 동안 무적 상태가 되고 100%의 체력을 회복한다. (1회)
+            회복이 완료된 이후, 주변에 있는 적에게 충격파를 날려 적을 넉백하고 5초간 기절상태를 부여한다.
+            이후, Knight의 방어력이 영구적으로 16% 증가한다.
     */
 
     public class SecondWind : ActionSkill
@@ -127,6 +135,7 @@ namespace STELLAREST_2D
             StartCoroutine(CoEndSecondWind());
         }
 
+        private const float ADD_ARMOR_RATIO = 0.16f;
         private IEnumerator CoEndSecondWind()
         {
             KnightAnimationController anim = this.Owner.AnimController.GetComponent<KnightAnimationController>();
@@ -137,6 +146,9 @@ namespace STELLAREST_2D
             this.Owner.ReserveSkillAnimationType(Define.SkillAnimationType.MasteryAction);
             this.Owner.CreatureState = Define.CreatureState.Skill;
             this.Owner.SkillBook.Activate(SkillTemplate.KnightMastery);
+
+            this.Owner.Stat.AddArmorRatio(ADD_ARMOR_RATIO);
+            this.Owner.SkillBook.Deactivate(SkillTemplate.SecondWind_Elite_Solo);
         }
     }
 }

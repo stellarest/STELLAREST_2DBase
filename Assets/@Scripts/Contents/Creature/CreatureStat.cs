@@ -65,6 +65,16 @@ namespace STELLAREST_2D
         [field: SerializeField] public float CoolDown { get; private set; }
 
         [field: SerializeField] public float Armor { get; private set; }
+        public void AddArmorRatio(float ratio)
+        {
+            this.Armor += ratio;
+            if (this.Armor >= Define.MAX_ARMOR_RATE)
+            {
+                this.Armor = Define.MAX_ARMOR_RATE;
+                return;
+            }
+        }
+
         [field: SerializeField] public float Dodge { get; private set; }
 
         [field: SerializeField] public float MovementSpeed { get; set; }
