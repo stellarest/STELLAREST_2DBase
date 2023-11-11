@@ -11,13 +11,17 @@ namespace STELLAREST_2D
         public override void Init(int templateID) => base.Init(templateID);
         public override void ShowMuzzle() => Managers.VFX.Muzzle(VFXMuzzle.Bow, this);
 
+        [field: SerializeField] public bool LockHandle { get; set; } = false;
         private void LateUpdate()
         {
-            float modifiedAngle = (Indicator.eulerAngles.z + _armBowFixedAngle);
-            if (LocalScale.x < 0)
-                modifiedAngle = 360f - modifiedAngle;
+            if (LockHandle == false)
+            {
+                float modifiedAngle = (Indicator.eulerAngles.z + _armBowFixedAngle);
+                if (LocalScale.x < 0)
+                    modifiedAngle = 360f - modifiedAngle;
 
-            BodyParts.ArmLeft.localRotation = Quaternion.Euler(0, 0, modifiedAngle);
+                BodyParts.ArmLeft.localRotation = Quaternion.Euler(0, 0, modifiedAngle);
+            }
         }
         
         protected override void UpdateSkill() => PlayerAnimController.RunSkill();

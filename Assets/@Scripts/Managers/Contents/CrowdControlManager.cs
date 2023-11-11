@@ -23,11 +23,15 @@ namespace STELLAREST_2D
             target.RequestCrowdControl(from);
         }
 
-        public IEnumerator CoStun(CreatureController target, SkillBase from)
+        public IEnumerator CoStun(CreatureController target, SkillBase from, bool isCalledFromContinuous = false)
         {
             float delta = 0f;
             float percent = 0f;
-            float duration = from.Data.CrowdControlDuration;
+            float duration = 0f;
+            if (isCalledFromContinuous == false)
+                duration = from.Data.CrowdControlDuration;
+            else
+                duration = from.Data.ContinuousCrowdControlDuration;
 
             GameObject goVFX = Managers.VFX.Environment(VFXEnv.Stun, target);
             target[CrowdControl.Stun] = true;
@@ -49,12 +53,21 @@ namespace STELLAREST_2D
             Managers.Resource.Destroy(goVFX);
         }
 
-        public IEnumerator CoSlow(CreatureController target, SkillBase from)
+        public IEnumerator CoSlow(CreatureController target, SkillBase from, bool isCalledFromContinuous = false)
         {
             float delta = 0f;
             float percent = 0f;
-            float duration = from.Data.CrowdControlDuration;
-            target.SpeedModifier *= from.Data.CrowdControlIntensity;
+            float duration = 0f;
+            if (isCalledFromContinuous == false)
+            {
+                duration = from.Data.CrowdControlDuration;
+                target.SpeedModifier *= from.Data.CrowdControlIntensity;
+            }
+            else
+            {
+                duration = from.Data.ContinuousCrowdControlDuration;
+                target.SpeedModifier *= from.Data.ContinuousCrowdControlIntensity;
+            }
 
             GameObject goVFX = Managers.VFX.Environment(VFXEnv.Slow, target);
             target[CrowdControl.Slow] = true;
@@ -74,7 +87,6 @@ namespace STELLAREST_2D
             }
             target[CrowdControl.Slow] = false;
             Managers.Resource.Destroy(goVFX);
-
             target.ResetSpeedModifier();
         }
 

@@ -451,6 +451,9 @@ namespace STELLAREST_2D
 
         public void RequestCrowdControl(SkillBase from)
         {
+            // TryContinuousCrowControl
+            // 연속된 CC기 이므로, 이전 CC기가 걸려야 다음 CC기가 걸릴지 여부를 판단
+
             CrowdControl ccType = from.Data.CrowdControlType;
             switch (ccType)
             {
@@ -484,7 +487,10 @@ namespace STELLAREST_2D
                 case CrowdControl.KnockBack:
                     {
                         if (this[ccType] == false)
+                        {
                             StartCoroutine(Managers.CrowdControl.CoKnockBack(this, from));
+                            TryContinuousCrowControl(this, from);
+                        }
                         else
                             Utils.Log("Already KnockBack,,,");
                     }
@@ -495,6 +501,7 @@ namespace STELLAREST_2D
                         if (this[ccType] == false)
                         {
                             StartCoroutine(Managers.CrowdControl.CoSilence(this, from));
+                            TryContinuousCrowControl(this, from);
                         }
                         else
                             Utils.Log("Already Silence,,,");
@@ -504,7 +511,10 @@ namespace STELLAREST_2D
                 case CrowdControl.Targeted:
                     {
                         if (this[ccType] == false)
+                        {
                             StartCoroutine(Managers.CrowdControl.CoTargeted(this, from));
+                            TryContinuousCrowControl(this, from);
+                        }
                         else
                             Utils.Log("Already Targeted,,,");
                     }
@@ -523,6 +533,42 @@ namespace STELLAREST_2D
                 case CrowdControl.None:
                     return;
 
+                case CrowdControl.Stun:
+                    {
+                        if (this[continuousCCType] == false)
+                        {
+                            Managers.VFX.ImpactHit(from.Data.VFX_ImpactHit_ForContinuousCrowdControl, target, from);
+                            StartCoroutine(Managers.CrowdControl.CoStun(this, from, true));
+                        }
+                        else
+                            Utils.Log("Already Stun,,,");
+                    }
+                    break;
+
+                case CrowdControl.Slow:
+                    {
+                        if (this[continuousCCType] == false)
+                        {
+                            Managers.VFX.ImpactHit(from.Data.VFX_ImpactHit_ForContinuousCrowdControl, target, from);
+                            StartCoroutine(Managers.CrowdControl.CoSlow(this, from, true));
+                        }
+                        else
+                            Utils.Log("Already Slow,,,");
+                    }
+                    break;
+
+                case CrowdControl.KnockBack:
+                    {
+                        if (this[continuousCCType] == false)
+                        {
+                            Managers.VFX.ImpactHit(from.Data.VFX_ImpactHit_ForContinuousCrowdControl, target, from);
+                            StartCoroutine(Managers.CrowdControl.CoKnockBack(this, from, true));
+                        }
+                        else
+                            Utils.Log("Already KnockBack,,,");
+                    }
+                    break;
+
                 case CrowdControl.Slience:
                     {
                         if (this[continuousCCType] == false)
@@ -535,14 +581,15 @@ namespace STELLAREST_2D
                     }
                     break;
 
-                case CrowdControl.KnockBack:
+                case CrowdControl.Targeted:
                     {
                         if (this[continuousCCType] == false)
                         {
-                            StartCoroutine(Managers.CrowdControl.CoKnockBack(this, from, true));
+                            Managers.VFX.ImpactHit(from.Data.VFX_ImpactHit_ForContinuousCrowdControl, target, from);
+                            StartCoroutine(Managers.CrowdControl.CoTargeted(this, from, true));
                         }
                         else
-                            Utils.Log("Already KnockBack,,,");
+                            Utils.Log("Already Targeted,,,");
                     }
                     break;
             }

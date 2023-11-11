@@ -22,6 +22,9 @@ namespace STELLAREST_2D
         private readonly int ENTER_NEXT_STATE = Animator.StringToHash("EnterNextState");
         public void EnterNextState() => AnimController.SetTrigger(ENTER_NEXT_STATE);
 
+        private readonly int CAN_ENTER_NEXT_STATE = Animator.StringToHash("CanEnterNextState");
+        public void SetCanEnterNextState(bool canEnter) => AnimController.SetBool(CAN_ENTER_NEXT_STATE, canEnter);
+
 
         public void SetAnimationSpeed(float speed)
         {

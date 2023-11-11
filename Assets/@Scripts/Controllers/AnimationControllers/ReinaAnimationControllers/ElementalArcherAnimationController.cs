@@ -23,6 +23,7 @@ namespace STELLAREST_2D
                 case Define.SkillAnimationType.EliteAction:
                     {
                         AnimController.StopPlayback();
+                        Utils.Log("PLAY ELITE ACTION !!");
                         AnimController.Play(UPPER_ELITE_SEQUENCE);
                     }
                     break;
