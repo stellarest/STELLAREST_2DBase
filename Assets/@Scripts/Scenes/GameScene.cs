@@ -63,7 +63,7 @@ namespace STELLAREST_2D
             Managers.VFX.Init();
             Managers.Collision.Init();
 
-            PlayerController player = this.SpawnPlayer(PlayerTemplateID.Reina_ElementalArcher);
+            PlayerController player = this.SpawnPlayer(PlayerTemplateID.Reina_ForestGuardian);
             //Managers.Game.OnGameStart += player.OnGameStartHandler;
             //Utils.Log("Add Event : Managers.Game.OnGameStart += player.OnGameStartHandler");
 

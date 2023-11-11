@@ -24,9 +24,13 @@ namespace STELLAREST_2D
             this.CoolDown = creatureData.CoolDown;
 
             this.Armor = creatureData.Armor;
+            this._armorOrigin = creatureData.Armor;
+
             this.Dodge = creatureData.Dodge;
 
             this.MovementSpeed = creatureData.MovementSpeed;
+            this._movementSpeedOrigin = creatureData.MovementSpeed;
+
             this.CollectRange = creatureData.CollectRange;
 
             this.Luck = creatureData.Luck;
@@ -69,19 +73,29 @@ namespace STELLAREST_2D
         public void AddArmorRatio(float ratio)
         {
             _armorOrigin = this.Armor;
-            this.Armor += ratio;
+            this.Armor = this.Armor + (this.Armor * ratio);
             if (this.Armor >= Define.MAX_ARMOR_RATE)
             {
                 this.Armor = Define.MAX_ARMOR_RATE;
                 return;
             }
         }
-
         public void ResetArmor() => this.Armor = _armorOrigin;
+
 
         [field: SerializeField] public float Dodge { get; private set; }
 
+
+        private float _movementSpeedOrigin = 0f;
         [field: SerializeField] public float MovementSpeed { get; set; }
+        public void AddMovementRatio(float ratio)
+        {
+            _movementSpeedOrigin = this.MovementSpeed;
+            this.MovementSpeed = this.MovementSpeed + (this.MovementSpeed * ratio);
+        }
+        public void ResetMovementSpeed() => this.MovementSpeed = _movementSpeedOrigin;
+
+        
         [field: SerializeField] public float CollectRange { get; private set; }
         [field: SerializeField] public float Luck { get; private set; } // -> Large Gem 드롭확률 증가, 희귀한 패시브 스킬(스탯) 등장 확률 증가
         [field: SerializeField] public float TotalExp { get; private set; }

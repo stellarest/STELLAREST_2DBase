@@ -8,7 +8,7 @@ namespace STELLAREST_2D
     {
         private readonly int UPPER_READY = Animator.StringToHash("ReadyBow");
         private readonly int UPPER_ATTACK = Animator.StringToHash("RangedShot");
-        private readonly int UPPER_ELITE_SEQUENCE = Animator.StringToHash("");
+        private readonly int UPPER_ELITE_SEQUENCE = Animator.StringToHash("UseForestBarrier");
 
         public override void Init(CreatureController owner) => base.Init(owner);
         public override void Ready() => AnimController.Play(UPPER_READY);
@@ -17,7 +17,6 @@ namespace STELLAREST_2D
             switch (this.Owner.SkillAnimationType)
             {
                 case Define.SkillAnimationType.MasteryAction:
-                    Utils.Log("PLAY ANIM,,,");
                     AnimController.Play(UPPER_ATTACK);
                     break;
 

@@ -61,6 +61,7 @@ namespace STELLAREST_2D
         public const float ORIGIN_SPEED_MODIFIER = 1f;
         public virtual float SpeedModifier { get; set; } = 1f;
         public virtual void ResetSpeedModifier() => SpeedModifier = ORIGIN_SPEED_MODIFIER;
+        
         private const int FIRST_CROWD_CONTROL_ID = 300100;
         [SerializeField] private CrowdControlState[] _ccStates = null;
         public virtual bool this[CrowdControl crowdControlType]
@@ -316,9 +317,12 @@ namespace STELLAREST_2D
             if (this.IsValid() == false)
                 return;
 
-            if (this.IsInvincible)
+            if (this.IsInvincible || this.SkillBook.IsOnBarrier)
             {
-                Managers.VFX.ImpactHit(VFXImpact.Incinvible, this, from); // --> 메모리 문제 발생시, 크리티컬 쪽에서 스폰
+                Managers.VFX.ImpactHit(VFXImpact.Incinvible, this, from);
+                if (this.SkillBook.IsOnBarrier)
+                    this.SkillBook.HitBarrier();
+                
                 return;
             }
 
@@ -339,7 +343,6 @@ namespace STELLAREST_2D
                 if (this.Stat.ShieldHp < 0f)
                 {
                     this.SkillBook.OffSheild();
-                    //this.SkillBook.Deactivate(SkillTemplate.Shield);
                 }
 
                 this.SkillBook.HitShield();

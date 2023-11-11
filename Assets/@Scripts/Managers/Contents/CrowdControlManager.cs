@@ -76,6 +76,7 @@ namespace STELLAREST_2D
                 if (target.IsDeadState)
                 {
                     target[CrowdControl.Slow] = false;
+                    target.ResetSpeedModifier();
                     Managers.Resource.Destroy(goVFX);
                     yield break;
                 }

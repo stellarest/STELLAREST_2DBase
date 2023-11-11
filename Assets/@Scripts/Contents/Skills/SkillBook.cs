@@ -248,6 +248,7 @@ namespace STELLAREST_2D
 
         public Shield CachedShield { get; private set; } = null;
         public SecondWind CachedSecondWind { get; private set; } = null;
+        public ForestBarrier CachedForestBarrier { get; private set; } = null;
 
         public void LateInit()
         {
@@ -292,6 +293,8 @@ namespace STELLAREST_2D
                                         this.CachedShield = skill.GetComponent<Shield>();
                                     else if (skill.Data.OriginalTemplate == SkillTemplate.SecondWind_Elite_Solo)
                                         this.CachedSecondWind = skill.GetComponent<SecondWind>();
+                                    else if (skill.Data.OriginalTemplate == SkillTemplate.ForestBarrier_Elite_Solo)
+                                        this.CachedForestBarrier = skill.GetComponent<ForestBarrier>();
 
                                     this.EliteActionTemplate = skill.Data.OriginalTemplate;
                                 }
@@ -410,8 +413,10 @@ namespace STELLAREST_2D
 
         public bool IsOnShield => (this.CachedShield != null) ? this.CachedShield.IsOnShield : false;
         public void HitShield() => this.CachedShield.Hit();
-        //public void OffSheild() => this.CachedShield.OffShield();
         public void OffSheild() => this.CachedShield.IsOnShield = false;
+        
+        public bool IsOnBarrier => (this.CachedForestBarrier != null) ? this.CachedForestBarrier.IsOnBarrier : false;
+        public void HitBarrier() => this.CachedForestBarrier.BarrierCount -= 1;
 
         public bool IsReadySecondWind => (this.CachedSecondWind != null) ? this.CachedSecondWind.IsReady : false;
         public void OnSecondWind() => this.CachedSecondWind.On();
