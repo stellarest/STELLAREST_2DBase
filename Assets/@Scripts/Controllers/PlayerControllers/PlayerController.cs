@@ -228,10 +228,8 @@ namespace STELLAREST_2D
             MoveByJoystick();
             CollectGems();
 
-            foreach (var mon in Utils.GetMonstersInRange(this, 11f))
-            {
-                Debug.DrawLine(this.Center.position, mon.Center.position, Color.magenta, -1f);
-            }
+            // foreach (var mon in Utils.GetMonstersInRange(this, 11f))
+            //     Debug.DrawLine(this.Center.position, mon.Center.position, Color.magenta, -1f);
         }
 
         private IEnumerator CoPercentageTemp()

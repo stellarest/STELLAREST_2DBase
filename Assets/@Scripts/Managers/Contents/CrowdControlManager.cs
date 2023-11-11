@@ -149,6 +149,8 @@ namespace STELLAREST_2D
 
         public IEnumerator CoTargeted(CreatureController target, SkillBase from, bool isCalledFromContinuous = false)
         {
+            Vector3 initScale = Vector3.one;
+            Quaternion initRot = Quaternion.identity;
             GameObject goVFX = Managers.VFX.Environment(VFXEnv.Targeted, target);
             goVFX.transform.DORotate(new Vector3(0f, 0f, 360f), 1.5f, RotateMode.FastBeyond360).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo);
             goVFX.transform.DOScale(Vector3.one * 2.5f, 1f).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo);
@@ -159,6 +161,9 @@ namespace STELLAREST_2D
                 if (target.IsDeadState)
                 {
                     target[CrowdControl.Targeted] = false;
+                    goVFX.transform.localScale = initScale;
+                    goVFX.transform.localRotation = initRot;
+                    goVFX.transform.DOKill();
                     Managers.Resource.Destroy(goVFX);
                     goVFX = null;
                     return true;
@@ -171,6 +176,8 @@ namespace STELLAREST_2D
             if (goVFX != null)
             {
                 target[CrowdControl.Targeted] = false;
+                goVFX.transform.localScale = initScale;
+                goVFX.transform.localRotation = initRot;
                 goVFX.transform.DOKill();
                 Managers.Resource.Destroy(goVFX);
             }
