@@ -19,7 +19,7 @@ namespace STELLAREST_2D
             (표식이 생성된 타겟은 100%의 확률로 크리티컬 적용)
         lv.2 : 6초 동안 화살의 데미지 60% 증가. 60%의 확률로 2개의 가까운 타겟에게 표식 생성.
             (표식이 생성된 타겟은 100%의 확률로 크리티컬 적용)
-        lv.2 : 9초 동안 화살의 데미지 100% 증가. 100%의 확률로 3개의 가까운 타겟에게 표식 생성.
+        lv.3 : 8초 동안 화살의 데미지 100% 증가. 100%의 확률로 3개의 가까운 타겟에게 표식 생성.
             (표식이 생성된 타겟은 100%의 확률로 크리티컬 적용)
     */
 
@@ -45,6 +45,7 @@ namespace STELLAREST_2D
             WaitForSeconds wait = new WaitForSeconds(this.Data.CoolTime);
             while (true)
             {
+                IsStopped = false;
                 DoSkillJob();
                 yield return wait;
             }
@@ -55,10 +56,10 @@ namespace STELLAREST_2D
             this.Owner.SkillBook.Deactivate(SkillTemplate.ArrowMasterMastery);
             this.Owner.ReserveSkillAnimationType(this.Data.AnimationType);
             Owner.CreatureState = Define.CreatureState.Skill;
-            StartCoroutine(CoTargeting());
+            StartCoroutine(CoConcentration());
         }
 
-        private IEnumerator CoTargeting()
+        private IEnumerator CoConcentration()
         {
             EnableParticles(_bursts, true);
             ApplyTarget();
@@ -96,8 +97,9 @@ namespace STELLAREST_2D
 
             EnableParticles(_bursts, false);
             EnableParticles(_buffs, false);
+            IsStopped = true;
 
-            this.Owner.SkillBook.Deactivate(SkillTemplate.Concentration_Elite_Solo);
+            //this.Owner.SkillBook.Deactivate(SkillTemplate.Concentration_Elite_Solo);
         }
 
         private const float FIXED_SEARCH_RANGE_FROM_OWNER = 11f;
@@ -153,23 +155,5 @@ namespace STELLAREST_2D
 
             return targets;
         }
-
-        private void EnableParticles(ParticleSystem[] particles, bool isOnEnable)
-        {
-            for (int i = 0; i < particles.Length; ++i)
-            {
-                if (isOnEnable)
-                {
-                    particles[i].gameObject.SetActive(isOnEnable);
-                    particles[i].Play();
-                }
-                else
-                    particles[i].gameObject.SetActive(isOnEnable);
-            }
-        }
     }
 }
-
-
-// for (int i = 0; i < mcList.Count; ++i)
-//     Managers.CrowdControl.Apply(mcList[i].GetComponent<CreatureController>(), this);

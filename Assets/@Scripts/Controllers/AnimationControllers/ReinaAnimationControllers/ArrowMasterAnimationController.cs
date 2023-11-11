@@ -11,7 +11,7 @@ namespace STELLAREST_2D
     {
         private readonly int UPPER_READY = Animator.StringToHash("ReadyBow");
         private readonly int UPPER_ATTACK = Animator.StringToHash("RangedShot");
-        private readonly int UPPER_ELITE_ACTION = Animator.StringToHash("UseTargeting");
+        private readonly int UPPER_ELITE_ACTION = Animator.StringToHash("UseConcentration");
 
         public override void Init(CreatureController owner) => base.Init(owner);
         public override void Ready() => AnimController.Play(UPPER_READY);

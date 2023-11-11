@@ -78,25 +78,6 @@ namespace STELLAREST_2D
             }
         }
 
-        // private IEnumerator CoRecoveryShield_PREV()
-        // {
-        //     float delta = 0f;
-        //     while (this.IsOnShield)
-        //     {
-        //         delta += Time.deltaTime;
-        //         if (delta >= FIXED_RECOVERY_INTERVAL)
-        //         {
-        //             this.Owner.Stat.ShieldHp += (_shieldMaxHp * FIXED_RECOVERY_RATIO);
-        //             if (this.Owner.Stat.ShieldHp >= _shieldMaxHp)
-        //                 this.Owner.Stat.ShieldHp = _shieldMaxHp;
-
-        //             delta = 0f;
-        //         }
-
-        //         yield return null;
-        //     }
-        // }
-
         public override void InitOrigin(CreatureController owner, SkillData data)
         {
             base.InitOrigin(owner, data);
@@ -239,3 +220,22 @@ namespace STELLAREST_2D
         //     this.Owner.SkillBook.Activate(SkillTemplate.PaladinMastery);
         // }
 */
+
+       // private IEnumerator CoRecoveryShield_PREV()
+        // {
+        //     float delta = 0f;
+        //     while (this.IsOnShield)
+        //     {
+        //         delta += Time.deltaTime;
+        //         if (delta >= FIXED_RECOVERY_INTERVAL)
+        //         {
+        //             this.Owner.Stat.ShieldHp += (_shieldMaxHp * FIXED_RECOVERY_RATIO);
+        //             if (this.Owner.Stat.ShieldHp >= _shieldMaxHp)
+        //                 this.Owner.Stat.ShieldHp = _shieldMaxHp;
+
+        //             delta = 0f;
+        //         }
+
+        //         yield return null;
+        //     }
+        // }

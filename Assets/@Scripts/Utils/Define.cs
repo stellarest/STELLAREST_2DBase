@@ -130,8 +130,8 @@ namespace STELLAREST_2D
 
                     // +++ ELEMENTAL ARCHER +++
                     ElementalArcherMastery = 200200,
-                    ElementalSpikes_Elite_Solo = 200203,
-                    LightningCharge_Ultimate_Solo = 200204,
+                    ElementalShock_Elite_Solo = 200203,
+                    ElementalCharge_Ultimate_Solo = 200204,
 
 
                     // +++ FOREST GUARDIAN +++

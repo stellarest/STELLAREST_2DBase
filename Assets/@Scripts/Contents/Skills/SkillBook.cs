@@ -281,7 +281,7 @@ namespace STELLAREST_2D
                             case SkillTemplate.PhantomSoul_Elite_Solo:
 
                             case SkillTemplate.Concentration_Elite_Solo:
-                            case SkillTemplate.ElementalSpikes_Elite_Solo:
+                            case SkillTemplate.ElementalShock_Elite_Solo:
                             case SkillTemplate.ForestBarrier_Elite_Solo:
 
                             case SkillTemplate.ShadowDagger_Elite_Solo:
@@ -303,7 +303,7 @@ namespace STELLAREST_2D
                             case SkillTemplate.Metamorphosis_Ultimate_Solo:
 
                             case SkillTemplate.ArrowShower_Ultimate_Solo:
-                            case SkillTemplate.LightningCharge_Ultimate_Solo:
+                            case SkillTemplate.ElementalCharge_Ultimate_Solo:
                             case SkillTemplate.SummonBlackPanther_Ultimate_Solo:
 
                             case SkillTemplate.CounterStrike_Ultimate_Solo:

@@ -112,6 +112,20 @@ namespace STELLAREST_2D
         public virtual void OnActiveEliteActionHandler() { }
         public virtual void OnActiveUltimateActionHandler() { }
 
+        public void EnableParticles(ParticleSystem[] particles, bool isOnEnable)
+        {
+            for (int i = 0; i < particles.Length; ++i)
+            {
+                if (isOnEnable)
+                {
+                    particles[i].gameObject.SetActive(isOnEnable);
+                    particles[i].Play();
+                }
+                else
+                    particles[i].gameObject.SetActive(isOnEnable);
+            }
+        }
+
         public override void Deactivate()
         {
             if (_coSkillActivate != null)
