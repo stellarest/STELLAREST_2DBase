@@ -19,7 +19,9 @@ namespace STELLAREST_2D
                 emission.enabled = false;
             }
 
-            GetComponent<Rigidbody2D>().simulated = false;
+            if (GetComponent<Rigidbody2D>() != null)
+                GetComponent<Rigidbody2D>().simulated = false;
+            
             GetComponent<Collider2D>().enabled = false;
             GetComponent<SortingGroup>().enabled = false;
         }
@@ -28,11 +30,16 @@ namespace STELLAREST_2D
         {
             if (this.IsFirstPooling)
             {
-                _particles = GetComponents<ParticleSystem>();
-                _particleSystemRenderers = GetComponents<ParticleSystemRenderer>();
+                // _particles = GetComponents<ParticleSystem>();
+                // _particleSystemRenderers = GetComponents<ParticleSystemRenderer>();
+                _particles = GetComponentsInChildren<ParticleSystem>();
+                _particleSystemRenderers = GetComponentsInChildren<ParticleSystemRenderer>();
 
-                RigidBody = GetComponent<Rigidbody2D>();
-                RigidBody.simulated = true;
+                if (GetComponent<Rigidbody2D>() != null)
+                {
+                    RigidBody = GetComponent<Rigidbody2D>();
+                    RigidBody.simulated = true;
+                }
 
                 HitCollider = GetComponent<Collider2D>();
                 HitCollider.isTrigger = true;

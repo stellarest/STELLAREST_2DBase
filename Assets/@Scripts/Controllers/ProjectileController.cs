@@ -199,6 +199,7 @@ namespace STELLAREST_2D
                     break;
 
                 case SkillTemplate.AssassinMastery:
+                case SkillTemplate.StabPoisonDagger_Elite_Solo:
                     StartDestroy(_lifeTime);
                     OnSetParticleInfo?.Invoke(_indicatorAngle, _initialLookAtDir, _continuousAngle, _continuousFlipX, _continuousFlipY);
                     _coProjectile = StartCoroutine(CoMeleeSwing());
@@ -228,7 +229,7 @@ namespace STELLAREST_2D
                         _coProjectile = StartCoroutine(CoBoomerangUltimate());
                     break;
 
-                case SkillTemplate.PhantomSoul_Elite_Child_Solo:
+                case SkillTemplate.PhantomSoul_Elite_Solo:
                     StartDestroy(_lifeTime);
                     _coProjectile = StartCoroutine(CoPhantomSoulChild());
                     break;
@@ -575,7 +576,7 @@ namespace STELLAREST_2D
                     }
                     break;
 
-                case SkillTemplate.PhantomSoul_Elite_Child_Solo:
+                case SkillTemplate.PhantomSoul_Elite_Solo:
                     Managers.Object.Despawn(this);
                     break;
             }

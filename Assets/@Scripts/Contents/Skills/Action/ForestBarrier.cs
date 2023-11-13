@@ -15,10 +15,14 @@ namespace STELLAREST_2D
 
         lv.1 : 매 웨이브마다 숲의 보호막을 1회 활성화한다. 숲의 보호막은 2회의 공격을 보호해준다.
                숲의 보호막이 활성화되어 있는 동안 이동 속도가 5% 증가한다.
+               (+ 숲의 보호막이 비활성화 될 때, 맵 전체에 있는 모든 적에게 2초간 침묵시킨다.)
         lv.2 : 매 웨이브마다 숲의 보호막을 1회 활성화한다. 숲의 보호막은 3회의 공격을 보호해준다.
                숲의 보호막이 활성화되어 있는 동안 이동 속도가 10% 증가한다.
+               (+ 숲의 보호막이 비활성화 될 때, 맵 전체에 있는 모든 적에게 3초간 침묵시킨다.)
         lv.3 : 매 웨이브마다 숲의 보호막을 1회 활성화한다. 숲의 보호막은 5회의 공격을 보호해준다.
                숲의 보호막이 활성화되어 있는 동안 이동 속도가 20% 증가한다.
+               (+ 숲의 보호막이 비활성화 될 때, 맵 전체에 있는 모든 적에게 5초간 침묵시킨다.)
+
     */
 
     public class ForestBarrier : ActionSkill
@@ -95,10 +99,7 @@ namespace STELLAREST_2D
             Owner.CreatureState = Define.CreatureState.Skill;
             this.IsOnBarrier = true;
 
-            Utils.Log("11");
             yield return new WaitForSeconds(FIXED_WAIT_TIME_AFTER_SKILL);
-            Utils.Log("22");
-
             _ownerController.LockHandle = false;
             _ownerController.PlayerAnimController.SetCanEnterNextState(true);
             this.Owner.SkillBook.Activate(SkillTemplate.ForestGuardianMastery);

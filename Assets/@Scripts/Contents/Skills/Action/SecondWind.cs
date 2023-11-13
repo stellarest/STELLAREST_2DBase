@@ -43,22 +43,15 @@ namespace STELLAREST_2D
             _readyLoop.gameObject.SetActive(false);
 
             _onGroup = transform.GetChild(1).GetComponentsInChildren<ParticleSystem>(includeInactive: true);
-            // for (int i = 0; i < _onGroup.Length; ++i)
-            //     _onGroup[i].gameObject.SetActive(false);
             EnableParticles(_onGroup, false);
 
             _burstGroup = transform.GetChild(2).GetComponentsInChildren<ParticleSystem>(includeInactive: true);
             transform.GetChild(2).GetComponent<SecondWindChild>().Init(owner, data);
-            
-            // for (int i = 0; i < _burstGroup.Length; ++i)
-            //     _burstGroup[i].gameObject.SetActive(false);
             EnableParticles(_burstGroup, false);
 
             _lastBuffs = transform.GetChild(3).GetComponentsInChildren<ParticleSystem>(includeInactive: true);
             _lastBuffs[0].transform.localScale = Vector3.one * 1.5f;
             _lastBuffs[0].transform.localPosition = Vector3.up * 0.7f;
-            // for (int i = 0; i < _lastBuffs.Length; ++i)
-            //     _lastBuffs[i].gameObject.SetActive(false);
             EnableParticles(_lastBuffs, false);
         }
 
@@ -84,11 +77,6 @@ namespace STELLAREST_2D
             this.Owner.ReserveSkillAnimationType(this.Data.AnimationType);
             Owner.CreatureState = Define.CreatureState.Skill;
             
-            // for (int i = 0; i < _onGroup.Length; ++i)
-            // {
-            //     _onGroup[i].gameObject.SetActive(true);
-            //     _onGroup[i].Play();
-            // }
             EnableParticles(_onGroup, true);
             StartCoroutine(CoOnSecondWind());
         }
@@ -126,15 +114,7 @@ namespace STELLAREST_2D
         public void Burst()
         {
             _readyLoop.gameObject.SetActive(false);
-            // for (int i = 0; i < _onGroup.Length; ++i)
-            //     _onGroup[i].gameObject.SetActive(false);
             EnableParticles(_onGroup, false);
-
-            // for (int i = 0; i < _burstGroup.Length; ++i)
-            // {
-            //     _burstGroup[i].gameObject.SetActive(true);
-            //     _burstGroup[i].Play();
-            // }
             EnableParticles(_burstGroup, true);
 
             this.Owner.IsInvincible = false;
@@ -153,21 +133,12 @@ namespace STELLAREST_2D
             yield return new WaitForSeconds(1f);
             anim.Ready();
 
-            //this.Owner.Stat.AddArmorRatio(Define.MAX_ARMOR_RATE);
-            // for (int i = 0; i < _lastBuffs.Length; ++i)
-            // {
-            //     _lastBuffs[i].gameObject.SetActive(true);
-            //     _lastBuffs[i].Play();
-            // }
             EnableParticles(_lastBuffs, true);
-
             this.Owner.ReserveSkillAnimationType(Define.SkillAnimationType.MasteryAction);
             this.Owner.CreatureState = Define.CreatureState.Skill;
             this.Owner.SkillBook.Activate(SkillTemplate.KnightMastery);
 
             yield return new WaitForSeconds(FIXED_LAST_BUFF_TIME);
-            // for (int i = 0; i < _lastBuffs.Length; ++i)
-            //     _lastBuffs[i].gameObject.SetActive(false);
             EnableParticles(_lastBuffs, false);
 
             this.Owner.Stat.ResetArmor();

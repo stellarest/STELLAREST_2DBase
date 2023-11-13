@@ -30,7 +30,7 @@ namespace STELLAREST_2D
         public enum SortingOrder { Map = 100, Player = 200, Item = 209, Monster = 210, Skill = 230, EnvEffect = 255 }
         public enum StageType { Normal, MiddleBoss, Boss, }
         // public enum CCStatus { None, Stun, KnockBack, Poisoned, Frozen, Cursed, Confused, Silent, Max }
-        public enum SkillType { None = -1, Default = 1, Action }
+        public enum SkillType { None = -1, Action = 1, Default = 2 }
         public enum CreatureState { Idle = 0, Walk = 1, Run = 2, Skill = 3, Invincible = 4, Dead = 999 }
         //public enum InGameGrade { Normal = 1, Elite = 2, Ultimate = 3 }
         public enum CollisionLayers { Default = 0, PlayerBody = 6, PlayerAttack = 7, MonsterBody = 8, MonsterAttack = 9 }
@@ -40,11 +40,13 @@ namespace STELLAREST_2D
         public enum MonsterFace { Normal = 0, Angry = 1, Death = 2 }
         public enum HitFromType { None = -1, ThrowingStar = 1, LazerBolt = 2, All = 9 }
         //public enum ImpactHits { None, Leaves, CriticalHit, }
-        public enum MaterialType { None = -1, Hit = 1, Hologram = 2, FadeOut = 3, StrongTintWhite }
+        public enum MaterialType { None = -1, Hit = 1, Hologram = 2, FadeOut = 3 }
         public enum FaceExpressionType { Default = 1, Battle, Dead, }
 
         public enum GemSize { Normal = 1, Large = 2 }
         public enum SkillAnimationType { None = -1, MasteryAction = 1, EliteAction = 2, UltimateAction = 3 }
+
+        public enum StrongTintColor { White, Red, Green }
 
         public static class TemplateIDs
         {
@@ -106,54 +108,56 @@ namespace STELLAREST_2D
                     // +++ PALADIN +++
                     PaladinMastery = 100100,
                     Shield_Elite_Solo = 100103,
-                    JudgementOfHeaven_Ultimate_Solo = 100104,
+                    JudgementOfHeaven_Ultimate_Solo = 100106,
 
 
                     // +++ KNIGHT +++
                     KnightMastery = 100200,
                     SecondWind_Elite_Solo = 100203,
-                    StormBlade_Ultimate_Solo = 100204,
+                    StormBlade_Ultimate_Solo = 100206,
 
 
                     // +++ PHANTOM KNIGHT +++
                     PhantomKnightMastery = 100300,
-                    PhantomSoul_Elite_Solo = 100303,
-                    PhantomSoul_Elite_Child_Solo = 100304,
-                    Metamorphosis_Ultimate_Solo = 100305,
+                    SummonPhantomSoul_Elite_Solo = 100303,
+                    PhantomSoul_Elite_Solo = 100306,
+                    Metamorphosis_Ultimate_Solo = 100309,
 
 
                     // +++ ARROW MASTERY +++
                     ArrowMasterMastery = 200100,
                     Concentration_Elite_Solo = 200103,
-                    ArrowShower_Ultimate_Solo = 200104,
+                    ArrowShower_Ultimate_Solo = 200106,
 
 
                     // +++ ELEMENTAL ARCHER +++
                     ElementalArcherMastery = 200200,
                     ElementalShock_Elite_Solo = 200203,
-                    ElementalCharge_Ultimate_Solo = 200204,
+                    ElementalCharge_Ultimate_Solo = 200206,
 
 
                     // +++ FOREST GUARDIAN +++
                     ForestGuardianMastery = 200300,
                     ForestBarrier_Elite_Solo = 200303,
-                    SummonBlackPanther_Ultimate_Solo = 200304,
+                    SummonBlackPanther_Ultimate_Solo = 200306,
 
                     
                     // +++ ASSASSIN +++
                     AssassinMastery = 300100,
-                    ShadowDagger_Elite_Solo = 300103,
-                    CounterStrike_Ultimate_Solo = 300104,
+                    PoisonDagger_Elite_Solo = 300103,
+                    // SkillGroupDictionary, DictionaryGroupMaxCount(_numberGroups)으로 인해서 현재는 3씩 증가시켜야함 (임시)
+                    StabPoisonDagger_Elite_Solo = 300106, 
+                    CounterStrike_Ultimate_Solo = 300109,
 
                     // +++ NINJA +++
                     NinjaMastery = 300200,
                     Cloaking_Elite_Solo = 300203,
-                    CloneTechnique_Ultimate_Solo = 300204,
+                    CloneTechnique_Ultimate_Solo = 300206,
 
                     // +++ THIEF +++
                     ThiefMastery = 300300,
                     SmokeBomb_Elite_Solo = 300303,
-                    LetsSweep_Ultimate_Solo = 300304,
+                    LetsSweep_Ultimate_Solo = 300306,
 
                     // +++ DEFAULT +++
                     ThrowingStar = 900100,
@@ -410,7 +414,10 @@ namespace STELLAREST_2D
                 public const string MAT_FADE = "Fade.mat";
                 public const string MAT_GLITCH = "Glitch.mat";
                 public const string MAT_HOLOGRAM = "Hologram.mat";
-                public const string MAT_STRONG_TINT_WHITE = "StrongTintWhite.mat";
+                public const string MAT_STRONG_TINT = "StrongTint.mat";
+                public const string MAT_INNER_OUTLINE = "InnerOutline.mat";
+                public const string MAT_SPLIT_TONING = "SplitToning.mat";
+
             }
 
             public static class Data

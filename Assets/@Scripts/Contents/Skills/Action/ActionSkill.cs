@@ -126,6 +126,21 @@ namespace STELLAREST_2D
             }
         }
 
+        public bool WaitUntilEndOfPlayingParticles(ParticleSystem[] _particles)
+        {
+            bool isAnyPlaying = false;
+            for (int i = 0; i < _particles.Length; ++i)
+            {
+                if (_particles[i].isPlaying)
+                {
+                    isAnyPlaying = true;
+                    break;
+                }
+            }
+
+            return (isAnyPlaying == false) ? true : false;
+        }
+
         public override void Deactivate()
         {
             if (_coSkillActivate != null)

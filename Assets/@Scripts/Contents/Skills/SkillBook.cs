@@ -92,13 +92,14 @@ namespace STELLAREST_2D
             {
                 if (Members[i].IsLearned == false)
                 {
-                    if (i == 0) // 있어야하는게 맞음
+                    if (i == 0) // FIRST SKILL
                     {
                         SkillBase unlockSkill = Members[0].Unlock();
                         if (unlockSkill.Data.HasEventHandler && unlockSkill.Data.SkillType == Define.SkillType.Action)
                         {
                             if (unlockSkill.Data.OriginalTemplate == Book.MasteryActionTemplate)
                             {
+                                unlockSkill.Owner.AnimCallback.OnActiveMasteryAction -= unlockSkill.GetComponent<ActionSkill>().OnActiveMasteryActionHandler;
                                 unlockSkill.Owner.AnimCallback.OnActiveMasteryAction += unlockSkill.GetComponent<ActionSkill>().OnActiveMasteryActionHandler;
                                 Utils.Log($"Add Event : AnimCallback.OnActiveMasteryAction += {unlockSkill.Data.Name}");
                             }
@@ -106,6 +107,12 @@ namespace STELLAREST_2D
                             {
                                 unlockSkill.Owner.AnimCallback.OnActiveEliteAction += unlockSkill.GetComponent<ActionSkill>().OnActiveEliteActionHandler;
                                 Utils.Log($"Add Event : AnimCallback.OnActiveEliteAction += {unlockSkill.Data.Name}");
+                            }
+                            else if (unlockSkill.Data.OriginalTemplate == SkillTemplate.StabPoisonDagger_Elite_Solo)
+                            {
+                                unlockSkill.Owner.AnimCallback.OnActiveMasteryAction -= unlockSkill.GetComponent<ActionSkill>().OnActiveMasteryActionHandler;
+                                unlockSkill.Owner.AnimCallback.OnActiveMasteryAction += unlockSkill.GetComponent<ActionSkill>().OnActiveMasteryActionHandler;
+                                Utils.Log($"Add Event : AnimCallback.OnActiveMasteryAction += {unlockSkill.Data.Name}");
                             }
                         }
 
@@ -250,6 +257,14 @@ namespace STELLAREST_2D
         public SecondWind CachedSecondWind { get; private set; } = null;
         public ForestBarrier CachedForestBarrier { get; private set; } = null;
 
+        public void CheckSkillGroupsDict_Temp()
+        {
+            foreach (KeyValuePair<int, SkillGroup> group in SkillGroupsDict)
+            {
+                Utils.Log("KEY : " + group.Key);
+            }
+        }
+
         public void LateInit()
         {
             //this.SetFirstSkill();
@@ -285,7 +300,7 @@ namespace STELLAREST_2D
                             case SkillTemplate.ElementalShock_Elite_Solo:
                             case SkillTemplate.ForestBarrier_Elite_Solo:
 
-                            case SkillTemplate.ShadowDagger_Elite_Solo:
+                            case SkillTemplate.PoisonDagger_Elite_Solo:
                             case SkillTemplate.Cloaking_Elite_Solo:
                             case SkillTemplate.SmokeBomb_Elite_Solo:
                                 {

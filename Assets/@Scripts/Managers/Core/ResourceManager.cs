@@ -34,7 +34,7 @@ namespace STELLAREST_2D
             GameObject prefab = Load<GameObject>($"{key}");
             if (prefab == null)
             {
-                Utils.LogStrong(nameof(ResourceManager), nameof(Instantiate), $"Failed to load prefab : {key}");
+                Utils.LogCritical(nameof(ResourceManager), nameof(Instantiate), $"Failed to load prefab : {key}");
                 return null;
             }
 

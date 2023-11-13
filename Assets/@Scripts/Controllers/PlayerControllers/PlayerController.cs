@@ -9,32 +9,46 @@ using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
 using System.Diagnostics;
 using Debug = UnityEngine.Debug;
+using HeroEditor.Common.Enums;
+using UnityEngine.SearchService;
 
 namespace STELLAREST_2D
 {
-    public class PlayerBody
+    [System.Serializable]
+    public class PlayerBodyParts
     {
-        public PlayerBody(Transform hair, Transform armLeft, Transform armRight, Transform leftHandMeleeWeapon,
-                        Transform legLeft, Transform legRight)
+        public PlayerBodyParts(Transform hair, Transform armLeft, Transform armRight, Transform handLeft, Transform handRight, 
+                    Transform legLeft, Transform legRight)
         {
             this.Hair = hair;
             this.ArmLeft = armLeft;
             this.ArmRight = armRight;
-            this.LeftHandMeleeWeapon = leftHandMeleeWeapon;
+
+            this.HandLeft = handLeft;
+            this.HandRight = handRight;
+
+            //this.LeftHandMeleeWeapon = leftHandMeleeWeapon;
             this.LegLeft = legLeft;
             this.LegRight = legRight;
 
-            if (Hair == null || ArmLeft == null || ArmRight == null || LeftHandMeleeWeapon == null ||
+            if (Hair == null || ArmLeft == null || ArmRight == null || HandLeft == null || HandRight == null ||
                 LegLeft == null || LegRight == null)
-                Utils.LogCritical(nameof(PlayerController), nameof(PlayerBody));
+                Utils.LogCritical(nameof(PlayerController), nameof(PlayerBodyParts));
         }
 
-        public Transform Hair { get; private set; } = null;
-        public Transform ArmLeft { get; private set; } = null;
-        public Transform ArmRight { get; private set; } = null;
-        public Transform LeftHandMeleeWeapon { get; private set; } = null;
-        public Transform LegLeft { get; private set; } = null;
-        public Transform LegRight { get; private set; } = null;
+        [field: SerializeField] public Transform Hair { get; private set; } = null;
+        [field: SerializeField] public Transform ArmLeft { get; private set; } = null;
+        [field: SerializeField] public Transform ArmRight { get; private set; } = null;
+
+        [field: SerializeField] public Transform HandLeft { get; private set; } = null;
+        [field: SerializeField] public Transform HandRight { get; private set; } = null;
+
+        [field: SerializeField] public Transform LegLeft { get; private set; } = null;
+        [field: SerializeField] public Transform LegRight { get; private set; } = null;
+
+
+        [field: SerializeField] public Transform HandLeft_MeleeWeapon { get; set; } = null;
+        [field: SerializeField] public Transform HandRight_MeleeWeapon { get; set; } = null;
     }
 
     public class PlayerController : CreatureController
@@ -44,7 +58,7 @@ namespace STELLAREST_2D
 
         protected float _armBowFixedAngle = 110f; // REINA에서 뺴야함
         private float _armRifleFixedAngle = 146f; // CHRISTIAN에서 빼야함
-        public PlayerBody BodyParts { get; protected set; } = null;
+        [field: SerializeField] public PlayerBodyParts BodyParts { get; protected set; } = null;
         public PlayerAnimationController PlayerAnimController { get; private set; } = null;
 
         public override bool this[CrowdControl crowdControlType] 
@@ -122,16 +136,27 @@ namespace STELLAREST_2D
         protected override void InitChildObject()
         {
             base.InitChildObject();
-            Transform hair = Utils.FindChild<Transform>(gameObject, "Hair", true);
-            Transform armL = Utils.FindChild<Transform>(gameObject, "ArmL", true);
-            Transform armR = Utils.FindChild<Transform>(gameObject, "ArmR[1]", true);
-            Transform leftHandMeleeWeapon = Utils.FindChild<Transform>(armL.gameObject, "MeleeWeapon", true);
-            Transform legL = Utils.FindChild<Transform>(gameObject, "Leg[L]", true);
-            Transform legR = Utils.FindChild<Transform>(gameObject, "Leg[R]", true);
-            BodyParts = new PlayerBody(hair: hair, armLeft: armL, armRight: armR, leftHandMeleeWeapon: leftHandMeleeWeapon,
-                                    legLeft: legL, legRight: legR);
 
+            this.BodyParts = new PlayerBodyParts(
+                hair: Utils.PlayerBodyPartsHelper.Find(this.gameObject, Utils.PlayerBodyPartsHelper.HAIR),
+                armLeft: Utils.PlayerBodyPartsHelper.Find(this.gameObject, Utils.PlayerBodyPartsHelper.ARM_LEFT),
+                armRight: Utils.PlayerBodyPartsHelper.Find(this.gameObject, Utils.PlayerBodyPartsHelper.ARM_RIGHT),
+                handLeft: Utils.PlayerBodyPartsHelper.Find(this.gameObject, Utils.PlayerBodyPartsHelper.HAND_LEFT),
+                handRight: Utils.PlayerBodyPartsHelper.Find(this.gameObject, Utils.PlayerBodyPartsHelper.HAND_RIGHT),
+                legLeft: Utils.PlayerBodyPartsHelper.Find(this.gameObject, Utils.PlayerBodyPartsHelper.LEG_LEFT),
+                legRight: Utils.PlayerBodyPartsHelper.Find(this.gameObject, Utils.PlayerBodyPartsHelper.LEG_RIGHT)
+            );
+
+            this.BodyParts.HandLeft_MeleeWeapon = Utils.PlayerBodyPartsHelper.Find(this.BodyParts.HandLeft.gameObject, Utils.PlayerBodyPartsHelper.MELEE_WEAPON);
+            this.BodyParts.HandRight_MeleeWeapon = Utils.PlayerBodyPartsHelper.Find(this.BodyParts.HandRight.gameObject, Utils.PlayerBodyPartsHelper.MELEE_WEAPON);
             Center = Utils.FindChild<Transform>(AnimTransform.gameObject, "Pelvis", true);
+
+#if UNITY_EDITOR
+            if (this.BodyParts.Hair == null || this.BodyParts.ArmLeft == null || this.BodyParts.ArmRight == null ||
+                this.BodyParts.HandLeft == null || this.BodyParts.HandRight == null || this.BodyParts.LegLeft == null || this.BodyParts.LegRight == null ||
+                this.BodyParts.HandLeft_MeleeWeapon == null || this.BodyParts.HandRight_MeleeWeapon == null)
+                Utils.LogCritical(nameof(PlayerController), nameof(InitChildObject), "Failed to init Body Parts.");
+#endif
         }
 
         private void AddCallbacks()
@@ -224,6 +249,7 @@ namespace STELLAREST_2D
                 SkillBook.ActivateAll();
             if (Input.GetKeyDown(KeyCode.L))
                 SkillBook.DeactivateAll();
+
 #endif
             MoveByJoystick();
             CollectGems();

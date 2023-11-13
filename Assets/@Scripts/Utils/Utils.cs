@@ -285,6 +285,25 @@ namespace STELLAREST_2D
             return toList;
         }
 
+        public static class PlayerBodyPartsHelper
+        {
+            public const string HAIR = "Hair";
+
+            public const string ARM_LEFT = "ArmL";
+            public const string ARM_RIGHT = "ArmR[1]";
+
+            public const string HAND_LEFT = "HandL";
+            public const string HAND_RIGHT = "HandR";
+
+            public const string LEG_LEFT = "Leg[L]";
+            public const string LEG_RIGHT = "Leg[R]";
+
+            public const string MELEE_WEAPON = "MeleeWeapon";
+
+            public static Transform Find(GameObject go, string name) => Utils.FindChild<Transform>(go, name, true);
+        }
+
+
         public static bool IsArrowMaster(CreatureController cc) => cc?.Stat.TemplateID == (int)Define.TemplateIDs.Creatures.Player.Reina_ArrowMaster;
         public static bool IsElementalArcher(CreatureController cc) => cc?.Stat.TemplateID == (int)Define.TemplateIDs.Creatures.Player.Reina_ElementalArcher;
         public static bool IsForestGuardian(CreatureController cc) => cc?.Stat.TemplateID == (int)Define.TemplateIDs.Creatures.Player.Reina_ForestGuardian;

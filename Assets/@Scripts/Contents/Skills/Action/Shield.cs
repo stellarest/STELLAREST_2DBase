@@ -48,7 +48,6 @@ namespace STELLAREST_2D
         }
 
         private Coroutine _coRecoveryShield = null;
-        //private const float RECOVERY_INTERVAL = 1.25f;
         private const float FIXED_RECOVERY_INTERVAL = 0.75f;
         private const float FIXED_RECOVERY_RATIO = 0.01f;
 
@@ -96,8 +95,6 @@ namespace STELLAREST_2D
             }
 
             _offShields = transform.GetChild(1).gameObject.GetComponentsInChildren<ParticleSystem>(includeInactive: true);
-            // for (int i = 0; i < _offShields.Length; ++i)
-            //     _offShields[i].gameObject.SetActive(false);
             EnableParticles(_offShields, false);
 
             _isOnShield = false;
@@ -121,15 +118,7 @@ namespace STELLAREST_2D
         private const float SHIELD_MAX_HP_RATIO = 0.9f;
         private void OnShield()
         {
-            // for (int i = 0; i < _offShields.Length; ++i)
-            //     _offShields[i].gameObject.SetActive(false);
             EnableParticles(_offShields, false);
-
-            // for (int i = 0; i < _onShields.Length; ++i)
-            // {
-            //     _onShields[i].gameObject.SetActive(true);
-            //     _onShields[i].Play();
-            // }
             EnableParticles(_onShields, true);
 
             _shieldMaxHp = (this.Owner.Stat.MaxHp * SHIELD_MAX_HP_RATIO);
@@ -150,15 +139,7 @@ namespace STELLAREST_2D
             }
             this.Owner.Stat.ShieldHp = 0f;
 
-            // for (int i = 0; i < _onShields.Length; ++i)
-            //     _onShields[i].gameObject.SetActive(false);
             EnableParticles(_onShields, false);
-
-            // for (int i = 0; i < _offShields.Length; ++i)
-            // {
-            //     _offShields[i].gameObject.SetActive(true);
-            //     _offShields[i].Play();
-            // }
             EnableParticles(_offShields, true);
 
             StartCoroutine(CoIsPlayingOffShield());
@@ -186,12 +167,8 @@ namespace STELLAREST_2D
                 yield return null;
             }
 
-            // for (int i = 0; i < _offShields.Length; ++i)
-            //     _offShields[i].gameObject.SetActive(false);
             EnableParticles(_offShields, false);
-
             this.Owner.SkillBook.Deactivate(SkillTemplate.Shield_Elite_Solo);
-            //base.Deactivate();
         }
 
         public override void Deactivate() => base.Deactivate();
