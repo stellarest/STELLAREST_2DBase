@@ -81,7 +81,7 @@ namespace STELLAREST_2D
                 yield return null;
             }
 
-            SkillBase skill = this.Owner.SkillBook.GetCanActiveSkillMember(SkillTemplate.ArrowMasterMastery);
+            SkillBase skill = this.Owner.SkillBook.GetLastLearnedSkillMember(SkillTemplate.ArrowMasterMastery);
             float originMinDamage = skill.Data.MinDamage;
             float originMaxDamage = skill.Data.MaxDamage;
 

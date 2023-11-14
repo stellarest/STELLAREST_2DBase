@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 
 namespace STELLAREST_2D
 {
@@ -13,15 +12,12 @@ namespace STELLAREST_2D
 
         public override void Init(CreatureController owner) => base.Init(owner);
         public override void Ready() => AnimController.Play(UPPER_READY);
-        public override void RunSkill() 
+        public override void RunSkill()
         {
             switch (this.Owner.SkillAnimationType)
             {
                 case Define.SkillAnimationType.MasteryAction:
-                    {
-                        if (this.Owner.SkillBook.GetCanActiveSkillMember(SkillTemplate.KnightMastery))
-                            AnimController.Play(UPPER_ATTACK);
-                    }
+                    AnimController.Play(UPPER_ATTACK);
                     break;
 
                 case Define.SkillAnimationType.EliteAction:

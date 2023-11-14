@@ -216,7 +216,7 @@ namespace STELLAREST_2D
 
             if (skillTemplate == SkillBook.MasteryActionTemplate)
             {
-                SkillBase skill = SkillBook.GetCanActiveSkillMember(skillTemplate);
+                SkillBase skill = SkillBook.GetLastLearnedSkillMember(skillTemplate);
                 if (skill.Data.Grade > Define.InGameGrade.Default)
                     this.RendererController.Upgrade(skill.Data.Grade);
             }

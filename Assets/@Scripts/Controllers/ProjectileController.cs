@@ -238,7 +238,7 @@ namespace STELLAREST_2D
 
             if (_isOnReadyInterpolateScale)
             {
-                Utils.Log("Interpolate Scale.");
+                //Utils.Log("Interpolate Scale.");
                 StartCoroutine(CoInterpolateScale());
             }
         }

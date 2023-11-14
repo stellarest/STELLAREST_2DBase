@@ -234,7 +234,8 @@ namespace STELLAREST_2D
                 Flee = 300106,
                 Sleep = 300107,
                 Targeted = 300108,
-                MaxCount = 9
+                Poison = 300109,
+                MaxCount = 10
             }
 
             public static class VFX
@@ -253,6 +254,7 @@ namespace STELLAREST_2D
                     Light = 400102,
                     SmokePuff = 400103,
                     Incinvible = 400104,
+                    Poison = 400105,
                 }
 
                 public enum Trail
@@ -311,6 +313,7 @@ namespace STELLAREST_2D
                 public const string VFX_IMPACT_HIT_LIGHT = "VFX_Impact_Hit_Light.prefab";
                 public const string VFX_IMPACT_HIT_SMOKE_PUFF = "VFX_Impact_Hit_SmokePuff.prefab";
                 public const string VFX_IMPACT_HIT_INVINCIBLE = "VFX_Impact_Hit_Invincible.prefab";
+                public const string VFX_IMPACT_HIT_POISON = "VFX_Impact_Hit_Poison.prefab";
 
                 // VFX Trail
                 public const string VFX_TRAIL_WIND = "VFX_Trail_Wind.prefab";
@@ -324,6 +327,8 @@ namespace STELLAREST_2D
                 public const string VFX_ENV_DAMAGE_TO_PLAYER = "VFX_Env_Damage_To_Player.prefab";
                 public const string VFX_ENV_DAMAGE_TO_PLAYER_SHIELD = "VFX_Env_Damage_To_Player_Shield.prefab";
                 public const string VFX_ENV_DAMAGE_TO_PLAYER_DODGE_FONT = "VFX_Env_Damage_To_Player_Dodge_Font.prefab";
+                public const string VFX_ENG_DAMAGE_POISON = "VFX_Env_Damage_Poison.prefab";
+
                 public const string VFX_ENV_SKULL = "VFX_Env_Skull.prefab";
                 public const string VFX_ENV_DUST = "VFX_Env_Dust.prefab";
                 public const string VFX_ENV_STUN = "VFX_Env_Stun.prefab";

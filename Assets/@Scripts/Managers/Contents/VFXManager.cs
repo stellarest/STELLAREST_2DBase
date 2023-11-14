@@ -274,6 +274,10 @@ namespace STELLAREST_2D
                 case VFXImpact.Incinvible:
                     goImpactHit = Managers.Resource.Instantiate(PrefabLabels.VFX_IMPACT_HIT_INVINCIBLE, null, true);
                     break;
+
+                case VFXImpact.Poison:
+                    goImpactHit = Managers.Resource.Instantiate(PrefabLabels.VFX_IMPACT_HIT_POISON, null, true);
+                    break;
             }
 
             goImpactHit.transform.position = impactPoint;
@@ -346,6 +350,9 @@ namespace STELLAREST_2D
                 {
                     Managers.Resource.Load<GameObject>(PrefabLabels.VFX_ENV_DAMAGE_TO_MONSTER)
                                      .GetComponent<DamageNumber>().Spawn(spawnPos, damage);
+
+                    // Managers.Resource.Load<GameObject>(PrefabLabels.VFX_ENG_DAMAGE_POISON)
+                    //                     .GetComponent<DamageNumber>().Spawn(spawnPos, damage);
                 }
             }
             else // Damage to Player

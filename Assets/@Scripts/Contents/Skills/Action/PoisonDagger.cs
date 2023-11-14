@@ -8,6 +8,7 @@ using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 
 namespace STELLAREST_2D
 {
+    // Take off Burst from Parent
     public class PoisonDagger : ActionSkill
     {
         private ParticleSystem[] _chargeGroup = null;
@@ -16,9 +17,15 @@ namespace STELLAREST_2D
 
         private Vector3 _startChargeScale = Vector3.zero;
         private Vector3 _targetChargeScale = Vector3.zero;
-        private const float FIXED_TARGET_CHARGE_SCALE_RATIO = 5f;
-        private const float FIXED_DESIRED_COMPLETE_CHARGE_TIME = 2f;
-        private const float FIXED_AFTER_COMPLETED_CHARGE_WAIT_TIME = 0.5f;
+        //private const float FIXED_TARGET_CHARGE_SCALE_RATIO = 5f;
+        private const float FIXED_TARGET_CHARGE_SCALE_RATIO = 3f;
+
+        //private const float FIXED_DESIRED_COMPLETE_CHARGE_TIME = 2f;
+        private const float FIXED_DESIRED_COMPLETE_CHARGE_TIME = 1.25f;
+
+        //private const float FIXED_AFTER_COMPLETED_CHARGE_WAIT_TIME = 0.5f;
+        private const float FIXED_AFTER_COMPLETED_CHARGE_WAIT_TIME = 0.3f;
+
 
         [SerializeField] private AnimationCurve _chargeCurve = null;
         private bool _isEndOfSkill = false;
@@ -60,7 +67,6 @@ namespace STELLAREST_2D
             if (_isEndOfSkill)
                 return;
 
-            Utils.Log($"IS END OF SKILL : {_isEndOfSkill}");
             StartCoroutine(CoOnPoisonDagger());
         }
 
@@ -82,10 +88,14 @@ namespace STELLAREST_2D
 
                 yield return null;
             }
-
             EnableParticles(_chargeGroup, false);
+            
+            TakeOffFromParent(_burstGroup[0]);
             EnableParticles(_burstGroup, true);
+
             yield return new WaitUntil(() => this.WaitUntilEndOfPlayingParticles(_burstGroup));
+            TakeOnToParent(_burstGroup);
+
             StartCoroutine(Managers.VFX.CoMatInnerOutline(_ownerController.BodyParts.HandLeft_MeleeWeapon.GetComponent<SpriteRenderer>(),
                 this.Data.Duration, delegate{
                     // DO SOMETHING AFTER COMPLETING SKILL..
@@ -116,12 +126,18 @@ namespace STELLAREST_2D
             this.Owner.ReserveSkillAnimationType(this.Data.AnimationType);
             Owner.CreatureState = Define.CreatureState.Skill;
 
+            _burstGroup[0].transform.SetParent(null);
+
+            TakeOffFromParent(_burstGroup[0]);
             EnableParticles(_burstGroup, true);
+
             this.Owner.SkillBook.Deactivate(SkillTemplate.StabPoisonDagger_Elite_Solo);
             yield return new WaitUntil(() => this.WaitUntilEndOfPlayingParticles(_burstGroup));
             yield return new WaitForSeconds(FIXED_AFTER_COMPLETED_CHARGE_WAIT_TIME);
 
             _ownerController.PlayerAnimController.SetCanEnterNextState(true);
+
+            TakeOnToParent(_burstGroup);
             EnableParticles(_burstGroup, false);
 
             yield return new WaitForSeconds(FIXED_AFTER_COMPLETED_CHARGE_WAIT_TIME);
@@ -129,6 +145,14 @@ namespace STELLAREST_2D
             this.Owner.SkillBook.Activate(SkillTemplate.AssassinMastery);
             
             yield break; // END OF SKILL
+        }
+
+        private void TakeOffFromParent(ParticleSystem particle) => particle.transform.SetParent(null);
+        private void TakeOnToParent(ParticleSystem[] particles)
+        {
+            particles[0].transform.SetParent(this.transform);
+            for (int i = 0; i < particles.Length; ++i)
+                particles[i].transform.localPosition = Vector3.zero;
         }
     }
 }

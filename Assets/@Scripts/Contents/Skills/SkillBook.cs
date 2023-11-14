@@ -211,7 +211,7 @@ namespace STELLAREST_2D
             }
         }
 
-        public SkillBase GetCanActiveSkillMember()
+        public SkillBase GetLastLearnedSkillMember()
         {
             for (int i = 0; i < MemberCount; ++i)
             {
@@ -346,7 +346,7 @@ namespace STELLAREST_2D
             if (SkillGroupsDict.TryGetValue((int)skillTemplate, out SkillGroup group) == false)
                 Utils.LogCritical(nameof(SkillBook), nameof(GetCurrentSkillGrade), "Failed to load Skill Template.");
 
-            return group.GetCanActiveSkillMember().Data.Grade;
+            return group.GetLastLearnedSkillMember().Data.Grade;
         }
 
         public void LevelUp(SkillTemplate templateOrigin)
@@ -393,14 +393,14 @@ namespace STELLAREST_2D
                 group.Value.Deactivate();
         }
 
-        public SkillBase GetCanActiveSkillMember(SkillTemplate templateOrigin)
+        public SkillBase GetLastLearnedSkillMember(SkillTemplate templateOrigin)
         {
             if (SkillGroupsDict.TryGetValue((int)templateOrigin, out SkillGroup group) == false)
-                Utils.LogCritical(nameof(SkillBook), nameof(GetCanActiveSkillMember), $"Check TemplateID : {templateOrigin}");
+                Utils.LogCritical(nameof(SkillBook), nameof(GetLastLearnedSkillMember), $"Check TemplateID : {templateOrigin}");
 
-            SkillBase skill = group.GetCanActiveSkillMember();
+            SkillBase skill = group.GetLastLearnedSkillMember();
             if (skill == null)
-                Utils.LogStrong(nameof(SkillGroup), nameof(GetCanActiveSkillMember), "You need to unlock first skill.");
+                Utils.LogStrong(nameof(SkillGroup), nameof(GetLastLearnedSkillMember), "You need to unlock first skill.");
 
             return skill;
         }
