@@ -41,7 +41,7 @@ namespace STELLAREST_2D
         public enum HitFromType { None = -1, ThrowingStar = 1, LazerBolt = 2, All = 9 }
         //public enum ImpactHits { None, Leaves, CriticalHit, }
         public enum MaterialType { None = -1, Hit = 1, Hologram = 2, FadeOut = 3 }
-        public enum FaceExpressionType { Default = 1, Battle, Dead, }
+        public enum FaceType { Default = 1, Combat, Dead, }
 
         public enum GemSize { Normal = 1, Large = 2 }
         public enum SkillAnimationType { None = -1, MasteryAction = 1, EliteAction = 2, UltimateAction = 3 }
@@ -278,6 +278,7 @@ namespace STELLAREST_2D
                     Slow,
                     Silence,
                     Targeted,
+                    Poison,
 
                     GemGather,
                     GemExplosion,
@@ -422,7 +423,7 @@ namespace STELLAREST_2D
                 public const string MAT_STRONG_TINT = "StrongTint.mat";
                 public const string MAT_INNER_OUTLINE = "InnerOutline.mat";
                 public const string MAT_SPLIT_TONING = "SplitToning.mat";
-
+                public const string MAT_POISON = "Poison.mat";
             }
 
             public static class Data

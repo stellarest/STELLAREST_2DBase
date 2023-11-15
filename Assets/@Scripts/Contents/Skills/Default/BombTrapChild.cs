@@ -25,7 +25,7 @@ namespace STELLAREST_2D
 
             //base.SetClonedRootTargetOnParticleStopped();
             GetComponent<ParticleSystemRenderer>().sortingOrder = (int)Define.SortingOrder.EnvEffect;
-            if (this.Owner?.IsPlayer() == true)
+            if (this.Owner?.IsPlayer == true)
                 Managers.Collision.InitCollisionLayer(this.gameObject, Define.CollisionLayers.PlayerAttack);
         }
 

@@ -111,7 +111,7 @@ namespace STELLAREST_2D
         public void AddCreatureMaterials(CreatureController cc)
         {
             int length = 0;
-            if (cc?.IsMonster() == false)
+            if (cc?.IsMonster == false)
             {
                 SpriteRenderer[] sprArr = cc.GetComponentsInChildren<SpriteRenderer>(includeInactive: true);
                 for (int i = 0; i < sprArr.Length; ++i)
@@ -352,14 +352,14 @@ namespace STELLAREST_2D
             //CreatureMaterial[] mats = _creatureMats[cc.CharaData.TemplateID];
             CreatureMaterial[] mats = _creatureMats[cc.gameObject];
 
-            if (cc?.IsMonster() == false)
+            if (cc?.IsMonster == false)
             {
                 Managers.Sprite.PlayerExpressionController.Hit();
             }
 
             for (int i = 0; i < mats.Length; ++i)
             {
-                if (cc?.IsMonster() == false)
+                if (cc?.IsMonster == false)
                     mats[i].spriteRender.material = _matHitRed;
                 else
                     mats[i].spriteRender.material = _matHitWhite;
@@ -375,7 +375,7 @@ namespace STELLAREST_2D
             for (int i = 0; i < mats.Length; ++i)
                 mats[i].spriteRender.material = mats[i].matOrigin;
 
-            if (cc?.IsMonster() == false)
+            if (cc?.IsMonster == false)
                 Managers.Sprite.PlayerExpressionController.EndHit();
         }
 

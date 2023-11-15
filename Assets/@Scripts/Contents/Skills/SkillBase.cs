@@ -54,7 +54,7 @@ namespace STELLAREST_2D
             }
 
             SetClonedRootTargetOnParticleStopped();
-            if (ownerFromOrigin?.IsPlayer() == true)
+            if (ownerFromOrigin?.IsPlayer == true)
                 Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.PlayerAttack);
             else
                 Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.MonsterAttack);
@@ -85,7 +85,7 @@ namespace STELLAREST_2D
                 }
 
                 SetClonedRootTargetOnParticleStopped();
-                if (ownerFromOrigin?.IsPlayer() == true)
+                if (ownerFromOrigin?.IsPlayer == true)
                     Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.PlayerAttack);
                 else
                     Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.MonsterAttack);

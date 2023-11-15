@@ -51,7 +51,7 @@ namespace STELLAREST_2D
             HitCollider.isTrigger = true;
             HitCollider.enabled = false;
 
-            if (owner?.IsPlayer() == true)
+            if (owner?.IsPlayer == true)
                 Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.PlayerAttack);
 
             this.transform.localScale = Vector3.one * 2.5f;

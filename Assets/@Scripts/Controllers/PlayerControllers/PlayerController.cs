@@ -415,6 +415,9 @@ namespace STELLAREST_2D
                 case VFXEnv.Silence:
                     return (Center.position + new Vector3(-1.65f, 2.55f, 0f));
 
+                case VFXEnv.Poison:
+                    return (transform.position + (Vector3.up * 2.5f));
+
                 default:
                     return base.LoadVFXEnvSpawnPos(templateOrigin);
             }
@@ -458,10 +461,10 @@ namespace STELLAREST_2D
         private IEnumerator CoCheckDeadEyes()
         {
             yield return new WaitForSeconds(UnityEngine.Random.Range(2f, 3f));
-            if (this.RendererController.IsPlayerDeadEyes() == false)
-                Utils.LogStrong(nameof(PlayerController), nameof(CoCheckDeadEyes), $"Player Eyes is not dead eyes.", true);
-            else
-                Utils.Log("### STILL DEAD EYES ###");
+            // if (this.RendererController.IsPlayerDeadEyes() == false)
+            //     Utils.LogStrong(nameof(PlayerController), nameof(CoCheckDeadEyes), $"Player Eyes is not dead eyes.", true);
+            // else
+            //     Utils.Log("### STILL DEAD EYES ###");
         }
 #endif
     }

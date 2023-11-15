@@ -75,7 +75,7 @@ namespace STELLAREST_2D
 
         public void On()
         {
-            this.Owner.RendererController.OnFaceBattleHandler();
+            this.Owner.RendererController.OnFaceCombatHandler();
             this.Owner.SkillBook.Deactivate(SkillTemplate.KnightMastery);
             this.Owner.ReserveSkillAnimationType(this.Data.AnimationType);
             Owner.CreatureState = Define.CreatureState.Skill;

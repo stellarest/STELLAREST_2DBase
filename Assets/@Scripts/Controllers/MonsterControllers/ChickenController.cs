@@ -178,6 +178,7 @@ namespace STELLAREST_2D
                 case VFXEnv.Spawn:
                     return (transform.position + (Vector3.up * 2.5f)) + new Vector3(0.1f, 1.2f, 1f);
 
+                case VFXEnv.Poison:
                 case VFXEnv.Damage:
                     return (transform.position + (Vector3.up * 2.5f)) - Vector3.up;
 
@@ -192,9 +193,6 @@ namespace STELLAREST_2D
 
                 case VFXEnv.Silence:
                     return (Center.position + new Vector3(-1f, 1.05f, 0f));
-
-                // case VFXEnv.Targeted:
-                //     return (Center.position + new Vector3(-0.11f, 1.45f, 0f));
 
                 case VFXEnv.Targeted:
                     return Center.position;

@@ -35,7 +35,7 @@ namespace STELLAREST_2D
 
         public Transform AnimTransform { get; protected set; } = null;
         public Transform Center { get; protected set; } = null;
-        public SpriteRenderer[] SPRs { get; protected set; } = null;
+        //public SpriteRenderer[] SPRs { get; protected set; } = null;
         public Vector3 LocalScale
         {
             get => AnimTransform.transform.localScale;
@@ -90,7 +90,7 @@ namespace STELLAREST_2D
         public void ReserveSkillAnimationType(Define.SkillAnimationType animType) => this.SkillAnimationType = animType;
 
         // +++ RENDERERS +++
-        public RendererController RendererController { get; protected set; } = null;
+        // public RendererController RendererController { get; protected set; } = null;
 
         // +++ FIELD, PROPERTY, METHODS +++
         [SerializeField] private Define.CreatureState _cretureState = Define.CreatureState.Idle;
@@ -150,7 +150,8 @@ namespace STELLAREST_2D
 
             InitCreatureStat(creatureData);
             InitCreatureSkills(creatureData);
-            InitCreatureRenderer(creatureData);
+            InitRendererController(creatureData);
+
             _baseRootLocalScale = transform.localScale;
 
             if (Center == null)
@@ -168,7 +169,7 @@ namespace STELLAREST_2D
             AnimTransform = Utils.FindChild<Transform>(this.gameObject,
                 Define.ANIMATION_BODY, true);
 
-            SPRs = AnimTransform.GetComponentsInChildren<SpriteRenderer>(includeInactive: true);
+            //SPRs = AnimTransform.GetComponentsInChildren<SpriteRenderer>(includeInactive: true);
         }
 
         protected virtual void InitBaseComponents()
@@ -306,7 +307,7 @@ namespace STELLAREST_2D
             }
         }
 
-        protected virtual void InitCreatureRenderer(Data.InitialCreatureData creatureData)
+        public void InitRendererController(Data.InitialCreatureData creatureData)
         {
             if (RendererController == null)
             {
@@ -381,8 +382,8 @@ namespace STELLAREST_2D
         }
 
         // +++ UTILS +++
-        public bool IsPlayer() => this.ObjectType == Define.ObjectType.Player;
-        public bool IsMonster() => this.ObjectType == Define.ObjectType.Monster;
+        public bool IsPlayer => this.ObjectType == Define.ObjectType.Player;
+        public bool IsMonster => this.ObjectType == Define.ObjectType.Monster;
 
         public bool IsHitFrom_ThrowingStar { get; set; } = false;
         public bool IsHitFrom_LazerBolt { get; set; } = false;
@@ -455,14 +456,13 @@ namespace STELLAREST_2D
         public bool IsDeadState => this.CreatureState == Define.CreatureState.Dead && (this.Stat.Hp <= 0);
 
         public void SetDefaultHead() => this.RendererController.OnFaceDefaultHandler();
-        public void SetBattleHead() => this.RendererController.OnFaceBattleHandler();
+        public void SetBattleHead() => this.RendererController.OnFaceCombatHandler();
         public void SetDeadHead() => this.RendererController.OnFaceDeadHandler();
 
-        public void RequestCrowdControl(SkillBase from)
+        public void RequestApplyingCrowdControl(SkillBase from)
         {
             // TryContinuousCrowControl
             // 연속된 CC기 이므로, 이전 CC기가 걸려야 다음 CC기가 걸릴지 여부를 판단
-
             CrowdControl ccType = from.Data.CrowdControlType;
             switch (ccType)
             {
@@ -526,6 +526,18 @@ namespace STELLAREST_2D
                         }
                         else
                             Utils.Log("Already Targeted,,,");
+                    }
+                    break;
+
+                case CrowdControl.Poison:
+                    {
+                        if (this[ccType] == false)
+                        {
+                            StartCoroutine(Managers.CrowdControl.CoPoisoning(this, from));
+                            TryContinuousCrowControl(this, from);
+                        }
+                        else
+                            Utils.Log("Already Poison,,,");
                     }
                     break;
             }
@@ -601,6 +613,19 @@ namespace STELLAREST_2D
                             Utils.Log("Already Targeted,,,");
                     }
                     break;
+
+                case CrowdControl.Poison:
+                    {
+                        if (this[continuousCCType] == false)
+                        {
+                            Managers.VFX.ImpactHit(from.Data.VFX_ImpactHit_ForContinuousCrowdControl, target, from);
+                            StartCoroutine(Managers.CrowdControl.CoPoisoning(this, from, true));
+                        }
+                        else
+                            Utils.Log("Already Poison,,,");
+                    }
+                    break;
+
             }
 
             // CHECK SUB CROWD CONTROL

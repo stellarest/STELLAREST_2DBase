@@ -71,7 +71,7 @@ namespace STELLAREST_2D
             //cc.GoCCEffect = goCCEffect;
             // cc[Define.TemplateIDs.CCType.Stun] = true; // !!! 인덱서로 Set 할것. 반드시 !!!
             MonsterController mc = null;
-            if (cc?.IsMonster() == true)
+            if (cc?.IsMonster == true)
             {
                 mc = cc.GetComponent<MonsterController>();
                 Managers.Sprite.SetMonsterFace(mc, Define.MonsterFace.Death);
@@ -91,7 +91,7 @@ namespace STELLAREST_2D
             Managers.Resource.Destroy(goCCEffect);
             //cc[Define.TemplateIDs.CCType.Stun] = false;
 
-            if (cc?.IsMonster() == true)
+            if (cc?.IsMonster == true)
             {
                 Managers.Sprite.SetMonsterFace(mc, Define.MonsterFace.Normal);
                 //mc.CoStartReadyToAction(false);

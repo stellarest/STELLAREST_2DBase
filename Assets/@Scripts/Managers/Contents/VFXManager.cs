@@ -21,6 +21,7 @@ namespace STELLAREST_2D
         public Material Mat_StrongTint { get; private set; } = null;
         public Material Mat_InnerOutline { get; private set; } = null;
         public Material Mat_SplitToning { get; private set; } = null;
+        public Material Mat_Poison { get; private set; } = null;
 
         public readonly int SHADER_HOLOGRAM = Shader.PropertyToID("_HologramFade");
         public readonly int SHADER_FADE = Shader.PropertyToID("_CustomFadeAlpha");
@@ -30,6 +31,7 @@ namespace STELLAREST_2D
 
         public readonly int SHADER_INNER_OUTLINE = Shader.PropertyToID("_InnerOutlineFade");
         public readonly int SHADER_SPLIT_TONING = Shader.PropertyToID("_SplitToningFade");
+        
         public readonly float DESIRED_TIME_FADE_OUT = 1.25f;
 
         public void Init()
@@ -40,10 +42,9 @@ namespace STELLAREST_2D
             Mat_Fade = Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_FADE);
             Mat_StrongTint = Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_STRONG_TINT);
             Mat_InnerOutline = Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_INNER_OUTLINE);
-            Mat_SplitToning =Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_SPLIT_TONING);
+            Mat_SplitToning = Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_SPLIT_TONING);
+            Mat_Poison =  Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_POISON);
         }
-
-        
 
         private const float HIT_RESET_DELAY = 0.1f;
         private const float HOLOGRAM_RESET_DELAY = 0.05f;
@@ -61,7 +62,7 @@ namespace STELLAREST_2D
 
                 case Define.MaterialType.Hit:
                     {
-                        if (cc.IsMonster())
+                        if (cc.IsMonster)
                             cc.RendererController.ChangeMaterial(matType, MatHit_Monster, HIT_RESET_DELAY);
                         else
                             cc.RendererController.ChangeMaterial(matType, MatHit_Player, HIT_RESET_DELAY);
@@ -74,6 +75,23 @@ namespace STELLAREST_2D
 
                 case Define.MaterialType.FadeOut:
                     cc.RendererController.ChangeMaterial(matType, Mat_Fade, FADE_RESET_DELAY);
+                    break;
+            }
+        }
+
+        public void Material(Define.MaterialType matType, BaseController bc, Color color, float duration, System.Action callback = null)
+        {
+            if (bc.IsValid() == false)
+                return;
+
+            switch (matType)
+            {
+                case Define.MaterialType.None:
+                    return;
+                
+                case Define.MaterialType.Hit:
+                    {
+                    }
                     break;
             }
         }
@@ -159,7 +177,6 @@ namespace STELLAREST_2D
                     delta = 0f;
                 }
 
-                // Utils.Log($"CHECK PERCENT : {percent}");
                 yield return null;
             }
 
@@ -210,6 +227,11 @@ namespace STELLAREST_2D
             callback?.Invoke();
             matCloned.SetFloat(SHADER_SPLIT_TONING, 0f);
             spr.material = matOrigin;
+        }
+
+        public IEnumerator CoMatPoison(CreatureController target, float duration)
+        {
+            yield return null;
         }
 
         public void Muzzle(VFXMuzzle templateOrigin, CreatureController target)
@@ -328,7 +350,7 @@ namespace STELLAREST_2D
             if (damage <= 0f)
                 return;
 
-            Vector3 spawnPos = (cc?.IsPlayer() == false && cc.GetComponent<MonsterController>() != null)
+            Vector3 spawnPos = (cc?.IsPlayer == false && cc.GetComponent<MonsterController>() != null)
                                 ? cc.GetComponent<MonsterController>().LoadVFXEnvSpawnPos(VFXEnv.Damage)
                                 : cc.GetComponent<PlayerController>().LoadVFXEnvSpawnPos(VFXEnv.Damage);
 
@@ -336,7 +358,7 @@ namespace STELLAREST_2D
             if (spawnPos == Vector3.zero)
                 Utils.LogCritical(nameof(VFXManager), nameof(Environment), "Failed to load VFX Env Spawn Pos.");
 #endif
-            if (cc.IsMonster()) // 현재 크티티컬은 몬스터만 받아서 필요 없을수도
+            if (cc.IsMonster) // 현재 크티티컬은 몬스터만 받아서 필요 없을수도
             {
                 if (isCritical)
                 {
@@ -370,6 +392,19 @@ namespace STELLAREST_2D
             }
         }
 
+        public void PoisonDamage(CreatureController target, float damage)
+        {
+            if (target.IsValid() == false)
+                return;
+
+            Vector3 spawnPos = (target?.IsPlayer == false && target.GetComponent<MonsterController>() != null)
+                                ? target.GetComponent<MonsterController>().LoadVFXEnvSpawnPos(VFXEnv.Poison)
+                                : target.GetComponent<PlayerController>().LoadVFXEnvSpawnPos(VFXEnv.Damage);
+
+            Managers.Resource.Load<GameObject>(PrefabLabels.VFX_ENG_DAMAGE_POISON)
+                                .GetComponent<DamageNumber>().Spawn(spawnPos, damage);
+        }
+
         public void Percentage(CreatureController target, int percent)
         {
             Vector3 spawnPos = target.Center.transform.position + (Vector3.up * 3.5f);
@@ -378,9 +413,7 @@ namespace STELLAREST_2D
             if (percent < 100)
                 dmgNumber.lifetime = 0.15f;
             else
-            {
                 dmgNumber.lifetime = 0.75f;
-            }
         }
 
         public GameObject Environment(VFXEnv templateOrigin, CreatureController target)
@@ -388,12 +421,12 @@ namespace STELLAREST_2D
             GameObject goVFX = null;
 
             Vector3 spawnScale = Vector3.one;
-            spawnScale = (target?.IsPlayer() == false && target.GetComponent<MonsterController>() != null)
+            spawnScale = (target?.IsPlayer == false && target.GetComponent<MonsterController>() != null)
                         ? target.GetComponent<MonsterController>().LoadVFXEnvSpawnScale(templateOrigin)
                         : target.GetComponent<PlayerController>().LoadVFXEnvSpawnScale(templateOrigin);
 
             Vector3 spawnPos = Vector3.zero;
-            spawnPos = (target?.IsPlayer() == false && target.GetComponent<MonsterController>() != null)
+            spawnPos = (target?.IsPlayer == false && target.GetComponent<MonsterController>() != null)
                         ? target.GetComponent<MonsterController>().LoadVFXEnvSpawnPos(templateOrigin)
                         : target.GetComponent<PlayerController>().LoadVFXEnvSpawnPos(templateOrigin);
 

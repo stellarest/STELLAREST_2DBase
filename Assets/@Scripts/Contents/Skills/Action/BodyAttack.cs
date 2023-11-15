@@ -128,7 +128,7 @@ namespace STELLAREST_2D
             circle.radius = ownerHitBody.radius;
             HitCollider.enabled = false;
 
-            if (this.Owner?.IsPlayer() == false)
+            if (this.Owner?.IsPlayer == false)
                 Managers.Collision.InitCollisionLayer(this.gameObject, Define.CollisionLayers.MonsterAttack);
             else
                 Managers.Collision.InitCollisionLayer(this.gameObject, Define.CollisionLayers.PlayerAttack);

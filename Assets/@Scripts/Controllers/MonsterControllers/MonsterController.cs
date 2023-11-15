@@ -198,7 +198,7 @@ namespace STELLAREST_2D
         protected override IEnumerator CoIdleTick()
         {
             MonsterAnimController.Idle();
-            RendererController.MonsterHead.sprite = this.DefaultHead;
+            //RendererController.MonsterHead.sprite = this.DefaultHead;
             Vector3 toTargetDir = Vector3.zero;
             while (true)
             {
@@ -256,7 +256,7 @@ namespace STELLAREST_2D
         {
             base.OnDead();
             Managers.VFX.Environment(VFXEnv.Skull, this);
-            this.RendererController.MonsterHead.sprite = this.DeadHead;
+            //this.RendererController.MonsterHead.sprite = this.DeadHead;
             MonsterAnimController.Dead();
 
             GemController spawnedGem = Managers.Object.Spawn<GemController>(this.Center.position,

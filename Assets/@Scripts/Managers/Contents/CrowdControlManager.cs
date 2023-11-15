@@ -20,7 +20,7 @@ namespace STELLAREST_2D
             if (target.IsDeadState)
                 return;
 
-            target.RequestCrowdControl(from);
+            target.RequestApplyingCrowdControl(from);
         }
 
         public IEnumerator CoStun(CreatureController target, SkillBase from, bool isCalledFromContinuous = false)
@@ -109,7 +109,7 @@ namespace STELLAREST_2D
             float dustGenPercentage = 0.2f;
             while (percent < 1f)
             {
-                if (target.IsPlayer())
+                if (target.IsPlayer)
                 {
                     if (percent > dustGenPercentage)
                     {
@@ -194,6 +194,27 @@ namespace STELLAREST_2D
                 goVFX.transform.DOKill();
                 Managers.Resource.Destroy(goVFX);
             }
+        }
+
+        public IEnumerator CoPoisoning(CreatureController target, SkillBase from, bool isCalledFromContinuous = false)
+        {
+            float delta = 0f;
+            float percent = 0f;
+            float duration = from.Data.CrowdControlDuration;
+            if (isCalledFromContinuous)
+                duration = from.Data.ContinuousCrowdControlDuration;
+
+            float intensity = from.Data.CrowdControlIntensity;
+            if (isCalledFromContinuous)
+                intensity = from.Data.ContinuousCrowdControlIntensity;
+
+            // while (percent < 1f)
+            // {
+            //     delta += Time.deltaTime;
+            //     percent = delta / duration;
+            // }
+
+            yield return null;
         }
     }
 }

@@ -17,7 +17,7 @@ namespace STELLAREST_2D
             _parent = parent;
             ChildHitCollider = GetComponent<Collider2D>();
 
-            if (owner?.IsPlayer() == true)
+            if (owner?.IsPlayer == true)
                 Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.PlayerAttack);
             else
                 Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.MonsterAttack);

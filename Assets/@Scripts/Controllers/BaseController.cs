@@ -11,6 +11,7 @@ namespace STELLAREST_2D
         public bool IsFirstPooling { get; protected set; } = true;
         public Define.ObjectType ObjectType { get; set; } = Define.ObjectType.None;
         public Transform TrailSocket { get; protected set; } = null;
+        public RendererController RendererController { get; protected set; } = null;
 
         public virtual void Init(int templateID) { }
         protected virtual void SetSortingOrder() { }

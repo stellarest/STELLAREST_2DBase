@@ -199,7 +199,7 @@ namespace STELLAREST_2D
         {
             CreatureController target = null;
             System.Type type = typeof(T);
-            if (owner?.IsPlayer() == true)
+            if (owner?.IsPlayer == true)
             {
                 List<MonsterController> toList = MakeMonsterList();
                 Vector3 fromPos = from.transform.position;

@@ -12,11 +12,11 @@ namespace STELLAREST_2D
         [ Ability Info : Shield (Elite Action, Paladin) ]
         (Currently Temped Set : lv.3)
 
-        lv.1 : 매 웨이브마다 최대 체력의 50%에 해당하는 쉴드 획득. 
+        lv.1 : 매 웨이브마다 최대 체력의 30%에 해당하는 쉴드 획득. 
             (쉴드가 활성화 되어 있을 때, 1.5초 마다 1%의 쉴드 회복)
-        lv.2 : 매 웨이브마다 최대 체력의 60%에 해당하는 쉴드 획득. 
+        lv.2 : 매 웨이브마다 최대 체력의 40%에 해당하는 쉴드 획득. 
             (쉴드가 활성화 되어 있을 때, 1.25초 마다 1%의 쉴드 회복)
-        lv.3 : 매 웨이브마다 최대 체력의 90%에 해당하는 쉴드 획득.
+        lv.3 : 매 웨이브마다 최대 체력의 60%에 해당하는 쉴드 획득.
             (쉴드가 활성화 되어 있을 때, 0.75초 마다 1%의 쉴드 회복)
     */
 
@@ -115,7 +115,7 @@ namespace STELLAREST_2D
 
         public override void OnActiveEliteActionHandler() => this.IsOnShield = true;
         public void Hit() => _hitBurst.Play();
-        private const float SHIELD_MAX_HP_RATIO = 0.9f;
+        private const float SHIELD_MAX_HP_RATIO = 0.6f;
         private void OnShield()
         {
             EnableParticles(_offShields, false);

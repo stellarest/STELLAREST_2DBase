@@ -555,7 +555,7 @@ namespace STELLAREST_2D
             else
                 spear._maxStabCount = 1;
 
-            if (this.Owner?.IsPlayer() == true)
+            if (this.Owner?.IsPlayer == true)
                 Managers.Collision.InitCollisionLayer(spear.gameObject, Define.CollisionLayers.PlayerAttack);
             else
                 Managers.Collision.InitCollisionLayer(spear.gameObject, Define.CollisionLayers.MonsterAttack);
