@@ -71,11 +71,16 @@ namespace STELLAREST_2D
                 if (_faceType == value)
                     return;
 
-                _faceType = value;
-                switch (_faceType)
+                switch (value)
                 {
                     case FaceType.Default:
                         {
+                            if (this.OwnerAsCreature[CrowdControl.Stun])
+                                return;
+
+                            if (this.OwnerAsCreature.IsDeadState)
+                                return;
+
                             if (FaceContainerDict.TryGetValue(FaceType.Default, out FaceContainer faceContainer) == false)
                             {
                                 Utils.LogCritical(nameof(CreatureRendererController), nameof(FaceType),
@@ -83,15 +88,16 @@ namespace STELLAREST_2D
                                 return;
                             }
 
-                            if (this.OwnerAsCreature[CrowdControl.Stun])
-                                return;
-
                             SetFace(faceContainer);
+                            _faceType = value;
                         }
                         break;
 
                     case FaceType.Combat:
                         {
+                            if (this.OwnerAsCreature.IsDeadState)
+                                return;
+
                             if (FaceContainerDict.TryGetValue(FaceType.Combat, out FaceContainer faceContainer) == false)
                             {
                                 Utils.LogCritical(nameof(CreatureRendererController), nameof(FaceType),
@@ -100,6 +106,7 @@ namespace STELLAREST_2D
                             }
 
                             SetFace(faceContainer);
+                            _faceType = value;
                         }
                         break;
 
@@ -113,6 +120,7 @@ namespace STELLAREST_2D
                             }
 
                             SetFace(faceContainer);
+                            _faceType = value;
                         }
                         break;
                 }
@@ -356,35 +364,6 @@ namespace STELLAREST_2D
         public override void OnFaceDeadHandler() => this.FaceType = FaceType.Dead;
         public override void OnDustVFXHandler() => Managers.VFX.Environment(VFXEnv.Dust, this.OwnerAsCreature);
 
-        public void FadeOut(Material matFadeOut, float duration = 1.25F)
-        {
-            if (IsChangingMaterial == false)
-            {
-                IsChangingMaterial = true;
-                for (int i = 0; i < OwnerSPRs.Length; ++i)
-                {
-                    if (OwnerSPRs[i].sprite != null)
-                        OwnerSPRs[i].material = matFadeOut;
-                }
-
-                StartCoroutine(CoFadeOut(duration));
-            }
-        }
-
-        private IEnumerator CoFadeOut(float duration)
-        {
-            Managers.VFX.Mat_Fade.SetFloat(Managers.VFX.SHADER_FADE, 1f);
-            float delta = 0f;
-            float percent = 1f;
-            while (percent > 0f)
-            {
-                delta += Time.deltaTime;
-                percent = 1f - (delta / duration);
-                Managers.VFX.Mat_Fade.SetFloat(Managers.VFX.SHADER_FADE, percent);
-                yield return null;
-            }
-        }
-
         public void HideFace(bool isOnHide)
         {
             switch (FaceRef.CreatureType)
@@ -504,7 +483,6 @@ namespace STELLAREST_2D
                         {
                             if (FaceContainerDict.TryGetValue(FaceType.Dead, out FaceContainer container))
                             {
-                                Utils.Log("Show Face Monster !!");
                                 FaceRef.EyesSPR.sprite = container.Eyes;
                                 FaceRef.EyesSPR.color = container.EyesColor;
                             }

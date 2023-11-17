@@ -69,6 +69,7 @@ namespace STELLAREST_2D
         protected override void EnterInGame(int templateID)
         {
             this.RendererController.EnterInGame();
+            
             InitCreatureStat(templateID);
             ClearCrowdControlStates();
             ClearHitFroms();

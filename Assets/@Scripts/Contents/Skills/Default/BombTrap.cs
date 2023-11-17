@@ -146,8 +146,10 @@ namespace STELLAREST_2D
         {
             this.RigidBody.simulated = false;
             this.HitCollider.enabled = false;
-            StartCoroutine(Managers.VFX.CoMatStrongTint(Define.StrongTintColor.White, this, SR, this.Data.Duration, delegate
+            StartCoroutine(Managers.VFX.CoMatStrongTint(Define.MaterialColor.White, this, SR, this.Data.Duration, delegate
             {
+                _childFuse.SetActive(false); // FIX
+
                 _childExplosion.RigidBody.simulated = true;
                 _childExplosion.HitCollider.enabled = true;
                 _childExplosion.gameObject.SetActive(true);

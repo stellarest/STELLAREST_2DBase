@@ -65,6 +65,8 @@ namespace STELLAREST_2D
         protected override IEnumerator CoReadyToAction(bool onStartImmediately = false) // 파라미터로 NextState를 넣는다면? 괜찮을듯
         {
             this.CreatureState = Define.CreatureState.Idle;
+            this.RendererController.OnFaceDefaultHandler();
+
             this.RigidBody.simulated = true;
             this.HitCollider.enabled = true;
 

@@ -129,6 +129,7 @@ namespace STELLAREST_2D
         private const float FIXED_LAST_BUFF_TIME = 12f;
         private IEnumerator CoEndSecondWind()
         {
+            // TODO 1
             this.Owner.Stat.AddArmorRatio(Define.MAX_ARMOR_RATE);
 
             KnightAnimationController anim = this.Owner.AnimController.GetComponent<KnightAnimationController>();
@@ -144,6 +145,7 @@ namespace STELLAREST_2D
             yield return new WaitForSeconds(FIXED_LAST_BUFF_TIME);
             EnableParticles(_lastBuffs, false);
 
+            // TODO 2
             this.Owner.Stat.ResetArmor();
             this.Owner.SkillBook.Deactivate(SkillTemplate.SecondWind_Elite_Solo);
         }

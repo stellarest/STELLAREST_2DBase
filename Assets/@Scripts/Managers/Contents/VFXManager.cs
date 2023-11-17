@@ -22,19 +22,13 @@ namespace STELLAREST_2D
         public Material Mat_Fade { get; private set; } = null;
         public Material Mat_StrongTint { get; private set; } = null;
         public Material Mat_InnerOutline { get; private set; } = null;
-        public Material Mat_SplitToning { get; private set; } = null;
         public Material Mat_Poison { get; private set; } = null;
 
-        public readonly int SHADER_HOLOGRAM = Shader.PropertyToID("_HologramFade");
-        public readonly int SHADER_FADE = Shader.PropertyToID("_CustomFadeAlpha");
-        
+        public readonly int SHADER_HOLOGRAM_FADE = Shader.PropertyToID("_HologramFade");
+        public readonly int SHADER_FADE_ALPHA = Shader.PropertyToID("_CustomFadeAlpha");
         public readonly int SHADER_STRONG_TINT_FADE = Shader.PropertyToID("_StrongTintFade");
         public readonly int SHADER_STRONG_TINT_COLOR = Shader.PropertyToID("_StrongTintTint");
-
         public readonly int SHADER_INNER_OUTLINE = Shader.PropertyToID("_InnerOutlineFade");
-        public readonly int SHADER_SPLIT_TONING = Shader.PropertyToID("_SplitToningFade");
-        
-        public readonly float DESIRED_TIME_FADE_OUT = 1.25f;
 
         public void Init()
         {
@@ -44,8 +38,7 @@ namespace STELLAREST_2D
             Mat_Fade = Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_FADE);
             Mat_StrongTint = Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_STRONG_TINT);
             Mat_InnerOutline = Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_INNER_OUTLINE);
-            Mat_SplitToning = Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_SPLIT_TONING);
-            Mat_Poison =  Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_POISON);
+            Mat_Poison = Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_POISON);
         }
 
         private const float FIXED_HIT_DURATION = 0.1F;
@@ -67,7 +60,7 @@ namespace STELLAREST_2D
                             bc.RendererController.SetMaterial(MatHit_Player);
                         else if (bc.ObjectType == Define.ObjectType.Monster)
                             bc.RendererController.SetMaterial(MatHit_Monster);
-                        
+
                         yield return new WaitForSeconds(FIXED_HIT_DURATION);
                         bc.RendererController.ResetMaterial();
                         endCallback?.Invoke();
@@ -104,7 +97,7 @@ namespace STELLAREST_2D
                             {
                                 while (percent < 1f)
                                 {
-                                    Mat_Hologram.SetFloat(SHADER_HOLOGRAM, percent);
+                                    Mat_Hologram.SetFloat(SHADER_HOLOGRAM_FADE, percent);
                                     percent += Time.deltaTime * FIXED_HOLOGRAM_SPEED_POWER;
                                     return false;
                                 }
@@ -118,7 +111,7 @@ namespace STELLAREST_2D
                             {
                                 while (percent > 0f)
                                 {
-                                    Mat_Hologram.SetFloat(SHADER_HOLOGRAM, percent);
+                                    Mat_Hologram.SetFloat(SHADER_HOLOGRAM_FADE, percent);
                                     elapsedTime += Time.deltaTime;
                                     percent = 1f - (elapsedTime * FIXED_HOLOGRAM_SPEED_POWER);
                                     return false;
@@ -152,7 +145,7 @@ namespace STELLAREST_2D
                     {
                         startCallback?.Invoke();
                         bc.RendererController.SetMaterial(Mat_Fade);
-                        Mat_Fade.SetFloat(SHADER_FADE, 1f);
+                        Mat_Fade.SetFloat(SHADER_FADE_ALPHA, 1f);
 
                         float delta = 0f;
                         float percent = 1f;
@@ -160,7 +153,7 @@ namespace STELLAREST_2D
                         {
                             delta += Time.deltaTime;
                             percent = 1f - (delta / FIXED_FADE_OUT_DURATION);
-                            Mat_Fade.SetFloat(SHADER_FADE, percent);
+                            Mat_Fade.SetFloat(SHADER_FADE_ALPHA, percent);
                             yield return null;
                         }
 
@@ -173,150 +166,39 @@ namespace STELLAREST_2D
             yield break;
         }
 
-        private bool IsChangingMaterial(BaseController bc) =>
-                        (bc.RendererController.IsChangingMaterial || bc.RendererController == null);
-
-        //=======================================================================================================
-        //=======================================================================================================
-        //=======================================================================================================
-        // public void Material(MaterialType matType, BaseController bc)
-        // {
-        //     if (bc?.IsValid() == false)
-        //         return;
-
-        //     switch (matType)
-        //     {
-        //         case MaterialType.None:
-        //             return;
-
-        //         case MaterialType.Hit:
-        //             {
-        //                 if (bc.ObjectType == Define.ObjectType.Monster)
-        //                     bc.RendererController.Hit(MatHit_Monster);
-        //                 else
-        //                     bc.RendererController.Hit(MatHit_Player);
-        //             }
-        //             break;
-
-        //         case MaterialType.Hologram:
-        //             bc.RendererController.Hologram(Mat_Hologram);
-        //             break;
-
-        //         case MaterialType.FadeOut:
-        //             bc.RendererController.FadeOut(Mat_Fade);
-        //             break;
-        //     }
-        // }
-
-        public void Material(BaseController bc, MaterialType matType, MaterialColor matColor, float duration, 
-                float pingPongRate = 0.5f, bool isOnLoop = false, System.Action callback = null)
-        {   
+        public IEnumerator CoMatStrongTint(MaterialColor matColor, BaseController bc, SpriteRenderer spr, float desiredTime, System.Action callback = null)
+        {
             if (bc?.IsValid() == false)
-                return;
-        }
-
-        public void Material(SpriteRenderer spr, MaterialType matType, MaterialColor matColor, float duration,
-                float pingPongRate = 0.5f, bool isOnLoop = false, System.Action callback = null)
-        {
-            switch (matType)
-            {
-                case MaterialType.None:
-                    break;
-
-                case MaterialType.Hit:
-                    break;
-
-                case MaterialType.Hologram:
-                    break;
-                
-                case MaterialType.FadeOut:
-                    break;
-
-                case MaterialType.StrongTint:
-                    break;
-
-                case MaterialType.InnerOutline:
-                    break;
-            }
-        }
-
-        // public void Material(Define.MaterialType matType, CreatureController cc)
-        // {
-        //     if (cc?.IsValid() == false)
-        //         return;
-
-        //     switch (matType)
-        //     {
-        //         case Define.MaterialType.None:
-        //             return;
-
-        //         case Define.MaterialType.Hit:
-        //             {
-        //                 if (cc.IsMonster)
-        //                     cc.RendererController.ChangeMaterial(matType, MatHit_Monster, HIT_RESET_DELAY);
-        //                 else
-        //                     cc.RendererController.ChangeMaterial(matType, MatHit_Player, HIT_RESET_DELAY);
-        //             }
-        //             break;
-
-        //         case Define.MaterialType.Hologram:
-        //             cc.RendererController.ChangeMaterial(matType, Mat_Hologram, HOLOGRAM_RESET_DELAY);
-        //             break;
-
-        //         case Define.MaterialType.FadeOut:
-        //             cc.RendererController.ChangeMaterial(matType, Mat_Fade, FADE_RESET_DELAY);
-        //             break;
-        //     }
-        // }
-
-        // public void Material(Define.MaterialType matType, BaseController bc, Color color, float duration, System.Action callback = null)
-        // {
-        //     if (bc.IsValid() == false)
-        //         return;
-
-        //     switch (matType)
-        //     {
-        //         case Define.MaterialType.None:
-        //             return;
-                
-        //         case Define.MaterialType.Hit:
-        //             {
-        //             }
-        //             break;
-        //     }
-        // }
-
-        public IEnumerator CoMatStrongTint(Define.StrongTintColor color, BaseController bc, SpriteRenderer spr, float desiredTime, System.Action callback = null)
-        {
-            if (bc.IsValid() == false)
                 yield break;
 
             Material matOrigin = spr.material;
-
             // NEED TO MAKE NEW MAT
-            Material clonedStrongTintWhiteMat = new Material(Mat_StrongTint);
+            Material clonedMat = new Material(Mat_StrongTint);
 
-            switch (color)
+            switch (matColor)
             {
-                case Define.StrongTintColor.White:
-                    clonedStrongTintWhiteMat.SetColor(SHADER_STRONG_TINT_COLOR, Color.white);
+                case MaterialColor.UsePreset:
                     break;
 
-                case Define.StrongTintColor.Red:
-                    clonedStrongTintWhiteMat.SetColor(SHADER_STRONG_TINT_COLOR, Color.red);
+                case MaterialColor.White:
+                    clonedMat.SetColor(SHADER_STRONG_TINT_COLOR, Color.white);
                     break;
 
-                case Define.StrongTintColor.Green:
-                    clonedStrongTintWhiteMat.SetColor(SHADER_STRONG_TINT_COLOR, Color.green);
+                case MaterialColor.Red:
+                    clonedMat.SetColor(SHADER_STRONG_TINT_COLOR, Color.red);
+                    break;
+
+                case MaterialColor.Green:
+                    clonedMat.SetColor(SHADER_STRONG_TINT_COLOR, Color.green);
                     break;
             }
 
-            spr.material = clonedStrongTintWhiteMat;
+            spr.material = clonedMat;
             float percent = 0f;
             while (percent < 1f)
             {
                 percent += Time.deltaTime / desiredTime;
-                clonedStrongTintWhiteMat.SetFloat(SHADER_STRONG_TINT_FADE, percent);
+                clonedMat.SetFloat(SHADER_STRONG_TINT_FADE, percent);
                 yield return null;
             }
 
@@ -375,55 +257,21 @@ namespace STELLAREST_2D
             spr.material = matOrigin;
         }
 
-        public IEnumerator CoMatSplitToning(SpriteRenderer spr, float duration, System.Action callback = null)
-        {
-            if (spr.sprite == null)
-            {
-                Utils.Log("Failed to find sprite in SpriteRenderer.");
-                yield break;
-            }
+        private bool IsChangingMaterial(BaseController bc) =>
+                        (bc.RendererController.IsChangingMaterial || bc.RendererController == null);
 
-            Material matOrigin = spr.material;
-            Material matCloned = new Material(Mat_SplitToning);
-            matCloned.SetFloat(SHADER_SPLIT_TONING, 0f);
-            spr.material = matCloned;
-
-            float delta = 0f;
-            float deltaForDuration = 0f;
-
-            float percent = 0f;
-            bool isIncreasing = true;
-            while (deltaForDuration < duration)
-            {
-                deltaForDuration += Time.deltaTime;
-
-                delta += Time.deltaTime;
-                if (isIncreasing)
-                    percent = delta / 1f;
-                else
-                    percent = 1f - (delta / 1f);
-
-                if (percent <= 1f && percent >= 0f)
-                    matCloned.SetFloat(SHADER_SPLIT_TONING, percent);
-                else
-                {
-                    isIncreasing = !isIncreasing;
-                    delta = 0f;
-                }
-
-                yield return null;
-            }
-
-            callback?.Invoke();
-            matCloned.SetFloat(SHADER_SPLIT_TONING, 0f);
-            spr.material = matOrigin;
-        }
+        //=======================================================================================================
+        //=======================================================================================================
+        //=======================================================================================================
 
         public IEnumerator CoMatPoison(CreatureController target, float duration)
         {
             yield return null;
         }
-
+        
+        //=======================================================================================================
+        //=======================================================================================================
+        //=======================================================================================================
         public void Muzzle(VFXMuzzle templateOrigin, CreatureController target)
         {
             Vector3 muzzlePoint = Vector3.zero;
