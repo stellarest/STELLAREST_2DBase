@@ -7,8 +7,10 @@ using VFXImpact = STELLAREST_2D.Define.TemplateIDs.VFX.ImpactHit;
 using VFXTrail = STELLAREST_2D.Define.TemplateIDs.VFX.Trail;
 using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
 using PrefabLabels = STELLAREST_2D.Define.Labels.Prefabs;
+using MaterialType = STELLAREST_2D.Define.MaterialType;
+using MaterialColor = STELLAREST_2D.Define.MaterialColor;
 using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
-using Unity.VisualScripting.FullSerializer;
+using System.Linq.Expressions;
 
 namespace STELLAREST_2D
 {
@@ -46,55 +48,243 @@ namespace STELLAREST_2D
             Mat_Poison =  Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_POISON);
         }
 
-        private const float HIT_RESET_DELAY = 0.1f;
-        private const float HOLOGRAM_RESET_DELAY = 0.05f;
-        private const float FADE_RESET_DELAY = 0f;
-
-        public void Material(Define.MaterialType matType, CreatureController cc)
+        private const float FIXED_HIT_DURATION = 0.1F;
+        public IEnumerator CoHit(BaseController bc, System.Action startCallback = null, System.Action endCallback = null)
         {
-            if (cc?.IsValid() == false)
-                return;
+            if (bc?.IsValid() == false)
+                yield break;
 
-            switch (matType)
+            if (IsChangingMaterial(bc))
+                yield break;
+
+            switch (bc.ObjectType)
             {
-                case Define.MaterialType.None:
-                    return;
-
-                case Define.MaterialType.Hit:
+                case Define.ObjectType.Player:
+                case Define.ObjectType.Monster:
                     {
-                        if (cc.IsMonster)
-                            cc.RendererController.ChangeMaterial(matType, MatHit_Monster, HIT_RESET_DELAY);
-                        else
-                            cc.RendererController.ChangeMaterial(matType, MatHit_Player, HIT_RESET_DELAY);
+                        startCallback?.Invoke();
+                        if (bc.ObjectType == Define.ObjectType.Player)
+                            bc.RendererController.SetMaterial(MatHit_Player);
+                        else if (bc.ObjectType == Define.ObjectType.Monster)
+                            bc.RendererController.SetMaterial(MatHit_Monster);
+                        
+                        yield return new WaitForSeconds(FIXED_HIT_DURATION);
+                        bc.RendererController.ResetMaterial();
+                        endCallback?.Invoke();
                     }
                     break;
 
-                case Define.MaterialType.Hologram:
-                    cc.RendererController.ChangeMaterial(matType, Mat_Hologram, HOLOGRAM_RESET_DELAY);
-                    break;
-
-                case Define.MaterialType.FadeOut:
-                    cc.RendererController.ChangeMaterial(matType, Mat_Fade, FADE_RESET_DELAY);
-                    break;
+                default:
+                    yield break;
             }
+
+            yield break;
         }
 
-        public void Material(Define.MaterialType matType, BaseController bc, Color color, float duration, System.Action callback = null)
+        private const float FIXED_HOLOGRAM_DURATION = 0.05F;
+        private const float FIXED_HOLOGRAM_SPEED_POWER = 20F;
+        public IEnumerator CoHologram(BaseController bc, System.Action startCallback = null, System.Action endCallback = null)
         {
-            if (bc.IsValid() == false)
-                return;
+            if (bc?.IsValid() == false)
+                yield break;
 
+            if (IsChangingMaterial(bc))
+                yield break;
+
+            switch (bc.ObjectType)
+            {
+                case Define.ObjectType.Player:
+                    {
+                        startCallback?.Invoke();
+                        bc.RendererController.SetMaterial(Mat_Hologram);
+
+                        {
+                            float percent = 0f;
+                            yield return new WaitUntil(() =>
+                            {
+                                while (percent < 1f)
+                                {
+                                    Mat_Hologram.SetFloat(SHADER_HOLOGRAM, percent);
+                                    percent += Time.deltaTime * FIXED_HOLOGRAM_SPEED_POWER;
+                                    return false;
+                                }
+
+                                return true;
+                            });
+
+                            percent = 1f;
+                            float elapsedTime = 0f;
+                            yield return new WaitUntil(() =>
+                            {
+                                while (percent > 0f)
+                                {
+                                    Mat_Hologram.SetFloat(SHADER_HOLOGRAM, percent);
+                                    elapsedTime += Time.deltaTime;
+                                    percent = 1f - (elapsedTime * FIXED_HOLOGRAM_SPEED_POWER);
+                                    return false;
+                                }
+
+                                return true;
+                            });
+                        }
+
+                        bc.RendererController.ResetMaterial();
+                        endCallback.Invoke();
+                    }
+                    break;
+
+                default:
+                    yield break;
+            }
+
+            yield break;
+        }
+
+        private const float FIXED_FADE_OUT_DURATION = 1.25F;
+        public IEnumerator CoFadeOut(BaseController bc, System.Action startCallback = null, System.Action endCallback = null)
+        {
+            if (bc?.IsValid() == false)
+                yield break;
+
+            switch (bc.ObjectType)
+            {
+                case Define.ObjectType.Monster:
+                    {
+                        startCallback?.Invoke();
+                        bc.RendererController.SetMaterial(Mat_Fade);
+                        Mat_Fade.SetFloat(SHADER_FADE, 1f);
+
+                        float delta = 0f;
+                        float percent = 1f;
+                        while (percent > 0f)
+                        {
+                            delta += Time.deltaTime;
+                            percent = 1f - (delta / FIXED_FADE_OUT_DURATION);
+                            Mat_Fade.SetFloat(SHADER_FADE, percent);
+                            yield return null;
+                        }
+
+                        bc.RendererController.ResetMaterial();
+                        endCallback?.Invoke();
+                    }
+                    break;
+            }
+
+            yield break;
+        }
+
+        private bool IsChangingMaterial(BaseController bc) =>
+                        (bc.RendererController.IsChangingMaterial || bc.RendererController == null);
+
+        //=======================================================================================================
+        //=======================================================================================================
+        //=======================================================================================================
+        // public void Material(MaterialType matType, BaseController bc)
+        // {
+        //     if (bc?.IsValid() == false)
+        //         return;
+
+        //     switch (matType)
+        //     {
+        //         case MaterialType.None:
+        //             return;
+
+        //         case MaterialType.Hit:
+        //             {
+        //                 if (bc.ObjectType == Define.ObjectType.Monster)
+        //                     bc.RendererController.Hit(MatHit_Monster);
+        //                 else
+        //                     bc.RendererController.Hit(MatHit_Player);
+        //             }
+        //             break;
+
+        //         case MaterialType.Hologram:
+        //             bc.RendererController.Hologram(Mat_Hologram);
+        //             break;
+
+        //         case MaterialType.FadeOut:
+        //             bc.RendererController.FadeOut(Mat_Fade);
+        //             break;
+        //     }
+        // }
+
+        public void Material(BaseController bc, MaterialType matType, MaterialColor matColor, float duration, 
+                float pingPongRate = 0.5f, bool isOnLoop = false, System.Action callback = null)
+        {   
+            if (bc?.IsValid() == false)
+                return;
+        }
+
+        public void Material(SpriteRenderer spr, MaterialType matType, MaterialColor matColor, float duration,
+                float pingPongRate = 0.5f, bool isOnLoop = false, System.Action callback = null)
+        {
             switch (matType)
             {
-                case Define.MaterialType.None:
-                    return;
+                case MaterialType.None:
+                    break;
+
+                case MaterialType.Hit:
+                    break;
+
+                case MaterialType.Hologram:
+                    break;
                 
-                case Define.MaterialType.Hit:
-                    {
-                    }
+                case MaterialType.FadeOut:
+                    break;
+
+                case MaterialType.StrongTint:
+                    break;
+
+                case MaterialType.InnerOutline:
                     break;
             }
         }
+
+        // public void Material(Define.MaterialType matType, CreatureController cc)
+        // {
+        //     if (cc?.IsValid() == false)
+        //         return;
+
+        //     switch (matType)
+        //     {
+        //         case Define.MaterialType.None:
+        //             return;
+
+        //         case Define.MaterialType.Hit:
+        //             {
+        //                 if (cc.IsMonster)
+        //                     cc.RendererController.ChangeMaterial(matType, MatHit_Monster, HIT_RESET_DELAY);
+        //                 else
+        //                     cc.RendererController.ChangeMaterial(matType, MatHit_Player, HIT_RESET_DELAY);
+        //             }
+        //             break;
+
+        //         case Define.MaterialType.Hologram:
+        //             cc.RendererController.ChangeMaterial(matType, Mat_Hologram, HOLOGRAM_RESET_DELAY);
+        //             break;
+
+        //         case Define.MaterialType.FadeOut:
+        //             cc.RendererController.ChangeMaterial(matType, Mat_Fade, FADE_RESET_DELAY);
+        //             break;
+        //     }
+        // }
+
+        // public void Material(Define.MaterialType matType, BaseController bc, Color color, float duration, System.Action callback = null)
+        // {
+        //     if (bc.IsValid() == false)
+        //         return;
+
+        //     switch (matType)
+        //     {
+        //         case Define.MaterialType.None:
+        //             return;
+                
+        //         case Define.MaterialType.Hit:
+        //             {
+        //             }
+        //             break;
+        //     }
+        // }
 
         public IEnumerator CoMatStrongTint(Define.StrongTintColor color, BaseController bc, SpriteRenderer spr, float desiredTime, System.Action callback = null)
         {
@@ -420,6 +610,7 @@ namespace STELLAREST_2D
         {
             GameObject goVFX = null;
 
+            // TODO : 여기 개선해야할듯. GetComponent 안해도 됨.
             Vector3 spawnScale = Vector3.one;
             spawnScale = (target?.IsPlayer == false && target.GetComponent<MonsterController>() != null)
                         ? target.GetComponent<MonsterController>().LoadVFXEnvSpawnScale(templateOrigin)

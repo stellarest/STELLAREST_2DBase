@@ -8,6 +8,7 @@ using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
 using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
 using TreeEditor;
+using Unity.VisualScripting;
 
 namespace STELLAREST_2D
 {
@@ -96,8 +97,8 @@ namespace STELLAREST_2D
             if (this.CanEnterRunState() == false)
                 return;
 
-            // if (this.MainTarget != null)
-            //     MoveToTarget(MainTarget, this.Stat.CollectRange * this.Stat.CollectRange);
+            if (this.MainTarget != null)
+                MoveToTarget(MainTarget, this.Stat.CollectRange * this.Stat.CollectRange);
         }
 
         public void StartMovementToRandomPoint()
@@ -255,22 +256,34 @@ namespace STELLAREST_2D
         protected override void OnDead()
         {
             base.OnDead();
-            Managers.VFX.Environment(VFXEnv.Skull, this);
+            //Managers.VFX.Environment(VFXEnv.Skull, this);
             //this.RendererController.MonsterHead.sprite = this.DeadHead;
+            
             MonsterAnimController.Dead();
+            this.RendererController.OnFaceDeadHandler();
 
             GemController spawnedGem = Managers.Object.Spawn<GemController>(this.Center.position,
                                             spawnObjectType: Define.ObjectType.Gem, isPooling: true);
 
-            StartCoroutine(CoDespawn());
+            //StartCoroutine(CoDespawn());
+            StartCoroutine(Managers.VFX.CoFadeOut(this, 
+                        startCallback: () => Managers.VFX.Environment(VFXEnv.Skull, this), 
+                        endCallback: () => Managers.Object.Despawn(this)));
         }
 
-        protected virtual IEnumerator CoDespawn()
-        {
-            Managers.VFX.Material(Define.MaterialType.FadeOut, this);
-            yield return new WaitForSeconds(Managers.VFX.DESIRED_TIME_FADE_OUT);
-            Managers.Object.Despawn(this);
-        }
+        // protected virtual IEnumerator CoDespawn()
+        // {
+        //     //Managers.VFX.Material(Define.MaterialType.FadeOut, this);
+        //     // StartCoroutine(Managers.VFX.CoFadeOut(this, 
+        //     //             startCallback: null,
+        //     //             endCallback: () => Managers.Object.Despawn(this)));
+        //     //yield return new WaitForSeconds(Managers.VFX.DESIRED_TIME_FADE_OUT);
+        //     //Utils.LogBreak("START FADE OUT !!");
+        //     // yield return new WaitUntil(() => this.RendererController.IsChangingMaterial == false);
+        //     // //Utils.LogBreak("BREAK");
+        //     // Managers.Object.Despawn(this);
+        //     yield return null;
+        // }
 
         private void OnDestroy()
         {

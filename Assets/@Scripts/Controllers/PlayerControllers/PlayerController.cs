@@ -9,8 +9,6 @@ using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
 using System.Diagnostics;
 using Debug = UnityEngine.Debug;
-using HeroEditor.Common.Enums;
-using UnityEngine.SearchService;
 
 namespace STELLAREST_2D
 {
@@ -218,7 +216,7 @@ namespace STELLAREST_2D
             {
                 SkillBase skill = SkillBook.GetLastLearnedSkillMember(skillTemplate);
                 if (skill.Data.Grade > Define.InGameGrade.Default)
-                    this.RendererController.Upgrade(skill.Data.Grade);
+                    this.RendererController.OnRefreshRenderer?.Invoke(skill.Data.Grade);
             }
         }
 
@@ -244,6 +242,15 @@ namespace STELLAREST_2D
                 DevSkillFlag(SkillTemplate.Spear);
             if (Input.GetKeyDown(KeyCode.Alpha5))
                 DevSkillFlag(SkillTemplate.BombTrap);
+
+            // Face Test
+            // if (Input.GetKeyDown(KeyCode.Alpha8))
+            //     this.RendererController.OnFaceDefaultHandler();
+            // if (Input.GetKeyDown(KeyCode.Alpha9))
+            //     this.RendererController.OnFaceCombatHandler();
+            // if (Input.GetKeyDown(KeyCode.Alpha0))
+            //     this.RendererController.OnFaceDeadHandler();
+
 
             if (Input.GetKeyDown(KeyCode.K))
                 SkillBook.ActivateAll();

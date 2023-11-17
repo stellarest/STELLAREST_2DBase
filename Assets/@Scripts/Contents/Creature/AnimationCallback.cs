@@ -20,6 +20,7 @@ namespace STELLAREST_2D
         public void OnFaceDefaultHandler() => this._owner.RendererController.OnFaceDefaultHandler();
         public void OnFaceCombatHandler() => this._owner.RendererController.OnFaceCombatHandler();
         public void OnFaceDeadHandler() => this._owner.RendererController.OnFaceDeadHandler();
+        
         public void OnDustVFXHandler() => this._owner.RendererController.OnDustVFXHandler();
     }
 }

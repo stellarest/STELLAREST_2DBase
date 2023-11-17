@@ -11,7 +11,7 @@ using STELLAREST_2D.UI;
 
 namespace STELLAREST_2D
 {
-    public interface IHitFrom // CC도 추가하면 괜찮을듯
+    public interface IHitFrom
     {
         public bool IsHitFrom_ThrowingStar { get; set; }
         public bool IsHitFrom_LazerBolt { get; set; }
@@ -58,7 +58,7 @@ namespace STELLAREST_2D
         public bool IsInvincible { get; set; } = false;
 
         // +++ CROWD CONTROL +++
-        public const float ORIGIN_SPEED_MODIFIER = 1f;
+        public const float ORIGIN_SPEED_MODIFIER = 1F;
         public virtual float SpeedModifier { get; set; } = 1f;
         public virtual void ResetSpeedModifier() => SpeedModifier = ORIGIN_SPEED_MODIFIER;
         
@@ -307,6 +307,7 @@ namespace STELLAREST_2D
             }
         }
 
+        public CreatureRendererController CreatureRendererController { get; private set; } = null;
         public void InitRendererController(Data.InitialCreatureData creatureData)
         {
             if (RendererController == null)
@@ -314,6 +315,7 @@ namespace STELLAREST_2D
                 RendererController = gameObject.GetOrAddComponent<RendererController>();
                 RendererController.InitRendererController(this, creatureData);
                 SetSortingOrder();
+                CreatureRendererController = RendererController.GetComponent<CreatureRendererController>();
             }
         }
 
@@ -338,7 +340,11 @@ namespace STELLAREST_2D
             if (dmgResult == -1f && isCritical == false)
             {
                 // DODGE
-                Managers.VFX.Material(Define.MaterialType.Hologram, this);
+                //Managers.VFX.Material(Define.MaterialType.Hologram, this);
+                StartCoroutine(Managers.VFX.CoHologram(this, 
+                                    startCallback: () => this.CreatureRendererController.HideFace(true), 
+                                    endCallback: () => this.CreatureRendererController.HideFace(false)));
+
                 Managers.VFX.Environment(VFXEnv.Dodge, this);
                 return;
             }
@@ -377,7 +383,12 @@ namespace STELLAREST_2D
                     Managers.CrowdControl.Apply(this, from);
 
                 if (this.SkillBook.IsOnShield == false)
-                    Managers.VFX.Material(Define.MaterialType.Hit, this);
+                {
+                    //Managers.VFX.Material(Define.MaterialType.Hit, this);
+                    StartCoroutine(Managers.VFX.CoHit(this, 
+                                    startCallback: () => this.CreatureRendererController.HideFace(true), 
+                                    endCallback: () => this.CreatureRendererController.HideFace(false)));
+                }
             }
         }
 

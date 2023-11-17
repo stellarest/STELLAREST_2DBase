@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using STELLAREST_2D.Data;
 using UnityEngine;
-
+using UnityEngine.U2D;
 using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 
 namespace STELLAREST_2D
@@ -96,6 +96,7 @@ namespace STELLAREST_2D
             yield return new WaitUntil(() => this.WaitUntilEndOfPlayingParticles(_burstGroup));
             TakeOnToParent(_burstGroup);
 
+            // 1 (Origin)
             StartCoroutine(Managers.VFX.CoMatInnerOutline(_ownerController.BodyParts.HandLeft_MeleeWeapon.GetComponent<SpriteRenderer>(),
                 this.Data.Duration, delegate{
                     // DO SOMETHING AFTER COMPLETING SKILL..
@@ -105,6 +106,13 @@ namespace STELLAREST_2D
                 this.Data.Duration, delegate{
                     StartCoroutine(CoOffPoisonDagger());
                 }));
+
+            // 2 (Todo)
+            // SpriteRenderer weaponSPR = _ownerController.BodyParts.HandLeft_MeleeWeapon.GetComponent<SpriteRenderer>();
+            // Managers.VFX.Material(weaponSPR, Define.MaterialType.FadeOut, Define.MaterialColor.UsePreset, this.Data.Duration, 0.5f, false,
+            // delegate{
+            //     StartCoroutine(CoOffPoisonDagger());
+            // });
             
             _ownerController.PlayerAnimController.SetCanEnterNextState(true);
             yield return new WaitForSeconds(FIXED_AFTER_COMPLETED_CHARGE_WAIT_TIME);
@@ -134,7 +142,6 @@ namespace STELLAREST_2D
             this.Owner.SkillBook.Deactivate(SkillTemplate.StabPoisonDagger_Elite_Solo);
             yield return new WaitUntil(() => this.WaitUntilEndOfPlayingParticles(_burstGroup));
             yield return new WaitForSeconds(FIXED_AFTER_COMPLETED_CHARGE_WAIT_TIME);
-
             _ownerController.PlayerAnimController.SetCanEnterNextState(true);
 
             TakeOnToParent(_burstGroup);

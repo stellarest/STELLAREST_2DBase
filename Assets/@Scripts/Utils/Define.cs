@@ -40,13 +40,18 @@ namespace STELLAREST_2D
         public enum MonsterFace { Normal = 0, Angry = 1, Death = 2 }
         public enum HitFromType { None = -1, ThrowingStar = 1, LazerBolt = 2, All = 9 }
         //public enum ImpactHits { None, Leaves, CriticalHit, }
-        public enum MaterialType { None = -1, Hit = 1, Hologram = 2, FadeOut = 3 }
+
+        public enum MaterialType { None = -1, Hit = 1, Hologram = 2, FadeOut = 3, StrongTint, InnerOutline }
+        public enum MaterialColor { UsePreset = -1, White, Red, Green, }
+
         public enum FaceType { Default = 1, Combat, Dead, }
 
         public enum GemSize { Normal = 1, Large = 2 }
         public enum SkillAnimationType { None = -1, MasteryAction = 1, EliteAction = 2, UltimateAction = 3 }
 
         public enum StrongTintColor { White, Red, Green }
+
+        
 
         public static class TemplateIDs
         {

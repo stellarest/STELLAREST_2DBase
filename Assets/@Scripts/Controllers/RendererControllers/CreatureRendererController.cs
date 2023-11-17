@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.HeroEditor.Common.Scripts.CharacterScripts.Firearms;
+using DamageNumbersPro;
 using STELLAREST_2D.Data;
 using UnityEngine;
-
+using UnityEngine.TextCore.Text;
 using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
 using FaceType = STELLAREST_2D.Define.FaceType;
+using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
 
 namespace STELLAREST_2D
 {
@@ -40,14 +41,14 @@ namespace STELLAREST_2D
         public Sprite Eyebrows { get; set; } = null;
         public Color EyebrowsColor { get; set; } = Color.white;
 
-        public Sprite Eyes { get; set; } = null; 
+        public Sprite Eyes { get; set; } = null;
         public Color EyesColor { get; set; } = Color.white;
 
         public Sprite Mouth { get; set; } = null;
         public Color MouthColor { get; set; } = Color.white;
     }
 
-    public class CreatureFace
+    public class FaceReference
     {
         public Define.ObjectType CreatureType { get; set; } = Define.ObjectType.None;
         public SpriteRenderer EyebrowsSPR { get; set; } = null;
@@ -58,11 +59,86 @@ namespace STELLAREST_2D
     public class CreatureRendererController : RendererController
     {
         public Dictionary<Define.InGameGrade, FaceContainer[]> InitialLoadedFaceContainersDict { get; } = new Dictionary<Define.InGameGrade, FaceContainer[]>();
-        public Dictionary<FaceType, FaceContainer> CurrentGradeFaceContainerDict { get; } = new Dictionary<FaceType, FaceContainer>();
-        public CreatureFace CreatureFace { get; } = new CreatureFace();
-        
-        [field: SerializeField] public Define.InGameGrade CurrentKeyGrade { get; private set; } = Define.InGameGrade.Default;
-        [field: SerializeField] public FaceType CurrentFaceType { get; private set; } = FaceType.Default;
+        public Dictionary<FaceType, FaceContainer> FaceContainerDict { get; } = new Dictionary<FaceType, FaceContainer>();
+        public FaceReference FaceRef { get; } = new FaceReference();
+
+        [SerializeField] private FaceType _faceType = FaceType.Default;
+        public FaceType FaceType
+        {
+            get => _faceType;
+            private set
+            {
+                if (_faceType == value)
+                    return;
+
+                _faceType = value;
+                switch (_faceType)
+                {
+                    case FaceType.Default:
+                        {
+                            if (FaceContainerDict.TryGetValue(FaceType.Default, out FaceContainer faceContainer) == false)
+                            {
+                                Utils.LogCritical(nameof(CreatureRendererController), nameof(FaceType),
+                                    $"Faield to load faceContainer in \"FaceType(Property)\": {FaceType.Default}");
+                                return;
+                            }
+
+                            if (this.OwnerAsCreature[CrowdControl.Stun])
+                                return;
+
+                            SetFace(faceContainer);
+                        }
+                        break;
+
+                    case FaceType.Combat:
+                        {
+                            if (FaceContainerDict.TryGetValue(FaceType.Combat, out FaceContainer faceContainer) == false)
+                            {
+                                Utils.LogCritical(nameof(CreatureRendererController), nameof(FaceType),
+                                    $"Faield to load faceContainer in \"FaceType(Property)\": {FaceType.Combat}");
+                                return;
+                            }
+
+                            SetFace(faceContainer);
+                        }
+                        break;
+
+                    case FaceType.Dead:
+                        {
+                            if (FaceContainerDict.TryGetValue(FaceType.Dead, out FaceContainer faceContainer) == false)
+                            {
+                                Utils.LogCritical(nameof(CreatureRendererController), nameof(FaceType),
+                                    $"Faield to load faceContainer in \"FaceType(Property)\": {FaceType.Dead}");
+                                return;
+                            }
+
+                            SetFace(faceContainer);
+                        }
+                        break;
+                }
+            }
+        }
+
+        private void SetFace(FaceContainer faceContainer)
+        {
+            if (faceContainer.Eyebrows != null)
+            {
+                FaceRef.EyebrowsSPR.sprite = faceContainer.Eyebrows;
+                FaceRef.EyebrowsSPR.color = faceContainer.EyebrowsColor;
+            }
+
+            if (faceContainer.Eyes != null)
+            {
+                FaceRef.EyesSPR.sprite = faceContainer.Eyes;
+                FaceRef.EyesSPR.color = faceContainer.EyesColor;
+            }
+
+            if (faceContainer.Mouth != null)
+            {
+                FaceRef.MouthSPR.sprite = faceContainer.Mouth;
+                FaceRef.MouthSPR.color = faceContainer.MouthColor;
+            }
+        }
 
         public override void InitRendererController(BaseController owner, InitialCreatureData initialCreatureData)
         {
@@ -70,88 +146,8 @@ namespace STELLAREST_2D
                 return;
 
             base.InitRendererController(owner, initialCreatureData);
-            InitCreatureFace();
-            InitFace(initialCreatureData);
             InitModels(initialCreatureData);
-        }
-
-        private void InitCreatureFace()
-        {
-            if (this.OwnerAsCreature.ObjectType != Define.ObjectType.Player ||
-                this.OwnerAsCreature.ObjectType != Define.ObjectType.Monster)
-            {
-                Utils.LogStrong(nameof(CreatureController), nameof(InitCreatureFace),
-                    $"Another object tries to access InitCreatureFace : {this.OwnerAsCreature.ObjectType}");
-                return;
-            }
-
-            CreatureFace.CreatureType = this.OwnerAsCreature.ObjectType;
-            if (this.OwnerAsCreature.ObjectType == Define.ObjectType.Player)
-            {
-                for (int i = 0; i < this.OwnerSPRs.Length; ++i)
-                {
-                    if (this.OwnerSPRs[i].gameObject.name.Contains("Eyebrows"))
-                        CreatureFace.EyebrowsSPR = this.OwnerSPRs[i];
-                    else if (this.OwnerSPRs[i].gameObject.name.Contains("Eyes"))
-                        CreatureFace.EyesSPR = this.OwnerSPRs[i];
-                    else if (this.OwnerSPRs[i].gameObject.name.Contains("Mouth"))
-                        CreatureFace.MouthSPR = this.OwnerSPRs[i];
-                }
-            }
-        }
-
-        private void InitFace(InitialCreatureData initialCreatureData)
-        {
-            for (int i = 0; i < initialCreatureData.FaceContainerLoaders.Length; ++i)
-            {
-                Define.InGameGrade masteryGrade = initialCreatureData.FaceContainerLoaders[i].MasteryGrade;
-                
-                int length = initialCreatureData.FaceContainerLoaders[i].FaceContainerKeyLoaders.Length;
-                FaceContainer[] faceValues = new FaceContainer[length];
-                for (int j = 0; j < length; ++j)
-                {
-                    FaceContainerKeyLoader keyLoader = initialCreatureData.FaceContainerLoaders[i].FaceContainerKeyLoaders[i];
-                    faceValues[i] = new FaceContainer();
-                    
-                    // Init Face Type 1 (Default)
-                    faceValues[i].FaceType = keyLoader.FaceType;
-
-                    faceValues[i].Eyebrows = Managers.Resource.Load<Sprite>(keyLoader.EyebrowsKey);
-                    if (ColorUtility.TryParseHtmlString(keyLoader.EyebrowsColor, out Color eyebrowsColor))
-                        faceValues[i].EyebrowsColor = eyebrowsColor;
-                    else
-                    {
-                        Utils.LogStrong(nameof(CreatureRendererController), nameof(InitFace), 
-                            $"Failed to load Eyebrows Color Code : {keyLoader.EyebrowsColor}");
-
-                        faceValues[i].EyebrowsColor = Color.white;
-                    }
-
-                    faceValues[i].Eyes = Managers.Resource.Load<Sprite>(keyLoader.EyesKey);
-                    if (ColorUtility.TryParseHtmlString(keyLoader.EyesColor, out Color eyesColor))
-                        faceValues[i].EyesColor = eyesColor;
-                    else
-                    {
-                        Utils.LogStrong(nameof(CreatureRendererController), nameof(InitFace),
-                            $"Failed to load Eyes Color Code : {keyLoader.EyesColor}");
-
-                        faceValues[i].EyesColor = Color.white;
-                    }
-
-                    faceValues[i].Mouth = Managers.Resource.Load<Sprite>(keyLoader.MouthKey);
-                    if (ColorUtility.TryParseHtmlString(keyLoader.MouthColor, out Color mouthColor))
-                        faceValues[i].MouthColor = mouthColor;
-                    else
-                    {
-                        Utils.LogStrong(nameof(CreatureRendererController), nameof(InitFace),
-                            $"Failed to load Eyes Color Code : {keyLoader.EyesColor}");
-
-                        faceValues[i].EyesColor = Color.white;
-                    }
-                }
-
-                InitialLoadedFaceContainersDict.Add(masteryGrade, faceValues);
-            }
+            InitFace(initialCreatureData);
         }
 
         private void InitModels(InitialCreatureData initialCreatureData)
@@ -191,14 +187,14 @@ namespace STELLAREST_2D
                         Utils.LogCritical(nameof(CreatureRendererController), nameof(InitModels), $"Faield to load model : {modelingLabel}");
                         return;
                     }
-                    
+
                     SPRs = go.GetComponentsInChildren<SpriteRenderer>(includeInactive: true);
                     BCs = new BaseContainer[SPRs.Length];
                     for (int j = 0; j < SPRs.Length; ++j)
                     {
-                        Material matOrigin = new Material(SPRs[i].sharedMaterial);
-                        Color colorOrigin = new Color(SPRs[i].color.r, SPRs[i].color.g, SPRs[i].color.g, SPRs[i].color.a);
-                        BCs[i] = new BaseContainer(SPRs[i].name, matOrigin, colorOrigin);
+                        Material matOrigin = new Material(SPRs[j].sharedMaterial);
+                        Color colorOrigin = new Color(SPRs[j].color.r, SPRs[j].color.g, SPRs[j].color.g, SPRs[j].color.a);
+                        BCs[j] = new BaseContainer(SPRs[j].name, matOrigin, colorOrigin);
                     }
 
                     rendererModerator.AddRendererContainers(keyGrade, BCs, SPRs);
@@ -208,19 +204,105 @@ namespace STELLAREST_2D
             RendererModeratorDict.Add(this.OwnerAsCreature, rendererModerator);
         }
 
-        private void OnRefreshCurrentGradeFaceContainerDictHandler(Define.InGameGrade currentKeyGrade)
+        private void InitFace(InitialCreatureData initialCreatureData)
         {
-            if (InitialLoadedFaceContainersDict.TryGetValue(currentKeyGrade, out FaceContainer[] initialLoadedFaceContainers) == false)
+            for (int i = 0; i < initialCreatureData.FaceContainerLoaders.Length; ++i)
             {
-                Utils.LogCritical(nameof(CreatureRendererController), nameof(OnRefreshCurrentGradeFaceContainerDictHandler), 
-                                    $"Failed to called \"OnRefreshFaceContainerDictHandler\" : {currentKeyGrade}");
+                Define.InGameGrade masteryGrade = initialCreatureData.FaceContainerLoaders[i].MasteryGrade;
+                int length = initialCreatureData.FaceContainerLoaders[i].FaceContainerKeyLoaders.Length;
+                FaceContainer[] faceContainers = new FaceContainer[length];
+                for (int j = 0; j < length; ++j)
+                {
+                    FaceContainerKeyLoader keyLoader = initialCreatureData.FaceContainerLoaders[i].FaceContainerKeyLoaders[j];
+                    faceContainers[j] = new FaceContainer();
+                    faceContainers[j].FaceType = keyLoader.FaceType;
+                    faceContainers[j].Eyebrows = Managers.Resource.Load<Sprite>(keyLoader.EyebrowsKey);
+                    if (ColorUtility.TryParseHtmlString(keyLoader.EyebrowsColor, out Color eyebrowsColor))
+                        faceContainers[j].EyebrowsColor = eyebrowsColor;
+                    else
+                    {
+                        Utils.LogStrong(nameof(CreatureRendererController), nameof(InitFace),
+                            $"Failed to load Eyebrows Color Code : {keyLoader.EyebrowsColor}");
+
+                        faceContainers[j].EyebrowsColor = Color.white;
+                    }
+
+                    faceContainers[j].Eyes = Managers.Resource.Load<Sprite>(keyLoader.EyesKey);
+                    if (ColorUtility.TryParseHtmlString(keyLoader.EyesColor, out Color eyesColor))
+                        faceContainers[j].EyesColor = eyesColor;
+                    else
+                    {
+                        Utils.LogStrong(nameof(CreatureRendererController), nameof(InitFace),
+                            $"Failed to load Eyes Color Code : {keyLoader.EyesColor}");
+
+                        faceContainers[j].EyesColor = Color.white;
+                    }
+
+                    faceContainers[j].Mouth = Managers.Resource.Load<Sprite>(keyLoader.MouthKey);
+                    if (ColorUtility.TryParseHtmlString(keyLoader.MouthColor, out Color mouthColor))
+                        faceContainers[j].MouthColor = mouthColor;
+                    else
+                    {
+                        Utils.LogStrong(nameof(CreatureRendererController), nameof(InitFace),
+                            $"Failed to load Eyes Color Code : {keyLoader.EyesColor}");
+
+                        faceContainers[j].EyesColor = Color.white;
+                    }
+                }
+
+                InitialLoadedFaceContainersDict.Add(masteryGrade, faceContainers);
+            }
+
+            InitFaceRef();
+            if (this.OwnerAsCreature.ObjectType == Define.ObjectType.Player)
+            {
+                OnRefreshRendererHandler(KeyGrade);
+                OnRefreshRenderer += OnRefreshRendererHandler;
+            }
+        }
+
+        private void InitFaceRef()
+        {
+            if (this.OwnerAsCreature.ObjectType != Define.ObjectType.Player && this.OwnerAsCreature.ObjectType != Define.ObjectType.Monster)
+            {
+                Utils.LogStrong(nameof(CreatureController), nameof(InitFaceRef),
+                    $"Only Player and Monster can access to \"InitCreatureFace\", Please Check in the Object Type : {this.OwnerAsCreature.ObjectType}");
                 return;
             }
 
-            if (CurrentGradeFaceContainerDict.Count > 0)
-                CurrentGradeFaceContainerDict.Clear();
+            FaceRef.CreatureType = this.OwnerAsCreature.ObjectType;
+            for (int i = 0; i < this.OwnerSPRs.Length; ++i)
+            {
+                if (this.OwnerSPRs[i].gameObject.name.Contains("Eyebrows"))
+                    FaceRef.EyebrowsSPR = this.OwnerSPRs[i];
+                else if (this.OwnerSPRs[i].gameObject.name.Contains("Eyes"))
+                    FaceRef.EyesSPR = this.OwnerSPRs[i];
+                else if (this.OwnerSPRs[i].gameObject.name.Contains("Mouth"))
+                    FaceRef.MouthSPR = this.OwnerSPRs[i];
+            }
+        }
 
-            this.CurrentKeyGrade = currentKeyGrade;
+        public override void EnterInGame()
+        {
+            this.FaceType = FaceType.Default;
+            ResetMaterial();
+        }
+
+        protected override void OnRefreshRendererHandler(Define.InGameGrade keyGrade)
+        {
+            if (InitialLoadedFaceContainersDict.TryGetValue(keyGrade, out FaceContainer[] initialLoadedFaceContainers) == false)
+            {
+                Utils.LogCritical(nameof(CreatureRendererController), nameof(OnRefreshRendererHandler),
+                                    $"Failed to called \"OnRefreshFaceContainerDictHandler\" : {keyGrade}");
+                return;
+            }
+            else if (this.KeyGrade == Define.InGameGrade.Ultimate)
+                return;
+
+            if (FaceContainerDict.Count > 0)
+                FaceContainerDict.Clear();
+
+            this.KeyGrade = keyGrade;
             for (int i = 0; i < initialLoadedFaceContainers.Length; ++i)
             {
                 FaceContainer faceContainer = new FaceContainer();
@@ -235,171 +317,201 @@ namespace STELLAREST_2D
                 faceContainer.Mouth = initialLoadedFaceContainers[i].Mouth;
                 faceContainer.MouthColor = initialLoadedFaceContainers[i].MouthColor;
 
-                CurrentGradeFaceContainerDict.Add(initialLoadedFaceContainers[i].FaceType, faceContainer);
+                FaceContainerDict.Add(initialLoadedFaceContainers[i].FaceType, faceContainer);
             }
 
-            Utils.Log($"Success OnRefreshFaceContainerHandler : {currentKeyGrade}");
+            RefreshModel(keyGrade);
         }
-        
-        public override void OnFaceDefaultHandler()
+
+        private void RefreshModel(Define.InGameGrade keyGrade)
         {
-            if (CurrentGradeFaceContainerDict.TryGetValue(FaceType.Default, out FaceContainer faceContainer) == false)
+            for (int i = 0; i < OwnerSPRs.Length; ++i)
+                OwnerSPRs[i].sprite = null;
+
+            SpriteRenderer[] nextSPRs = SpriteRenderers(keyGrade);
+            int length = Mathf.Max(OwnerSPRs.Length, nextSPRs.Length);
+            for (int i = 0; i < length; ++i)
             {
-                Utils.LogCritical(nameof(CreatureRendererController), nameof(OnFaceDefaultHandler),
-                    $"Faield to called \"OnFaceDefaultHandler\": {FaceType.Default}");
-                return;
-            }
-
-            if (this.OwnerAsCreature[CrowdControl.Stun])
-                return;
-
-            this.CurrentFaceType = FaceType.Default;
-            if (CreatureFace.CreatureType == Define.ObjectType.Player)
-            {
-                if (faceContainer.Eyebrows != null)
+                if ((i < OwnerSPRs.Length) && (i < nextSPRs.Length))
                 {
-                    CreatureFace.EyebrowsSPR.sprite = faceContainer.Eyebrows;
-                    CreatureFace.EyebrowsSPR.color = faceContainer.EyebrowsColor;
-                }
-
-                if (faceContainer.Eyes != null)
-                {
-                    CreatureFace.EyesSPR.sprite = faceContainer.Eyes;
-                    CreatureFace.EyesSPR.color = faceContainer.EyesColor;
-                }
-
-                if (faceContainer.Mouth != null)
-                {
-                    CreatureFace.MouthSPR.sprite = faceContainer.Mouth;
-                    CreatureFace.MouthSPR.color = faceContainer.MouthColor;
+                    if (nextSPRs[i].name.Contains(OwnerSPRs[i].name))
+                    {
+                        // nextSPRs[i].sprite가 갖고 있는것만 집어 넣어 넣으면 해결
+                        if (nextSPRs[i].sprite != null)
+                        {
+                            OwnerSPRs[i].gameObject.SetActive(nextSPRs[i].gameObject.activeSelf);
+                            OwnerSPRs[i].gameObject.GetComponent<SpriteRenderer>().enabled = nextSPRs[i].gameObject.activeSelf; // 추가
+                            OwnerSPRs[i].sprite = nextSPRs[i].sprite;
+                            OwnerSPRs[i].color = nextSPRs[i].color;
+                        }
+                    }
                 }
             }
-            else if (this.CreatureFace.CreatureType == Define.ObjectType.Monster)
-            {
-            }
+
+            Utils.Log($"Success OnRefreshFaceContainerHandler : {keyGrade}");
         }
 
-        public override void OnFaceCombatHandler()
+        public override void OnFaceDefaultHandler() => this.FaceType = FaceType.Default;
+        public override void OnFaceCombatHandler() => this.FaceType = FaceType.Combat;
+        public override void OnFaceDeadHandler() => this.FaceType = FaceType.Dead;
+        public override void OnDustVFXHandler() => Managers.VFX.Environment(VFXEnv.Dust, this.OwnerAsCreature);
+
+        public void FadeOut(Material matFadeOut, float duration = 1.25F)
         {
-            if (CurrentGradeFaceContainerDict.TryGetValue(FaceType.Combat, out FaceContainer faceContainer) == false)
+            if (IsChangingMaterial == false)
             {
-                Utils.LogCritical(nameof(CreatureRendererController), nameof(OnFaceDefaultHandler), 
-                    $"Faield to called \"OnFaceCombatHandler\": {FaceType.Combat}");
-                return;
-            }
-
-            this.CurrentFaceType = FaceType.Combat;
-            if (CreatureFace.CreatureType == Define.ObjectType.Player)
-            {
-                if (faceContainer.Eyebrows != null)
+                IsChangingMaterial = true;
+                for (int i = 0; i < OwnerSPRs.Length; ++i)
                 {
-                    CreatureFace.EyebrowsSPR.sprite = faceContainer.Eyebrows;
-                    CreatureFace.EyebrowsSPR.color = faceContainer.EyebrowsColor;
+                    if (OwnerSPRs[i].sprite != null)
+                        OwnerSPRs[i].material = matFadeOut;
                 }
 
-                if (faceContainer.Eyes != null)
-                {
-                    CreatureFace.EyesSPR.sprite = faceContainer.Eyes;
-                    CreatureFace.EyesSPR.color = faceContainer.EyesColor;
-                }
-
-                if (faceContainer.Mouth != null)
-                {
-                    CreatureFace.MouthSPR.sprite = faceContainer.Mouth;
-                    CreatureFace.MouthSPR.color = faceContainer.MouthColor;
-                }
-            }
-            else if (this.CreatureFace.CreatureType == Define.ObjectType.Monster)
-            {
+                StartCoroutine(CoFadeOut(duration));
             }
         }
 
-        public override void OnFaceDeadHandler()
+        private IEnumerator CoFadeOut(float duration)
         {
-            if (CurrentGradeFaceContainerDict.TryGetValue(FaceType.Dead, out FaceContainer faceContainer) == false)
+            Managers.VFX.Mat_Fade.SetFloat(Managers.VFX.SHADER_FADE, 1f);
+            float delta = 0f;
+            float percent = 1f;
+            while (percent > 0f)
             {
-                Utils.LogCritical(nameof(CreatureRendererController), nameof(OnFaceDefaultHandler),
-                    $"Faield to called \"OnFaceDeadHandler\": {FaceType.Dead}");
-                return;
-            }
-
-            CurrentFaceType = FaceType.Dead;
-            if (CreatureFace.CreatureType == Define.ObjectType.Player)
-            {
-                if (faceContainer.Eyebrows != null)
-                {
-                    CreatureFace.EyebrowsSPR.sprite = faceContainer.Eyebrows;
-                    CreatureFace.EyebrowsSPR.color = faceContainer.EyebrowsColor;
-                }
-
-                if (faceContainer.Eyes != null)
-                {
-                    CreatureFace.EyesSPR.sprite = faceContainer.Eyes;
-                    CreatureFace.EyesSPR.color = faceContainer.EyesColor;
-                }
-
-                if (faceContainer.Mouth != null)
-                {
-                    CreatureFace.MouthSPR.sprite = faceContainer.Mouth;
-                    CreatureFace.MouthSPR.color = faceContainer.MouthColor;
-                }
-            }
-            else if (this.CreatureFace.CreatureType == Define.ObjectType.Monster)
-            {
+                delta += Time.deltaTime;
+                percent = 1f - (delta / duration);
+                Managers.VFX.Mat_Fade.SetFloat(Managers.VFX.SHADER_FADE, percent);
+                yield return null;
             }
         }
 
-    // ============================================================================================================
-    // ============================================================================================================
-    // ============================================================================================================
-    // ============================================================================================================
-    // ============================================================================================================
-    // ============================================================================================================
-        // private void InitPlayerEyes()
-        // {
-        //     for (int i = 0; i < this.OwnerSPRs.Length; ++i)
-        //     {
-        //         if (this.OwnerSPRs[i].name.Contains("Eyes"))
-        //         {
-        //             PlayerEyes = this.OwnerSPRs[i].sprite;
-        //             PlayerEyesSPR = this.OwnerSPRs[i];
-        //         }
-        //     }
-        // }
+        public void HideFace(bool isOnHide)
+        {
+            switch (FaceRef.CreatureType)
+            {
+                case Define.ObjectType.Player:
+                    {
+                        if (isOnHide)
+                        {
+                            if (FaceRef.EyebrowsSPR.sprite != null)
+                                FaceRef.EyebrowsSPR.sprite = null;
 
-        // private void InitPlayerFace()
-        // {
-        //     if (this.PlayerFace != null)
-        //         return;
+                            if (FaceRef.EyesSPR.sprite != null)
+                                FaceRef.EyesSPR.sprite = null;
 
-        //     this.PlayerFace = new PlayerFace();
-        //     for (int i = 0; i < OwnerSPRs.Length; ++i)
-        //     {
-        //         if (this.OwnerSPRs[i].name.Contains("Eyebrows"))
-        //             this.PlayerFace.eyebrowsSPR = OwnerSPRs[i];
+                            if (FaceRef.MouthSPR.sprite != null)
+                                FaceRef.MouthSPR.sprite = null;
+                        }
+                        else
+                            ShowFace(Define.ObjectType.Player);
+                    }
+                    break;
 
-        //         if (this.OwnerSPRs[i].name.Contains("Eyes"))
-        //             this.PlayerFace.eyesSPR = OwnerSPRs[i];
+                case Define.ObjectType.Monster:
+                    {
+                        if (isOnHide)
+                        {
+                            if (FaceRef.EyesSPR.sprite != null)
+                                FaceRef.EyesSPR.sprite = null;
+                        }
+                        else
+                            ShowFace(Define.ObjectType.Monster);
+                    }
+                    break;
+            }
+        }
 
-        //         if (this.OwnerSPRs[i].name.Contains("Mouth"))
-        //             this.PlayerFace.mouthSPR = OwnerSPRs[i];
-        //     }
-        // }
+        private void ShowFace(Define.ObjectType creatureType)
+        {
+            if (creatureType == Define.ObjectType.Player)
+            {
+                switch (this.FaceType)
+                {
+                    case FaceType.Default:
+                        {
+                            if (FaceContainerDict.TryGetValue(FaceType.Default, out FaceContainer container))
+                            {
+                                FaceRef.EyebrowsSPR.sprite = container.Eyebrows;
+                                FaceRef.EyebrowsSPR.color = container.EyebrowsColor;
 
-        // private void LoadPlayerExpressionsData(InitialCreatureData initialCreatureData)
-        // {
-        //     GameObject go = Managers.Resource.Load<GameObject>(initialCreatureData.PrimaryLabel);
-        //     SpriteRenderer[] SPRs = go.GetComponentsInChildren<SpriteRenderer>(includeInactive: true);
-        //     BaseContainer[] BCs = new BaseContainer[SPRs.Length];
-        //     for (int i = 0; i < SPRs.Length; ++i)
-        //     {
-        //         Material matOrigin = new Material(SPRs[i].sharedMaterial);
-        //         Color colorOrigin = SPRs[i].color;
-        //         BCs[i] = new BaseContainer(SPRs[i].name, matOrigin, colorOrigin);
-        //     }
+                                FaceRef.EyesSPR.sprite = container.Eyes;
+                                FaceRef.EyesSPR.color = container.EyesColor;
 
-        //     // Moderator moderator = new Moderator();
-        //     // moderator.AddRendererContainers(Define.InGameGrade.Default, BCs, SPRs);
-        // }
+                                FaceRef.MouthSPR.sprite = container.Mouth;
+                                FaceRef.MouthSPR.color = container.MouthColor;
+                            }
+                        }
+                        break;
+
+                    case FaceType.Combat:
+                        {
+                            if (FaceContainerDict.TryGetValue(FaceType.Combat, out FaceContainer container))
+                            {
+                                FaceRef.EyebrowsSPR.sprite = container.Eyebrows;
+                                FaceRef.EyebrowsSPR.color = container.EyebrowsColor;
+
+                                FaceRef.EyesSPR.sprite = container.Eyes;
+                                FaceRef.EyesSPR.color = container.EyesColor;
+
+                                FaceRef.MouthSPR.sprite = container.Mouth;
+                                FaceRef.MouthSPR.color = container.MouthColor;
+                            }
+                        }
+                        break;
+
+                    case FaceType.Dead:
+                        {
+                            if (FaceContainerDict.TryGetValue(FaceType.Dead, out FaceContainer container))
+                            {
+                                FaceRef.EyebrowsSPR.sprite = container.Eyebrows;
+                                FaceRef.EyebrowsSPR.color = container.EyebrowsColor;
+
+                                FaceRef.EyesSPR.sprite = container.Eyes;
+                                FaceRef.EyesSPR.color = container.EyesColor;
+
+                                FaceRef.MouthSPR.sprite = container.Mouth;
+                                FaceRef.MouthSPR.color = container.MouthColor;
+                            }
+                        }
+                        break;
+                }
+            }
+            else if (creatureType == Define.ObjectType.Monster)
+            {
+                switch (this.FaceType)
+                {
+                    case FaceType.Default:
+                        {
+                            if (FaceContainerDict.TryGetValue(FaceType.Default, out FaceContainer container))
+                            {
+                                FaceRef.EyesSPR.sprite = container.Eyes;
+                                FaceRef.EyesSPR.color = container.EyesColor;
+                            }
+                        }
+                        break;
+
+                    case FaceType.Combat:
+                        {
+                            if (FaceContainerDict.TryGetValue(FaceType.Combat, out FaceContainer container))
+                            {
+                                FaceRef.EyesSPR.sprite = container.Eyes;
+                                FaceRef.EyesSPR.color = container.EyesColor;
+                            }
+                        }
+                        break;
+
+                    case FaceType.Dead:
+                        {
+                            if (FaceContainerDict.TryGetValue(FaceType.Dead, out FaceContainer container))
+                            {
+                                Utils.Log("Show Face Monster !!");
+                                FaceRef.EyesSPR.sprite = container.Eyes;
+                                FaceRef.EyesSPR.color = container.EyesColor;
+                            }
+                        }
+                        break;
+                }
+            }
+        }
     }
 }
