@@ -40,7 +40,7 @@ namespace STELLAREST_2D
 
                     case CrowdControl.Slience:
                         {
-                            if (IsCCStates(CrowdControl.Slience) == false)
+                            if (this[CrowdControl.Slience] == false)
                             {
                                 if (this.CreatureState == Define.CreatureState.Idle)
                                 {
@@ -50,6 +50,8 @@ namespace STELLAREST_2D
                             }
                         }
                         break;
+
+                    
                 }
             }
         }
@@ -73,7 +75,7 @@ namespace STELLAREST_2D
             if (onStartImmediately)
             {
                 IsCompleteReadyToAction = true;
-                if (this.IsCCStates(CrowdControl.Stun)) // CHECK THIS
+                if (this[CrowdControl.Stun]) // CHECK THIS
                     this.CreatureState = Define.CreatureState.Idle;
                 else
                     this.CreatureState = Define.CreatureState.Run;
@@ -92,7 +94,7 @@ namespace STELLAREST_2D
             }
 
             IsCompleteReadyToAction = true;
-            if (this.IsCCStates(CrowdControl.Stun))
+            if (this[CrowdControl.Stun])
                 this.CreatureState = Define.CreatureState.Idle;
             else
                 this.CreatureState = Define.CreatureState.Run;
@@ -127,11 +129,11 @@ namespace STELLAREST_2D
                 if (this.MainTarget != null)
                 {
                     toTargetDir = (MainTarget.Center.position - this.Center.position);
-                    if (this.IsCCStates(CrowdControl.Stun) == false && this.LockFlip == false)
+                    if (this[CrowdControl.Stun] == false && this.LockFlip == false)
                         Flip(toTargetDir.x > 0 ? -1 : 1);
                 }
 
-                if (this.IsCCStates(CrowdControl.Slience))
+                if (this[CrowdControl.Slience])
                 {
                     if (toTargetDir.sqrMagnitude > this.Stat.CollectRange * this.Stat.CollectRange)
                         this.CreatureState = Define.CreatureState.Run;

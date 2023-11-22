@@ -186,7 +186,7 @@ namespace STELLAREST_2D
             if (this.IsDeadState)
                 return;
 
-            if (IsCCStates(CrowdControl.Stun))
+            if (this[CrowdControl.Stun])
                 return;
 
             this.MoveDir = moveDir;
@@ -320,7 +320,7 @@ namespace STELLAREST_2D
         private void MoveByJoystick()
         {
             Vector3 dir = MoveDir.normalized * (Stat.MovementSpeed * this.SpeedModifier) * Time.deltaTime;
-            if (IsCCStates(CrowdControl.KnockBack) == false)
+            if (this[CrowdControl.KnockBack] == false)
                 transform.position += dir;
 
             if (IsMoving)

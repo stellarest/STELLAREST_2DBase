@@ -26,7 +26,6 @@ namespace STELLAREST_2D
         //private const float FIXED_AFTER_COMPLETED_CHARGE_WAIT_TIME = 0.5f;
         private const float FIXED_AFTER_COMPLETED_CHARGE_WAIT_TIME = 0.3f;
 
-
         [SerializeField] private AnimationCurve _chargeCurve = null;
         private bool _isEndOfSkill = false;
 

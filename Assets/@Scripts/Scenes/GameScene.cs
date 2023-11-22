@@ -63,7 +63,7 @@ namespace STELLAREST_2D
             Managers.VFX.Init();
             Managers.Collision.Init();
 
-            PlayerController player = this.SpawnPlayer(PlayerTemplateID.Gary_Paladin);
+            PlayerController player = this.SpawnPlayer(PlayerTemplateID.Kenneth_Assassin);
             //Managers.Game.OnGameStart += player.OnGameStartHandler;
             //Utils.Log("Add Event : Managers.Game.OnGameStart += player.OnGameStartHandler");
 

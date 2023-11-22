@@ -5,10 +5,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
-using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
-using TreeEditor;
-using Unity.VisualScripting;
 
 namespace STELLAREST_2D
 {
@@ -87,7 +84,7 @@ namespace STELLAREST_2D
             if (this.IsCompleteReadyToAction == false)
                 return false;
 
-            if (IsIdleState || IsSkillState || IsDeadState || this.IsCCStates(CrowdControl.Stun))
+            if (IsIdleState || IsSkillState || IsDeadState || this[CrowdControl.Stun])
                 return false;
 
             return true;
@@ -141,7 +138,7 @@ namespace STELLAREST_2D
             this.RigidBody.MovePosition(toTargetMovement);
             if (Utils.IsArriveToTarget(this.Center, this.MainTarget.transform, minDistance))
             {
-                if (IsCCStates(CrowdControl.Slience) == false)
+                if (this[CrowdControl.Slience] == false)
                     this.CreatureState = Define.CreatureState.Skill;
                 else
                     this.CreatureState = Define.CreatureState.Idle;
@@ -211,7 +208,7 @@ namespace STELLAREST_2D
                         Flip(toTargetDir.x > 0 ? -1 : 1);
                 }
 
-                if (IsCCStates(CrowdControl.Slience))
+                if (this[CrowdControl.Slience])
                 {
                     if (toTargetDir.sqrMagnitude > this.Stat.CollectRange * this.Stat.CollectRange)
                         this.CreatureState = Define.CreatureState.Run;
@@ -267,7 +264,7 @@ namespace STELLAREST_2D
                                             spawnObjectType: Define.ObjectType.Gem, isPooling: true);
 
             //StartCoroutine(CoDespawn());
-            StartCoroutine(Managers.VFX.CoFadeOut(this, 
+            StartCoroutine(Managers.VFX.CoMatFadeOut(this, 
                         startCallback: () => Managers.VFX.Environment(VFXEnv.Skull, this), 
                         endCallback: () => Managers.Object.Despawn(this)));
         }

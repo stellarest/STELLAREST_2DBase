@@ -8,6 +8,7 @@ using VFXImpact = STELLAREST_2D.Define.TemplateIDs.VFX.ImpactHit;
 using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
 using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 using STELLAREST_2D.UI;
+using UnityEditor.Rendering;
 
 namespace STELLAREST_2D
 {
@@ -68,20 +69,6 @@ namespace STELLAREST_2D
         {
             get => _ccStates[(int)crowdControlType % FIRST_CROWD_CONTROL_ID].IsOn;
             set => _ccStates[(int)crowdControlType % FIRST_CROWD_CONTROL_ID].IsOn = value;
-        }
-
-        public bool IsCCStates(params CrowdControl[] ccTypes)
-        {
-            for (int i = 0; i < ccTypes.Length; ++i)
-            {
-                if (ccTypes[i] == CrowdControl.None || ccTypes[i] == CrowdControl.MaxCount)
-                    return false;
-
-                if (this[ccTypes[i]])
-                    return true;
-            }
-
-            return false;
         }
 
         // +++ SKILLS +++
@@ -341,7 +328,7 @@ namespace STELLAREST_2D
             {
                 // DODGE
                 //Managers.VFX.Material(Define.MaterialType.Hologram, this);
-                StartCoroutine(Managers.VFX.CoHologram(this, 
+                StartCoroutine(Managers.VFX.CoMatHologram(this, 
                                     startCallback: () => this.CreatureRendererController.HideFace(true), 
                                     endCallback: () => this.CreatureRendererController.HideFace(false)));
 
@@ -385,9 +372,31 @@ namespace STELLAREST_2D
                 if (this.SkillBook.IsOnShield == false)
                 {
                     //Managers.VFX.Material(Define.MaterialType.Hit, this);
-                    StartCoroutine(Managers.VFX.CoHit(this, 
+                    StartCoroutine(Managers.VFX.CoMatHit(this, 
                                     startCallback: () => this.CreatureRendererController.HideFace(true), 
                                     endCallback: () => this.CreatureRendererController.HideFace(false)));
+                }
+            }
+        }
+
+        public void OnFixedDamaged(float fixedDamage, CrowdControl vfxForDamage = CrowdControl.None)
+        {
+            if (this.IsValid() == false || this.IsDeadState)
+                return;
+
+            this.Stat.Hp -= fixedDamage;
+            if (this.Stat.Hp <= 0)
+                this.CreatureState = Define.CreatureState.Dead;
+            
+            switch (vfxForDamage)
+            {
+                case CrowdControl.None:
+                    return;
+
+                case CrowdControl.Poison:
+                {
+                    Managers.VFX.PoisonDamage(this, fixedDamage);
+                    break;
                 }
             }
         }
@@ -544,6 +553,7 @@ namespace STELLAREST_2D
                     {
                         if (this[ccType] == false)
                         {
+                            Utils.Log("Apply Poison.");
                             StartCoroutine(Managers.CrowdControl.CoPoisoning(this, from));
                             TryContinuousCrowControl(this, from);
                         }
@@ -638,16 +648,6 @@ namespace STELLAREST_2D
                     break;
 
             }
-
-            // CHECK SUB CROWD CONTROL
-            // if (from.Data.ContinuousCrowdControlType != CrowdControl.None && 
-            //     Managers.Game.TryCrowdControl(from.Data.ContinuousCrowdControlRatio))
-            // {
-            //     if (this[from.Data.ContinuousCrowdControlType] == false)
-            //         StartCoroutine(Managers.CrowdControl.)
-            //     else
-            //         Utils.Log($"Already {from.Data.ContinuousCrowdControlType},,,");
-            // }
         }
 
         public void ClearCrowdControlStates()
@@ -868,4 +868,18 @@ namespace STELLAREST_2D
 //     SequenceSkill sequenceSkill = go.GetComponent<SequenceSkill>();
 //     sequenceSkill.InitOrigin(this, value);
 //     SkillBook.SkillGroupsDict.AddGroup(templateID, new SkillGroup(sequenceSkill));
+// }
+
+// public bool IsCCStates(params CrowdControl[] ccTypes)
+// {
+//     for (int i = 0; i < ccTypes.Length; ++i)
+//     {
+//         if (ccTypes[i] == CrowdControl.None || ccTypes[i] == CrowdControl.MaxCount)
+//             return false;
+
+//         if (this[ccTypes[i]])
+//             return true;
+//     }
+
+//     return false;
 // }

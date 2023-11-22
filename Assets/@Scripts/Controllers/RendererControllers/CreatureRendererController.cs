@@ -168,9 +168,11 @@ namespace STELLAREST_2D
             BaseContainer[] BCs = new BaseContainer[SPRs.Length];
             for (int i = 0; i < SPRs.Length; ++i)
             {
-                Material matOrigin = new Material(SPRs[i].sharedMaterial);
+                Material matCloned = new Material(SPRs[i].sharedMaterial);
+                //Material matCloned = new Material(SPRs[i].material);
+
                 Color colorOrigin = new Color(SPRs[i].color.r, SPRs[i].color.g, SPRs[i].color.g, SPRs[i].color.a);
-                BCs[i] = new BaseContainer(SPRs[i].name, matOrigin, colorOrigin);
+                BCs[i] = new BaseContainer(SPRs[i].name, matCloned, colorOrigin);
             }
             rendererModerator.AddRendererContainers(Define.InGameGrade.Default, BCs, SPRs);
 

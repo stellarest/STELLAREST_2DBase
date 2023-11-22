@@ -11,6 +11,9 @@ using MaterialType = STELLAREST_2D.Define.MaterialType;
 using MaterialColor = STELLAREST_2D.Define.MaterialColor;
 using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
 using System.Linq.Expressions;
+using UnityEngine.Tilemaps;
+using UnityEditorInternal;
+using TMPro;
 
 namespace STELLAREST_2D
 {
@@ -28,7 +31,8 @@ namespace STELLAREST_2D
         public readonly int SHADER_FADE_ALPHA = Shader.PropertyToID("_CustomFadeAlpha");
         public readonly int SHADER_STRONG_TINT_FADE = Shader.PropertyToID("_StrongTintFade");
         public readonly int SHADER_STRONG_TINT_COLOR = Shader.PropertyToID("_StrongTintTint");
-        public readonly int SHADER_INNER_OUTLINE = Shader.PropertyToID("_InnerOutlineFade");
+        public readonly int SHADER_INNER_OUTLINE_FADE = Shader.PropertyToID("_InnerOutlineFade");
+        public readonly int SHADER_POISON_FADE = Shader.PropertyToID("_PoisonFade");
 
         public void Init()
         {
@@ -42,7 +46,7 @@ namespace STELLAREST_2D
         }
 
         private const float FIXED_HIT_DURATION = 0.1F;
-        public IEnumerator CoHit(BaseController bc, System.Action startCallback = null, System.Action endCallback = null)
+        public IEnumerator CoMatHit(BaseController bc, System.Action startCallback = null, System.Action endCallback = null)
         {
             if (bc?.IsValid() == false)
                 yield break;
@@ -76,7 +80,8 @@ namespace STELLAREST_2D
 
         private const float FIXED_HOLOGRAM_DURATION = 0.05F;
         private const float FIXED_HOLOGRAM_SPEED_POWER = 20F;
-        public IEnumerator CoHologram(BaseController bc, System.Action startCallback = null, System.Action endCallback = null)
+        // 플레이어 혼자 쓸거면 clone 안해도 ㄱㅊ
+        public IEnumerator CoMatHologram(BaseController bc, System.Action startCallback = null, System.Action endCallback = null)
         {
             if (bc?.IsValid() == false)
                 yield break;
@@ -122,7 +127,7 @@ namespace STELLAREST_2D
                         }
 
                         bc.RendererController.ResetMaterial();
-                        endCallback.Invoke();
+                        endCallback?.Invoke();
                     }
                     break;
 
@@ -133,8 +138,9 @@ namespace STELLAREST_2D
             yield break;
         }
 
+        // 이것도 HIt처럼 매터리얼 클론해야함..
         private const float FIXED_FADE_OUT_DURATION = 1.25F;
-        public IEnumerator CoFadeOut(BaseController bc, System.Action startCallback = null, System.Action endCallback = null)
+        public IEnumerator CoMatFadeOut(BaseController bc, System.Action startCallback = null, System.Action endCallback = null)
         {
             if (bc?.IsValid() == false)
                 yield break;
@@ -144,8 +150,9 @@ namespace STELLAREST_2D
                 case Define.ObjectType.Monster:
                     {
                         startCallback?.Invoke();
-                        bc.RendererController.SetMaterial(Mat_Fade);
-                        Mat_Fade.SetFloat(SHADER_FADE_ALPHA, 1f);
+                        Material clonedMat = MakeClonedMaterial(Mat_Fade);
+                        clonedMat.SetFloat(SHADER_FADE_ALPHA, 1f);
+                        bc.RendererController.SetMaterial(clonedMat);
 
                         float delta = 0f;
                         float percent = 1f;
@@ -153,7 +160,7 @@ namespace STELLAREST_2D
                         {
                             delta += Time.deltaTime;
                             percent = 1f - (delta / FIXED_FADE_OUT_DURATION);
-                            Mat_Fade.SetFloat(SHADER_FADE_ALPHA, percent);
+                            clonedMat.SetFloat(SHADER_FADE_ALPHA, percent);
                             yield return null;
                         }
 
@@ -213,6 +220,7 @@ namespace STELLAREST_2D
             spr.material = matOrigin; // RESET MATERIAL
         }
 
+        private const float FIXED_MAT_INNER_OUTLINE_FADE_PING_PONG_INTERVAL = 0.5F;
         public IEnumerator CoMatInnerOutline(SpriteRenderer spr, float duration, System.Action callback = null)
         {
             if (spr.sprite == null)
@@ -223,7 +231,7 @@ namespace STELLAREST_2D
 
             Material matOrigin = spr.material;
             Material matCloned = new Material(Mat_InnerOutline);
-            matCloned.SetFloat(SHADER_INNER_OUTLINE, 0f);
+            matCloned.SetFloat(SHADER_INNER_OUTLINE_FADE, 0f);
             spr.material = matCloned;
 
             float delta = 0f;
@@ -234,15 +242,15 @@ namespace STELLAREST_2D
             while (deltaForDuration < duration)
             {
                 deltaForDuration += Time.deltaTime;
-
                 delta += Time.deltaTime;
+
                 if (isIncreasing)
-                    percent = delta / 0.5f;
+                    percent = delta / FIXED_MAT_INNER_OUTLINE_FADE_PING_PONG_INTERVAL;
                 else
-                    percent = 1f - (delta / 0.5f);
+                    percent = 1f - (delta / FIXED_MAT_INNER_OUTLINE_FADE_PING_PONG_INTERVAL);
 
                 if (percent <= 1f && percent >= 0f)
-                    matCloned.SetFloat(SHADER_INNER_OUTLINE, percent);
+                    matCloned.SetFloat(SHADER_INNER_OUTLINE_FADE, percent);
                 else
                 {
                     isIncreasing = !isIncreasing;
@@ -253,25 +261,71 @@ namespace STELLAREST_2D
             }
 
             callback?.Invoke();
-            matCloned.SetFloat(SHADER_INNER_OUTLINE, 0f);
+            matCloned.SetFloat(SHADER_INNER_OUTLINE_FADE, 0f);
             spr.material = matOrigin;
         }
 
         private bool IsChangingMaterial(BaseController bc) =>
                         (bc.RendererController.IsChangingMaterial || bc.RendererController == null);
 
+        private const float FIXED_MAT_POISON_PING_PONG_INTERVAL = 0.5F;        
+        private const float FIXED_POISON_DURATION = 5F;
+        public IEnumerator CoMatPoison(BaseController bc, float duration, System.Action startCallback = null, System.Action endCallback = null)
+        {
+            if (bc?.IsValid() == false)
+                yield break;
+
+            if (IsChangingMaterial(bc))
+                yield break;
+            
+            Material clonedMat = MakeClonedMaterial(Mat_Poison);
+            bc.RendererController.SetMaterial(clonedMat);
+            clonedMat.SetFloat(SHADER_POISON_FADE, 0f);
+
+            float delta = 0f;
+            float deltaForDuration = 0f;
+
+            float percent = 0f;
+            bool isIncreasing = true;
+            startCallback?.Invoke();
+
+            CreatureController cc = bc.GetComponent<CreatureController>();
+            while (deltaForDuration < duration)
+            {
+                if (cc != null && cc.IsDeadState)
+                {
+                    cc.RendererController.ResetMaterial();
+                    endCallback?.Invoke();
+                    yield break;
+                }
+
+                deltaForDuration += Time.deltaTime;
+                delta += Time.deltaTime;
+
+                if (isIncreasing)
+                    percent = delta / FIXED_MAT_POISON_PING_PONG_INTERVAL;
+                else
+                    percent = 1f - (delta / FIXED_MAT_POISON_PING_PONG_INTERVAL);
+
+                if (percent >= 0f && percent <= 1f)
+                    clonedMat.SetFloat(SHADER_POISON_FADE, percent);
+                else
+                {
+                   isIncreasing = !isIncreasing;
+                   delta = 0f;
+                }
+
+                yield return null;
+            }
+
+            bc.RendererController.ResetMaterial();
+            endCallback?.Invoke();
+        }
+
         //=======================================================================================================
         //=======================================================================================================
         //=======================================================================================================
 
-        public IEnumerator CoMatPoison(CreatureController target, float duration)
-        {
-            yield return null;
-        }
-        
-        //=======================================================================================================
-        //=======================================================================================================
-        //=======================================================================================================
         public void Muzzle(VFXMuzzle templateOrigin, CreatureController target)
         {
             Vector3 muzzlePoint = Vector3.zero;
@@ -341,7 +395,6 @@ namespace STELLAREST_2D
             }
 
             goImpactHit.transform.position = impactPoint;
-
             return goImpactHit;
         }
 
@@ -384,7 +437,6 @@ namespace STELLAREST_2D
         {
             if (cc.IsValid() == false)
                 return;
-
             if (damage <= 0f)
                 return;
 
@@ -410,9 +462,6 @@ namespace STELLAREST_2D
                 {
                     Managers.Resource.Load<GameObject>(PrefabLabels.VFX_ENV_DAMAGE_TO_MONSTER)
                                      .GetComponent<DamageNumber>().Spawn(spawnPos, damage);
-
-                    // Managers.Resource.Load<GameObject>(PrefabLabels.VFX_ENG_DAMAGE_POISON)
-                    //                     .GetComponent<DamageNumber>().Spawn(spawnPos, damage);
                 }
             }
             else // Damage to Player
@@ -440,7 +489,7 @@ namespace STELLAREST_2D
                                 : target.GetComponent<PlayerController>().LoadVFXEnvSpawnPos(VFXEnv.Damage);
 
             Managers.Resource.Load<GameObject>(PrefabLabels.VFX_ENG_DAMAGE_POISON)
-                                .GetComponent<DamageNumber>().Spawn(spawnPos, damage);
+                            .GetComponent<DamageNumber>().Spawn(spawnPos, damage, followedTransform: target.Center);
         }
 
         public void Percentage(CreatureController target, int percent)
@@ -564,6 +613,8 @@ namespace STELLAREST_2D
 
             return goVFX;
         }
+
+        private Material MakeClonedMaterial(Material matTarget) => new Material(matTarget);
     }
 }
 

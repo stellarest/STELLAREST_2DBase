@@ -4,9 +4,12 @@ using System.Collections.Generic;
 using STELLAREST_2D.Data;
 using UnityEngine;
 
+using DamageNumbersPro;
+
 using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
 using VFXImpact = STELLAREST_2D.Define.TemplateIDs.VFX.ImpactHit;
 using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
+using PrefabLabels = STELLAREST_2D.Define.Labels.Prefabs;
 
 namespace STELLAREST_2D
 {
@@ -196,10 +199,12 @@ namespace STELLAREST_2D
             }
         }
 
+        private const float FIXED_MIN_POISON_DOT_DMG_RATIO = 0.2F;
+        private const float FIXED_MAX_POISON_DOT_DMG_RATIO = 0.3F;
+        private const float FIXED_TAKE_DOT_DMG_INTERVAL = 0.25F;
         public IEnumerator CoPoisoning(CreatureController target, SkillBase from, bool isCalledFromContinuous = false)
         {
             float delta = 0f;
-            float percent = 0f;
             float duration = from.Data.CrowdControlDuration;
             if (isCalledFromContinuous)
                 duration = from.Data.ContinuousCrowdControlDuration;
@@ -208,13 +213,37 @@ namespace STELLAREST_2D
             if (isCalledFromContinuous)
                 intensity = from.Data.ContinuousCrowdControlIntensity;
 
-            // while (percent < 1f)
-            // {
-            //     delta += Time.deltaTime;
-            //     percent = delta / duration;
-            // }
+            target[CrowdControl.Poison] = true;
+            target.StartCoroutine(Managers.VFX.CoMatPoison(target, duration, delegate
+            {
+                target.RendererController.OnFaceDeadHandler();
+            }, delegate
+            {
+                target.RendererController.OnFaceDefaultHandler();
+            }));
 
-            yield return null;
+            float dotPoisionDmgInterval = 0f;
+            float minDotDmg = from.Data.MinDamage * FIXED_MIN_POISON_DOT_DMG_RATIO;
+            float maxDotDmg = from.Data.MaxDamage * FIXED_MAX_POISON_DOT_DMG_RATIO;
+            while (delta <= duration)
+            {
+                if (target.IsDeadState)
+                {
+                    target[CrowdControl.Poison] = false;
+                    yield break;
+                }
+
+                delta += Time.deltaTime;
+                dotPoisionDmgInterval += Time.deltaTime;
+                if (dotPoisionDmgInterval >= FIXED_TAKE_DOT_DMG_INTERVAL)
+                {
+                    target.OnFixedDamaged(Random.Range(minDotDmg, maxDotDmg), CrowdControl.Poison);
+                    dotPoisionDmgInterval = 0f;
+                }
+
+                yield return null;
+            }
+            target[CrowdControl.Poison] = false;
         }
     }
 }
