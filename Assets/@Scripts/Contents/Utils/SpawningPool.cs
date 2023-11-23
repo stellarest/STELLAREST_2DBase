@@ -8,7 +8,7 @@ namespace STELLAREST_2D
     public class  SpawningPool : MonoBehaviour
     {
         private float _spawnInterval = 1.25f; // 이것도 나중에 데이터 시트로 뺴야함. 무조건.
-        private const int MAX_MONSTER_COUNT = 5; // 나중에 데이터 시트로 빼야함
+        private const int MAX_MONSTER_COUNT = 1; // 나중에 데이터 시트로 빼야함
 
         private Coroutine _coUpdateSpawningPool;
         public bool Stopped { get; set; } = false;
@@ -41,7 +41,6 @@ namespace STELLAREST_2D
             // TEMP : DataID for spawning pos
             // Vector3 randPos = new Vector2(Random.Range(-5, 5), Random.Range(-5, 5));
             // Vector3 randPos = Utils.GenerateMonsterSpawnPosition(Managers.Game.Player.transform.position, 10f, 15f);
-
             // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
             // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
             // 1. Stage Data를 가져왔다고 가정.

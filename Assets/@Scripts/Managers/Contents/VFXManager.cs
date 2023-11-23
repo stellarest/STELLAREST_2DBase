@@ -294,8 +294,9 @@ namespace STELLAREST_2D
             {
                 if (cc != null && cc.IsDeadState)
                 {
-                    cc.RendererController.ResetMaterial();
-                    endCallback?.Invoke();
+                    // 어차피 Fade로 바뀌니까...
+                    //cc.RendererController.ResetMaterial();
+                    endCallback?.Invoke(); // 중복호출일수도 있지만 혹시 모르니
                     yield break;
                 }
 
@@ -325,7 +326,6 @@ namespace STELLAREST_2D
         //=======================================================================================================
         //=======================================================================================================
         //=======================================================================================================
-
         public void Muzzle(VFXMuzzle templateOrigin, CreatureController target)
         {
             Vector3 muzzlePoint = Vector3.zero;

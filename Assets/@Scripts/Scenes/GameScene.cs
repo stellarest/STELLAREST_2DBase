@@ -76,7 +76,6 @@ namespace STELLAREST_2D
 
             // Spawning Pool
             _spawningPool = gameObject.AddComponent<SpawningPool>();
-
             Managers.Game.OnKillCountChanged -= this.OnKillCountChangedHandler;
             Managers.Game.OnGemCountChanged += this.OnGemCountChangedHandler;
 
