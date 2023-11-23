@@ -9,6 +9,7 @@ using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
 using System.Diagnostics;
 using Debug = UnityEngine.Debug;
+using PlayerTemplateID = STELLAREST_2D.Define.TemplateIDs.Creatures.Player;
 
 namespace STELLAREST_2D
 {
@@ -25,7 +26,6 @@ namespace STELLAREST_2D
             this.HandLeft = handLeft;
             this.HandRight = handRight;
 
-            //this.LeftHandMeleeWeapon = leftHandMeleeWeapon;
             this.LegLeft = legLeft;
             this.LegRight = legRight;
 
@@ -44,9 +44,9 @@ namespace STELLAREST_2D
         [field: SerializeField] public Transform LegLeft { get; private set; } = null;
         [field: SerializeField] public Transform LegRight { get; private set; } = null;
 
-
         [field: SerializeField] public Transform HandLeft_MeleeWeapon { get; set; } = null;
         [field: SerializeField] public Transform HandRight_MeleeWeapon { get; set; } = null;
+        [field: SerializeField] public Transform RangedWeapon { get; set; } = null;
     }
 
     public class PlayerController : CreatureController
@@ -131,30 +131,56 @@ namespace STELLAREST_2D
             _prevLookAtDir = this.LookAtDir;
         }
 
-        protected override void InitChildObject()
+        protected override void InitChildObject(int templateID)
         {
-            base.InitChildObject();
-
+            base.InitChildObject(templateID);
             this.BodyParts = new PlayerBodyParts(
-                hair: Utils.PlayerBodyPartsHelper.Find(this.gameObject, Utils.PlayerBodyPartsHelper.HAIR),
-                armLeft: Utils.PlayerBodyPartsHelper.Find(this.gameObject, Utils.PlayerBodyPartsHelper.ARM_LEFT),
-                armRight: Utils.PlayerBodyPartsHelper.Find(this.gameObject, Utils.PlayerBodyPartsHelper.ARM_RIGHT),
-                handLeft: Utils.PlayerBodyPartsHelper.Find(this.gameObject, Utils.PlayerBodyPartsHelper.HAND_LEFT),
-                handRight: Utils.PlayerBodyPartsHelper.Find(this.gameObject, Utils.PlayerBodyPartsHelper.HAND_RIGHT),
-                legLeft: Utils.PlayerBodyPartsHelper.Find(this.gameObject, Utils.PlayerBodyPartsHelper.LEG_LEFT),
-                legRight: Utils.PlayerBodyPartsHelper.Find(this.gameObject, Utils.PlayerBodyPartsHelper.LEG_RIGHT)
+                hair: Utils.PlayerBodyPartsFinder.Find(this.gameObject, Utils.PlayerBodyPartsFinder.HAIR),
+                armLeft: Utils.PlayerBodyPartsFinder.Find(this.gameObject, Utils.PlayerBodyPartsFinder.ARM_LEFT),
+                armRight: Utils.PlayerBodyPartsFinder.Find(this.gameObject, Utils.PlayerBodyPartsFinder.ARM_RIGHT),
+                handLeft: Utils.PlayerBodyPartsFinder.Find(this.gameObject, Utils.PlayerBodyPartsFinder.HAND_LEFT),
+                handRight: Utils.PlayerBodyPartsFinder.Find(this.gameObject, Utils.PlayerBodyPartsFinder.HAND_RIGHT),
+                legLeft: Utils.PlayerBodyPartsFinder.Find(this.gameObject, Utils.PlayerBodyPartsFinder.LEG_LEFT),
+                legRight: Utils.PlayerBodyPartsFinder.Find(this.gameObject, Utils.PlayerBodyPartsFinder.LEG_RIGHT)
             );
 
-            this.BodyParts.HandLeft_MeleeWeapon = Utils.PlayerBodyPartsHelper.Find(this.BodyParts.HandLeft.gameObject, Utils.PlayerBodyPartsHelper.MELEE_WEAPON);
-            this.BodyParts.HandRight_MeleeWeapon = Utils.PlayerBodyPartsHelper.Find(this.BodyParts.HandRight.gameObject, Utils.PlayerBodyPartsHelper.MELEE_WEAPON);
             Center = Utils.FindChild<Transform>(AnimTransform.gameObject, "Pelvis", true);
+            SetPlayerWeapon(templateID);
+        }
 
-#if UNITY_EDITOR
-            if (this.BodyParts.Hair == null || this.BodyParts.ArmLeft == null || this.BodyParts.ArmRight == null ||
-                this.BodyParts.HandLeft == null || this.BodyParts.HandRight == null || this.BodyParts.LegLeft == null || this.BodyParts.LegRight == null ||
-                this.BodyParts.HandLeft_MeleeWeapon == null || this.BodyParts.HandRight_MeleeWeapon == null)
-                Utils.LogCritical(nameof(PlayerController), nameof(InitChildObject), "Failed to init Body Parts.");
-#endif
+        private void SetPlayerWeapon(int templateID)
+        {
+            switch (templateID)
+            {
+                case (int)PlayerTemplateID.Gary_Paladin:
+                    {
+                        this.BodyParts.HandLeft_MeleeWeapon = Utils.PlayerBodyPartsFinder.Find(this.BodyParts.HandLeft.gameObject, Utils.PlayerBodyPartsFinder.SHIELD);
+                        this.BodyParts.HandRight_MeleeWeapon = Utils.PlayerBodyPartsFinder.Find(this.BodyParts.HandRight.gameObject, Utils.PlayerBodyPartsFinder.MELEE_WEAPON);
+                    }
+                    break;
+
+                case (int)PlayerTemplateID.Gary_Knight:
+                case (int)PlayerTemplateID.Gary_PhantomKnight:
+                    this.BodyParts.HandRight_MeleeWeapon = Utils.PlayerBodyPartsFinder.Find(this.BodyParts.HandRight.gameObject, Utils.PlayerBodyPartsFinder.MELEE_WEAPON);
+                    break;
+
+                case (int)PlayerTemplateID.Reina_ArrowMaster:
+                case (int)PlayerTemplateID.Reina_ElementalArcher:
+                case (int)PlayerTemplateID.Reina_ForestGuardian:
+                    {
+                        GameObject foreArmL2 = Utils.FindChild(this.BodyParts.ArmLeft.gameObject, Utils.PlayerBodyPartsFinder.FOREARM_LEFT_2, true);
+                        this.BodyParts.RangedWeapon = Utils.PlayerBodyPartsFinder.Find(foreArmL2, Utils.PlayerBodyPartsFinder.BOW);
+                    }
+                    break;
+
+                case (int)PlayerTemplateID.Kenneth_Assassin:
+                case (int)PlayerTemplateID.Kenneth_Ninja:
+                    {
+                        this.BodyParts.HandLeft_MeleeWeapon = Utils.PlayerBodyPartsFinder.Find(this.BodyParts.HandLeft.gameObject, Utils.PlayerBodyPartsFinder.MELEE_WEAPON);
+                        this.BodyParts.HandRight_MeleeWeapon = Utils.PlayerBodyPartsFinder.Find(this.BodyParts.HandRight.gameObject, Utils.PlayerBodyPartsFinder.MELEE_WEAPON);
+                    }
+                    break;
+            }
         }
 
         private void AddCallbacks()
@@ -220,6 +246,7 @@ namespace STELLAREST_2D
             }
         }
 
+        bool testHideWeapon = false;
         private void Update()
         {
             if (this.IsDeadState)
@@ -251,16 +278,19 @@ namespace STELLAREST_2D
             // if (Input.GetKeyDown(KeyCode.Alpha0))
             //     this.RendererController.OnFaceDeadHandler();
 
-
             if (Input.GetKeyDown(KeyCode.K))
                 SkillBook.ActivateAll();
             if (Input.GetKeyDown(KeyCode.L))
                 SkillBook.DeactivateAll();
 
+            if (Input.GetKeyDown(KeyCode.T))
+            {
+                this.CreatureRendererController.HideWeapons(testHideWeapon);
+                testHideWeapon = !testHideWeapon;
+            }
 #endif
             MoveByJoystick();
             CollectGems();
-
             // foreach (var mon in Utils.GetMonstersInRange(this, 11f))
             //     Debug.DrawLine(this.Center.position, mon.Center.position, Color.magenta, -1f);
         }
@@ -479,6 +509,16 @@ namespace STELLAREST_2D
 
 // -------------------------------------------------------------------------------------
 // -------------------------------------------------------------------------------------
+// this.BodyParts.HandLeft_MeleeWeapon = Utils.PlayerBodyPartsFinder.Find(this.BodyParts.HandLeft.gameObject, Utils.PlayerBodyPartsFinder.MELEE_WEAPON);
+// this.BodyParts.HandRight_MeleeWeapon = Utils.PlayerBodyPartsFinder.Find(this.BodyParts.HandRight.gameObject, Utils.PlayerBodyPartsFinder.MELEE_WEAPON);
+
+// #if UNITY_EDITOR
+//             if (this.BodyParts.Hair == null || this.BodyParts.ArmLeft == null || this.BodyParts.ArmRight == null ||
+//                 this.BodyParts.HandLeft == null || this.BodyParts.HandRight == null || this.BodyParts.LegLeft == null || this.BodyParts.LegRight == null ||
+//                 this.BodyParts.HandLeft_MeleeWeapon == null || this.BodyParts.HandRight_MeleeWeapon == null)
+//                 Utils.LogCritical(nameof(PlayerController), nameof(InitChildObject), "Failed to init Body Parts.");
+// #endif
+
 // private void LateUpdate()
 // {
 //     // if (Managers.Game.IsGameStart)

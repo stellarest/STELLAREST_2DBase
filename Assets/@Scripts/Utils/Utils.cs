@@ -59,7 +59,7 @@ namespace STELLAREST_2D
             }
             else
             {
-                foreach (T comp in go.GetComponentsInChildren<T>())
+                foreach (T comp in go.GetComponentsInChildren<T>(includeInactive: true))
                 {
                     if (string.IsNullOrEmpty(name) || comp.name == name)
                         return comp;
@@ -285,12 +285,15 @@ namespace STELLAREST_2D
             return toList;
         }
 
-        public static class PlayerBodyPartsHelper
+        public static class PlayerBodyPartsFinder
         {
             public const string HAIR = "Hair";
 
             public const string ARM_LEFT = "ArmL";
             public const string ARM_RIGHT = "ArmR[1]";
+
+            public const string FOREARM_LEFT_1 = "ForearmL[1]";
+            public const string FOREARM_LEFT_2 = "ForearmL[2]";
 
             public const string HAND_LEFT = "HandL";
             public const string HAND_RIGHT = "HandR";
@@ -299,6 +302,8 @@ namespace STELLAREST_2D
             public const string LEG_RIGHT = "Leg[R]";
 
             public const string MELEE_WEAPON = "MeleeWeapon";
+            public const string SHIELD = "Shield";
+            public const string BOW = "Bow";
 
             public static Transform Find(GameObject go, string name) => Utils.FindChild<Transform>(go, name, true);
         }

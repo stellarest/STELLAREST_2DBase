@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using STELLAREST_2D.Data;
 using UnityEngine;
-using UnityEngine.U2D;
+
 using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 
 namespace STELLAREST_2D

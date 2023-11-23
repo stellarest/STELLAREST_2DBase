@@ -7,7 +7,7 @@ namespace STELLAREST_2D
 {
     public class  SpawningPool : MonoBehaviour
     {
-        private float _spawnInterval = 1.25f; // 이것도 나중에 데이터 시트로 뺴야함. 무조건.
+        private float _spawnInterval = 1.5f; // 이것도 나중에 데이터 시트로 뺴야함. 무조건.
         private const int MAX_MONSTER_COUNT = 1; // 나중에 데이터 시트로 빼야함
 
         private Coroutine _coUpdateSpawningPool;
@@ -49,7 +49,6 @@ namespace STELLAREST_2D
             // 4. 또한 CreatureData, CreatureStat, Stage, 또는 Wave 데이터에서 IsPooling에 대한 정보를 가져와서, 이를 바탕으로 오브젝트를 생성해야함
             // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
             // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-            
             Vector3 randPos = Utils.GetRandomPosition(Managers.Game.Player.transform.position, 5f, 20f);
             MonsterController mc = Managers.Object.Spawn<MonsterController>(randPos, (int)Define.TemplateIDs.Creatures.Monster.Chicken, Define.ObjectType.Monster, true);
             //MonsterController mc = Managers.Object.Spawn<MonsterController>(randPos, (int)Define.TemplateIDs.Monster.Chicken);

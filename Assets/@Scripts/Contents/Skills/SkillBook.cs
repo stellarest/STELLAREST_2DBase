@@ -301,7 +301,7 @@ namespace STELLAREST_2D
                             case SkillTemplate.ForestBarrier_Elite_Solo:
 
                             case SkillTemplate.PoisonDagger_Elite_Solo:
-                            case SkillTemplate.Cloaking_Elite_Solo:
+                            case SkillTemplate.Cloak_Elite_Solo:
                             case SkillTemplate.SmokeBomb_Elite_Solo:
                                 {
                                     if (skill.Data.OriginalTemplate == SkillTemplate.Shield_Elite_Solo)

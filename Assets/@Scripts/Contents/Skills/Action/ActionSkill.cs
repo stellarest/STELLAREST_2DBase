@@ -154,9 +154,7 @@ namespace STELLAREST_2D
     }
 }
 
-
 // private List<SequenceSkill> SequenceSkills = new List<SequenceSkill>();
-
 // private int _sequenceIdx = 0;
 // public void StartNextSequenceSkill()
 // {

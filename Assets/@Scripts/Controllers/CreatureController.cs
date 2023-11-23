@@ -131,7 +131,7 @@ namespace STELLAREST_2D
             if (Managers.Data.CreaturesDict.TryGetValue(templateID, out Data.InitialCreatureData creatureData) == false)
                 Utils.LogCritical(nameof(CreatureController), nameof(Init), $"TemplateID : {templateID}");
 
-            InitChildObject();
+            InitChildObject(templateID);
             InitBaseComponents();
             InitCrowdControlStates();
 
@@ -145,7 +145,7 @@ namespace STELLAREST_2D
                 Utils.LogCritical(nameof(CreatureController), nameof(Init), "You have to set \"Center\" in child before starting game.");
         }
 
-        protected virtual void InitChildObject()
+        protected virtual void InitChildObject(int templateID)
         {
             Indicator = Utils.FindChild<Transform>(this.gameObject,
                 Define.INDICATOR, true);
@@ -254,7 +254,8 @@ namespace STELLAREST_2D
                     GameObject go = Managers.Resource.Instantiate(data.PrimaryLabel);
                     go.transform.SetParent(goActionSkills.transform);
                     go.transform.localPosition = Vector3.zero;
-                    go.transform.localScale = Vector3.one;
+                    if (data.LoadPresetLocalScale == false)
+                        go.transform.localScale = Vector3.one;
 
                     ActionSkill actionSkill = go.GetComponent<ActionSkill>();
                     actionSkill.InitOrigin(this, data);
@@ -285,7 +286,8 @@ namespace STELLAREST_2D
                     GameObject go = Managers.Resource.Instantiate(data.PrimaryLabel);
                     go.transform.SetParent(goDefaultSkills.transform);
                     go.transform.localPosition = Vector3.zero;
-                    go.transform.localScale = Vector3.one;
+                    if (data.LoadPresetLocalScale == false)
+                        go.transform.localScale = Vector3.one;
 
                     DefaultSkill defaultSkill = go.GetComponent<DefaultSkill>();
                     defaultSkill.InitOrigin(this, data);

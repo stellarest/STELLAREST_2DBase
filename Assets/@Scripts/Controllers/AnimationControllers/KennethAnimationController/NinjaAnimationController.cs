@@ -12,7 +12,7 @@ namespace STELLAREST_2D
         private readonly int UPPER_ATTACK = Animator.StringToHash("ThrowKunai");
         private readonly int UPPER_ATTACK_ELITE = Animator.StringToHash("ThrowKunai_Elite");
         private readonly int UPPER_ATTACK_ULTIMATE = Animator.StringToHash("ThrowKunai_Ultimate");
-        private readonly int UPPER_ELITE_SEQUENCE = Animator.StringToHash("");
+        private readonly int UPPER_ELITE_SEQUENCE = Animator.StringToHash("UseCloak");
 
 
         private readonly int UPPER_ATTACK_MELEE = Animator.StringToHash("NinjaMelee2H");
@@ -27,19 +27,6 @@ namespace STELLAREST_2D
         public override void Ready() => AnimController.Play(UPPER_READY);
         public override void RunSkill()
         {
-            // NINJA MELEE SLASH TEMP
-            // if (this.Owner.SkillBook.GetFirstSkillGrade() > Define.InGameGrade.Default)
-            // {
-            //     CreatureController cc = Utils.GetClosestCreatureTargetFromAndRange<MonsterController>
-            //         (this.Owner.gameObject, this.Owner, this.Owner.Stat.CollectRange * 2);
-
-            //     if (cc != null)
-            //     {
-            //         AnimController.Play(UPPER_ATTACK_MELEE);
-            //         return;
-            //     }
-            // }
-
             switch (this.Owner.SkillAnimationType)
             {
                 case Define.SkillAnimationType.MasteryAction:

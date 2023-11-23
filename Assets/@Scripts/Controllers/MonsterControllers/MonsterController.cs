@@ -57,9 +57,9 @@ namespace STELLAREST_2D
             EnterInGame(templateID);
         }
 
-        protected override void InitChildObject()
+        protected override void InitChildObject(int templateID)
         {
-            base.InitChildObject();
+            base.InitChildObject(templateID);
             Center = Utils.FindChild<Transform>(AnimTransform.gameObject, "Body", true);
         }
 
@@ -95,8 +95,8 @@ namespace STELLAREST_2D
             if (this.CanEnterRunState() == false)
                 return;
 
-            if (this.MainTarget != null)
-                MoveToTarget(MainTarget, this.Stat.CollectRange * this.Stat.CollectRange);
+            // if (this.MainTarget != null)
+            //     MoveToTarget(MainTarget, this.Stat.CollectRange * this.Stat.CollectRange);
         }
 
         public void StartMovementToRandomPoint()

@@ -155,7 +155,7 @@ namespace STELLAREST_2D
 
                     // +++ NINJA +++
                     NinjaMastery = 300200,
-                    Cloaking_Elite_Solo = 300203,
+                    Cloak_Elite_Solo = 300203,
                     CloneTechnique_Ultimate_Solo = 300206,
 
                     // +++ THIEF +++
