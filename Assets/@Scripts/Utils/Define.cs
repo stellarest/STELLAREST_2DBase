@@ -43,14 +43,18 @@ namespace STELLAREST_2D
         public enum MaterialType { None = -1, Hit = 1, Hologram = 2, FadeOut = 3, StrongTint, InnerOutline }
         public enum MaterialColor { UsePreset = -1, White, Red, Green, }
 
-        public enum FaceType { Default = 1, Combat, Dead, }
+        public enum FaceType { Default = 1, Combat, Dead, Bunny, }
 
         public enum GemSize { Normal = 1, Large = 2 }
-        public enum SkillAnimationType { None = -1, MasteryAction = 1, EliteAction = 2, UltimateAction = 3 }
-
         public enum StrongTintColor { White, Red, Green }
-
-        
+        public enum SkillAnimationType
+        {
+            None = -1,
+            DefaultMasteryAction = 10001,
+            EliteAction = 20001,
+            ContinuousEliteAction = 20002,
+            UltimateAction = 30001
+        }
 
         public static class TemplateIDs
         {
@@ -156,7 +160,8 @@ namespace STELLAREST_2D
                     // +++ NINJA +++
                     NinjaMastery = 300200,
                     Cloak_Elite_Solo = 300203,
-                    CloneTechnique_Ultimate_Solo = 300206,
+                    NinjaSlash_Elite_Solo = 300206,
+                    CloneTechnique_Ultimate_Solo = 300209,
 
                     // +++ THIEF +++
                     ThiefMastery = 300300,
@@ -428,6 +433,12 @@ namespace STELLAREST_2D
                 public const string MAT_INNER_OUTLINE = "InnerOutline.mat";
                 public const string MAT_SPLIT_TONING = "SplitToning.mat";
                 public const string MAT_POISON = "Poison.mat";
+            }
+
+            public static class ScriptableObjects
+            {
+                public const string SO_SPT_BLOB = "SO_SPT_BLOB.asset";
+                public const string SO_SPT_POS = "SO_SPT_POS.asset";
             }
 
             public static class Data

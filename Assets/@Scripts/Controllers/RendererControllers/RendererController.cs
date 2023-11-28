@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using SpriteTrail;
 using STELLAREST_2D.Data;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace STELLAREST_2D
@@ -82,6 +84,32 @@ namespace STELLAREST_2D
         public SpriteRenderer[] OwnerSPRs { get; protected set; } = null;
         public bool IsChangingMaterial { get; protected set; } = false;
 
+        public SpriteTrail.SpriteTrail[] Trails { get; protected set; } = null;
+
+        public void EnableSpriteTrails(bool isOnEnable)
+        {
+            if (Trails.Length == 0)
+                return;
+
+            for (int i = 0; i < Trails.Length; ++i)
+                Trails[i].enabled = isOnEnable;
+        }
+
+        private TrailPreset currentTrail = null;
+        public void ChangeSpriteTrails(TrailPreset trailPreset)
+        {
+            if (Trails.Length == 0)
+                return;
+
+            if (currentTrail == trailPreset)
+                return;
+
+            for (int i = 0; i < Trails.Length; ++i)
+                Trails[i].SetTrailPreset(trailPreset);
+            
+            currentTrail = trailPreset;
+        }
+
         public void InitRendererController(BaseController owner)
         {
             this.Owner = owner;
@@ -92,6 +120,17 @@ namespace STELLAREST_2D
             this.InitRendererController(owner);
             this.OwnerAsCreature = owner.GetComponent<CreatureController>();
             this.OwnerSPRs = OwnerAsCreature.AnimTransform.GetComponentsInChildren<SpriteRenderer>(includeInactive: true);
+
+            for (int i = 0; i < this.OwnerSPRs.Length; ++i)
+            {
+                SpriteTrail.SpriteTrail SPT = this.OwnerSPRs[i].gameObject.GetOrAddComponent<SpriteTrail.SpriteTrail>();
+                SPT.SetTrailPreset(Managers.VFX.SO_SPT_BLOB);
+                SPT.m_OrderInSortingLayer = this.OwnerSPRs[i].sortingOrder;
+            }
+
+            currentTrail = Managers.VFX.SO_SPT_BLOB;
+            Trails = this.Owner.GetComponentsInChildren<SpriteTrail.SpriteTrail>(includeInactive: true);
+            EnableSpriteTrails(false);
         }
 
         public SpriteRenderer[] SpriteRenderers(Define.InGameGrade grade)

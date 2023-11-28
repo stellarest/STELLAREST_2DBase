@@ -20,7 +20,7 @@ namespace STELLAREST_2D
         {
             switch (this.Owner.SkillAnimationType)
             {
-                case Define.SkillAnimationType.MasteryAction:
+                case Define.SkillAnimationType.DefaultMasteryAction:
                     {
                         if (this.Owner.SkillBook.GetCurrentSkillGrade(SkillTemplate.AssassinMastery) < Define.InGameGrade.Ultimate)
                             AnimController.Play(UPPER_ATTACK);

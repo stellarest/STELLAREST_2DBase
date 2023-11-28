@@ -1,12 +1,38 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Callbacks;
 using UnityEngine;
+using UnityEngine.Jobs;
 
 namespace STELLAREST_2D
 {
     public class Dash : ActionSkill
     {
+#region Dash Sample
+        float dashDistance = 5f;
+        private void DashSample()
+        {
+            // 로그함수를 통해 점차 자연스럽게 멈추게 됨
+            // 이 공식을 사용하는 이유는 현재 설정된 리지드바디의 저항값을 로그 함수화 시켜서
+            // 점차적으로 느려지는 것을 볼 수 있게 Dash에 대한 Velocity를 계산한 것.
+            Vector3 dashVelocity = Vector3.Scale(transform.forward, 
+                dashDistance * new Vector3((Mathf.Log(1f / (Time.deltaTime * RigidBody.drag + 1))  / -Time.deltaTime), 
+                0, 
+                (Mathf.Log(1f / (Time.deltaTime * RigidBody.drag + 1))  / -Time.deltaTime)));
+            RigidBody.AddForce(dashVelocity, ForceMode2D.Force); // ForceMode.VelocityChange
+
+            /*
+              RigidBody.velocity = Vector3.Scale(DashToDir.normailzed, 
+                dashDistance * new Vector3((Mathf.Log(1f / (Time.deltaTime * RigidBody.drag + 1))  / -Time.deltaTime), 
+                (Mathf.Log(1f / (Time.deltaTime * RigidBody.drag + 1))  / -Time.deltaTime)), 
+                0);
+                
+            */
+        }
+
+#endregion
+
         private Rigidbody2D _rigidBody;
         private Coroutine _coroutine;
 

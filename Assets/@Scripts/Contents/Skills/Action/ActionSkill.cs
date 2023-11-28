@@ -24,8 +24,14 @@ namespace STELLAREST_2D
             int continuousCount = this.Data.ContinuousCount;
             Define.LookAtDirection lootAtDir = Owner.LookAtDir;
             Vector3 shootDir = Owner.ShootDir;
-            Vector3 localScale = Owner.LocalScale;
-            localScale *= 0.8f;
+            Vector3 localScale = transform.localScale;
+            if (this.Data.LoadPresetLocalScale == false)
+            {
+                localScale = Owner.LocalScale;
+                localScale *= 0.8f;
+            }
+            // Vector3 localScale = Owner.LocalScale;
+            // localScale *= 0.8f;
 
             Vector3 indicatorAngle = Owner.Indicator.eulerAngles;
             float movementSpeed = this.Data.MovementSpeed;
@@ -70,7 +76,7 @@ namespace STELLAREST_2D
             Vector3 spawnPosOnFirstPoint = (this.Data.IsOnFireSocket) ? this.Owner.FireSocketPosition : this.Owner.transform.position;
             for (int i = 0; i < continuousCount; ++i)
             {
-                Vector3 spawnPos = (this.Data.IsOnFireSocket) ? this.Owner.FireSocketPosition : this.Owner.transform.position;
+                Vector3 spawnPos = (this.Data.IsOnFireSocket) ? this.Owner.FireSocketPosition : (this.Owner.transform.position + (Vector3.up * this.Data.AddtionalSpawnHeightRatio));
                 if (Utils.IsThief(this.Owner))
                     spawnPos = spawnPosOnFirstPoint;
 
@@ -140,6 +146,15 @@ namespace STELLAREST_2D
 
             return (isAnyPlaying == false) ? true : false;
         }
+
+        public void TakeOnParticlesFromParent(ParticleSystem[] particles, Transform parentTarget)
+        {
+            particles[0].transform.SetParent(parentTarget);
+            for (int i = 0; i < particles.Length; ++i)
+                particles[i].transform.localPosition = Vector3.zero;
+        }
+
+        public void TakeOffParticlesFromParent(ParticleSystem[] particles) => particles[0].transform.SetParent(null);
 
         public override void Deactivate()
         {

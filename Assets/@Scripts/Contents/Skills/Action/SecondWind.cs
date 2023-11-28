@@ -138,7 +138,7 @@ namespace STELLAREST_2D
             anim.Ready();
 
             EnableParticles(_lastBuffs, true);
-            this.Owner.ReserveSkillAnimationType(Define.SkillAnimationType.MasteryAction);
+            this.Owner.ReserveSkillAnimationType(Define.SkillAnimationType.DefaultMasteryAction);
             this.Owner.CreatureState = Define.CreatureState.Skill;
             this.Owner.SkillBook.Activate(SkillTemplate.KnightMastery);
 

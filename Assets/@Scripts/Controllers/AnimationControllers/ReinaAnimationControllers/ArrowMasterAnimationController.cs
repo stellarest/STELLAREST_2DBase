@@ -19,7 +19,7 @@ namespace STELLAREST_2D
         {
             switch (this.Owner.SkillAnimationType)
             {
-                case Define.SkillAnimationType.MasteryAction:
+                case Define.SkillAnimationType.DefaultMasteryAction:
                     AnimController.Play(UPPER_ATTACK);
                     break;
 

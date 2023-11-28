@@ -247,7 +247,6 @@ namespace STELLAREST_2D
                     Utils.LogCritical(nameof(CreatureController), nameof(LoadActionSkills), 
                                 $"Failed to load Skill Data From SkillsDict, Check TemplateID : {templateID}");
 
-
                 for (int i = templateID; i < templateID + (int)dataOrigin.MaxGrade; ++i)
                 {
                     SkillData data = Managers.Data.SkillsDict[i];
@@ -259,10 +258,6 @@ namespace STELLAREST_2D
 
                     ActionSkill actionSkill = go.GetComponent<ActionSkill>();
                     actionSkill.InitOrigin(this, data);
-
-                    if (templateID == (int)SkillTemplate.StabPoisonDagger_Elite_Solo)
-                        Utils.Log("Hello");
-
                     SkillBook.SkillGroupsDict.AddGroup(templateID, new SkillGroup(actionSkill));
                 }
             }

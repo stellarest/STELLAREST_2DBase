@@ -40,7 +40,7 @@ namespace STELLAREST_2D
                 {
                     _barrierCount = BARRIER_MAX_COUNT;
                     EnableParticles(_particles, true);
-                    this.Owner.Stat.AddMovementRatio(0.2f);
+                    this.Owner.Stat.AddMovementSpeedRatio(0.2f);
                 }
                 else
                 {

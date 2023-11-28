@@ -135,6 +135,21 @@ namespace STELLAREST_2D
                             _faceType = value;
                         }
                         break;
+
+                    case FaceType.Bunny:
+                        {
+                            if (FaceContainerDict.TryGetValue(FaceType.Bunny, out FaceContainer faceContainer) == false)
+                            {
+                                Utils.LogCritical(nameof(CreatureRendererController), nameof(FaceType),
+                                    $"Faield to load faceContainer in \"FaceType(Property)\": {FaceType.Bunny}");
+                                return;
+                            }
+
+                            Utils.Log("Bunny Bunny !!");
+                            SetFace(faceContainer);
+                            _faceType = value;
+                        }
+                        break;
                 }
             }
         }
@@ -378,6 +393,7 @@ namespace STELLAREST_2D
             }
 
             RefreshModel(keyGrade);
+            OnFaceDefaultHandler();
         }
 
         private void RefreshModel(Define.InGameGrade keyGrade)
@@ -411,6 +427,7 @@ namespace STELLAREST_2D
         public override void OnFaceDefaultHandler() => this.FaceType = FaceType.Default;
         public override void OnFaceCombatHandler() => this.FaceType = FaceType.Combat;
         public override void OnFaceDeadHandler() => this.FaceType = FaceType.Dead;
+        public void OnFaceBunny() => this.FaceType = FaceType.Bunny;
         public override void OnDustVFXHandler() => Managers.VFX.Environment(VFXEnv.Dust, this.OwnerAsCreature);
 
         public void HideFace(bool isOnHide)
@@ -557,14 +574,14 @@ namespace STELLAREST_2D
             {
                 case (int)PlayerTemplateID.Gary_Paladin:
                     {
-                        WeaponsRef.HandLeft_MeleeWeapon.enabled = isOnHide;
-                        WeaponsRef.HandRight_MeleeWeapon.enabled = isOnHide;
+                        WeaponsRef.HandLeft_MeleeWeapon.enabled = (!isOnHide);
+                        WeaponsRef.HandRight_MeleeWeapon.enabled = (!isOnHide);
                     }
                     break;
 
                 case (int)PlayerTemplateID.Gary_Knight:
                 case (int)PlayerTemplateID.Gary_PhantomKnight:
-                    WeaponsRef.HandRight_MeleeWeapon.enabled = isOnHide;
+                    WeaponsRef.HandRight_MeleeWeapon.enabled = (!isOnHide);
                     break;
 
                 case (int)PlayerTemplateID.Reina_ArrowMaster:
@@ -572,7 +589,7 @@ namespace STELLAREST_2D
                 case (int)PlayerTemplateID.Reina_ForestGuardian:
                     {
                         for (int i = 0; i < WeaponsRef.RangedWeapon.Length; ++i)
-                            WeaponsRef.RangedWeapon[i].enabled = isOnHide;
+                            WeaponsRef.RangedWeapon[i].enabled = (!isOnHide);
                     }
                     break;
 
@@ -580,10 +597,14 @@ namespace STELLAREST_2D
                 case (int)PlayerTemplateID.Kenneth_Ninja:
                     {
                         if (WeaponsRef.HandLeft_MeleeWeapon.sprite != null)
-                            WeaponsRef.HandLeft_MeleeWeapon.enabled = isOnHide;
+                            WeaponsRef.HandLeft_MeleeWeapon.enabled = (!isOnHide);
 
                         if (WeaponsRef.HandRight_MeleeWeapon.sprite != null)
-                            WeaponsRef.HandRight_MeleeWeapon.enabled = isOnHide;
+                            WeaponsRef.HandRight_MeleeWeapon.enabled = (!isOnHide);
+
+                        Utils.Log("HIDE NINJA WEAPONS.");
+                        Utils.Log("HIDE NINJA WEAPONS.");
+                        Utils.Log("HIDE NINJA WEAPONS.");
                     }
                     break;
             }

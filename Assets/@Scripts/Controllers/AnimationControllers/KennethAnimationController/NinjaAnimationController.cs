@@ -12,10 +12,9 @@ namespace STELLAREST_2D
         private readonly int UPPER_ATTACK = Animator.StringToHash("ThrowKunai");
         private readonly int UPPER_ATTACK_ELITE = Animator.StringToHash("ThrowKunai_Elite");
         private readonly int UPPER_ATTACK_ULTIMATE = Animator.StringToHash("ThrowKunai_Ultimate");
-        private readonly int UPPER_ELITE_SEQUENCE = Animator.StringToHash("UseCloak");
-
-
-        private readonly int UPPER_ATTACK_MELEE = Animator.StringToHash("NinjaMelee2H");
+        
+        private readonly int UPPER_ELITE_ACTION = Animator.StringToHash("UseCloak");
+        private readonly int UPPER_CONTINUOUS_ELITE_ACTION = Animator.StringToHash("NinjaSlash");
         private readonly int LOWER_NINJA_RUN = Animator.StringToHash("NinjaRun");
         public override void Init(CreatureController owner)
         {
@@ -29,7 +28,7 @@ namespace STELLAREST_2D
         {
             switch (this.Owner.SkillAnimationType)
             {
-                case Define.SkillAnimationType.MasteryAction:
+                case Define.SkillAnimationType.DefaultMasteryAction:
                     {
                         if (this.Owner.SkillBook.GetCurrentSkillGrade(SkillTemplate.NinjaMastery) == Define.InGameGrade.Default)
                             AnimController.Play(UPPER_ATTACK);
@@ -43,7 +42,14 @@ namespace STELLAREST_2D
                 case Define.SkillAnimationType.EliteAction:
                     {
                         AnimController.StopPlayback();
-                        AnimController.Play(UPPER_ELITE_SEQUENCE);
+                        AnimController.Play(UPPER_ELITE_ACTION);
+                    }
+                    break;
+
+                case Define.SkillAnimationType.ContinuousEliteAction:
+                    {
+                        AnimController.StopPlayback();
+                        AnimController.Play(UPPER_CONTINUOUS_ELITE_ACTION);
                     }
                     break;
 

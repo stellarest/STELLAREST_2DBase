@@ -88,7 +88,7 @@ namespace STELLAREST_2D
 
         private float _movementSpeedOrigin = 0f;
         [field: SerializeField] public float MovementSpeed { get; set; }
-        public void AddMovementRatio(float ratio)
+        public void AddMovementSpeedRatio(float ratio)
         {
             _movementSpeedOrigin = this.MovementSpeed;
             this.MovementSpeed = this.MovementSpeed + (this.MovementSpeed * ratio);

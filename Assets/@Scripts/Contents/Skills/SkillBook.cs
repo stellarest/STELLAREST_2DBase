@@ -114,6 +114,12 @@ namespace STELLAREST_2D
                                 unlockSkill.Owner.AnimCallback.OnActiveMasteryAction += unlockSkill.GetComponent<ActionSkill>().OnActiveMasteryActionHandler;
                                 Utils.Log($"Add Event : AnimCallback.OnActiveMasteryAction += {unlockSkill.Data.Name}");
                             }
+                            else if (unlockSkill.Data.OriginalTemplate == SkillTemplate.NinjaSlash_Elite_Solo)
+                            {
+                                unlockSkill.Owner.AnimCallback.OnActiveMasteryAction -= unlockSkill.GetComponent<ActionSkill>().OnActiveMasteryActionHandler;
+                                unlockSkill.Owner.AnimCallback.OnActiveMasteryAction += unlockSkill.GetComponent<ActionSkill>().OnActiveMasteryActionHandler;
+                                Utils.Log($"Add Event : AnimCallback.OnActiveMasteryAction += {unlockSkill.Data.Name}");
+                            }
                         }
 
                         return unlockSkill;

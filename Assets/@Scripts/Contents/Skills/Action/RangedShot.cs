@@ -113,6 +113,7 @@ namespace STELLAREST_2D
                 return;
 
             Owner.AttackStartPoint = transform.position;
+            // this.Owner.ShowMuzzle(); // 고쳐야할듯.
             StartCoroutine(this.CoGenerateProjectile());
         }
 

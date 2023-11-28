@@ -8,7 +8,6 @@ using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 
 namespace STELLAREST_2D
 {
-    // Take off Burst from Parent
     public class PoisonDagger : ActionSkill
     {
         private ParticleSystem[] _chargeGroup = null;
@@ -89,11 +88,13 @@ namespace STELLAREST_2D
             }
             EnableParticles(_chargeGroup, false);
             
-            TakeOffFromParent(_burstGroup[0]);
+            //TakeOffFromParent(_burstGroup[0]);
+            TakeOffParticlesFromParent(_burstGroup);
             EnableParticles(_burstGroup, true);
 
             yield return new WaitUntil(() => this.WaitUntilEndOfPlayingParticles(_burstGroup));
-            TakeOnToParent(_burstGroup);
+            //TakeOnToParent(_burstGroup);
+            TakeOnParticlesFromParent(_burstGroup, this.transform);
 
             // 1 (Origin)
             StartCoroutine(Managers.VFX.CoMatInnerOutline(_ownerController.BodyParts.HandLeft_MeleeWeapon.GetComponent<SpriteRenderer>(),
@@ -115,7 +116,6 @@ namespace STELLAREST_2D
             
             _ownerController.PlayerAnimController.SetCanEnterNextState(true);
             yield return new WaitForSeconds(FIXED_AFTER_COMPLETED_CHARGE_WAIT_TIME);
-
             if (this.Owner.SkillBook.ForceGetSkillMember(SkillTemplate.StabPoisonDagger_Elite_Solo, 0).IsLearned == false)
             {
                 this.Owner.SkillBook.LevelUp(SkillTemplate.StabPoisonDagger_Elite_Solo);
@@ -133,9 +133,9 @@ namespace STELLAREST_2D
             this.Owner.ReserveSkillAnimationType(this.Data.AnimationType);
             Owner.CreatureState = Define.CreatureState.Skill;
 
-            _burstGroup[0].transform.SetParent(null);
-
-            TakeOffFromParent(_burstGroup[0]);
+            //_burstGroup[0].transform.SetParent(null);
+            //TakeOffFromParent(_burstGroup[0]);
+            TakeOffParticlesFromParent(_burstGroup);
             EnableParticles(_burstGroup, true);
 
             this.Owner.SkillBook.Deactivate(SkillTemplate.StabPoisonDagger_Elite_Solo);
@@ -143,7 +143,8 @@ namespace STELLAREST_2D
             yield return new WaitForSeconds(FIXED_AFTER_COMPLETED_CHARGE_WAIT_TIME);
             _ownerController.PlayerAnimController.SetCanEnterNextState(true);
 
-            TakeOnToParent(_burstGroup);
+            //TakeOnToParent(_burstGroup);
+            TakeOnParticlesFromParent(_burstGroup, this.transform);
             EnableParticles(_burstGroup, false);
 
             yield return new WaitForSeconds(FIXED_AFTER_COMPLETED_CHARGE_WAIT_TIME);
@@ -153,12 +154,14 @@ namespace STELLAREST_2D
             yield break; // END OF SKILL
         }
 
-        private void TakeOffFromParent(ParticleSystem particle) => particle.transform.SetParent(null);
-        private void TakeOnToParent(ParticleSystem[] particles)
-        {
-            particles[0].transform.SetParent(this.transform);
-            for (int i = 0; i < particles.Length; ++i)
-                particles[i].transform.localPosition = Vector3.zero;
-        }
+
+
+        // private void TakeOffFromParent(ParticleSystem particle) => particle.transform.SetParent(null);
+        // private void TakeOnToParent(ParticleSystem[] particles)
+        // {
+        //     particles[0].transform.SetParent(this.transform);
+        //     for (int i = 0; i < particles.Length; ++i)
+        //         particles[i].transform.localPosition = Vector3.zero;
+        // }
     }
 }

@@ -246,7 +246,6 @@ namespace STELLAREST_2D
             }
         }
 
-        bool testHideWeapon = false;
         private void Update()
         {
             if (this.IsDeadState)
@@ -285,8 +284,9 @@ namespace STELLAREST_2D
 
             if (Input.GetKeyDown(KeyCode.T))
             {
-                this.CreatureRendererController.HideWeapons(testHideWeapon);
-                testHideWeapon = !testHideWeapon;
+                CreatureRendererController.OnFaceBunny();
+                // this.CreatureRendererController.HideWeapons(testHideWeapon);
+                // testHideWeapon = !testHideWeapon;
             }
 #endif
             MoveByJoystick();

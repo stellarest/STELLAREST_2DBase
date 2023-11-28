@@ -10,10 +10,8 @@ using PrefabLabels = STELLAREST_2D.Define.Labels.Prefabs;
 using MaterialType = STELLAREST_2D.Define.MaterialType;
 using MaterialColor = STELLAREST_2D.Define.MaterialColor;
 using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
-using System.Linq.Expressions;
-using UnityEngine.Tilemaps;
-using UnityEditorInternal;
-using TMPro;
+using Unity.VisualScripting;
+using SpriteTrail;
 
 namespace STELLAREST_2D
 {
@@ -34,6 +32,10 @@ namespace STELLAREST_2D
         public readonly int SHADER_INNER_OUTLINE_FADE = Shader.PropertyToID("_InnerOutlineFade");
         public readonly int SHADER_POISON_FADE = Shader.PropertyToID("_PoisonFade");
 
+        public TrailPreset SO_SPT_BLOB { get; private set; } = null;
+        public TrailPreset SO_SPT_POS { get; private set; } = null;
+        
+
         public void Init()
         {
             MatHit_Monster = Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_HIT_WHITE);
@@ -43,6 +45,9 @@ namespace STELLAREST_2D
             Mat_StrongTint = Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_STRONG_TINT);
             Mat_InnerOutline = Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_INNER_OUTLINE);
             Mat_Poison = Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_POISON);
+
+            SO_SPT_BLOB = Managers.Resource.Load<TrailPreset>(Define.Labels.ScriptableObjects.SO_SPT_BLOB);
+            SO_SPT_POS = Managers.Resource.Load<TrailPreset>(Define.Labels.ScriptableObjects.SO_SPT_POS);
         }
 
         private const float FIXED_HIT_DURATION = 0.1F;
@@ -147,6 +152,7 @@ namespace STELLAREST_2D
 
             switch (bc.ObjectType)
             {
+                case Define.ObjectType.Player:
                 case Define.ObjectType.Monster:
                     {
                         startCallback?.Invoke();
@@ -171,6 +177,30 @@ namespace STELLAREST_2D
             }
 
             yield break;
+        }
+
+        private const float FIXED_INSTANTLY_FADE_ALPHA = 0.25F;
+        public IEnumerator CoMatFadeOutInstantly(BaseController bc, float duration, System.Action startCallback = null, System.Action endCallback = null)
+        {
+            if (bc?.IsValid() == false)
+                yield break;
+
+            startCallback?.Invoke();
+            Material clonedMat = MakeClonedMaterial(Mat_Fade);
+            clonedMat.SetFloat(SHADER_FADE_ALPHA, FIXED_INSTANTLY_FADE_ALPHA);
+            bc.RendererController.SetMaterial(clonedMat);
+
+            float delta = 0f;
+            float percent = 0f;
+            while (percent < 1f)
+            {
+                delta += Time.deltaTime;
+                percent = delta / duration;
+                yield return null;
+            }
+
+            bc.RendererController.ResetMaterial();
+            endCallback?.Invoke();
         }
 
         public IEnumerator CoMatStrongTint(MaterialColor matColor, BaseController bc, SpriteRenderer spr, float desiredTime, System.Action callback = null)
