@@ -219,7 +219,10 @@ namespace STELLAREST_2D
             if (moveDir == Vector3.zero)
                 CreatureState = Define.CreatureState.Idle;
             else
+            {
                 CreatureState = Define.CreatureState.Run;
+                this.LastMovementDir = moveDir;
+            }
         }
 
         public void OnGameStartHandler() => StartCoroutine(CoPlayerGameStart());
@@ -284,9 +287,11 @@ namespace STELLAREST_2D
 
             if (Input.GetKeyDown(KeyCode.T))
             {
-                CreatureRendererController.OnFaceBunny();
+                // CreatureRendererController.OnFaceBunny();
+
                 // this.CreatureRendererController.HideWeapons(testHideWeapon);
                 // testHideWeapon = !testHideWeapon;
+                CreatureRendererController.ChangeWeapon(SpriteManager.WeaponType.NinjaSword);
             }
 #endif
             MoveByJoystick();
@@ -339,12 +344,6 @@ namespace STELLAREST_2D
                     OnDead();
                     break;
             }
-        }
-
-        public Define.ExpressionType Testxpression = Define.ExpressionType.Default;
-        private void TEST_EXPRESSION()
-        {
-            Managers.Sprite.PlayerExpressionController.Expression(Testxpression);
         }
 
         private void MoveByJoystick()
@@ -479,9 +478,6 @@ namespace STELLAREST_2D
             IsStillDeadEyes();
 #endif
         }
-
-        public void Expression(Define.ExpressionType expression, float duration)
-            => StartCoroutine(Managers.Sprite.PlayerExpressionController.CoExpression(expression, duration));
 
         private void OnDestroy()
             => RemoveCallbacks();

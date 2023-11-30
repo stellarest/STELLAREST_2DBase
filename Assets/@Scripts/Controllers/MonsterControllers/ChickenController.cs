@@ -114,7 +114,8 @@ namespace STELLAREST_2D
             if (_coIdleTick != null)
                 return;
 
-            _coIdleTick = StartCoroutine(CoIdleTick());
+            if (this.IsValid())
+                _coIdleTick = StartCoroutine(CoIdleTick());
         }
 
         protected override IEnumerator CoIdleTick()
@@ -170,6 +171,9 @@ namespace STELLAREST_2D
                 case VFXEnv.Slow:
                     return new Vector3(1.85f, 1f, 1f);
 
+                case VFXEnv.QuestionMark:
+                    return Vector3.one * 2.5f;
+
                 default:
                     return base.LoadVFXEnvSpawnScale(templateOrigin);
             }
@@ -200,6 +204,9 @@ namespace STELLAREST_2D
 
                 case VFXEnv.Targeted:
                     return Center.position;
+
+                case VFXEnv.QuestionMark:
+                    return Center.position + (Vector3.up * 2f);
 
                 default:
                     return base.LoadVFXEnvSpawnPos(templateOrigin);

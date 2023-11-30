@@ -346,39 +346,6 @@ namespace STELLAREST_2D
             Managers.Resource.Destroy(go);
         }
 
-        // public void UpgradePlayerBuffEffect() => _upgradePlayerBuffEffect.SetActive(true);
-        public void StartHitEffect(CreatureController cc)
-        {
-            //CreatureMaterial[] mats = _creatureMats[cc.CharaData.TemplateID];
-            CreatureMaterial[] mats = _creatureMats[cc.gameObject];
-
-            if (cc?.IsMonster == false)
-            {
-                Managers.Sprite.PlayerExpressionController.Hit();
-            }
-
-            for (int i = 0; i < mats.Length; ++i)
-            {
-                if (cc?.IsMonster == false)
-                    mats[i].spriteRender.material = _matHitRed;
-                else
-                    mats[i].spriteRender.material = _matHitWhite;
-
-                mats[i].spriteRender.material.SetFloat(SHADER_HIT_EFFECT, 1);
-            }
-        }
-
-        public void EndHitEffect(CreatureController cc)
-        {
-            CreatureMaterial[] mats = _creatureMats[cc.gameObject];
-
-            for (int i = 0; i < mats.Length; ++i)
-                mats[i].spriteRender.material = mats[i].matOrigin;
-
-            if (cc?.IsMonster == false)
-                Managers.Sprite.PlayerExpressionController.EndHit();
-        }
-
         public void ShowSpawnEffect(string effectLabel, Vector3 position)
         {
             GameObject go = Managers.Resource.Instantiate(effectLabel, pooling: true);

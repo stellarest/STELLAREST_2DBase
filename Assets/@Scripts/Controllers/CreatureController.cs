@@ -115,6 +115,10 @@ namespace STELLAREST_2D
 
         private Vector3 _moveDir = Vector3.zero;
         public Vector3 MoveDir { get => _moveDir; protected set { _moveDir = value.normalized; } }
+
+        private Vector3 _lastMovementDir = Vector3.right;
+        public Vector3 LastMovementDir { get => _lastMovementDir; protected set{ _lastMovementDir = value.normalized; } }
+
         public bool IsMoving => _moveDir != Vector3.zero;
 
         public Vector3 AttackStartPoint { get; set; } = Vector3.zero;
@@ -155,8 +159,6 @@ namespace STELLAREST_2D
 
             AnimTransform = Utils.FindChild<Transform>(this.gameObject,
                 Define.ANIMATION_BODY, true);
-
-            //SPRs = AnimTransform.GetComponentsInChildren<SpriteRenderer>(includeInactive: true);
         }
 
         protected virtual void InitBaseComponents()
@@ -253,7 +255,7 @@ namespace STELLAREST_2D
                     GameObject go = Managers.Resource.Instantiate(data.PrimaryLabel);
                     go.transform.SetParent(goActionSkills.transform);
                     go.transform.localPosition = Vector3.zero;
-                    if (data.LoadPresetLocalScale == false)
+                    if (data.UsePresetLocalScale == false)
                         go.transform.localScale = Vector3.one;
 
                     ActionSkill actionSkill = go.GetComponent<ActionSkill>();
@@ -281,7 +283,7 @@ namespace STELLAREST_2D
                     GameObject go = Managers.Resource.Instantiate(data.PrimaryLabel);
                     go.transform.SetParent(goDefaultSkills.transform);
                     go.transform.localPosition = Vector3.zero;
-                    if (data.LoadPresetLocalScale == false)
+                    if (data.UsePresetLocalScale == false)
                         go.transform.localScale = Vector3.one;
 
                     DefaultSkill defaultSkill = go.GetComponent<DefaultSkill>();
@@ -464,6 +466,7 @@ namespace STELLAREST_2D
         public virtual float ADDITIONAL_SPAWN_HEIGHT { get; protected set; } = 0f;
 
         protected virtual float ReadyToActionCompleteTime() => 1f;
+        
         public virtual Vector3 LoadVFXEnvSpawnScale(VFXEnv templateOrigin) => Vector3.one;
         public virtual Vector3 LoadVFXEnvSpawnPos(VFXEnv templateOrigin) => this.Center.transform.position;
 

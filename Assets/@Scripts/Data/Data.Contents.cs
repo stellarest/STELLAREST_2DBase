@@ -97,7 +97,8 @@ namespace STELLAREST_2D.Data
         public bool HasEventHandler;
         public bool IsProjectile;
         public bool IsOnFireSocket;
-        public bool LoadPresetLocalScale;
+        public bool UsePresetLocalScale;
+        public bool UsePresetParticleInfo;
         public float AddtionalSpawnHeightRatio;
         public Define.InGameGrade Grade;
         public Define.InGameGrade MaxGrade;

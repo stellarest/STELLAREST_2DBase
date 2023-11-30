@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.HeroEditor.Common.Scripts.Common;
 using DamageNumbersPro;
 using STELLAREST_2D.Data;
 using UnityEngine;
@@ -608,6 +607,13 @@ namespace STELLAREST_2D
                     }
                     break;
             }
+        }
+
+        public void ChangeWeapon(SpriteManager.WeaponType type)
+        {
+            Sprite spriteWeapon = Managers.Sprite.LoadWeapon(type);
+            WeaponsRef.HandLeft_MeleeWeapon.sprite = spriteWeapon;
+            WeaponsRef.HandRight_MeleeWeapon.sprite = spriteWeapon;
         }
     }
 }

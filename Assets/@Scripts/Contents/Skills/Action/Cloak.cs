@@ -6,8 +6,10 @@ using System.Text;
 using STELLAREST_2D;
 using STELLAREST_2D.Data;
 using UnityEngine;
+using UnityEngine.VFX;
 
 using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
+using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
 
 namespace STELLAREST_2D
 {
@@ -66,9 +68,9 @@ namespace STELLAREST_2D
 
         private void StartCloak()
         {
-            this.Owner.RendererController.ChangeSpriteTrails(Managers.VFX.SO_SPT_POS);
-            this.Owner.RendererController.EnableSpriteTrails(true);
-            
+            Managers.Game.OnStopAction?.Invoke(true);
+            Managers.Game.OnVFXEnvTarget?.Invoke(VFXEnv.QuestionMark);
+
             this.Owner.CreatureRendererController.OnFaceBunny();
             this.Owner.Stat.AddMovementSpeedRatio(FIXED_ADD_MOVEMENT_RATIO);
         }
@@ -81,12 +83,15 @@ namespace STELLAREST_2D
             StartCoroutine(CoNinjaSlash());
         }
 
-        private const float FIXED_NINJA_SLASH_START_DASH_SPEED = 80F;
+        private const float FIXED_NINJA_SLASH_START_DASH_SPEED = 60F;
         private const float FIXED_NINJA_SLASH_DASH_SPEED_LOG_DECAY_FACTOR = 2F;
         private const float FIXED_NINJA_SLASH_MINIMUM_DASH_SPEED = 1F;
         private const float FIXED_NINJA_SLASH_ADDITIONAL_END_TIME = 0.25F;
         private IEnumerator CoNinjaSlash()
         {
+            this.Owner.CreatureRendererController.HideWeapons(false);
+            //_ownerController.CreatureRendererController.ChangeWeapon(SpriteManager.WeaponType.NinjaSword); 이거 의미가 없는것같기도 하고
+
             SkillBase ninjaSlash = this.Owner.SkillBook.ForceGetSkillMember(SkillTemplate.NinjaSlash_Elite_Solo, 0);
             if (ninjaSlash.IsLearned == false)
             {
@@ -99,10 +104,13 @@ namespace STELLAREST_2D
             this.Owner.RigidBody.constraints &= ~RigidbodyConstraints2D.FreezePositionX;
             this.Owner.RigidBody.constraints &= ~RigidbodyConstraints2D.FreezePositionY;
 
+            this.Owner.RendererController.EnableSpriteTrails(true);
             float dashSpeed = FIXED_NINJA_SLASH_START_DASH_SPEED;
             while (dashSpeed > 0f)
             {
                 Vector2 dashDirection = Owner.MoveDir;
+                //Vector2 dashDirection = Owner.LastMovementDir; 화면 밖으로 넘어감
+
                 float timeFactor = Mathf.Log(FIXED_NINJA_SLASH_DASH_SPEED_LOG_DECAY_FACTOR + 1) / Time.deltaTime;
                 if (dashSpeed <= 1f)
                 {
@@ -124,6 +132,7 @@ namespace STELLAREST_2D
 
             yield return new WaitForSeconds(ninjaSlash.Data.Duration + FIXED_NINJA_SLASH_ADDITIONAL_END_TIME);
             this.Owner.Stat.ResetMovementSpeed();
+            Managers.Game.OnStopAction?.Invoke(false);
 
             this.Owner.SkillBook.Deactivate(SkillTemplate.NinjaSlash_Elite_Solo);
             this.Owner.SkillBook.Deactivate(SkillTemplate.Cloak_Elite_Solo);

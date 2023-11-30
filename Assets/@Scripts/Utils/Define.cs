@@ -280,7 +280,6 @@ namespace STELLAREST_2D
                     Damage,
                     Dodge,
 
-
                     Skull,
                     Dust,
                     Stun,
@@ -292,6 +291,7 @@ namespace STELLAREST_2D
                     GemGather,
                     GemExplosion,
                     Font_Percentage,
+                    QuestionMark,
 
                     KnockBack,
                     WindTrail,
@@ -349,6 +349,7 @@ namespace STELLAREST_2D
                 public const string VFX_ENV_FONT_PERCENTAGE = "VFX_Env_Font_Percentage.prefab";
                 public const string VFX_ENV_TARGETED = "VFX_Env_Targeted.prefab";
                 public const string VFX_ENV_FONT_HIT = "VFX_Env_Font_Hit.prefab";
+                public const string VFX_ENV_QUESTION_MARK = "VFX_Env_QuestionMark.prefab";
 
                 // ENV
                 public const string ENV_GEM = "Env_Gem.prefab";

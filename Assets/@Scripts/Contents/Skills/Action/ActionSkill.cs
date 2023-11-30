@@ -25,7 +25,7 @@ namespace STELLAREST_2D
             Define.LookAtDirection lootAtDir = Owner.LookAtDir;
             Vector3 shootDir = Owner.ShootDir;
             Vector3 localScale = transform.localScale;
-            if (this.Data.LoadPresetLocalScale == false)
+            if (this.Data.UsePresetLocalScale == false)
             {
                 localScale = Owner.LocalScale;
                 localScale *= 0.8f;

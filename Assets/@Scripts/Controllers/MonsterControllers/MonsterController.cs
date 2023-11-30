@@ -6,6 +6,7 @@ using UnityEngine.Rendering;
 
 using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
 using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
+using UnityEngine.VFX;
 
 namespace STELLAREST_2D
 {
@@ -41,6 +42,8 @@ namespace STELLAREST_2D
         [SerializeField] private Sprite _deadHead = null;
         public Sprite DeadHead => _deadHead;
 
+        protected Coroutine _coMoveToRandomPoint = null;
+
         public override void Init(int templateID)
         {
             if (this.IsFirstPooling)
@@ -49,8 +52,16 @@ namespace STELLAREST_2D
                 LateInit();
                 MonsterAnimController = AnimController as MonsterAnimationController;
                 Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.MonsterBody);
+                
                 Managers.Game.OnPlayerIsDead += OnPlayerIsDeadHandler;
-                Utils.Log("Add Event : OnPlayerIsDeadHandler");
+                Utils.Log("Add Event : OnPlayerIsDead += OnPlayerIsDeadHandler");
+
+                Managers.Game.OnVFXEnvTarget += OnVFXEnvTargetHandler;
+                Utils.Log("Add Event : OnVFXEnvTarget += OnVFXEnvTargetHandler");
+
+                Managers.Game.OnStopAction += OnStopActionHandler;
+                Utils.Log("Add Event : OnStopAction += OnStopActionHandler");
+
                 this.IsFirstPooling = false;
             }
 
@@ -102,8 +113,8 @@ namespace STELLAREST_2D
         public void StartMovementToRandomPoint()
         {
             this.SkillBook.DeactivateAll();
-            if (this.IsValid())
-                StartCoroutine(CoMoveToRandomPoint());
+            if (this.IsValid() && _coMoveToRandomPoint == null)
+                _coMoveToRandomPoint = StartCoroutine(CoMoveToRandomPoint());
         }
 
         private readonly float MIN_MOVE_TO_RANDOM_POINT_DELAY = 3f;
@@ -234,6 +245,22 @@ namespace STELLAREST_2D
             StartMovementToRandomPoint();
         }
 
+        public void OnStopActionHandler(bool isOnStop)
+        {
+            if (isOnStop)
+            {
+                MainTarget = null;
+                this.CreatureState = Define.CreatureState.Idle;
+            }
+            else
+            {
+                MainTarget = Managers.Game.Player;
+                this.CreatureState = Define.CreatureState.Run;
+            }
+        }
+
+        public void OnVFXEnvTargetHandler(VFXEnv vfxEnvType) => Managers.VFX.Environment(vfxEnvType, this);
+
         public override void OnDamaged(CreatureController attacker, SkillBase from)
         {
             // 한대 맞았을 때 바로 움직이게 했던 것임
@@ -287,8 +314,20 @@ namespace STELLAREST_2D
         {
             if (Managers.Game.OnPlayerIsDead != null)
             {
-                Utils.Log("Release Event : OnPlayerIsDeadHandler");
                 Managers.Game.OnPlayerIsDead -= OnPlayerIsDeadHandler;
+                Utils.Log("Release Event : OnPlayerIsDead -= OnPlayerIsDeadHandler");
+            }
+
+            if (Managers.Game.OnVFXEnvTarget != null)
+            {
+                Managers.Game.OnVFXEnvTarget -= OnVFXEnvTargetHandler;
+                Utils.Log("Release Event : OnVFXEnvTarget -= OnVFXEnvTargetHandler");
+            }
+
+            if (Managers.Game.OnStopAction != null)
+            {
+                Managers.Game.OnStopAction -= OnStopActionHandler;
+                Utils.Log("Release Event : OnStopAction -= OnStopActionHandler");
             }
         }
 

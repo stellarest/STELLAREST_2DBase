@@ -66,38 +66,6 @@ namespace STELLAREST_2D
             // cc.CoCCKnockBack(cc, dir, duration);
         }
 
-        public IEnumerator CoStun(CreatureController cc, GameObject goCCEffect, float duration)
-        {
-            //cc.GoCCEffect = goCCEffect;
-            // cc[Define.TemplateIDs.CCType.Stun] = true; // !!! 인덱서로 Set 할것. 반드시 !!!
-            MonsterController mc = null;
-            if (cc?.IsMonster == true)
-            {
-                mc = cc.GetComponent<MonsterController>();
-                Managers.Sprite.SetMonsterFace(mc, Define.MonsterFace.Death);
-            }
-
-            float t = 0f;
-            float percent = 0f;
-            while (percent < 1f)
-            {
-                //goCCEffect.transform.position = ApplyCCEffectPosition(cc, Define.TemplateIDs.CCType.Stun);
-                t += Time.deltaTime;
-                percent = t / duration;
-                yield return null;
-            }
-
-            //cc.GoCCEffect = null;
-            Managers.Resource.Destroy(goCCEffect);
-            //cc[Define.TemplateIDs.CCType.Stun] = false;
-
-            if (cc?.IsMonster == true)
-            {
-                Managers.Sprite.SetMonsterFace(mc, Define.MonsterFace.Normal);
-                //mc.CoStartReadyToAction(false);
-            }
-        }
-
         public IEnumerator CoKnockBack(CreatureController cc, Vector3 attackerShootDir, float duration)
         {
             float t = 0f;

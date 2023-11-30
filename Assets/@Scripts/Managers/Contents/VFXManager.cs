@@ -537,21 +537,18 @@ namespace STELLAREST_2D
         {
             GameObject goVFX = null;
 
-            // TODO : 여기 개선해야할듯. GetComponent 안해도 됨.
-            Vector3 spawnScale = Vector3.one;
-            spawnScale = (target?.IsPlayer == false && target.GetComponent<MonsterController>() != null)
-                        ? target.GetComponent<MonsterController>().LoadVFXEnvSpawnScale(templateOrigin)
-                        : target.GetComponent<PlayerController>().LoadVFXEnvSpawnScale(templateOrigin);
+            // Vector3 spawnScale = Vector3.one;
+            // spawnScale = (target?.IsPlayer == false && target.GetComponent<MonsterController>() != null)
+            //             ? target.GetComponent<MonsterController>().LoadVFXEnvSpawnScale(templateOrigin)
+            //             : target.GetComponent<PlayerController>().LoadVFXEnvSpawnScale(templateOrigin);
+            Vector3 spawnScale = target.LoadVFXEnvSpawnScale(templateOrigin);
 
-            Vector3 spawnPos = Vector3.zero;
-            spawnPos = (target?.IsPlayer == false && target.GetComponent<MonsterController>() != null)
-                        ? target.GetComponent<MonsterController>().LoadVFXEnvSpawnPos(templateOrigin)
-                        : target.GetComponent<PlayerController>().LoadVFXEnvSpawnPos(templateOrigin);
+            // Vector3 spawnPos = Vector3.zero;
+            // spawnPos = (target?.IsPlayer == false && target.GetComponent<MonsterController>() != null)
+            //             ? target.GetComponent<MonsterController>().LoadVFXEnvSpawnPos(templateOrigin)
+            //             : target.GetComponent<PlayerController>().LoadVFXEnvSpawnPos(templateOrigin);
+            Vector3 spawnPos = target.LoadVFXEnvSpawnPos(templateOrigin);
 
-#if UNITY_EDITOR
-            if (spawnPos == Vector3.zero)
-                Utils.LogCritical(nameof(VFXManager), nameof(Environment), "Failed to load VFX Env Spawn Pos.");
-#endif
             switch (templateOrigin)
             {
                 case VFXEnv.Spawn:
@@ -612,6 +609,14 @@ namespace STELLAREST_2D
                 case VFXEnv.Targeted:
                     {
                         goVFX = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_ENV_TARGETED, null, true);
+                        goVFX.transform.localScale = spawnScale;
+                        goVFX.transform.position = spawnPos;
+                    }
+                    break;
+
+                case VFXEnv.QuestionMark:
+                    {
+                        goVFX = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_ENV_QUESTION_MARK, null, true);
                         goVFX.transform.localScale = spawnScale;
                         goVFX.transform.position = spawnPos;
                     }

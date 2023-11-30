@@ -45,7 +45,10 @@ namespace STELLAREST_2D
                 HitCollider.isTrigger = true;
 
                 base.InitClone(ownerFromOrigin, dataFromOrigin);
-                this.PC.OnSetParticleInfo += this.OnSetSwingParticleInfoHandler;
+
+                if (dataFromOrigin.UsePresetParticleInfo == false)
+                    this.PC.OnSetParticleInfo += this.OnSetSwingParticleInfoHandler;
+                    
                 this.IsFirstPooling = false;
             }
         }
