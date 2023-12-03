@@ -5,10 +5,7 @@ namespace STELLAREST_2D
 {
     public class PlayerAnimationController : BaseAnimationController
     {
-        public override void Init(CreatureController owner)
-        {
-            base.Init(owner);
-        }
+        public override void Init(CreatureController owner) => base.Init(owner);
 
         private readonly int UPPER_STAND = Animator.StringToHash("Stand");
         private readonly int LOWER_RUN = Animator.StringToHash("Run");
@@ -16,7 +13,7 @@ namespace STELLAREST_2D
 
         private readonly int UPPER_BODY_SPEED = Animator.StringToHash("UpperBodySpeed");
         private readonly int LOWER_BODY_SPEED = Animator.StringToHash("LowerBodySpeed");
-        private readonly int MOVEMENT_SPEED = Animator.StringToHash("MovementSpeed");
+        //private readonly int MOVEMENT_SPEED = Animator.StringToHash("MovementSpeed");
 
 
         private readonly int ENTER_NEXT_STATE = Animator.StringToHash("EnterNextState");
@@ -32,7 +29,7 @@ namespace STELLAREST_2D
             AnimController.SetFloat(LOWER_BODY_SPEED, speed);
         }
 
-        public void SetMovementSpeed(float speed) => AnimController.SetFloat(MOVEMENT_SPEED, speed);
+        //public void SetMovementSpeed(float speed) => AnimController.SetFloat(MOVEMENT_SPEED, speed);
 
         public virtual void Ready() { }
         public virtual void RunSkill() { }

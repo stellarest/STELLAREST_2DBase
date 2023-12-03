@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace STELLAREST_2D
 {
-    public class Boomerang : DefaultSkill
+    public class Boomerang : PublicSkill
     {
         [SerializeField] private AnimationCurve _curve = null;
         public AnimationCurve Curve => _curve;

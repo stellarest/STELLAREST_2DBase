@@ -4,7 +4,6 @@ using System.Linq;
 using DamageNumbersPro;
 using STELLAREST_2D.Data;
 using UnityEngine;
-using UnityEngine.TextCore.Text;
 using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
 using FaceType = STELLAREST_2D.Define.FaceType;
 using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
@@ -174,7 +173,7 @@ namespace STELLAREST_2D
             }
         }
 
-        public override void InitRendererController(BaseController owner, InitialCreatureData initialCreatureData)
+        public override void InitRendererController(BaseController owner, CreatureData initialCreatureData)
         {
             if (this.Owner != null)
                 return;
@@ -185,7 +184,7 @@ namespace STELLAREST_2D
             InitWeapons(initialCreatureData);
         }
 
-        private void InitModels(InitialCreatureData initialCreatureData)
+        private void InitModels(CreatureData initialCreatureData)
         {
             RendererModerator rendererModerator = new RendererModerator();
 
@@ -241,7 +240,7 @@ namespace STELLAREST_2D
             RendererModeratorDict.Add(this.OwnerAsCreature, rendererModerator);
         }
 
-        private void InitFace(InitialCreatureData initialCreatureData)
+        private void InitFace(CreatureData initialCreatureData)
         {
             for (int i = 0; i < initialCreatureData.FaceContainerLoaders.Length; ++i)
             {
@@ -319,7 +318,7 @@ namespace STELLAREST_2D
             }
         }
 
-        private void InitWeapons(InitialCreatureData initialCreatureData)
+        private void InitWeapons(CreatureData initialCreatureData)
         {
             WeaponsRef.CreatureType = this.OwnerAsCreature.ObjectType;
             WeaponsRef.CreatureTemplateID = initialCreatureData.TemplateID;

@@ -11,9 +11,15 @@ using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 
 namespace STELLAREST_2D
 {
+    /*
+        [ Phantom Soul - Phantom Knight Mastery lv.2 ]
+
+        3초 마다, 6회에 해당하는 Phantom Soul 발사하고, 대상으로부터 피해량의 1% ~ 3%에 해당하는 체력을 흡수함
+    */
+
     // Phantom Soul 그대로 사용
     // 베지에 곡선 적용
-    public class PhantomSoul : ActionSkill
+    public class PhantomSoul : UniqueSkill
     {
         private ParticleSystem[] _particles = null;
         private const float INITIAL_LOCAL_POS_X = 3.5f;

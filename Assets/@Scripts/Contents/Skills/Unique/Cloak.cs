@@ -25,7 +25,7 @@ namespace STELLAREST_2D
         또는, 죽음의 위기에서 100%의 확률 -> 85%의 확률 -> 60% -> 45% -> 30% -> 15%(고정)
     */
 
-    public class Cloak : ActionSkill
+    public class Cloak : UniqueSkill
     {
         private ParticleSystem[] _burstGroup = null;
         private KennethController _ownerController = null;

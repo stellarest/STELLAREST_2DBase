@@ -5,7 +5,7 @@ using UnityEngine.Rendering;
 
 namespace STELLAREST_2D
 {
-    public class MeleeSwing : ActionSkill
+    public class MeleeSwing : UniqueSkill
     {
         private ParticleSystem[] _particles = null;
         private ParticleSystemRenderer[] _particleSystemRenderers = null;
@@ -58,7 +58,7 @@ namespace STELLAREST_2D
 
         protected override IEnumerator CoStartSkill()
         {
-            WaitForSeconds wait = new WaitForSeconds(this.Data.CoolTime);
+            WaitForSeconds wait = new WaitForSeconds(this.Data.Cooldown);
             while (true)
             {
                 DoSkillJob();

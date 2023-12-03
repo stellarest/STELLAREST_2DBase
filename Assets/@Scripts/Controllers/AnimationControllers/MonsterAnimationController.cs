@@ -4,10 +4,7 @@ namespace STELLAREST_2D
 {
     public class MonsterAnimationController : BaseAnimationController
     {
-        public override void Init(CreatureController owner)
-        {
-            base.Init(owner);
-        }
+        public override void Init(CreatureController owner) => base.Init(owner);
 
         private readonly int ANIM_SPEED = Animator.StringToHash("AnimSpeed");
         private readonly int IDLE = Animator.StringToHash("Idle");

@@ -16,7 +16,7 @@ namespace STELLAREST_2D
         [SerializeField] private Sprite _combatEyes = null;
         [SerializeField] private Sprite _deadEyes = null;
 
-        public override void InitRendererController(BaseController owner, InitialCreatureData initialCreatureData)
+        public override void InitRendererController(BaseController owner, CreatureData initialCreatureData)
         {
             if (this.Owner != null)
                 return;

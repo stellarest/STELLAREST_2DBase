@@ -24,7 +24,7 @@ namespace STELLAREST_2D
                (+ 숲의 보호막이 비활성화 될 때, 맵 전체에 있는 모든 적에게 5초간 침묵시킨다.)
     */
 
-    public class ForestBarrier : ActionSkill
+    public class ForestBarrier : UniqueSkill
     {
         private ParticleSystem[] _particles = null;
         private ReinaController _ownerController = null;

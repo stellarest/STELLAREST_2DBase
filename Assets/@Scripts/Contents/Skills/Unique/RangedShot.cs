@@ -11,7 +11,7 @@ using VFXTrail = STELLAREST_2D.Define.TemplateIDs.VFX.Trail;
 
 namespace STELLAREST_2D
 {
-    public class RangedShot : ActionSkill
+    public class RangedShot : UniqueSkill
     {
         public SpriteTrail.SpriteTrail SpriteTrail { get; private set; } = null;
         private RangedShotChild _rangedShotChild = null;
@@ -93,7 +93,7 @@ namespace STELLAREST_2D
 
         protected override IEnumerator CoStartSkill()
         {
-            WaitForSeconds wait = new WaitForSeconds(this.Data.CoolTime);
+            WaitForSeconds wait = new WaitForSeconds(this.Data.Cooldown);
             while (true)
             {
                 DoSkillJob();

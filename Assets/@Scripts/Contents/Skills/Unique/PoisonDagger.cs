@@ -8,7 +8,7 @@ using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 
 namespace STELLAREST_2D
 {
-    public class PoisonDagger : ActionSkill
+    public class PoisonDagger : UniqueSkill
     {
         private ParticleSystem[] _chargeGroup = null;
         private ParticleSystem[] _burstGroup = null;

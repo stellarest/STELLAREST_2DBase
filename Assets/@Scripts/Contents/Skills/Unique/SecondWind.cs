@@ -1,8 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
 using STELLAREST_2D.Data;
 using UnityEngine;
 
@@ -11,24 +8,14 @@ using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 namespace STELLAREST_2D
 {
     /*
-        [ Ability Info : Second Wind (Elite Action, Knight) ]
-        (Currently Temped Set : lv.3)
+        [ Second Wind - Knight Mastery lv.2 ]
 
-        lv.1 : 죽음의 위기에서 2.5초 동안 무적 상태가 되고 100%의 체력을 회복한다. (1회)
-            회복이 완료된 이후, 주변에 있는 적에게 충격파를 날려 적을 넉백하고 2초간 기절상태를 부여한다.
-            이후, 5초 동안 Knight의 방어력이 최대치(80%)까지 증가한 이후, 스킬은 비활성화 된다.
-            (TODO : 5초 동안 공 20%, 방 20% 증가)
-        lv.2 : 죽음의 위기에서 2.5초에 동안 무적 상태가 되고 100%의 체력을 회복한다. (1회)
-            회복이 완료된 이후, 주변에 있는 적에게 충격파를 날려 적을 넉백하고 3초간 기절상태를 부여한다.
-            이후, 6초 동안 Knight의 방어력이 최대치(80%)까지 증가한 이후, 스킬은 비활성화 된다.
-            (TODO : 6초 동안 공 30%, 방 30% 증가)
-        lv.3 : 죽음의 위기에서 2.5초에 동안 무적 상태가 되고 100%의 체력을 회복한다. (1회)
-            회복이 완료된 이후, 주변에 있는 적에게 충격파를 날려 적을 넉백하고 5초간 기절상태를 부여한다.
-            이후, 12초 동안 Knight의 방어력이 최대치(80%)까지 증가한 이후, 스킬은 비활성화 된다.
-            (TODO : 12초 동안 공 50%, 방 50% 증가)
+        1회 죽음의 위기에서 2.5초 동안 무적 상태가 되고, 체력을 100%까지 회복
+        회복이 완료 된 이후, 주변에 있는 적에게 5초간 기절 상태 부여
+        이후, 12초 동안 Knight의 이동 속도, 공격 속도가 100% 증가.
     */
 
-    public class SecondWind : ActionSkill
+    public class SecondWind : UniqueSkill
     {
         private ParticleSystem _readyLoop = null;
         private ParticleSystem[] _onGroup = null;
@@ -96,19 +83,19 @@ namespace STELLAREST_2D
                 delta += Time.deltaTime;
                 percentage = delta / DESIRED_RECOVERY_TIME;
                 percent = Mathf.FloorToInt(percentage * 100);
-                this.Owner.Stat.Hp = Recovery(percent);
+                this.Owner.Stat.HP = Recovery(percent);
                 Managers.VFX.Percentage(this.Owner, percent);
 
                 yield return null;
             }
 
-            this.Owner.Stat.Hp = this.Owner.Stat.MaxHp;
+            this.Owner.Stat.HP = this.Owner.Stat.MaxHP;
             Burst();            
         }
 
         private float Recovery(int percent)
         {
-            float maxHp = this.Owner.Stat.MaxHp;
+            float maxHp = this.Owner.Stat.MaxHP;
             float recoveryPercentage = percent / 100f;
             float recoveryAmount = maxHp * recoveryPercentage;
             return recoveryAmount;
@@ -130,7 +117,7 @@ namespace STELLAREST_2D
         private IEnumerator CoEndSecondWind()
         {
             // TODO 1
-            this.Owner.Stat.AddArmorRatio(Define.MAX_ARMOR_RATE);
+            // this.Owner.Stat.AddArmorRatio(Define.MAX_ARMOR_RATE);
 
             KnightAnimationController anim = this.Owner.AnimController.GetComponent<KnightAnimationController>();
             anim.EnterNextState();
@@ -146,7 +133,7 @@ namespace STELLAREST_2D
             EnableParticles(_lastBuffs, false);
 
             // TODO 2
-            this.Owner.Stat.ResetArmor();
+            // this.Owner.Stat.ResetArmor();
             this.Owner.SkillBook.Deactivate(SkillTemplate.SecondWind_Elite_Solo);
         }
     }

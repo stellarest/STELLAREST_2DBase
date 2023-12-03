@@ -11,13 +11,13 @@ using UnityEngine.Rendering;
 namespace STELLAREST_2D
 {
     /*
-    +++++++++++++++++++++++++++++++++++++++++++
-        Continuous Count : Max Count
-        Duration : Start Explosion Time
-        CoolTime : Generate Time
-    +++++++++++++++++++++++++++++++++++++++++++
+        +++++++++++++++++++++++++++++++++++++++++++
+            Continuous Count : Max Count
+            Duration : Start Explosion Time
+            CoolTime : Generate Time
+        +++++++++++++++++++++++++++++++++++++++++++
     */
-    public class BombTrap : DefaultSkill
+    public class BombTrap : PublicSkill
     {
         public BombTrap Commander { get; private set; } = null;
 
@@ -76,7 +76,7 @@ namespace STELLAREST_2D
                 if (this._currentCount < this.Data.ContinuousCount)
                 {
                     _coolTimeDelta += Time.deltaTime;
-                    if (_coolTimeDelta > this.Data.CoolTime)
+                    if (_coolTimeDelta > this.Data.Cooldown)
                     {
                         DoSkillJob();
                         _coolTimeDelta = 0f;

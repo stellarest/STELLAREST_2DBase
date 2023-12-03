@@ -27,7 +27,7 @@ namespace STELLAREST_2D
         lv.3 : 주변의 적에게 [n + (n * ratio)]만큼의 데미지를 입히고, 3초 동안 기절과 함께 7초 동안 70% 감속시킨다.
     */
 
-    public class ElementalShock : ActionSkill
+    public class ElementalShock : UniqueSkill
     {
         private ParticleSystem[] _particles = null;
         private ParticleSystem _burst = null; // TEMP
@@ -59,7 +59,7 @@ namespace STELLAREST_2D
 
         protected override IEnumerator CoStartSkill()
         {
-            WaitForSeconds wait = new WaitForSeconds(this.Data.CoolTime);
+            WaitForSeconds wait = new WaitForSeconds(this.Data.Cooldown);
             while (true)
             {
                 DoSkillJob();

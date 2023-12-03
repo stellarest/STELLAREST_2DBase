@@ -8,7 +8,7 @@ using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
 
 namespace STELLAREST_2D
 {
-    public class BodyAttack : ActionSkill
+    public class BodyAttack : UniqueSkill
     {
         #region Constant Options (Temp)
         private const float DESIRED_TIME_TO_REACH = 0.15f;

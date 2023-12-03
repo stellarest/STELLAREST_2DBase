@@ -6,7 +6,7 @@ using STELLAREST_2D.Data;
 
 namespace STELLAREST_2D
 {
-    public class PhantomSoulChild : DefaultSkill
+    public class PhantomSoulChild : PublicSkill
     {
         private PhantomSoul _parent = null;
         public void SetParent(PhantomSoul parent) => this._parent = parent;

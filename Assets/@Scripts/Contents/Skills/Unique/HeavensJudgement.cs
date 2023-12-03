@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace STELLAREST_2D
 {
-    public class HeavensJudgement : ActionSkill
+    public class HeavensJudgement : UniqueSkill
     {
         protected override IEnumerator CoStartSkill()
         {

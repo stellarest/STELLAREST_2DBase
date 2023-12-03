@@ -50,7 +50,6 @@ namespace STELLAREST_2D
         // public List<int> GetGroupNumbers(int keyOrigin)
         //     => _numberGroups.TryGetValue(keyOrigin, out List<int> value) ? value : null;
 
-
         public void AddGroup(int key, TValue value)
         {
             if (IsInheritFromIGroupNumberDictionary(value) == false)

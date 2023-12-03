@@ -5,6 +5,10 @@ namespace STELLAREST_2D
 {
     public static class Define
     {
+        public enum StatType { MinPower, MaxPower, AttackSpeed, Armor, MovementSpeed }
+        public enum InitialStatDescGrade { None, VeryLow, Low, Average, High, VeryHigh }
+
+        public const float FIXED_INITIAL_COLLECT_RANGE = 3F;
         public const float MAX_DODGE_CHANCE = 0.6f;
         public const float MAX_ARMOR_RATE = 0.8f;
 
@@ -15,6 +19,9 @@ namespace STELLAREST_2D
         public const string FIRE_SOCKET = "FireSocket";
         public const string ANIMATION_BODY = "AnimationBody";
 
+        // public const int STAGE_MAX_WAVE_COUNT = 20;
+        // public const int ABILITY_MAX_POINT = 8;
+
         public enum UIEvent { Click, Pressed, PointerDown, PointerUp, BeginDrag, Drag, EndDrag, }
         public enum Scene { Unknown, DevScene, GameScene, }
         public enum Sound { BGM, Effect, }
@@ -22,18 +29,21 @@ namespace STELLAREST_2D
         public enum MonsterType { None = -1, Chicken = 1, }
 
         public enum InGameGrade { Default = 1, Elite, Ultimate }
-        public enum InGameMode { Forest, Volcano }
+        public enum InGameStage { Forest, Volcano }
+
+        /*
+            Normal, Hard, Expert : Forest
+             Master, Extreme : Volcano
+        */
         public enum InGameDifficulty { Normal, Hard, Expert, Master, Extreme }
-        public const int STAGE_MAX_WAVE_COUNT = 20;
-        public const int ABILITY_MAX_POINT = 8;
         public enum WaveType { None, Elite, MiddleBoss, Boss }
         public enum SortingOrder { Map = 100, Player = 200, Item = 209, Monster = 210, Skill = 230, EnvEffect = 255 }
         public enum StageType { Normal, MiddleBoss, Boss, }
-        public enum SkillType { None = -1, Action = 1, Default = 2 }
+        public enum SkillType { None = -1, Unique = 1, Public = 2 }
         public enum CreatureState { Idle = 0, Walk = 1, Run = 2, Skill = 3, Invincible = 4, Dead = 999 }
         //public enum InGameGrade { Normal = 1, Elite = 2, Ultimate = 3 }
         public enum CollisionLayers { Default = 0, PlayerBody = 6, PlayerAttack = 7, MonsterBody = 8, MonsterAttack = 9 }
-        public enum InitialStatRatioGrade { None = 0, Low = 5, Average = 15, High = 20 }
+        //public enum InitialStatRatioGrade { None = 0, Low = 5, Average = 15, High = 20 }
         public enum LookAtDirection { Left = 1, Right = -1 }
         public enum ExpressionType { Default, Battle, Concentration, Angry, Kitty, Sick, Death, }
         public enum MonsterFace { Normal = 0, Angry = 1, Death = 2 }
@@ -47,6 +57,10 @@ namespace STELLAREST_2D
 
         public enum GemSize { Normal = 1, Large = 2 }
         public enum StrongTintColor { White, Red, Green }
+
+        
+
+
         public enum SkillAnimationType
         {
             None = -1,
@@ -444,13 +458,9 @@ namespace STELLAREST_2D
 
             public static class Data
             {
-                public const string INITIAL_CREATURE_DATA = "InitialCreatureData.json";
-                public const string CREATURE_STAT = "CreatureStatData.json";
-                public const string SKILL = "SkillData.json";
-                public const string CROWD_CONTROL = "CrowdControlData.json";
-
-                // public const string SEQUENCE_SKILL = "SequenceSkillData.json";
-                // public const string BUFF_SKILL = "BuffSkillData.json";
+                public const string FIXED_LOAD_CREATURE_DATA = "CreatureData.json";
+                public const string FIXED_LOAD_CREATURE_STAT_DATA = "CreatureStatData.json";
+                public const string FIXED_LOAD_SKILL_DATA = "SkillData.json";
             }
         }
     }

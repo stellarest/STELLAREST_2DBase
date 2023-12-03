@@ -5,7 +5,7 @@ using UnityEngine;
 namespace STELLAREST_2D
 {
     // FOR CHLOE
-    public class RangedMagicShot : DefaultSkill
+    public class RangedMagicShot : PublicSkill
     {
         protected override void DoSkillJob()
         {

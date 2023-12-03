@@ -7,7 +7,7 @@ using UnityEngine.Jobs;
 
 namespace STELLAREST_2D
 {
-    public class Dash : ActionSkill
+    public class Dash : UniqueSkill
     {
 #region Dash Sample
         float dashDistance = 5f;

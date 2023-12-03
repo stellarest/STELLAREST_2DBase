@@ -9,26 +9,19 @@ using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 namespace STELLAREST_2D
 {
     /*
-        [ Ability Info : Shield (Elite Action, Paladin) ]
-        (Currently Temped Set : lv.3)
-
-        lv.1 : 매 웨이브마다 최대 체력의 30%에 해당하는 쉴드 획득. 
-            (쉴드가 활성화 되어 있을 때, 1.5초 마다 1%의 쉴드 회복)
-        lv.2 : 매 웨이브마다 최대 체력의 40%에 해당하는 쉴드 획득. 
-            (쉴드가 활성화 되어 있을 때, 1.25초 마다 1%의 쉴드 회복)
-        lv.3 : 매 웨이브마다 최대 체력의 60%에 해당하는 쉴드 획득.
-            (쉴드가 활성화 되어 있을 때, 0.75초 마다 1%의 쉴드 회복)
+        [ Paladin Mastery lv.2 - Shield ]
+        - 매 웨이브마다 최대 체력의 50%에 해당하는 쉴드 획득
+        - TODO : 쉴드가 활성화되어 있을 때, 모든 상태이상 면역
     */
 
-    public class Shield : ActionSkill
+    public class Shield : UniqueSkill
     {
         private ParticleSystem[] _onShields = null;
         private ParticleSystem[] _onShieldsEnter = null;
-
         private ParticleSystem[] _offShields = null;
         private ParticleSystem _hitBurst = null;
-        private const string INIT_HIT_BURST = "Hit_Burst";
-        private const int ON_SHIELDS_ENTER_COUNT = 5;
+        private const string FIXED_INIT_HIT_BURST = "Hit_Burst";
+        private const int FIXED_ON_SHIELDS_ENTER_COUNT = 5;
         private float _shieldMaxHp = 0f;
 
         private bool _isOnShield = false;
@@ -50,7 +43,6 @@ namespace STELLAREST_2D
         private Coroutine _coRecoveryShield = null;
         private const float FIXED_RECOVERY_INTERVAL = 0.75f;
         private const float FIXED_RECOVERY_RATIO = 0.01f;
-
         private IEnumerator CoRecoveryShield()
         {
             float delta = 0f;
@@ -65,9 +57,9 @@ namespace STELLAREST_2D
                     int recoveryCount = Mathf.FloorToInt(delta / FIXED_RECOVERY_INTERVAL);
                     for (int i = 0; i < recoveryCount; ++i)
                     {
-                        this.Owner.Stat.ShieldHp += (_shieldMaxHp * FIXED_RECOVERY_RATIO);
-                        if (this.Owner.Stat.ShieldHp >= _shieldMaxHp)
-                            this.Owner.Stat.ShieldHp = _shieldMaxHp;
+                        this.Owner.Stat.ShieldHP += (_shieldMaxHp * FIXED_RECOVERY_RATIO);
+                        if (this.Owner.Stat.ShieldHP >= _shieldMaxHp)
+                            this.Owner.Stat.ShieldHP = _shieldMaxHp;
                     }
 
                     delta %= FIXED_RECOVERY_INTERVAL;
@@ -82,12 +74,12 @@ namespace STELLAREST_2D
             base.InitOrigin(owner, data);
             this.transform.localPosition = new Vector3(0, 0.75f, 0);
             _onShields = transform.GetChild(0).gameObject.GetComponentsInChildren<ParticleSystem>(includeInactive: true);
-            _onShieldsEnter = new ParticleSystem[ON_SHIELDS_ENTER_COUNT];
+            _onShieldsEnter = new ParticleSystem[FIXED_ON_SHIELDS_ENTER_COUNT];
 
             for (int i = 0; i < _onShields.Length; ++i)
             {
                 _onShields[i].gameObject.SetActive(false);
-                if (_onShields[i].gameObject.name.Contains(INIT_HIT_BURST))
+                if (_onShields[i].gameObject.name.Contains(FIXED_INIT_HIT_BURST))
                     _hitBurst = _onShields[i].gameObject.GetComponent<ParticleSystem>();
 
                 if (i >= 1 && i <= 5)
@@ -96,7 +88,6 @@ namespace STELLAREST_2D
 
             _offShields = transform.GetChild(1).gameObject.GetComponentsInChildren<ParticleSystem>(includeInactive: true);
             EnableParticles(_offShields, false);
-
             _isOnShield = false;
         }
 
@@ -115,14 +106,14 @@ namespace STELLAREST_2D
 
         public override void OnActiveEliteActionHandler() => this.IsOnShield = true;
         public void Hit() => _hitBurst.Play();
-        private const float SHIELD_MAX_HP_RATIO = 0.6f;
+        private const float SHIELD_MAX_HP_RATIO = 0.5f;
         private void OnShield()
         {
             EnableParticles(_offShields, false);
             EnableParticles(_onShields, true);
 
-            _shieldMaxHp = (this.Owner.Stat.MaxHp * SHIELD_MAX_HP_RATIO);
-            this.Owner.Stat.ShieldHp = _shieldMaxHp;
+            _shieldMaxHp = (this.Owner.Stat.MaxHP * SHIELD_MAX_HP_RATIO);
+            this.Owner.Stat.ShieldHP = _shieldMaxHp;
 
             if (_coRecoveryShield != null)
                 StopCoroutine(_coRecoveryShield);
@@ -137,7 +128,7 @@ namespace STELLAREST_2D
                 StopCoroutine(_coRecoveryShield);
                 _coRecoveryShield = null;
             }
-            this.Owner.Stat.ShieldHp = 0f;
+            this.Owner.Stat.ShieldHP = 0f;
 
             EnableParticles(_onShields, false);
             EnableParticles(_offShields, true);

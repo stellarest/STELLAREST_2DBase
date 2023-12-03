@@ -1,84 +1,55 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using UnityEngine;
 
 namespace STELLAREST_2D.Data
 {
     [Serializable]
-    public class InitialCreatureData
+    public class CreatureData
     {
         public int TemplateID;
         public string Name;
         public string Description;
         public string PrimaryLabel;
-        public float MaxHp;
-        public float Damage;
-        public float Critical;
-        public float AttackSpeed;
-        public float CoolDown;
-        public float Armor;
-        public float Dodge;
-        public float MovementSpeed;
-        public float CollectRange;
-        public float Luck;
-        public float TotalExp;
-        public List<int> ActionSkillList;
-        public List<int> DefaultSkillList;
+
+        public float InitialMaxHP;
+        public Define.InitialStatDescGrade InitialStatDescGrade_MinPower;
+        public Define.InitialStatDescGrade InitialStatDescGrade_MaxPower;
+
+        public float InitialAttackSpeed;
+        public Define.InitialStatDescGrade InitialStatDescGrade_AttackSpeed;
+
+        public float InitialArmor;
+        public Define.InitialStatDescGrade InitialStatDescGrade_Armor;
+
+        public float InitialMovementSpeed;
+        public Define.InitialStatDescGrade InitialStatDescGrade_MovementSpeed;
+        
+        public Sprite InitialSkillDesc_MasteryUniqueSkillIcon;
+        public string InitialSkillDesc_MasteryUniqueSkillDescription;
+        public Sprite InitialSkillDesc_EliteUniqueSkillIcon;
+        public string InitialSkillDesc_EliteUniqueSkillDescription;
+        public Sprite InitialSkillDesc_UltimateUniqueSkillIcon;
+        public string InitialSkillDesc_UltimateUniqueSkillDescription;
+
+        public List<int> UniqueSkills;
+        public List<int> PublicSkills;
         public FaceContainerLoader[] FaceContainerLoaders;
     }
 
     [Serializable]
-    public class InitialCreatureDataLoader : ILoader<int, InitialCreatureData>
+    public class CreatureDataLoader : ILoader<int, CreatureData>
     {
-        public List<InitialCreatureData> initialCreatures = new List<InitialCreatureData>();
-        public Dictionary<int, InitialCreatureData> MakeDict()
+        public List<CreatureData> Creatures = new List<CreatureData>();
+        public Dictionary<int, CreatureData> MakeDict()
         {
-            if (initialCreatures.Count == 0)
-                Utils.LogCritical(nameof(InitialCreatureDataLoader), nameof(MakeDict), "Failed to load InitialCreatureData.json.json");
-
-            Dictionary<int, InitialCreatureData> dict = new Dictionary<int, InitialCreatureData>();
-            foreach (var creature in initialCreatures)
+            if (Creatures.Count == 0)
+                Utils.LogCritical(nameof(CreatureDataLoader), nameof(MakeDict));
+                
+            Dictionary<int, CreatureData> dict = new Dictionary<int, CreatureData>();
+            foreach (var creature in Creatures)
                 dict.Add(creature.TemplateID, creature);
-
-            return dict;
-        }
-    }
-
-    [Serializable]
-    public class CreatureStatData
-    {
-        public int TemplateID;
-        public string Name;
-        public string Description;
-        Define.InGameGrade InGameGrade;
-        public float MaxHpUp;
-        public float DamageUp; // 전체 데미지 증가량 (적게 증가함)
-        public float CriticalUp;
-        public float AttackSpeedUp;
-        public float CoolDownUp;
-        public float ArmorUp;
-        public float DodgeUp;
-        public float MovementSpeedUp;
-        public float CollectRangeUp;
-        public float LuckUp;
-    }
-
-    [Serializable]
-    public class CreatureStatDataLoader : ILoader<int, CreatureStatData>
-    {
-        public List<CreatureStatData> creatureStats = new List<CreatureStatData>();
-
-        public Dictionary<int, CreatureStatData> MakeDict()
-        {
-            if (creatureStats.Count == 0)
-                Utils.LogCritical(nameof(CreatureStatDataLoader), nameof(MakeDict), "Failed to load CreatureStatData.json");
-
-            Dictionary<int, CreatureStatData> dict = new Dictionary<int, CreatureStatData>();
-            foreach (CreatureStatData stat in creatureStats)
-                dict.Add(stat.TemplateID, stat);
 
             return dict;
         }
@@ -113,7 +84,6 @@ namespace STELLAREST_2D.Data
         public float[] ContinuousAngles;
         public float[] ContinuousFlipXs;
         public float[] ContinuousFlipYs;
-        //public Vector3[] AdditionalLocalPositions;
         public Vector3[] ScaleInterpolations;
         public bool[] IsOnlyVisibles;
         public bool IsColliderHalfRatio;
@@ -121,20 +91,17 @@ namespace STELLAREST_2D.Data
         public int MaxPenetrationCount;
         public Define.TemplateIDs.VFX.ImpactHit VFX_ImpactHit;
         public bool IsImpactPointOnTarget;
-        //public Define.TemplateIDs.Status.Skill UnlockSkillTemplate;
         public Define.SkillAnimationType AnimationType;
         public Define.TemplateIDs.CrowdControl CrowdControlType;
         public float CrowdControlRatio;
         public float CrowdControlDuration;
         public float CrowdControlIntensity;
-
         public Define.TemplateIDs.CrowdControl ContinuousCrowdControlType;
         public Define.TemplateIDs.VFX.ImpactHit VFX_ImpactHit_ForContinuousCrowdControl;
         public float ContinuousCrowdControlRatio;
         public float ContinuousCrowdControlDuration;
         public float ContinuousCrowdControlIntensity;
-
-        public float CoolTime;
+        public float Cooldown;
     }
 
     [Serializable]
@@ -145,7 +112,7 @@ namespace STELLAREST_2D.Data
         public Dictionary<int, SkillData> MakeDict()
         {
             if (skills.Count == 0)
-                Utils.LogCritical(nameof(SkillDataLoader), nameof(MakeDict), "Failed to load SkillData.json");
+                Utils.LogCritical(nameof(SkillDataLoader), nameof(MakeDict));
 
             Dictionary<int, SkillData> dict = new Dictionary<int, SkillData>();
             foreach (SkillData skill in skills)
@@ -154,74 +121,48 @@ namespace STELLAREST_2D.Data
             return dict;
         }
     }
-
-    // =============================================================================================
-    // =============================================================================================
-    // [Serializable]
-    // public class CrowdControlData
-    // {
-    //     public int TemplateID;
-    //     public string Name;
-    //     public string Description;
-
-    // }
-
-    // [Serializable]
-    // public class CrowdControlDataLoader : ILoader<int, CrowdControlData>
-    // {
-    //     public List<CrowdControlData> crowdControls = new List<CrowdControlData>();
-
-    //     public Dictionary<int, CrowdControlData> MakeDict()
-    //     {
-    //         if (crowdControls.Count == 0)
-    //             Utils.LogCritical(nameof(CrowdControlDataLoader), nameof(MakeDict), "Failed to load CrowdControlData.json");
-
-    //         Dictionary<int, CrowdControlData> dict = new Dictionary<int, CrowdControlData>();
-    //         foreach (CrowdControlData crowdControl in crowdControls)
-    //             dict.Add(crowdControl.TemplateID, crowdControl);
-
-    //         return dict;
-    //     }
-    // }
-
-    [Serializable]
-    public class BuffSkillData
-    {
-        public int TemplateID;
-        public string Name;
-        public string Description;
-        public string PrimaryLabel;
-        public Define.InGameGrade InGameGrade;
-        public float Duration;
-        public float CoolTime;
-        public bool IsOnParent;
-        public bool IsLoopType;
-        public BuffBase.BuffType BuffType;
-    }
-
-    [Serializable]
-    public class BuffSkillDataLoader : ILoader<int, BuffSkillData>
-    {
-        public List<BuffSkillData> bonusBuffs = new List<BuffSkillData>();
-
-        public Dictionary<int, BuffSkillData> MakeDict()
-        {
-            if (bonusBuffs.Count == 0)
-            {
-                Debug.LogError("Failed to load PassiveSkillData.json");
-                Debug.Break();
-            }
-
-            Dictionary<int, BuffSkillData> dict = new Dictionary<int, BuffSkillData>();
-            foreach (BuffSkillData buff in bonusBuffs)
-                dict.Add(buff.TemplateID, buff);
-
-            return dict;
-        }
-    }
-
+   
     [System.Serializable]
     public class WaveData
     {
     }
 }
+
+// -------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------
+// [Serializable]
+// public class CreatureStatData
+// {
+//     public int TemplateID;
+//     public string Name;
+//     public string Description;
+//     Define.InGameGrade InGameGrade;
+//     public float MaxHpUp;
+//     public float DamageUp;
+//     public float CriticalUp;
+//     public float AttackSpeedUp;
+//     public float CoolDownUp;
+//     public float ArmorUp;
+//     public float DodgeUp;
+//     public float MovementSpeedUp;
+//     public float CollectRangeUp;
+//     public float LuckUp;
+// }
+
+// [Serializable]
+// public class CreatureStatDataLoader : ILoader<int, CreatureStatData>
+// {
+//     public List<CreatureStatData> CreatureStats = new List<CreatureStatData>();
+
+//     public Dictionary<int, CreatureStatData> MakeDict()
+//     {
+//         if (CreatureStats.Count == 0)
+//             Utils.LogCritical(nameof(CreatureStatDataLoader), nameof(MakeDict));
+
+//         Dictionary<int, CreatureStatData> dict = new Dictionary<int, CreatureStatData>();
+//         foreach (CreatureStatData creatureStat in CreatureStats)
+//             dict.Add(creatureStat.TemplateID, creatureStat);
+
+//         return dict;
+//     }
+// }

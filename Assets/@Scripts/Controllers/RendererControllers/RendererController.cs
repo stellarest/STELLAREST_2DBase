@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using SpriteTrail;
 using STELLAREST_2D.Data;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace STELLAREST_2D
@@ -115,7 +114,7 @@ namespace STELLAREST_2D
             this.Owner = owner;
         }
 
-        public virtual void InitRendererController(BaseController owner, InitialCreatureData initialCreatureData)
+        public virtual void InitRendererController(BaseController owner, CreatureData initialCreatureData)
         {
             this.InitRendererController(owner);
             this.OwnerAsCreature = owner.GetComponent<CreatureController>();

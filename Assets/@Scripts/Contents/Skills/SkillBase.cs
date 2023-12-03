@@ -1,35 +1,42 @@
 using System.Collections;
 using UnityEngine;
 
+using STELLAREST_2D.Data;
+
 namespace STELLAREST_2D
 {
-    // Default Type Skill
-    // Action Type Skill
+    // [ SkillBase ]
+    // - Unique Skill : "캐릭터 고유의 전용 스킬". 전용 애니메이션 있을수도 있고 없을 수도 있음.
+    // - Public Skill : "모든 캐릭터가 획득할 수 있는 스킬". 전용 애니메이션 있을수도 있고 없을수도 있지만 거의 없을듯.
+    // 사실 이 두개의 큰 차이는 없지만, 구분 용으로 따로 상속받아서 클래스를 작성한 것. 
     [System.Serializable]
     public class SkillBase : BaseController
     {
         public System.Action<Vector3, Define.LookAtDirection, float, float, float> OnSetParticleInfo = null;
         public System.EventHandler<ProjectileLaunchInfoEventArgs> OnProjectileLaunchInfo = null;
         public CreatureController Owner { get; protected set; } = null;
-        public Data.SkillData Data { get; protected set; } = null;
-        public ProjectileController PC { get; protected set; } = null;
         
+        [field: SerializeField] public SkillData Data { get; protected set; } = null;
+        public float InitialCooldown { get; protected set; } = 0f;
+
+        public ProjectileController PC { get; protected set; } = null;
         public SpriteRenderer SR { get; protected set; } = null;
         public Rigidbody2D RigidBody { get; protected set; } = null;
         public Collider2D HitCollider { get; protected set; } = null;
         public Vector3 HitPoint { get; protected set; } = Vector3.zero;
 
-        public virtual void InitOrigin(CreatureController owner, Data.SkillData data)
+        public virtual void InitOrigin(CreatureController owner, SkillData data)
         {
             this.Owner = owner;
             this.Data = data;
+            this.InitialCooldown = data.Cooldown;
 
             this.IsLearned = false;
             this.IsLast = false;
             _isCompleteInitOrigin = true;
         }
 
-        public virtual void InitClone(CreatureController ownerFromOrigin, Data.SkillData dataFromOrigin)
+        public virtual void InitClone(CreatureController ownerFromOrigin, SkillData dataFromOrigin)
         {
             this.Owner = ownerFromOrigin;
             this.Data = dataFromOrigin;

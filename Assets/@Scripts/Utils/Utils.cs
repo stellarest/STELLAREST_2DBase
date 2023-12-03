@@ -428,6 +428,12 @@ namespace STELLAREST_2D
         }
 
         [Conditional("UNITY_EDITOR")]
+        public static void LogAddEvent(object caller, object subscriber) => Utils.Log($"Add Event : {caller} += {subscriber}");
+
+        [Conditional("UNITY_EDITOR")]
+        public static void LogReleaseEvent(object caller, object subscriber) => Utils.Log($"Release Event : {caller} -= {subscriber}");
+
+        [Conditional("UNITY_EDITOR")]
         public static void ClearLog()
         {
             var assembly = Assembly.GetAssembly(typeof(UnityEditor.Editor));

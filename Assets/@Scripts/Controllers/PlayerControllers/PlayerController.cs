@@ -3,13 +3,28 @@ using System.Collections;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
+using System.Diagnostics;
+using Debug = UnityEngine.Debug;
 
+using static STELLAREST_2D.Define;
 using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
 using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
-using System.Diagnostics;
-using Debug = UnityEngine.Debug;
 using PlayerTemplateID = STELLAREST_2D.Define.TemplateIDs.Creatures.Player;
+
+/*
+    [ Gary_Paladin ]
+    * Atk   : Low - Average             * Atk Speed : Average
+    * Armor : Very High                 * Movement Speed : Low
+
+    [ Gary_Knight ]
+    * Atk : High - Very High            * Atk Speed : Very Low
+    * Armor : Average                   * Movement Speed : Low
+
+    [ Gary_Phantom Knight ]
+    * Atk : Very Low - Very High        * Atk Speed : High
+    * Armor : Average                   * Movement Speed : Average
+*/
 
 namespace STELLAREST_2D
 {
@@ -53,7 +68,6 @@ namespace STELLAREST_2D
     {
         //private readonly float GEM_COLLECTION_FIXED_DIST = 5f; // +++ NO DATE SHEET +++
         private readonly float FIXED_MINIMUM_COLLECT_RANGE = 5f;
-
         protected float _armBowFixedAngle = 110f; // REINA에서 뺴야함
         private float _armRifleFixedAngle = 146f; // CHRISTIAN에서 빼야함
         [field: SerializeField] public PlayerBodyParts BodyParts { get; protected set; } = null;
@@ -231,8 +245,8 @@ namespace STELLAREST_2D
         private IEnumerator CoPlayerGameStart()
         {
             yield return new WaitForSeconds(PLAYER_GAME_START_TIME);
-            SkillBook.LevelUp(SkillBook.MasteryActionTemplate);
-            SkillBook.Activate(SkillBook.MasteryActionTemplate);
+            SkillBook.LevelUp(SkillBook.MasteryAttackTemplate);
+            SkillBook.Activate(SkillBook.MasteryAttackTemplate);
         }
 
         [Conditional("UNITY_EDITOR")]
@@ -241,7 +255,7 @@ namespace STELLAREST_2D
             SkillBook.LevelUp(skillTemplate);
             SkillBook.Activate(skillTemplate);
 
-            if (skillTemplate == SkillBook.MasteryActionTemplate)
+            if (skillTemplate == SkillBook.MasteryAttackTemplate)
             {
                 SkillBase skill = SkillBook.GetLastLearnedSkillMember(skillTemplate);
                 if (skill.Data.Grade > Define.InGameGrade.Default)
@@ -249,6 +263,8 @@ namespace STELLAREST_2D
             }
         }
 
+        public SkillTemplate TestSkillTemplate = SkillTemplate.None;
+        public float TestAddCooldownRatio = 0f;
         private void Update()
         {
             if (this.IsDeadState)
@@ -257,7 +273,7 @@ namespace STELLAREST_2D
 #if UNITY_EDITOR
             DEV_CLEAR_LOG();
             if (Input.GetKeyDown(KeyCode.Q))
-                DevSkillFlag(SkillBook.MasteryActionTemplate);
+                DevSkillFlag(SkillBook.MasteryAttackTemplate);
             if (Input.GetKeyDown(KeyCode.W))
                 DevSkillFlag(SkillBook.EliteActionTemplate);
 
@@ -287,11 +303,17 @@ namespace STELLAREST_2D
 
             if (Input.GetKeyDown(KeyCode.T))
             {
+                // this.Stat.OnSetMasteryAttackSpeed?.Invoke(MasteryAtkSpeedTest);
+                this.Stat.OnAddSkillCooldownRatio?.Invoke(TestSkillTemplate, TestAddCooldownRatio);
                 // CreatureRendererController.OnFaceBunny();
-
                 // this.CreatureRendererController.HideWeapons(testHideWeapon);
                 // testHideWeapon = !testHideWeapon;
-                CreatureRendererController.ChangeWeapon(SpriteManager.WeaponType.NinjaSword);
+                // CreatureRendererController.ChangeWeapon(SpriteManager.WeaponType.NinjaSword);
+            }
+
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                this.Stat.OnResetSkillCooldown?.Invoke(TestSkillTemplate);
             }
 #endif
             MoveByJoystick();
@@ -470,7 +492,6 @@ namespace STELLAREST_2D
         protected override void OnDead()
         {
             base.OnDead();
-            Utils.Log($"Player HP is on dead : {Stat.Hp}");
             PlayerAnimController.DeathBack();
             this.RendererController.OnFaceDeadHandler();
             Managers.Game.OnPlayerIsDead?.Invoke();

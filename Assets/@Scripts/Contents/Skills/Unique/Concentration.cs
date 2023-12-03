@@ -23,7 +23,7 @@ namespace STELLAREST_2D
             (표식이 생성된 타겟은 100%의 확률로 크리티컬 적용)
     */
 
-    public class Concentration : ActionSkill
+    public class Concentration : UniqueSkill
     {
         private ParticleSystem[] _bursts = null;
         private ParticleSystem[] _buffs = null;
@@ -42,7 +42,7 @@ namespace STELLAREST_2D
 
         protected override IEnumerator CoStartSkill()
         {
-            WaitForSeconds wait = new WaitForSeconds(this.Data.CoolTime);
+            WaitForSeconds wait = new WaitForSeconds(this.Data.Cooldown);
             while (true)
             {
                 IsStopped = false;

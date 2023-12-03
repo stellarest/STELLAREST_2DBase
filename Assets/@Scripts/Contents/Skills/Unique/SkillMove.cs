@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace STELLAREST_2D
 {
-    public class SkillMove : ActionSkill
+    public class SkillMove : UniqueSkill
     {
         private Rigidbody2D _rigidBody;
         private Coroutine _corouine;

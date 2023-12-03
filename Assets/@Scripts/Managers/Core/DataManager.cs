@@ -1,7 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
+
+using STELLAREST_2D.Data;
 
 namespace STELLAREST_2D
 {
@@ -12,40 +13,19 @@ namespace STELLAREST_2D
 
     public class DataManager
     {
-        public Dictionary<int, Data.InitialCreatureData> CreaturesDict { get; private set; } = new Dictionary<int, Data.InitialCreatureData>();
-        public Dictionary<int, Data.CreatureStatData> StatsDict { get; private set; } = new Dictionary<int, Data.CreatureStatData>();
-        public Dictionary<int, Data.SkillData> SkillsDict { get; private set; } = new Dictionary<int, Data.SkillData>();
-
-        //public Dictionary<int, Data.CrowdControlData> CrowdControlDict { get; private set; } = new Dictionary<int, Data.CrowdControlData>();
-        //public Dictionary<int, Data.SequenceSkillData> SequenceSkillsDict { get; private set; } = new Dictionary<int, Data.SequenceSkillData>();
-        //public Dictionary<int, Data.BuffSkillData> BuffSkillsDict { get; private set; } = new Dictionary<int, Data.BuffSkillData>();
+        public Dictionary<int, CreatureData> CreaturesDict { get; private set; } = new Dictionary<int, CreatureData>();
+        public Dictionary<int, SkillData> SkillsDict { get; private set; } = new Dictionary<int, SkillData>();
 
         public void Init()
         {
-            CreaturesDict = LoadJson<Data.InitialCreatureDataLoader, int, Data.InitialCreatureData>
-                            (Define.Labels.Data.INITIAL_CREATURE_DATA).MakeDict();
+            CreaturesDict = LoadJson<CreatureDataLoader, int, CreatureData>
+                        (Define.Labels.Data.FIXED_LOAD_CREATURE_DATA).MakeDict();
 
-            StatsDict = LoadJson<Data.CreatureStatDataLoader, int, Data.CreatureStatData>
-                            (Define.Labels.Data.CREATURE_STAT).MakeDict();
-
-            SkillsDict = LoadJson<Data.SkillDataLoader, int, Data.SkillData>
-                            (Define.Labels.Data.SKILL).MakeDict();
-
-            // CrowdControlDict = LoadJson<Data.CrowdControlDataLoader, int, Data.CrowdControlData>
-            //                 (Define.Labels.Data.SKILL).MakeDict();
-
-            // SequenceSkillsDict = LoadJson<Data.SequenceSkillDataLoader, int, Data.SequenceSkillData>
-            //                 (Define.Labels.Data.SEQUENCE_SKILL).MakeDict();
-
-            // BuffSkillsDict = LoadJson<Data.BuffSkillDataLoader, int, Data.BuffSkillData>
-            //                 (Define.Labels.Data.BUFF_SKILL).MakeDict();
+            SkillsDict = LoadJson<SkillDataLoader, int, SkillData>
+                        (Define.Labels.Data.FIXED_LOAD_SKILL_DATA).MakeDict();
         }
 
         private T LoadJson<T, Key, Value>(string path) where T : ILoader<Key, Value>
-        {
-            TextAsset textAsset = Managers.Resource.Load<TextAsset>($"{path}");
-
-            return UnityEngine.JsonUtility.FromJson<T>(textAsset.text);
-        }
+            => UnityEngine.JsonUtility.FromJson<T>(Managers.Resource.Load<TextAsset>($"{path}").text);
     }
 }

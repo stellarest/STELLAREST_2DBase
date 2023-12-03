@@ -9,7 +9,7 @@ namespace STELLAREST_2D
     // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     // +++ Spear is a actually commander for controlling spears[LEFT, RIGHT] +++
     // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    public class Spear : DefaultSkill
+    public class Spear : PublicSkill
     {
         private enum SpearDirection { Left, Right, Max }
         #region Utilities
@@ -343,7 +343,7 @@ namespace STELLAREST_2D
             else
             {
                 spear._coolTimeDelta += Time.deltaTime;
-                spear._percent = spear._coolTimeDelta / spear.Data.CoolTime;
+                spear._percent = spear._coolTimeDelta / spear.Data.Cooldown;
             }
 
             return false;

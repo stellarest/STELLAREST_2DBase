@@ -50,15 +50,15 @@ namespace STELLAREST_2D
         public (float dmgResult, bool isCritical) TakeDamage(CreatureController target, CreatureController attacker, SkillBase from)
         {
             // DODGE CHANCE OF TARGET
-            if (UnityEngine.Random.Range(0f, 1f) <= target.Stat.Dodge)
+            if (UnityEngine.Random.Range(0f, 1f) <= target.Stat.DodgeChance)
                 return (-1f, false);
             
             // DAMAGE FROM ATTACKER
             float armor = target.Stat.Armor;
             bool isCritical = false;
             float dmgSkill = UnityEngine.Random.Range(from.Data.MinDamage, from.Data.MaxDamage);
-            float dmgResult = dmgSkill + (dmgSkill * attacker.Stat.Damage);
-            if (UnityEngine.Random.Range(0f, 1f) <= attacker.Stat.Critical || target[CrowdControl.Targeted])
+            float dmgResult = dmgSkill + (dmgSkill * attacker.Stat.DamageUpRate);
+            if (UnityEngine.Random.Range(0f, 1f) <= attacker.Stat.CriticalChance || target[CrowdControl.Targeted])
             {
                 isCritical = true;
                 float criticalRatio = UnityEngine.Random.Range(MIN_CRITICAL_RATIO, MAX_CRITICAL_RATIO);
