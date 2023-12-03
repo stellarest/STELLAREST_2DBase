@@ -13,18 +13,15 @@ namespace STELLAREST_2D.Data
         public string Description;
         public string PrimaryLabel;
 
-        public float InitialMaxHP;
         public Define.InitialStatDescGrade InitialStatDescGrade_MinPower;
         public Define.InitialStatDescGrade InitialStatDescGrade_MaxPower;
-
-        public float InitialAttackSpeed;
         public Define.InitialStatDescGrade InitialStatDescGrade_AttackSpeed;
-
-        public float InitialArmor;
         public Define.InitialStatDescGrade InitialStatDescGrade_Armor;
-
-        public float InitialMovementSpeed;
         public Define.InitialStatDescGrade InitialStatDescGrade_MovementSpeed;
+
+        public float InitialMaxHP;
+        public float InitialArmor;
+        public float InitialMovementSpeed;
         
         public Sprite InitialSkillDesc_MasteryUniqueSkillIcon;
         public string InitialSkillDesc_MasteryUniqueSkillDescription;
@@ -59,7 +56,7 @@ namespace STELLAREST_2D.Data
     public class SkillData
     {
         public int TemplateID;
-        public Define.TemplateIDs.Status.Skill OriginalTemplate;
+        public Define.FixedValue.TemplateID.Skill FirstTemplateID;
         public Define.SkillType SkillType;
         public string Name;
         public string Description;

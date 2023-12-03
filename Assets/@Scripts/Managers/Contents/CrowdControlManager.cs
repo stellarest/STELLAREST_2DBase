@@ -1,15 +1,9 @@
-using DG.Tweening;
 using System.Collections;
-using System.Collections.Generic;
-using STELLAREST_2D.Data;
+using DG.Tweening;
 using UnityEngine;
 
-using DamageNumbersPro;
-
 using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
-using VFXImpact = STELLAREST_2D.Define.TemplateIDs.VFX.ImpactHit;
 using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
-using PrefabLabels = STELLAREST_2D.Define.Labels.Prefabs;
 
 namespace STELLAREST_2D
 {

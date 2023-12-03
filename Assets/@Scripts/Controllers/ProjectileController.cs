@@ -1,10 +1,7 @@
 using System.Collections;
-using STELLAREST_2D.Data;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Timeline;
 
-using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
+using static STELLAREST_2D.Define;
 
 namespace STELLAREST_2D
 {
@@ -154,7 +151,7 @@ namespace STELLAREST_2D
 
         public void Launch()
         {
-            SkillTemplate templateOrigin = this.Data.OriginalTemplate;
+            FixedValue.TemplateID.Skill skillOriginTemplate = this.Data.FirstTemplateID;
             HitCollider.enabled = (_isOnlyVisible) ? false : true;
             //HitCollider.enabled = (_isOnlyVisible) ? (HitCollider.enabled != false) : true;
             // _movementSpeed *= _continuousSpeedRatio;
@@ -163,64 +160,64 @@ namespace STELLAREST_2D
             if (this._isColliderHalfRatio)
                 StartCoroutine(CoPreDisableCollider(this._lifeTime * 0.5f));
             
-            switch (templateOrigin)
+            switch (skillOriginTemplate)
             {
-                case SkillTemplate.PaladinMastery:
+                case FixedValue.TemplateID.Skill.PaladinMastery:
                     StartDestroy(_lifeTime);
                     OnSetParticleInfo?.Invoke(_indicatorAngle, _initialLookAtDir, _continuousAngle, _continuousFlipX, _continuousFlipY);
                     _coProjectile = StartCoroutine(CoMeleeSwing());
                     break;
-                case SkillTemplate.KnightMastery:
+                case FixedValue.TemplateID.Skill.KnightMastery:
                     StartDestroy(_lifeTime);
                     OnSetParticleInfo?.Invoke(_indicatorAngle, _initialLookAtDir, _continuousAngle, _continuousFlipX, _continuousFlipY);
                     _shootDir = Quaternion.Euler(0, 0, _continuousAngle * -1) * _shootDir; // Knight Mastery
                     _coProjectile = StartCoroutine(CoMeleeSwing());
                     break;
-                case SkillTemplate.PhantomKnightMastery:
+                case FixedValue.TemplateID.Skill.PhantomKnightMastery:
                     StartDestroy(_lifeTime);
                     OnSetParticleInfo?.Invoke(_indicatorAngle, _initialLookAtDir, _continuousAngle, _continuousFlipX, _continuousFlipY);
                     _coProjectile = StartCoroutine(CoMeleeSwing());
                     break;
 
-                case SkillTemplate.ArrowMasterMastery:
+                case FixedValue.TemplateID.Skill.ArrowMasterMastery:
                     StartDestroy(_lifeTime);
                     _coProjectile = StartCoroutine(CoRangedShot());
                     break;
-                case SkillTemplate.ElementalArcherMastery:
+                case FixedValue.TemplateID.Skill.ElementalArcherMastery:
                     StartDestroy(_lifeTime);
                     if (this.Data.Grade < Define.InGameGrade.Ultimate)
                         _coProjectile = StartCoroutine(CoRangedShot());
                     else
                         _coProjectile = StartCoroutine(CoRangedGuidedShot());
                     break;
-                case SkillTemplate.ForestGuardianMastery:
+                case FixedValue.TemplateID.Skill.ForestGuardianMastery:
                     StartDestroy(_lifeTime);
                     _coProjectile = StartCoroutine(CoRangedShot());
                     break;
 
-                case SkillTemplate.AssassinMastery:
-                case SkillTemplate.StabPoisonDagger_Elite_Solo:
+                case FixedValue.TemplateID.Skill.AssassinMastery:
+                case FixedValue.TemplateID.Skill.StabPoisonDagger_Elite_Solo:
                     StartDestroy(_lifeTime);
                     OnSetParticleInfo?.Invoke(_indicatorAngle, _initialLookAtDir, _continuousAngle, _continuousFlipX, _continuousFlipY);
                     _coProjectile = StartCoroutine(CoMeleeSwing());
                     break;
-                case SkillTemplate.ThiefMastery:
-                case SkillTemplate.NinjaSlash_Elite_Solo:
+                //case FixedValue.TemplateID.Skill.ThiefMastery:
+                case FixedValue.TemplateID.Skill.NinjaSlash_Elite_Solo:
                     StartDestroy(_lifeTime);
                     OnSetParticleInfo?.Invoke(_indicatorAngle, _initialLookAtDir, _continuousAngle, _continuousFlipX, _continuousFlipY);
                     //_shootDir = Quaternion.Euler(0, 0, _continuousAngle * -1) * _shootDir;
                     _coProjectile = StartCoroutine(CoMeleeSwing());
                     break;
-                case SkillTemplate.NinjaMastery:
+                case FixedValue.TemplateID.Skill.NinjaMastery:
                     StartDestroy(_lifeTime);
                     _coProjectile = StartCoroutine(CoRangedShot());
                     break;
 
-                case SkillTemplate.ThrowingStar:
+                case FixedValue.TemplateID.Skill.ThrowingStar:
                     StartDestroy(_lifeTime);
                     _coProjectile = StartCoroutine(CoThrowingStar());
                     break;
-                case SkillTemplate.Boomerang:
+                case FixedValue.TemplateID.Skill.Boomerang:
                     if (Data.Grade < Data.MaxGrade)
                     {
                         StartDestroy(_lifeTime);
@@ -230,7 +227,7 @@ namespace STELLAREST_2D
                         _coProjectile = StartCoroutine(CoBoomerangUltimate());
                     break;
 
-                case SkillTemplate.PhantomSoul_Elite_Solo:
+                case FixedValue.TemplateID.Skill.PhantomSoul_Elite_Solo:
                     StartDestroy(_lifeTime);
                     _coProjectile = StartCoroutine(CoPhantomSoulChild());
                     break;
@@ -521,20 +518,20 @@ namespace STELLAREST_2D
             if (cc.IsValid() == false)
                 return;
 
-            switch (this.Data.OriginalTemplate)
+            switch (this.Data.FirstTemplateID)
             {
-                case SkillTemplate.ThrowingStar:
+                case FixedValue.TemplateID.Skill.ThrowingStar:
                     _shootDir = NextBounceTarget(cc, Define.HitFromType.ThrowingStar);
                     break;
 
-                case SkillTemplate.ArrowMasterMastery:
+                case FixedValue.TemplateID.Skill.ArrowMasterMastery:
                     if (_maxPenetrationCount == -1)
                         return;
                     else
                         Managers.Object.Despawn(this);
                     break;
 
-                case SkillTemplate.ElementalArcherMastery:
+                case FixedValue.TemplateID.Skill.ElementalArcherMastery:
                     {
                         if (this.Data.Grade == Define.InGameGrade.Default)
                             Managers.Object.Despawn(this);
@@ -543,7 +540,7 @@ namespace STELLAREST_2D
                     }
                     break;
 
-                case SkillTemplate.ForestGuardianMastery:
+                case FixedValue.TemplateID.Skill.ForestGuardianMastery:
                     {
                         if (this.Data.Grade > Define.InGameGrade.Elite)
                             StopCoroutine(_coProjectile);
@@ -552,7 +549,7 @@ namespace STELLAREST_2D
                     }
                     break;
 
-                case SkillTemplate.NinjaMastery:
+                case FixedValue.TemplateID.Skill.NinjaMastery:
                     {
                         if (this.Data.Grade < this.Data.MaxGrade)
                             Managers.Object.Despawn(this);
@@ -577,7 +574,7 @@ namespace STELLAREST_2D
                     }
                     break;
 
-                case SkillTemplate.PhantomSoul_Elite_Solo:
+                case FixedValue.TemplateID.Skill.PhantomSoul_Elite_Solo:
                     Managers.Object.Despawn(this);
                     break;
             }

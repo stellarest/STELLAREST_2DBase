@@ -1,9 +1,8 @@
 using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using DG.Tweening;
+using UnityEngine;
 
-using SpriteLabels = STELLAREST_2D.Define.Labels.Sprites;
+using static STELLAREST_2D.Define;
 using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
 
 namespace STELLAREST_2D
@@ -45,12 +44,12 @@ namespace STELLAREST_2D
                 if (_gemSize == Define.GemSize.Normal)
                 {
                     transform.localScale = Vector3.one * GEM_NORMAL_SCALE_RATIO;
-                    _sr.sprite = Managers.Resource.Load<Sprite>(SpriteLabels.GEM_NORMAL);
+                    _sr.sprite = Managers.Resource.Load<Sprite>(FixedValue.Load.SPRITE_GEM_NORMAL);
                 }
                 else
                 {
                     transform.localScale = Vector3.one * GEM_LARGE_SCALE_RATIO;
-                    _sr.sprite = Managers.Resource.Load<Sprite>(SpriteLabels.GEM_LARGE);
+                    _sr.sprite = Managers.Resource.Load<Sprite>(FixedValue.Load.SPRITE_GEM_LARGE);
                 }
             }
         }

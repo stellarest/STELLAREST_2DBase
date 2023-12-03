@@ -1,13 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Net;
-using STELLAREST_2D.Data;
 using UnityEngine;
 
-using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
+using static STELLAREST_2D.Define;
+using STELLAREST_2D.Data;
 using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
-using System.Linq;
 
 namespace STELLAREST_2D
 {
@@ -53,7 +51,7 @@ namespace STELLAREST_2D
 
         protected override void DoSkillJob(Action callback = null)
         {
-            this.Owner.SkillBook.Deactivate(SkillTemplate.ArrowMasterMastery);
+            this.Owner.SkillBook.Deactivate(FixedValue.TemplateID.Skill.ArrowMasterMastery);
             this.Owner.ReserveSkillAnimationType(this.Data.AnimationType);
             Owner.CreatureState = Define.CreatureState.Skill;
             StartCoroutine(CoConcentration());
@@ -81,14 +79,14 @@ namespace STELLAREST_2D
                 yield return null;
             }
 
-            SkillBase skill = this.Owner.SkillBook.GetLastLearnedSkillMember(SkillTemplate.ArrowMasterMastery);
+            SkillBase skill = this.Owner.SkillBook.GetLastLearnedSkillMember(FixedValue.TemplateID.Skill.ArrowMasterMastery);
             float originMinDamage = skill.Data.MinDamage;
             float originMaxDamage = skill.Data.MaxDamage;
 
             skill.Data.MinDamage += (skill.Data.MinDamage * this.Data.CrowdControlIntensity);
             skill.Data.MaxDamage += (skill.Data.MaxDamage * this.Data.CrowdControlIntensity);
             
-            this.Owner.SkillBook.Activate(SkillTemplate.ArrowMasterMastery);
+            this.Owner.SkillBook.Activate(FixedValue.TemplateID.Skill.ArrowMasterMastery);
             EnableParticles(_buffs, true);
 
             yield return new WaitForSeconds(this.Data.CrowdControlDuration);

@@ -1,10 +1,9 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using STELLAREST_2D.Data;
 using UnityEngine;
 
-using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
+using static STELLAREST_2D.Define;
+using STELLAREST_2D.Data;
 
 namespace STELLAREST_2D
 {
@@ -72,7 +71,7 @@ namespace STELLAREST_2D
             _ownerController.PlayerAnimController.SetCanEnterNextState(false);
             _ownerController.LockHandle = true;
 
-            this.Owner.SkillBook.Deactivate(SkillTemplate.ElementalArcherMastery);
+            this.Owner.SkillBook.Deactivate(FixedValue.TemplateID.Skill.ElementalArcherMastery);
             this.Owner.ReserveSkillAnimationType(this.Data.AnimationType);
             Owner.CreatureState = Define.CreatureState.Skill;
 
@@ -100,7 +99,7 @@ namespace STELLAREST_2D
 
             yield return new WaitForSeconds(FIXED_WAIT_TIME_AFTER_SKILL);
             _ownerController.LockHandle = false;
-            this.Owner.SkillBook.Activate(SkillTemplate.ElementalArcherMastery);
+            this.Owner.SkillBook.Activate(FixedValue.TemplateID.Skill.ElementalArcherMastery);
             EnableParticles(_particles, false);
             _ownerController.PlayerAnimController.SetCanEnterNextState(true);
         }

@@ -1,12 +1,11 @@
 using UnityEngine;
 
-using STELLAREST_2D.Data;
 using static STELLAREST_2D.Define;
-using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
+using STELLAREST_2D.Data;
 
 namespace STELLAREST_2D
 {
-    [System.Serializable] 
+    [System.Serializable]
     public class CreatureStat
     {
         public CreatureStat(CreatureController owner, CreatureData creatureData)
@@ -16,21 +15,19 @@ namespace STELLAREST_2D
             this.Name = creatureData.Name;
             this.Description = creatureData.Description;
 
-            if (creatureData.InitialStatDescGrade_MinPower == InitialStatDescGrade.None || creatureData.InitialStatDescGrade_MaxPower == InitialStatDescGrade.None) 
+            if (creatureData.InitialStatDescGrade_MinPower == InitialStatDescGrade.None || creatureData.InitialStatDescGrade_MaxPower == InitialStatDescGrade.None)
                 Utils.LogCritical(nameof(CreatureStat), nameof(CreatureStat), "Not allowed initial zero value for display(Min and Max Power)");
-
-            this.MaxHP = creatureData.InitialMaxHP;
-            this.HP = creatureData.InitialMaxHP;
 
             this.InitialStatDesc_MinPower = creatureData.InitialStatDescGrade_MinPower;
             this.InitialStatDesc_MaxPower = creatureData.InitialStatDescGrade_MaxPower;
             this.InitialStatDesc_AttackSpeed = creatureData.InitialStatDescGrade_AttackSpeed;
-
-            this.Armor = creatureData.InitialArmor;
             this.InitialStatDesc_Armor = creatureData.InitialStatDescGrade_Armor;
-
-            this._movementSpeed = creatureData.InitialMovementSpeed;
             this.InitialStatDesc_MovementSpeed = creatureData.InitialStatDescGrade_MovementSpeed;
+
+            this.MaxHP = creatureData.InitialMaxHP;
+            this.HP = creatureData.InitialMaxHP;
+            this.Armor = creatureData.InitialArmor;
+            this._movementSpeed = creatureData.InitialMovementSpeed;
 
             this.InitialSkillDesc_MasteryUniqueSkillIcon = creatureData.InitialSkillDesc_MasteryUniqueSkillIcon;
             this.InitialSkillDesc_MasteryUniqueDescription = creatureData.InitialSkillDesc_MasteryUniqueSkillDescription;
@@ -40,18 +37,18 @@ namespace STELLAREST_2D
             this.InitialSkillDesc_UltimateUniqueSkillDescription = creatureData.InitialSkillDesc_UltimateUniqueSkillDescription;
         }
 
-#region Event
+        #region Event
         // +++++ Mastery Attack Template : Cooldown is Attack Speed +++++
-        public System.Action<SkillTemplate, float> OnAddSkillCooldownRatio = null;
-        public System.Action<SkillTemplate> OnResetSkillCooldown = null;
-#endregion
+        public System.Action<FixedValue.TemplateID.Skill, float> OnAddSkillCooldownRatio = null;
+        public System.Action<FixedValue.TemplateID.Skill> OnResetSkillCooldown = null;
+        #endregion
 
         public CreatureController Owner { get; private set; } = null;
         public int TemplateID { get; private set; } = -1;
         [field: SerializeField] public string Name { get; private set; } = string.Empty;
         public string Description { get; private set; } = string.Empty;
 
-#region SET PREV FOR USING UI LATER
+        #region SET PREV FOR USING UI LATER
         public InitialStatDescGrade InitialStatDesc_MinPower { get; private set; } = InitialStatDescGrade.None;
         public InitialStatDescGrade InitialStatDesc_MaxPower { get; private set; } = InitialStatDescGrade.None;
         public InitialStatDescGrade InitialStatDesc_AttackSpeed { get; private set; } = InitialStatDescGrade.None;
@@ -66,7 +63,7 @@ namespace STELLAREST_2D
 
         public Sprite InitialSkillDesc_UltimateUniqueSkillIcon { get; private set; } = null;
         public string InitialSkillDesc_UltimateUniqueSkillDescription { get; private set; } = string.Empty;
-#endregion
+        #endregion
 
         [field: SerializeField] public int Level { get; set; } = 0;
         [field: SerializeField] public int LevelUpPoint { get; set; } = 0;
@@ -77,28 +74,24 @@ namespace STELLAREST_2D
         [field: SerializeField] public float MaxShieldHP { get; set; } = 0f;
         [field: SerializeField] public float ShieldHP { get; set; } = 0f;
 
-
         // +++++ ARMOR +++++
         [SerializeField] private float _armor = 0f;
         private float _armorPrev = 0f;
         private float _armorTotalUpRatio = 0f;
         public float Armor { get => _armor; private set => _armor = value; } // 외부에서는 Armor만 알고 있으면 됨.
 
-
-        [field: SerializeField] public float CollectRange { get; set; } = FIXED_INITIAL_COLLECT_RANGE;
+        [field: SerializeField] public float CollectRange { get; set; } = FixedValue.Numeric.INITIAL_COLLECT_RANGE;
         [field: SerializeField] public float Luck { get; set; } = 0f;
         [field: SerializeField] public float HPRegenerationRate { get; set; } = 0f;
         [field: SerializeField] public float HPStealRate { get; set; } = 0f;
         [field: SerializeField] public float DamageUpRate { get; set; } = 0f;
 
-        
         [field: SerializeField] public float CriticalChance { get; set; } = 0f;
         [field: SerializeField] public float PublicSkillCooldownRate { get; set; } = 0f;
-        
 
         [field: SerializeField] public float DodgeChance { get; set; } = 0f;
         [SerializeField] private float _movementSpeed = 0f;
-        public float MovementSpeed 
+        public float MovementSpeed
         {
             get => _movementSpeed;
             set
@@ -116,27 +109,5 @@ namespace STELLAREST_2D
         }
 
         public void ResetMovementSpeed() => this.MovementSpeed = _movementSpeedOrigin;
-
-
-        public void AddStatValue(StatType type, float addValue) { }
-        public void AddStatRatio(StatType type, float addRatio)
-        {
-            switch (type)
-            {
-                case StatType.AttackSpeed:
-                    break;
-
-                case StatType.Armor:
-                    {
-                        _armorPrev = this.Armor;
-                        _armorTotalUpRatio += addRatio;
-                        this.Armor = _armorTotalUpRatio;
-                    }
-                    break;
-
-                default:
-                    return;
-            }
-        }
     }
 }

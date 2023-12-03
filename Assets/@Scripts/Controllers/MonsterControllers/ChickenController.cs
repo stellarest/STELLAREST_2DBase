@@ -1,10 +1,9 @@
 using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using DG.Tweening;
+using UnityEngine;
 
+using static STELLAREST_2D.Define;
 using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
-using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
 
 namespace STELLAREST_2D
@@ -27,8 +26,8 @@ namespace STELLAREST_2D
                                 this.SkillBook.DeactivateAll();
                                 this.CreatureState = Define.CreatureState.Idle;
 
-                                transform.DOShakePosition(Utils.CREATURES_FIXED_SHAKE_DURATION, Utils.CREATURES_FIXED_SHAKE_POWER);
-                                transform.DOShakeScale(Utils.CREATURES_FIXED_SHAKE_DURATION, Utils.CREATURES_FIXED_SHAKE_POWER);
+                                transform.DOShakePosition(FixedValue.Numeric.STANDARD_CREATURE_SHAKE_DURATION, FixedValue.Numeric.STANDARD_CREATURE_SHAKE_POWER);
+                                transform.DOShakeScale(FixedValue.Numeric.STANDARD_CREATURE_SHAKE_DURATION, FixedValue.Numeric.STANDARD_CREATURE_SHAKE_POWER);
                             }
                             else if (this[CrowdControl.Stun] == false)
                             {
@@ -50,8 +49,6 @@ namespace STELLAREST_2D
                             }
                         }
                         break;
-
-                    
                 }
             }
         }
@@ -60,7 +57,7 @@ namespace STELLAREST_2D
 
         protected override void LateInit()
         {
-            SkillBook.LevelUp(SkillTemplate.BodyAttack_Solo);
+            SkillBook.LevelUp(FixedValue.TemplateID.Skill.BodyAttack_Solo);
             //SkillBook.LevelUp(SkillTemplate.ThrowingStar);
         }
 
@@ -154,7 +151,7 @@ namespace STELLAREST_2D
             if (this.SkillBook != null)
             {
                 this.MonsterAnimController.Attack();
-                this.SkillBook.Activate(SkillTemplate.BodyAttack_Solo);
+                this.SkillBook.Activate(FixedValue.TemplateID.Skill.BodyAttack_Solo);
             }
         }
 

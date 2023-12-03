@@ -1,13 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using DamageNumbersPro;
-using STELLAREST_2D.Data;
 using UnityEngine;
+
+using DamageNumbersPro;
+
+using static STELLAREST_2D.Define;
+using STELLAREST_2D.Data;
 using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
 using FaceType = STELLAREST_2D.Define.FaceType;
 using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
-using PlayerTemplateID = STELLAREST_2D.Define.TemplateIDs.Creatures.Player;
+//using PlayerTemplateID = STELLAREST_2D.Define.TemplateIDs.Creatures.Player;
 
 namespace STELLAREST_2D
 {
@@ -324,26 +327,26 @@ namespace STELLAREST_2D
             WeaponsRef.CreatureTemplateID = initialCreatureData.TemplateID;
             switch (initialCreatureData.TemplateID)
             {
-                case (int)PlayerTemplateID.Gary_Paladin:
+                case (int)FixedValue.TemplateID.Player.Gary_Paladin:
                     {
                         WeaponsRef.HandLeft_MeleeWeapon = OwnerAsCreature.GetComponent<PlayerController>().BodyParts.HandLeft_MeleeWeapon.GetComponent<SpriteRenderer>();
                         WeaponsRef.HandRight_MeleeWeapon = OwnerAsCreature.GetComponent<PlayerController>().BodyParts.HandRight_MeleeWeapon.GetComponent<SpriteRenderer>();
                     }
                     break;
 
-                case (int)PlayerTemplateID.Gary_Knight:
-                case (int)PlayerTemplateID.Gary_PhantomKnight:
+                case (int)FixedValue.TemplateID.Player.Gary_Knight:
+                case (int)FixedValue.TemplateID.Player.Gary_PhantomKnight:
                     WeaponsRef.HandRight_MeleeWeapon = OwnerAsCreature.GetComponent<PlayerController>().BodyParts.HandRight_MeleeWeapon.GetComponent<SpriteRenderer>();
                     break;
 
-                case (int)PlayerTemplateID.Reina_ArrowMaster:
-                case (int)PlayerTemplateID.Reina_ElementalArcher:
-                case (int)PlayerTemplateID.Reina_ForestGuardian:
+                case (int)FixedValue.TemplateID.Player.Reina_ArrowMaster:
+                case (int)FixedValue.TemplateID.Player.Reina_ElementalArcher:
+                case (int)FixedValue.TemplateID.Player.Reina_ForestGuardian:
                     WeaponsRef.RangedWeapon = OwnerAsCreature.GetComponent<PlayerController>().BodyParts.RangedWeapon.GetComponentsInChildren<SpriteRenderer>();
                     break;
 
-                case (int)PlayerTemplateID.Kenneth_Assassin:
-                case (int)PlayerTemplateID.Kenneth_Ninja:
+                case (int)FixedValue.TemplateID.Player.Kenneth_Assassin:
+                case (int)FixedValue.TemplateID.Player.Kenneth_Ninja:
                     {
                         WeaponsRef.HandLeft_MeleeWeapon = OwnerAsCreature.GetComponent<PlayerController>().BodyParts.HandLeft_MeleeWeapon.GetComponent<SpriteRenderer>();
                         WeaponsRef.HandRight_MeleeWeapon = OwnerAsCreature.GetComponent<PlayerController>().BodyParts.HandRight_MeleeWeapon.GetComponent<SpriteRenderer>();
@@ -570,29 +573,29 @@ namespace STELLAREST_2D
         {
             switch (templateID)
             {
-                case (int)PlayerTemplateID.Gary_Paladin:
+                case (int)FixedValue.TemplateID.Player.Gary_Paladin:
                     {
                         WeaponsRef.HandLeft_MeleeWeapon.enabled = (!isOnHide);
                         WeaponsRef.HandRight_MeleeWeapon.enabled = (!isOnHide);
                     }
                     break;
 
-                case (int)PlayerTemplateID.Gary_Knight:
-                case (int)PlayerTemplateID.Gary_PhantomKnight:
+                case (int)FixedValue.TemplateID.Player.Gary_Knight:
+                case (int)FixedValue.TemplateID.Player.Gary_PhantomKnight:
                     WeaponsRef.HandRight_MeleeWeapon.enabled = (!isOnHide);
                     break;
 
-                case (int)PlayerTemplateID.Reina_ArrowMaster:
-                case (int)PlayerTemplateID.Reina_ElementalArcher:
-                case (int)PlayerTemplateID.Reina_ForestGuardian:
+                case (int)FixedValue.TemplateID.Player.Reina_ArrowMaster:
+                case (int)FixedValue.TemplateID.Player.Reina_ElementalArcher:
+                case (int)FixedValue.TemplateID.Player.Reina_ForestGuardian:
                     {
                         for (int i = 0; i < WeaponsRef.RangedWeapon.Length; ++i)
                             WeaponsRef.RangedWeapon[i].enabled = (!isOnHide);
                     }
                     break;
 
-                case (int)PlayerTemplateID.Kenneth_Assassin:
-                case (int)PlayerTemplateID.Kenneth_Ninja:
+                case (int)FixedValue.TemplateID.Player.Kenneth_Assassin:
+                case (int)FixedValue.TemplateID.Player.Kenneth_Ninja:
                     {
                         if (WeaponsRef.HandLeft_MeleeWeapon.sprite != null)
                             WeaponsRef.HandLeft_MeleeWeapon.enabled = (!isOnHide);

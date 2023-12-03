@@ -1,10 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 // 26 RIO
 // 31 RIO (last henshin)
 // 57 RIO
+using static STELLAREST_2D.Define;
+
 namespace STELLAREST_2D
 {
     public class ArrowMasterAnimationController : PlayerAnimationController
@@ -19,18 +20,18 @@ namespace STELLAREST_2D
         {
             switch (this.Owner.SkillAnimationType)
             {
-                case Define.SkillAnimationType.DefaultMasteryAction:
+                case SkillAnimationType.Attack:
                     AnimController.Play(UPPER_ATTACK);
                     break;
 
-                case Define.SkillAnimationType.EliteAction:
+                case SkillAnimationType.ElitePlus:
                     {
                         AnimController.StopPlayback();
                         AnimController.Play(UPPER_ELITE_ACTION);
                     }
                     break;
 
-                case Define.SkillAnimationType.UltimateAction:
+                case SkillAnimationType.UltimatePlus:
                     break;
             }
         }

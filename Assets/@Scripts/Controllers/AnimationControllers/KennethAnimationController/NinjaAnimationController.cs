@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
+using static STELLAREST_2D.Define;
 
 namespace STELLAREST_2D
 {
@@ -28,32 +28,32 @@ namespace STELLAREST_2D
         {
             switch (this.Owner.SkillAnimationType)
             {
-                case Define.SkillAnimationType.DefaultMasteryAction:
+                case SkillAnimationType.Attack:
                     {
-                        if (this.Owner.SkillBook.GetCurrentSkillGrade(SkillTemplate.NinjaMastery) == Define.InGameGrade.Default)
+                        if (this.Owner.SkillBook.GetCurrentSkillGrade(FixedValue.TemplateID.Skill.NinjaMastery) == InGameGrade.Default)
                             AnimController.Play(UPPER_ATTACK);
-                        else if (this.Owner.SkillBook.GetCurrentSkillGrade(SkillTemplate.NinjaMastery) == Define.InGameGrade.Elite)
+                        else if (this.Owner.SkillBook.GetCurrentSkillGrade(FixedValue.TemplateID.Skill.NinjaMastery) == InGameGrade.Elite)
                             AnimController.Play(UPPER_ATTACK_ELITE);
                         else
                             AnimController.Play(UPPER_ATTACK_ULTIMATE);
                     }
                     break;
 
-                case Define.SkillAnimationType.EliteAction:
+                case SkillAnimationType.ElitePlus:
                     {
                         AnimController.StopPlayback();
                         AnimController.Play(UPPER_ELITE_ACTION);
                     }
                     break;
 
-                case Define.SkillAnimationType.ContinuousEliteAction:
+                case SkillAnimationType.C1ElitePlus:
                     {
                         AnimController.StopPlayback();
                         AnimController.Play(UPPER_CONTINUOUS_ELITE_ACTION);
                     }
                     break;
 
-                case Define.SkillAnimationType.UltimateAction:
+                case SkillAnimationType.UltimatePlus:
                     break;
             }
         }

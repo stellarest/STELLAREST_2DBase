@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+using static STELLAREST_2D.Define;
 using STELLAREST_2D.Data;
 
 namespace STELLAREST_2D
@@ -18,11 +19,8 @@ namespace STELLAREST_2D
 
         public void Init()
         {
-            CreaturesDict = LoadJson<CreatureDataLoader, int, CreatureData>
-                        (Define.Labels.Data.FIXED_LOAD_CREATURE_DATA).MakeDict();
-
-            SkillsDict = LoadJson<SkillDataLoader, int, SkillData>
-                        (Define.Labels.Data.FIXED_LOAD_SKILL_DATA).MakeDict();
+            CreaturesDict = LoadJson<CreatureDataLoader, int, CreatureData>(FixedValue.Load.CREATURE_DATA).MakeDict();
+            SkillsDict = LoadJson<SkillDataLoader, int, SkillData>(FixedValue.Load.SKILL_DATA).MakeDict();
         }
 
         private T LoadJson<T, Key, Value>(string path) where T : ILoader<Key, Value>

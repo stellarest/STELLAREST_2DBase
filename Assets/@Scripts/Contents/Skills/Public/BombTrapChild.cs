@@ -1,10 +1,3 @@
-// using System.Collections;
-// using System.Collections.Generic;
-// using STELLAREST_2D.Data;
-// using UnityEditor.Animations;
-// using UnityEngine;
-
-using Unity.Collections;
 using UnityEngine;
 
 namespace STELLAREST_2D
@@ -23,7 +16,6 @@ namespace STELLAREST_2D
             HitCollider.isTrigger = true;
             HitCollider.enabled = false;
 
-            //base.SetClonedRootTargetOnParticleStopped();
             GetComponent<ParticleSystemRenderer>().sortingOrder = (int)Define.SortingOrder.EnvEffect;
             if (this.Owner?.IsPlayer == true)
                 Managers.Collision.InitCollisionLayer(this.gameObject, Define.CollisionLayers.PlayerAttack);

@@ -1,10 +1,9 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using STELLAREST_2D.Data;
 using UnityEngine;
 
-using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
+using static STELLAREST_2D.Define;
+using STELLAREST_2D.Data;
 
 namespace STELLAREST_2D
 {
@@ -53,7 +52,7 @@ namespace STELLAREST_2D
         protected override void DoSkillJob(Action callback = null)
         {
             _isEndOfSkill = false;
-            this.Owner.SkillBook.Deactivate(SkillTemplate.AssassinMastery);
+            this.Owner.SkillBook.Deactivate(FixedValue.TemplateID.Skill.AssassinMastery);
             _ownerController.PlayerAnimController.SetCanEnterNextState(false);
 
             this.Owner.ReserveSkillAnimationType(this.Data.AnimationType);
@@ -116,13 +115,13 @@ namespace STELLAREST_2D
             
             _ownerController.PlayerAnimController.SetCanEnterNextState(true);
             yield return new WaitForSeconds(FIXED_AFTER_COMPLETED_CHARGE_WAIT_TIME);
-            if (this.Owner.SkillBook.ForceGetSkillMember(SkillTemplate.StabPoisonDagger_Elite_Solo, 0).IsLearned == false)
+            if (this.Owner.SkillBook.ForceGetSkillMember(FixedValue.TemplateID.Skill.StabPoisonDagger_Elite_Solo, 0).IsLearned == false)
             {
-                this.Owner.SkillBook.LevelUp(SkillTemplate.StabPoisonDagger_Elite_Solo);
-                this.Owner.SkillBook.Activate(SkillTemplate.StabPoisonDagger_Elite_Solo);
+                this.Owner.SkillBook.LevelUp(FixedValue.TemplateID.Skill.StabPoisonDagger_Elite_Solo);
+                this.Owner.SkillBook.Activate(FixedValue.TemplateID.Skill.StabPoisonDagger_Elite_Solo);
             }
             else
-                this.Owner.SkillBook.Activate(SkillTemplate.StabPoisonDagger_Elite_Solo);
+                this.Owner.SkillBook.Activate(FixedValue.TemplateID.Skill.StabPoisonDagger_Elite_Solo);
         }
 
         private IEnumerator CoOffPoisonDagger()
@@ -138,7 +137,7 @@ namespace STELLAREST_2D
             TakeOffParticlesFromParent(_burstGroup);
             EnableParticles(_burstGroup, true);
 
-            this.Owner.SkillBook.Deactivate(SkillTemplate.StabPoisonDagger_Elite_Solo);
+            this.Owner.SkillBook.Deactivate(FixedValue.TemplateID.Skill.StabPoisonDagger_Elite_Solo);
             yield return new WaitUntil(() => this.WaitUntilEndOfPlayingParticles(_burstGroup));
             yield return new WaitForSeconds(FIXED_AFTER_COMPLETED_CHARGE_WAIT_TIME);
             _ownerController.PlayerAnimController.SetCanEnterNextState(true);
@@ -148,8 +147,8 @@ namespace STELLAREST_2D
             EnableParticles(_burstGroup, false);
 
             yield return new WaitForSeconds(FIXED_AFTER_COMPLETED_CHARGE_WAIT_TIME);
-            this.Owner.SkillBook.Deactivate(SkillTemplate.PoisonDagger_Elite_Solo);
-            this.Owner.SkillBook.Activate(SkillTemplate.AssassinMastery);
+            this.Owner.SkillBook.Deactivate(FixedValue.TemplateID.Skill.PoisonDagger_Elite_Solo);
+            this.Owner.SkillBook.Activate(FixedValue.TemplateID.Skill.AssassinMastery);
             
             yield break; // END OF SKILL
         }

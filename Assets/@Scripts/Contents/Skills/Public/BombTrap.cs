@@ -1,12 +1,9 @@
-// using System.Collections;
-// using System.Collections.Generic;
 using System.Collections;
-using CartoonFX;
 using STELLAREST_2D.Data;
-using Unity.VisualScripting;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
+
+using static STELLAREST_2D.Define;
 
 namespace STELLAREST_2D
 {
@@ -20,11 +17,9 @@ namespace STELLAREST_2D
     public class BombTrap : PublicSkill
     {
         public BombTrap Commander { get; private set; } = null;
-
         private BombTrapChild _childExplosion = null;
         private GameObject _childSmoke = null;
         private GameObject _childFuse = null;
-
         private bool _isRolling = false;
 
         public override void InitOrigin(CreatureController owner, SkillData data)
@@ -44,7 +39,6 @@ namespace STELLAREST_2D
         {
             if (this.IsFirstPooling)
             {
-                //Utils.Log("BombTrab Init Clone.");
                 Commander = ownerFromOrigin.SkillBook.GetComponentInChildren<BombTrap>();
                 _childExplosion = transform.GetChild(0).GetComponent<BombTrapChild>();
                 _childExplosion.Init(ownerFromOrigin, dataFromOrigin);
@@ -71,8 +65,6 @@ namespace STELLAREST_2D
         {
             while (true)
             {
-                //Utils.Log($"{this._currentCount} / {this.Data.ContinuousCount}");
-                // this._currentCount < this.Data.ContinuousCount
                 if (this._currentCount < this.Data.ContinuousCount)
                 {
                     _coolTimeDelta += Time.deltaTime;
@@ -87,22 +79,18 @@ namespace STELLAREST_2D
             }
         }
 
-        protected override void DoSkillJob()
-        {
-            StartCoroutine(CoGenerateBombTrap());
-        }
-
-        private readonly float MIN_RANDOM_DISTANCE = 5f;
-        private readonly float MAX_RANDOM_DISTNACE = 8f;
+        private const float THROWING_MIN_RANDOM_DISTANCE = 5F;
+        private const float THROWING_MAX_RANDOM_DISTANCE = 8F;
+        protected override void DoSkillJob() =>  StartCoroutine(CoGenerateBombTrap());
         private IEnumerator CoGenerateBombTrap()
         {
             SkillBase clone = Managers.Object.Spawn<SkillBase>(spawnPos: Vector3.zero, templateID: this.Data.TemplateID,
-                    spawnObjectType: Define.ObjectType.Skill, isPooling: true);
+                    spawnObjectType: ObjectType.Skill, isPooling: true);
             BombTrap bombTrap = clone as BombTrap;
             bombTrap.InitClone(this.Owner, this.Data);
 
             Vector3 startPos = this.Owner.Center.position;
-            Vector3 targetPos = Utils.GetRandomPosition(startPos, MIN_RANDOM_DISTANCE, MAX_RANDOM_DISTNACE);
+            Vector3 targetPos = Utils.GetRandomPosition(startPos, THROWING_MIN_RANDOM_DISTANCE, THROWING_MAX_RANDOM_DISTANCE);
 
             float percent = 0f;
             Quaternion startRot = transform.rotation;
@@ -146,7 +134,7 @@ namespace STELLAREST_2D
         {
             this.RigidBody.simulated = false;
             this.HitCollider.enabled = false;
-            StartCoroutine(Managers.VFX.CoMatStrongTint(Define.MaterialColor.White, this, SR, this.Data.Duration, delegate
+            StartCoroutine(Managers.VFX.CoMatStrongTint(MaterialColor.White, this, SR, this.Data.Duration, delegate
             {
                 _childFuse.SetActive(false); // FIX
 
@@ -168,21 +156,12 @@ namespace STELLAREST_2D
         }
 
         protected override void SetSortingOrder() 
-            => GetComponent<SortingGroup>().sortingOrder = (int)Define.SortingOrder.Skill;
+            => GetComponent<SortingGroup>().sortingOrder = (int)SortingOrder.Skill;
 
         public override void OnDeactivateRepeatSkillHandler()
         {
             if (_isRolling)
             {
-                // Utils.LogBreak("BREAK.");
-                // this.RigidBody.simulated = true;
-                // this.HitCollider.enabled = true;
-
-                // this._childSmoke.SetActive(true);
-                // this._childFuse.SetActive(true);
-                // ++Commander._currentCount;
-
-                // Managers.Object.SkillCounts를 맞추려면 제거하는게 맞는 것 같음
                 Managers.Object.Despawn(this.GetComponent<SkillBase>());
                 _isRolling = false;
             }

@@ -5,246 +5,41 @@ namespace STELLAREST_2D
 {
     public static class Define
     {
-        public enum StatType { MinPower, MaxPower, AttackSpeed, Armor, MovementSpeed }
-        public enum InitialStatDescGrade { None, VeryLow, Low, Average, High, VeryHigh }
+        // enum temps
+        public enum InGameStage { Forest, Volcano } // temp
+        /*
+            +++++ In Game Difficulty +++++
+            * Normal, Hard, Expert : Forest (FIXED_FOREST_STAGE_MAX_WAVE_COUNT : 20) (per stage level, total 60)
+            * Master, Extreme : Volcano (FIXED_VOLCANO_STAGE_MAX_WAVE_COUNT : 30) (per stage level, total 60)
+        */
+        public enum InGameDifficulty { Normal, Hard, Expert, Master, Extreme } // temp
+        public enum WaveType { None, Elite, MiddleBoss, Boss } // temp
+        public enum Scene { Unknown, DevScene, GameScene, } // temp
+        public enum Sound { BGM, SFX, } // temp
+        public enum StageType { Normal, MiddleBoss, Boss, } // temp
 
-        public const float FIXED_INITIAL_COLLECT_RANGE = 3F;
-        public const float MAX_DODGE_CHANCE = 0.6f;
-        public const float MAX_ARMOR_RATE = 0.8f;
-
-        public const float PLAYER_LOCAL_SCALE_X = 1.25f; // Initial ScaleX : 0.8f
-        public const float PLAYER_LOCAL_SCALE_Y = 1.25f; // Initial ScaleY : 0.8f
-
-        public const string INDICATOR = "Indicator";
-        public const string FIRE_SOCKET = "FireSocket";
-        public const string ANIMATION_BODY = "AnimationBody";
-
-        // public const int STAGE_MAX_WAVE_COUNT = 20;
-        // public const int ABILITY_MAX_POINT = 8;
 
         public enum UIEvent { Click, Pressed, PointerDown, PointerUp, BeginDrag, Drag, EndDrag, }
-        public enum Scene { Unknown, DevScene, GameScene, }
-        public enum Sound { BGM, Effect, }
+        public enum InitialStatDescGrade { None, VeryLow, Low, Average, High, VeryHigh }
         public enum ObjectType { None = -1, Player = 1, Monster, Skill, Projectile, Gem, Soul }
         public enum MonsterType { None = -1, Chicken = 1, }
-
         public enum InGameGrade { Default = 1, Elite, Ultimate }
-        public enum InGameStage { Forest, Volcano }
-
-        /*
-            Normal, Hard, Expert : Forest
-             Master, Extreme : Volcano
-        */
-        public enum InGameDifficulty { Normal, Hard, Expert, Master, Extreme }
-        public enum WaveType { None, Elite, MiddleBoss, Boss }
         public enum SortingOrder { Map = 100, Player = 200, Item = 209, Monster = 210, Skill = 230, EnvEffect = 255 }
-        public enum StageType { Normal, MiddleBoss, Boss, }
         public enum SkillType { None = -1, Unique = 1, Public = 2 }
         public enum CreatureState { Idle = 0, Walk = 1, Run = 2, Skill = 3, Invincible = 4, Dead = 999 }
-        //public enum InGameGrade { Normal = 1, Elite = 2, Ultimate = 3 }
         public enum CollisionLayers { Default = 0, PlayerBody = 6, PlayerAttack = 7, MonsterBody = 8, MonsterAttack = 9 }
-        //public enum InitialStatRatioGrade { None = 0, Low = 5, Average = 15, High = 20 }
         public enum LookAtDirection { Left = 1, Right = -1 }
-        public enum ExpressionType { Default, Battle, Concentration, Angry, Kitty, Sick, Death, }
-        public enum MonsterFace { Normal = 0, Angry = 1, Death = 2 }
         public enum HitFromType { None = -1, ThrowingStar = 1, LazerBolt = 2, All = 9 }
-        //public enum ImpactHits { None, Leaves, CriticalHit, }
-
         public enum MaterialType { None = -1, Hit = 1, Hologram = 2, FadeOut = 3, StrongTint, InnerOutline }
         public enum MaterialColor { UsePreset = -1, White, Red, Green, }
-
         public enum FaceType { Default = 1, Combat, Dead, Bunny, }
-
         public enum GemSize { Normal = 1, Large = 2 }
         public enum StrongTintColor { White, Red, Green }
+        public enum SkillAnimationType { None = -1, Attack = 101, ElitePlus = 201, C1ElitePlus = 202, UltimatePlus = 301, }
 
-        
-
-
-        public enum SkillAnimationType
-        {
-            None = -1,
-            DefaultMasteryAction = 10001,
-            EliteAction = 20001,
-            ContinuousEliteAction = 20002,
-            UltimateAction = 30001
-        }
 
         public static class TemplateIDs
         {
-            // Player, Monster -> CreaturesDict : Do not add same key in dict
-            public static class Creatures
-            {
-                public enum Player
-                {
-                    Gary_Paladin = 100100,
-                    Gary_Knight = 100200,
-                    Gary_PhantomKnight = 100300,
-
-                    Reina_ArrowMaster = 200100,
-                    Reina_ElementalArcher = 200200,
-                    Reina_ForestGuardian = 200300,
-
-                    Kenneth_Assassin = 300100,
-                    Kenneth_Ninja = 300200,
-                    // ====================================
-                    // ====================================
-                    // ====================================
-                    // 일단 Mastery Skill은 Thief까지는 Set해놓음
-                    Kenneth_Thief = 300300,
-                    // ====================================
-                    // ====================================
-                    // ====================================
-                    Lionel_Warrior = 100109,
-                    Lionel_Barbarian = 100110,
-                    Lionel_Berserker = 100111,
-
-                    Christian_Hunter = 100112,
-                    Christian_Desperado = 100113,
-                    Christian_Destroyer = 100114,
-
-                    Chloe_Archmage = 100115,
-                    Chloe_Trickster = 100116,
-                    Chloe_Frostweaver = 100117,
-
-                    Stigma_SkeletonKing = 100118,
-                    Stigma_Pirate = 100119,
-                    Stigma_Mutant = 100120,
-
-                    Eleanor_Queen = 100121 // +++ Special Hidden Character : Will be very fun !! +++
-                }
-
-                public enum Monster
-                {
-                    Chicken = 900100,
-                }
-            }
-
-            public static class Status
-            {
-                public enum Skill
-                {
-                    None = -1,
-
-
-                    // +++ PALADIN +++
-                    PaladinMastery = 100100,
-                    Shield_Elite_Solo = 100103,
-                    JudgementOfHeaven_Ultimate_Solo = 100106,
-
-
-                    // +++ KNIGHT +++
-                    KnightMastery = 100200,
-                    SecondWind_Elite_Solo = 100203,
-                    StormBlade_Ultimate_Solo = 100206,
-
-
-                    // +++ PHANTOM KNIGHT +++
-                    PhantomKnightMastery = 100300,
-                    SummonPhantomSoul_Elite_Solo = 100303,
-                    PhantomSoul_Elite_Solo = 100306,
-                    Metamorphosis_Ultimate_Solo = 100309,
-
-
-                    // +++ ARROW MASTERY +++
-                    ArrowMasterMastery = 200100,
-                    Concentration_Elite_Solo = 200103,
-                    ArrowShower_Ultimate_Solo = 200106,
-
-
-                    // +++ ELEMENTAL ARCHER +++
-                    ElementalArcherMastery = 200200,
-                    ElementalShock_Elite_Solo = 200203,
-                    ElementalCharge_Ultimate_Solo = 200206,
-
-
-                    // +++ FOREST GUARDIAN +++
-                    ForestGuardianMastery = 200300,
-                    ForestBarrier_Elite_Solo = 200303,
-                    SummonBlackPanther_Ultimate_Solo = 200306,
-
-                    
-                    // +++ ASSASSIN +++
-                    AssassinMastery = 300100,
-                    PoisonDagger_Elite_Solo = 300103,
-                    // SkillGroupDictionary, DictionaryGroupMaxCount(_numberGroups)으로 인해서 현재는 3씩 증가시켜야함 (임시)
-                    StabPoisonDagger_Elite_Solo = 300106, 
-                    CounterStrike_Ultimate_Solo = 300109,
-
-                    // +++ NINJA +++
-                    NinjaMastery = 300200,
-                    Cloak_Elite_Solo = 300203,
-                    NinjaSlash_Elite_Solo = 300206,
-                    CloneTechnique_Ultimate_Solo = 300209,
-
-                    // +++ THIEF +++
-                    ThiefMastery = 300300,
-                    SmokeBomb_Elite_Solo = 300303,
-                    LetsSweep_Ultimate_Solo = 300306,
-
-                    // +++ DEFAULT +++
-                    ThrowingStar = 900100,
-                    Boomerang = 900103,
-                    LazerBolt = 900106,
-                    Spear = 900109,
-                    BombTrap = 900112,
-
-                    // +++ ETC +++
-                    BodyAttack_Solo = 901100
-
-                    // ...
-                    // ===============================
-                    // ===============================
-                    // ===============================
-                    // ...
-                    // +++ LIONEL +++
-                    // WarriorMeleeSwing = 200236,
-                    // BarbarianRangedShot = 200240,
-                    // BerserkerMeleeSwing = 200244,
-
-                    // // +++ CHRISTIAN +++
-                    // HunterRangedShot = 200248,
-                    // DesperadoRangedShot = 200252,
-                    // DestroyerRangedShot = 200256,
-
-                    // // +++ CHLOE +++
-                    // ArchmageRangedMagicShot = 200260,
-                    // TricksterRangedMagicShot = 200264,
-                    // FrostWeaverRangedMagicShot = 200268,
-
-                    // // +++ STIGMA +++
-                    // SkeletonKingMeleeSwing = 200272,
-                    // PirateMeleeSwing = 200276,
-                    // DeathClaw = 200280,
-
-                    // // +++ ELEANOR +++
-                    // QueenMeleeSwing = 200284,
-
-
-                    // +++ ETC +++
-                    // PhantomSoul_Elite_Solo = 201103,
-                    // PhantomSoul_Elite_Solo_Child = 201104
-                    // HeavensJudgment,
-                    // GuardiansShield,
-                    // Concentration,
-                }
-
-                public enum Stat
-                {
-                    None = -1,
-
-                    MaxHpUp_Normal = 300100,
-                    MaxHpUp_Rare = 300101,
-                    MaxHpUp_Epic = 300102,
-                    MaxHpUp_Legendary = 300103,
-
-                    ArmorUp_Normal = 300160,
-                    ArmorUp_Rare = 300161,
-                    ArmorUp_Epic = 300162,
-                    ArmorUp_Legendary = 300163,
-                }            
-            }
-
             public enum CrowdControl
             {
                 None = -1,
@@ -312,38 +107,50 @@ namespace STELLAREST_2D
                     Max = 999,
                 }
             }
-
-            // +++++ TEMP +++++
-            public enum ItemType
-            {
-                //PiggyBank = 600101,
-            }
         }
 
-        public static class Labels
+        #region Public Constant Value
+        /// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        /// +++++ Sprite Addressable Key Name == File Name !! (ex) Mouth_Sick.sprite = Mouth_Sick +++++
+        /// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        public static class FixedValue
         {
-            public static class Prefabs
+            public static class Load
             {
-                // ENV
+                // GameScene
                 public const string UI_JOYSTICK = "UI_Joystick.prefab";
 
+                // ObjectManager
+                public const string ENV_GEM = "Env_Gem.prefab";
+                public const string ENV_SOUL = "Env_Soul.prefab";
 
-                // VFX_MUZZLE
+                // GemController
+                public const string SPRITE_GEM_NORMAL = "Gem_Normal.sprite";
+                public const string SPRITE_GEM_LARGE = "Gem_Large.sprite";
+
+                // DataManager
+                public const string CREATURE_DATA = "CreatureData.json";
+                public const string SKILL_DATA = "SkillData.json";
+
+                // VFXManager
+                public const string MAT_HIT_WHITE = "HitWhite.mat";
+                public const string MAT_HIT_RED = "HitRed.mat";
+                public const string MAT_HOLOGRAM = "Hologram.mat";
+                public const string MAT_FADE = "Fade.mat";
+                public const string MAT_STRONG_TINT = "StrongTint.mat";
+                public const string MAT_INNER_OUTLINE = "InnerOutline.mat";
+                public const string MAT_POISON = "Poison.mat";
+                public const string SO_SPT_BLOB = "SO_SPT_BLOB.asset";
+                public const string SO_SPT_POS = "SO_SPT_POS.asset";
                 public const string VFX_MUZZLE_BOW = "VFX_Muzzle_Bow.prefab";
-
-                // VFX_IMPACT
                 public const string VFX_IMPACT_HIT_DEFAULT = "VFX_Impact_Hit_Default.prefab";
                 public const string VFX_IMPACT_HIT_LEAVES = "VFX_Impact_Hit_Leaves.prefab";
                 public const string VFX_IMPACT_HIT_LIGHT = "VFX_Impact_Hit_Light.prefab";
                 public const string VFX_IMPACT_HIT_SMOKE_PUFF = "VFX_Impact_Hit_SmokePuff.prefab";
                 public const string VFX_IMPACT_HIT_INVINCIBLE = "VFX_Impact_Hit_Invincible.prefab";
                 public const string VFX_IMPACT_HIT_POISON = "VFX_Impact_Hit_Poison.prefab";
-
-                // VFX Trail
                 public const string VFX_TRAIL_WIND = "VFX_Trail_Wind.prefab";
                 public const string VFX_TRAIL_LIGHT = "VFX_Trail_Light.prefab";
-
-                // VFX_ENV : Spawn, Damage, Dodge, Skull, Dust
                 public const string VFX_ENV_SPAWN = "VFX_Env_Spawn.prefab";
                 public const string VFX_ENV_DAMAGE_TO_MONSTER = "VFX_Env_Damage_To_Monster.prefab";
                 public const string VFX_ENV_DAMAGE_TO_MONSTER_CRITICAL = "VFX_Env_Damage_To_Monster_Critical.prefab";
@@ -352,7 +159,6 @@ namespace STELLAREST_2D
                 public const string VFX_ENV_DAMAGE_TO_PLAYER_SHIELD = "VFX_Env_Damage_To_Player_Shield.prefab";
                 public const string VFX_ENV_DAMAGE_TO_PLAYER_DODGE_FONT = "VFX_Env_Damage_To_Player_Dodge_Font.prefab";
                 public const string VFX_ENG_DAMAGE_POISON = "VFX_Env_Damage_Poison.prefab";
-
                 public const string VFX_ENV_SKULL = "VFX_Env_Skull.prefab";
                 public const string VFX_ENV_DUST = "VFX_Env_Dust.prefab";
                 public const string VFX_ENV_STUN = "VFX_Env_Stun.prefab";
@@ -364,104 +170,140 @@ namespace STELLAREST_2D
                 public const string VFX_ENV_TARGETED = "VFX_Env_Targeted.prefab";
                 public const string VFX_ENV_FONT_HIT = "VFX_Env_Font_Hit.prefab";
                 public const string VFX_ENV_QUESTION_MARK = "VFX_Env_QuestionMark.prefab";
-
-                // ENV
-                public const string ENV_GEM = "Env_Gem.prefab";
-                public const string ENV_SOUL = "Env_Soul.prefab";
-
-
-                // TEMP
-                // =====================================================================================
-                // =====================================================================================
-                // =====================================================================================
-                public const string STUN_EFFECT = "StunEffect.prefab";
-                public const string GEM_GATHER = "GemGather.prefab";
-                public const string GEM_EXPLOSION_NORMAL = "GemExplosion_Normal.prefab";
-                public const string GEM_EXPLOSION_LARGE = "GemExplosion_Large.prefab";
-                public const string CURSED_TEXT_EFFECT = "CursedTextEffect.prefab";
-                public const string ARROW_SHOT_MUZZLE_EFFECT = "ArrowShotMuzzleEffect.prefab";
-                public const string ARROW_SHOT_LEGENDARY_TRAIL_EFFECT = "ArrowShotLegendaryTrailEffect.prefab";
-
-
-                public const string DEATH_CLAW_SLASH = "DeathClawSlash.prefab";
-                public const string DEATH_CLAW_SLASH_LEGENDARY = "DeathClawSlash_Legendary.prefab";
-                public const string IMPACT_BLOODY_EFFECT = "ImpactBloodyEffect.prefab";
-                public const string WIND_TRAIL_EFFECT = "WindTrailEffect.prefab";
-                public const string IMPACT_WIND_LV1_EFFECT = "ImpactWindLv1Effect.prefab";
-                public const string IMPACT_WIND_LV2_EFFECT = "ImpactWindLv2Effect.prefab";
-                public const string IMPACT_WIND_LV3_EFFECT = "ImpactWindLv3Effect.prefab";
-                public const string FIRE_TRAIL_EFFECT = "FireTrailEffect.prefab";
-                public const string IMPACT_FIRE_LV1_EFFECT = "ImpactFireLv1Effect.prefab";
-                public const string IMPACT_FIRE_LV2_EFFECT = "ImpactFireLv2Effect.prefab";
-                public const string IMPACT_FIRE_LV3_EFFECT = "ImpactFireLv3Effect.prefab";
-                public const string ICE_TRAIL_EFFECT = "IceTrailEffect.prefab";
-                public const string IMPACT_ICE_LV1_EFFECT = "ImpactIceLv1Effect.prefab";
-                public const string IMPACT_ICE_LV2_EFFECT = "ImpactIceLv2Effect.prefab";
-                public const string IMPACT_ICE_LV3_EFFECT = "ImpactIceLv3Effect.prefab";
-                public const string BUBBLE_TRAIL_EFFECT = "BubbleTrailEffect.prefab";
-                public const string IMPACT_BUBBLE_EFFECT = "ImpactBubbleEffect.prefab";
-                public const string LIGHT_TRAIL_EFFECT = "LightTrailEffect.prefab";
-                public const string IMPACT_LIGHT_EFFECT = "ImpactLightEffect.prefab";
-                public const string IMPACT_HIT_LEAVES_EFFECT = "ImpactHitLeavesEffect.prefab";
-                public const string IMPACT_CRITICAL_HIT_EFFECT = "ImpactCriticalHitEffect.prefab";
-                public const string CONCENTRATION_BUFF = "ConcentrationBuff.prefab";
             }
 
-            /// <summary>
-            /// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-            /// +++++ Sprite Addressable Key Name == File Name !! (ex) Mouth_Sick.sprite = Mouth_Sick +++++
-            /// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-            /// </summary>
-            public static class Sprites
+            public static class Find
             {
-                public const string GEM_NORMAL = "Gem_Normal.sprite";
-                public const string GEM_LARGE = "Gem_Large.sprite";
+                // CreatureController
+                public const string INDICATOR = "Indicator";
+                public const string FIRE_SOCKET = "FireSocket";
+                public const string ANIMATION_BODY = "AnimationBody";
+                public const string PLAYER_HAIR = "Hair";
 
-                public const string EYEBROWS_BATTLE = "Eyebrows_Battle.sprite";
-                public const string MOUTH_BATTLE = "Mouth_Battle.sprite";
-
-                public const string EYEBROWS_ANGRY = "Eyebrows_Angry.sprite";
-                public const string MOUTH_ANGRY = "Mouth_Angry.sprite";
-
-                public const string MOUTH_CONCENTRATION = "Mouth_Concentration.sprite";
-
-                public const string EYES_KITTY = "Eyes_Kitty.sprite";
-                public const string MOUTH_KITTY = "Mouth_Kitty.sprite";
-
-                public const string EYEBROWS_SICK = "Eyebrows_Sick.sprite";
-                public const string EYES_SICK = "Eyes_Sick.sprite";
-                public const string MOUTH_SICK = "Mouth_Sick.sprite";
-
-                public const string EYEBROWS_DEATH = "Eyebrows_Death.sprite";
-                public const string EYES_DEATH = "Eyes_Death.sprite";
-                public const string MOUTH_DEATH = "Mouth_Death.sprite";
+                // PlayerController
+                public const string PLAYER_ARM_LEFT = "ArmL";
+                public const string PLAYER_ARM_RIGHT = "ArmR[1]";
+                public const string PLAYER_FOREARM_LEFT_1 = "ForearmL[1]";
+                public const string PLAYER_FOREARM_LEFT_2 = "ForearmL[2]";
+                public const string PLAYER_HAND_LEFT = "HandL";
+                public const string PLAYER_HAND_RIGHT = "HandR";
+                public const string PLAYER_LEG_LEFT = "Leg[L]";
+                public const string PLAYER_LEG_RIGHT = "Leg[R]";
+                public const string PLAYER_MELEE_WEAPON = "MeleeWeapon";
+                public const string PLAYER_SHIELD = "Shield";
+                public const string PLAYER_BOW = "Bow";
+                public const string PLAYER_PELVIS = "Pelvis";
             }
 
-            public static class Materials
+            public static class Numeric
             {
-                public const string MAT_HIT_WHITE = "HitWhite.mat";
-                public const string MAT_HIT_RED = "HitRed.mat";
-                public const string MAT_FADE = "Fade.mat";
-                public const string MAT_GLITCH = "Glitch.mat";
-                public const string MAT_HOLOGRAM = "Hologram.mat";
-                public const string MAT_STRONG_TINT = "StrongTint.mat";
-                public const string MAT_INNER_OUTLINE = "InnerOutline.mat";
-                public const string MAT_SPLIT_TONING = "SplitToning.mat";
-                public const string MAT_POISON = "Poison.mat";
+                public const int FOREST_STAGE_MAX_WAVE_COUNT = 20; // temp (memo)
+                public const int VOLCANO_STAGE_MAX_WAVE_COUNT = 30; // temp (memo)
+
+                // VFXManager
+                public const float HIT_DURATION = 1F;
+                public const float HOLOGRAM_SPEED_POWER = 20F;
+                public const float FADE_OUT_DURATION = 1.25F;
+                public const float INSTANT_FADE_ALPHA = 0.25F;
+                public const float INNER_OUTLINE_FADE_PING_PONG_INTERVAL = 0.5F;
+                public const float POISON_PING_PONG_INTERVAL = 0.5F;
+
+                // CreatureStat
+                public const float INITIAL_COLLECT_RANGE = 3F;
+                public const float INGAME_MAX_DODGE_CHANCE = 0.7F; // temp (memo)
+                public const float INGAME_MAX_ARMOR_RATE = 0.8F; // temp (memo)
+
+                // PlayerController
+                public const float PLAYER_LOCAL_SCALE_X = 1.25F;
+                public const float PLAYER_LOCAL_SCALE_Y = 1.25F;
+                public const float MINIMUM_ENV_COLLECT_RANGE = 5F;
+
+                // ChickenController
+                public const float STANDARD_CREATURE_SHAKE_DURATION = 0.75F;
+                public const float STANDARD_CREATURE_SHAKE_POWER = 0.5F;
             }
 
-            public static class ScriptableObjects
+            public static class TemplateID
             {
-                public const string SO_SPT_BLOB = "SO_SPT_BLOB.asset";
-                public const string SO_SPT_POS = "SO_SPT_POS.asset";
-            }
+                public enum Player
+                {
+                    Gary_Paladin = 100100,
+                    Gary_Knight = 100200,
+                    Gary_PhantomKnight = 100300,
 
-            public static class Data
-            {
-                public const string FIXED_LOAD_CREATURE_DATA = "CreatureData.json";
-                public const string FIXED_LOAD_CREATURE_STAT_DATA = "CreatureStatData.json";
-                public const string FIXED_LOAD_SKILL_DATA = "SkillData.json";
+                    Reina_ArrowMaster = 200100,
+                    Reina_ElementalArcher = 200200,
+                    Reina_ForestGuardian = 200300,
+
+                    Kenneth_Assassin = 300100,
+                    Kenneth_Ninja = 300200,
+                    Kenneth_Thief = 300300,
+                }
+
+                public enum Monster
+                {
+                    Chicken = 900100,
+                }
+
+                public enum Skill
+                {
+                    None = -1,
+
+                    // +++ PALADIN +++
+                    PaladinMastery = 100100,
+                    Shield_Elite_Solo = 100103, // ELITE_SOLO 이름 바꿔야할듯,,,
+                    JudgementOfHeaven_Ultimate_Solo = 100106,
+
+                    // +++ KNIGHT +++
+                    KnightMastery = 100200,
+                    SecondWind_Elite_Solo = 100203,
+                    StormBlade_Ultimate_Solo = 100206,
+
+                    // +++ PHANTOM KNIGHT +++
+                    PhantomKnightMastery = 100300,
+                    SummonPhantomSoul_Elite_Solo = 100303,
+                    PhantomSoul_Elite_Solo = 100306,
+                    Metamorphosis_Ultimate_Solo = 100309,
+
+                    // +++ ARROW MASTERY +++
+                    ArrowMasterMastery = 200100,
+                    Concentration_Elite_Solo = 200103,
+                    ArrowShower_Ultimate_Solo = 200106,
+
+                    // +++ ELEMENTAL ARCHER +++
+                    ElementalArcherMastery = 200200,
+                    ElementalShock_Elite_Solo = 200203,
+                    ElementalCharge_Ultimate_Solo = 200206,
+
+                    // +++ FOREST GUARDIAN +++
+                    ForestGuardianMastery = 200300,
+                    ForestBarrier_Elite_Solo = 200303,
+                    SummonBlackPanther_Ultimate_Solo = 200306,
+
+                    // +++ ASSASSIN +++
+                    AssassinMastery = 300100,
+                    PoisonDagger_Elite_Solo = 300103,
+                    // SkillGroupDictionary, DictionaryGroupMaxCount(_numberGroups)으로 인해서 현재는 3씩 증가시켜야함 (임시)
+                    StabPoisonDagger_Elite_Solo = 300106,
+                    CounterStrike_Ultimate_Solo = 300109,
+
+                    // +++ NINJA +++
+                    NinjaMastery = 300200,
+                    Cloak_Elite_Solo = 300203,
+                    NinjaSlash_Elite_Solo = 300206,
+                    CloneTechnique_Ultimate_Solo = 300209,
+
+                    // +++ PUBLIC +++
+                    ThrowingStar = 900100,
+                    Boomerang = 900103,
+                    LazerBolt = 900106,
+                    Spear = 900109,
+                    BombTrap = 900112,
+
+                    BodyAttack_Solo = 901100
+                }
             }
         }
+        #endregion
     }
 }

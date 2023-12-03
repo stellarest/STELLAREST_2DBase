@@ -1,10 +1,9 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using STELLAREST_2D.Data;
 using UnityEngine;
 
-using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
+using static STELLAREST_2D.Define;
+using STELLAREST_2D.Data;
 using VFXImpact = STELLAREST_2D.Define.TemplateIDs.VFX.ImpactHit;
 
 namespace STELLAREST_2D
@@ -46,7 +45,7 @@ namespace STELLAREST_2D
                 {
                     EnableParticles(_particles, false);
                     Managers.VFX.ImpactHit(VFXImpact.Leaves, this.Owner, this);
-                    this.Owner.SkillBook.Deactivate(SkillTemplate.ForestBarrier_Elite_Solo);
+                    this.Owner.SkillBook.Deactivate(FixedValue.TemplateID.Skill.ForestBarrier_Elite_Solo);
                     this.Owner.Stat.ResetMovementSpeed();
                 }
             }
@@ -90,7 +89,7 @@ namespace STELLAREST_2D
         private const float FIXED_WAIT_TIME_AFTER_SKILL = 1.25f;
         private IEnumerator CoOnForestBarrier(Action callback = null)
         {
-            this.Owner.SkillBook.Deactivate(SkillTemplate.ForestGuardianMastery);
+            this.Owner.SkillBook.Deactivate(FixedValue.TemplateID.Skill.ForestGuardianMastery);
             _ownerController.PlayerAnimController.SetCanEnterNextState(false);
             _ownerController.LockHandle = true;
 
@@ -101,7 +100,7 @@ namespace STELLAREST_2D
             yield return new WaitForSeconds(FIXED_WAIT_TIME_AFTER_SKILL);
             _ownerController.LockHandle = false;
             _ownerController.PlayerAnimController.SetCanEnterNextState(true);
-            this.Owner.SkillBook.Activate(SkillTemplate.ForestGuardianMastery);
+            this.Owner.SkillBook.Activate(FixedValue.TemplateID.Skill.ForestGuardianMastery);
         }
     }
 }

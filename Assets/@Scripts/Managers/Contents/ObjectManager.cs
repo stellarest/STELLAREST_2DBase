@@ -1,19 +1,10 @@
-
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.Mail;
-using TMPro.EditorUtilities;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Rendering; // Sorting Group
 
+using static STELLAREST_2D.Define;
 using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
-using PrefabLabels = STELLAREST_2D.Define.Labels.Prefabs;
-using System.Diagnostics;
-using UnityEditor;
-
 // using DamageNumbersPro;
+
 namespace STELLAREST_2D
 {
     public class ObjectManager
@@ -67,7 +58,7 @@ namespace STELLAREST_2D
                     {
                         switch (templateID)
                         {
-                            case (int)Define.TemplateIDs.Creatures.Monster.Chicken:
+                            case (int)FixedValue.TemplateID.Monster.Chicken:
                                 {
                                     GameObject go = Managers.Resource.Instantiate(Managers.Data.CreaturesDict[templateID].PrimaryLabel, pooling: isPooling);
                                     go.transform.position = spawnPos;
@@ -111,7 +102,7 @@ namespace STELLAREST_2D
 
                 case Define.ObjectType.Gem:
                     {
-                        GameObject go = Managers.Resource.Instantiate(PrefabLabels.ENV_GEM, pooling: isPooling);
+                        GameObject go = Managers.Resource.Instantiate(FixedValue.Load.ENV_GEM, pooling: isPooling);
                         go.transform.position = spawnPos;
 
                         GemController gem = go.GetComponent<GemController>();
@@ -126,7 +117,7 @@ namespace STELLAREST_2D
 
                 case Define.ObjectType.Soul:
                     {
-                        GameObject go = Managers.Resource.Instantiate(PrefabLabels.ENV_SOUL, pooling: isPooling);
+                        GameObject go = Managers.Resource.Instantiate(FixedValue.Load.ENV_SOUL, pooling: isPooling);
                         go.transform.position = spawnPos;
 
                         SoulController soul = go.GetComponent<SoulController>();

@@ -2,16 +2,13 @@ using System.Collections;
 using DamageNumbersPro;
 using UnityEngine;
 
+using SpriteTrail;
+using static STELLAREST_2D.Define;
 using VFXMuzzle = STELLAREST_2D.Define.TemplateIDs.VFX.Muzzle;
 using VFXImpact = STELLAREST_2D.Define.TemplateIDs.VFX.ImpactHit;
 using VFXTrail = STELLAREST_2D.Define.TemplateIDs.VFX.Trail;
 using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
-using PrefabLabels = STELLAREST_2D.Define.Labels.Prefabs;
-using MaterialType = STELLAREST_2D.Define.MaterialType;
 using MaterialColor = STELLAREST_2D.Define.MaterialColor;
-using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
-using Unity.VisualScripting;
-using SpriteTrail;
 
 namespace STELLAREST_2D
 {
@@ -34,23 +31,23 @@ namespace STELLAREST_2D
 
         public TrailPreset SO_SPT_BLOB { get; private set; } = null;
         public TrailPreset SO_SPT_POS { get; private set; } = null;
-        
 
         public void Init()
         {
-            MatHit_Monster = Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_HIT_WHITE);
-            MatHit_Player = Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_HIT_RED);
-            Mat_Hologram = Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_HOLOGRAM);
-            Mat_Fade = Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_FADE);
-            Mat_StrongTint = Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_STRONG_TINT);
-            Mat_InnerOutline = Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_INNER_OUTLINE);
-            Mat_Poison = Managers.Resource.Load<Material>(Define.Labels.Materials.MAT_POISON);
+            MatHit_Monster = Managers.Resource.Load<Material>(FixedValue.Load.MAT_HIT_WHITE);
+            MatHit_Player = Managers.Resource.Load<Material>(FixedValue.Load.MAT_HIT_RED);
+            Mat_Hologram = Managers.Resource.Load<Material>(FixedValue.Load.MAT_HOLOGRAM);
+            Mat_Fade = Managers.Resource.Load<Material>(FixedValue.Load.MAT_FADE);
+            Mat_StrongTint = Managers.Resource.Load<Material>(FixedValue.Load.MAT_STRONG_TINT);
+            Mat_InnerOutline = Managers.Resource.Load<Material>(FixedValue.Load.MAT_INNER_OUTLINE);
+            Mat_Poison = Managers.Resource.Load<Material>(FixedValue.Load.MAT_POISON);
 
-            SO_SPT_BLOB = Managers.Resource.Load<TrailPreset>(Define.Labels.ScriptableObjects.SO_SPT_BLOB);
-            SO_SPT_POS = Managers.Resource.Load<TrailPreset>(Define.Labels.ScriptableObjects.SO_SPT_POS);
+            SO_SPT_BLOB = Managers.Resource.Load<TrailPreset>(FixedValue.Load.SO_SPT_BLOB);
+            SO_SPT_POS = Managers.Resource.Load<TrailPreset>(FixedValue.Load.SO_SPT_POS);
+
+
         }
 
-        private const float FIXED_HIT_DURATION = 0.1F;
         public IEnumerator CoMatHit(BaseController bc, System.Action startCallback = null, System.Action endCallback = null)
         {
             if (bc?.IsValid() == false)
@@ -70,7 +67,7 @@ namespace STELLAREST_2D
                         else if (bc.ObjectType == Define.ObjectType.Monster)
                             bc.RendererController.SetMaterial(MatHit_Monster);
 
-                        yield return new WaitForSeconds(FIXED_HIT_DURATION);
+                        yield return new WaitForSeconds(FixedValue.Numeric.HIT_DURATION);
                         bc.RendererController.ResetMaterial();
                         endCallback?.Invoke();
                     }
@@ -83,8 +80,6 @@ namespace STELLAREST_2D
             yield break;
         }
 
-        private const float FIXED_HOLOGRAM_DURATION = 0.05F;
-        private const float FIXED_HOLOGRAM_SPEED_POWER = 20F;
         // 플레이어 혼자 쓸거면 clone 안해도 ㄱㅊ
         public IEnumerator CoMatHologram(BaseController bc, System.Action startCallback = null, System.Action endCallback = null)
         {
@@ -108,7 +103,7 @@ namespace STELLAREST_2D
                                 while (percent < 1f)
                                 {
                                     Mat_Hologram.SetFloat(SHADER_HOLOGRAM_FADE, percent);
-                                    percent += Time.deltaTime * FIXED_HOLOGRAM_SPEED_POWER;
+                                    percent += Time.deltaTime * FixedValue.Numeric.HOLOGRAM_SPEED_POWER;
                                     return false;
                                 }
 
@@ -123,7 +118,7 @@ namespace STELLAREST_2D
                                 {
                                     Mat_Hologram.SetFloat(SHADER_HOLOGRAM_FADE, percent);
                                     elapsedTime += Time.deltaTime;
-                                    percent = 1f - (elapsedTime * FIXED_HOLOGRAM_SPEED_POWER);
+                                    percent = 1f - (elapsedTime * FixedValue.Numeric.HOLOGRAM_SPEED_POWER);
                                     return false;
                                 }
 
@@ -144,7 +139,6 @@ namespace STELLAREST_2D
         }
 
         // 이것도 HIt처럼 매터리얼 클론해야함..
-        private const float FIXED_FADE_OUT_DURATION = 1.25F;
         public IEnumerator CoMatFadeOut(BaseController bc, System.Action startCallback = null, System.Action endCallback = null)
         {
             if (bc?.IsValid() == false)
@@ -165,7 +159,7 @@ namespace STELLAREST_2D
                         while (percent > 0f)
                         {
                             delta += Time.deltaTime;
-                            percent = 1f - (delta / FIXED_FADE_OUT_DURATION);
+                            percent = 1f - (delta / FixedValue.Numeric.FADE_OUT_DURATION);
                             clonedMat.SetFloat(SHADER_FADE_ALPHA, percent);
                             yield return null;
                         }
@@ -179,7 +173,6 @@ namespace STELLAREST_2D
             yield break;
         }
 
-        private const float FIXED_INSTANTLY_FADE_ALPHA = 0.25F;
         public IEnumerator CoMatFadeOutInstantly(BaseController bc, float duration, System.Action startCallback = null, System.Action endCallback = null)
         {
             if (bc?.IsValid() == false)
@@ -187,7 +180,7 @@ namespace STELLAREST_2D
 
             startCallback?.Invoke();
             Material clonedMat = MakeClonedMaterial(Mat_Fade);
-            clonedMat.SetFloat(SHADER_FADE_ALPHA, FIXED_INSTANTLY_FADE_ALPHA);
+            clonedMat.SetFloat(SHADER_FADE_ALPHA, FixedValue.Numeric.INSTANT_FADE_ALPHA);
             bc.RendererController.SetMaterial(clonedMat);
 
             float delta = 0f;
@@ -250,7 +243,6 @@ namespace STELLAREST_2D
             spr.material = matOrigin; // RESET MATERIAL
         }
 
-        private const float FIXED_MAT_INNER_OUTLINE_FADE_PING_PONG_INTERVAL = 0.5F;
         public IEnumerator CoMatInnerOutline(SpriteRenderer spr, float duration, System.Action callback = null)
         {
             if (spr.sprite == null)
@@ -275,9 +267,9 @@ namespace STELLAREST_2D
                 delta += Time.deltaTime;
 
                 if (isIncreasing)
-                    percent = delta / FIXED_MAT_INNER_OUTLINE_FADE_PING_PONG_INTERVAL;
+                    percent = delta / FixedValue.Numeric.INNER_OUTLINE_FADE_PING_PONG_INTERVAL;
                 else
-                    percent = 1f - (delta / FIXED_MAT_INNER_OUTLINE_FADE_PING_PONG_INTERVAL);
+                    percent = 1f - (delta / FixedValue.Numeric.INNER_OUTLINE_FADE_PING_PONG_INTERVAL);
 
                 if (percent <= 1f && percent >= 0f)
                     matCloned.SetFloat(SHADER_INNER_OUTLINE_FADE, percent);
@@ -298,8 +290,6 @@ namespace STELLAREST_2D
         private bool IsChangingMaterial(BaseController bc) =>
                         (bc.RendererController.IsChangingMaterial || bc.RendererController == null);
 
-        private const float FIXED_MAT_POISON_PING_PONG_INTERVAL = 0.5F;        
-        private const float FIXED_POISON_DURATION = 5F;
         public IEnumerator CoMatPoison(BaseController bc, float duration, System.Action startCallback = null, System.Action endCallback = null)
         {
             if (bc?.IsValid() == false)
@@ -334,9 +324,9 @@ namespace STELLAREST_2D
                 delta += Time.deltaTime;
 
                 if (isIncreasing)
-                    percent = delta / FIXED_MAT_POISON_PING_PONG_INTERVAL;
+                    percent = delta / FixedValue.Numeric.POISON_PING_PONG_INTERVAL;
                 else
-                    percent = 1f - (delta / FIXED_MAT_POISON_PING_PONG_INTERVAL);
+                    percent = 1f - (delta / FixedValue.Numeric.POISON_PING_PONG_INTERVAL);
 
                 if (percent >= 0f && percent <= 1f)
                     clonedMat.SetFloat(SHADER_POISON_FADE, percent);
@@ -365,7 +355,7 @@ namespace STELLAREST_2D
                     return;
 
                 case VFXMuzzle.Bow:
-                    GameObject go = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_MUZZLE_BOW, null, true);
+                    GameObject go = Managers.Resource.Instantiate(FixedValue.Load.VFX_MUZZLE_BOW, null, true);
                     go.transform.position = target.FireSocketPosition;
                     MovementToOwner movementToOwner = go.GetComponent<MovementToOwner>();
                     movementToOwner.IsOnFireSocket = true;
@@ -400,27 +390,27 @@ namespace STELLAREST_2D
                     return goImpactHit;
 
                 case VFXImpact.Hit:
-                    goImpactHit = Managers.Resource.Instantiate(PrefabLabels.VFX_IMPACT_HIT_DEFAULT, null, true);
+                    goImpactHit = Managers.Resource.Instantiate(FixedValue.Load.VFX_IMPACT_HIT_DEFAULT, null, true);
                     break;
 
                 case VFXImpact.Leaves:
-                    goImpactHit = Managers.Resource.Instantiate(PrefabLabels.VFX_IMPACT_HIT_LEAVES, null, true);
+                    goImpactHit = Managers.Resource.Instantiate(FixedValue.Load.VFX_IMPACT_HIT_LEAVES, null, true);
                     break;
 
                 case VFXImpact.Light:
-                    goImpactHit = Managers.Resource.Instantiate(PrefabLabels.VFX_IMPACT_HIT_LIGHT, null, true);
+                    goImpactHit = Managers.Resource.Instantiate(FixedValue.Load.VFX_IMPACT_HIT_LIGHT, null, true);
                     break;
 
                 case VFXImpact.SmokePuff:
-                    goImpactHit = Managers.Resource.Instantiate(PrefabLabels.VFX_IMPACT_HIT_SMOKE_PUFF, null, true);
+                    goImpactHit = Managers.Resource.Instantiate(FixedValue.Load.VFX_IMPACT_HIT_SMOKE_PUFF, null, true);
                     break;
 
                 case VFXImpact.Incinvible:
-                    goImpactHit = Managers.Resource.Instantiate(PrefabLabels.VFX_IMPACT_HIT_INVINCIBLE, null, true);
+                    goImpactHit = Managers.Resource.Instantiate(FixedValue.Load.VFX_IMPACT_HIT_INVINCIBLE, null, true);
                     break;
 
                 case VFXImpact.Poison:
-                    goImpactHit = Managers.Resource.Instantiate(PrefabLabels.VFX_IMPACT_HIT_POISON, null, true);
+                    goImpactHit = Managers.Resource.Instantiate(FixedValue.Load.VFX_IMPACT_HIT_POISON, null, true);
                     break;
             }
 
@@ -441,7 +431,7 @@ namespace STELLAREST_2D
 
                 case VFXTrail.Wind:
                     {
-                        goTrail = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_TRAIL_WIND, null, true);
+                        goTrail = Managers.Resource.Instantiate(FixedValue.Load.VFX_TRAIL_WIND, null, true);
                         TrailTarget trailTarget = goTrail.GetComponent<TrailTarget>();
                         trailTarget.transform.position = owner.FireSocketPosition;
                         trailTarget.Owner = owner;
@@ -451,7 +441,7 @@ namespace STELLAREST_2D
 
                 case VFXTrail.Light:
                     {
-                        goTrail = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_TRAIL_LIGHT, null, true);
+                        goTrail = Managers.Resource.Instantiate(FixedValue.Load.VFX_TRAIL_LIGHT, null, true);
                         TrailTarget trailTarget = goTrail.GetComponent<TrailTarget>();
                         trailTarget.transform.position = owner.FireSocketPosition;
                         trailTarget.Owner = owner;
@@ -482,15 +472,15 @@ namespace STELLAREST_2D
             {
                 if (isCritical)
                 {
-                    Managers.Resource.Load<GameObject>(PrefabLabels.VFX_ENV_DAMAGE_TO_MONSTER_CRITICAL_FONT)
+                    Managers.Resource.Load<GameObject>(FixedValue.Load.VFX_ENV_DAMAGE_TO_MONSTER_CRITICAL_FONT)
                                      .GetComponent<DamageNumber>().Spawn(spawnPos);
 
-                    Managers.Resource.Load<GameObject>(PrefabLabels.VFX_ENV_DAMAGE_TO_MONSTER_CRITICAL)
+                    Managers.Resource.Load<GameObject>(FixedValue.Load.VFX_ENV_DAMAGE_TO_MONSTER_CRITICAL)
                                      .GetComponent<DamageNumber>().Spawn(spawnPos, damage);
                 }
                 else
                 {
-                    Managers.Resource.Load<GameObject>(PrefabLabels.VFX_ENV_DAMAGE_TO_MONSTER)
+                    Managers.Resource.Load<GameObject>(FixedValue.Load.VFX_ENV_DAMAGE_TO_MONSTER)
                                      .GetComponent<DamageNumber>().Spawn(spawnPos, damage);
                 }
             }
@@ -498,12 +488,12 @@ namespace STELLAREST_2D
             {
                 if (cc.SkillBook.IsOnShield == false)
                 {
-                    Managers.Resource.Load<GameObject>(PrefabLabels.VFX_ENV_DAMAGE_TO_PLAYER)
+                    Managers.Resource.Load<GameObject>(FixedValue.Load.VFX_ENV_DAMAGE_TO_PLAYER)
                                     .GetComponent<DamageNumber>().Spawn(spawnPos, damage);
                 }
                 else
                 {
-                    Managers.Resource.Load<GameObject>(PrefabLabels.VFX_ENV_DAMAGE_TO_PLAYER_SHIELD)
+                    Managers.Resource.Load<GameObject>(FixedValue.Load.VFX_ENV_DAMAGE_TO_PLAYER_SHIELD)
                                      .GetComponent<DamageNumber>().Spawn(spawnPos, damage);
                 }
             }
@@ -518,14 +508,14 @@ namespace STELLAREST_2D
                                 ? target.GetComponent<MonsterController>().LoadVFXEnvSpawnPos(VFXEnv.Poison)
                                 : target.GetComponent<PlayerController>().LoadVFXEnvSpawnPos(VFXEnv.Damage);
 
-            Managers.Resource.Load<GameObject>(PrefabLabels.VFX_ENG_DAMAGE_POISON)
+            Managers.Resource.Load<GameObject>(FixedValue.Load.VFX_ENG_DAMAGE_POISON)
                             .GetComponent<DamageNumber>().Spawn(spawnPos, damage, followedTransform: target.Center);
         }
 
         public void Percentage(CreatureController target, int percent)
         {
             Vector3 spawnPos = target.Center.transform.position + (Vector3.up * 3.5f);
-            DamageNumber dmgNumber = Managers.Resource.Load<GameObject>(PrefabLabels.VFX_ENV_FONT_PERCENTAGE)
+            DamageNumber dmgNumber = Managers.Resource.Load<GameObject>(FixedValue.Load.VFX_ENV_FONT_PERCENTAGE)
                  .GetComponent<DamageNumber>().Spawn(spawnPos, percent);
             if (percent < 100)
                 dmgNumber.lifetime = 0.15f;
@@ -553,7 +543,7 @@ namespace STELLAREST_2D
             {
                 case VFXEnv.Spawn:
                     {
-                        goVFX = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_ENV_SPAWN, null, true);
+                        goVFX = Managers.Resource.Instantiate(FixedValue.Load.VFX_ENV_SPAWN, null, true);
                         goVFX.transform.localScale = spawnScale;
                         goVFX.transform.position = spawnPos;
                     }
@@ -561,14 +551,14 @@ namespace STELLAREST_2D
 
                 case VFXEnv.Dodge:
                     {
-                        Managers.Resource.Load<GameObject>(Define.Labels.Prefabs.VFX_ENV_DAMAGE_TO_PLAYER_DODGE_FONT)
+                        Managers.Resource.Load<GameObject>(FixedValue.Load.VFX_ENV_DAMAGE_TO_PLAYER_DODGE_FONT)
                                          .GetComponent<DamageNumber>().Spawn(spawnPos);
                     }
                     break;
 
                 case VFXEnv.Skull:
                     {
-                        goVFX = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_ENV_SKULL, null, true);
+                        goVFX = Managers.Resource.Instantiate(FixedValue.Load.VFX_ENV_SKULL, null, true);
                         goVFX.transform.localScale = spawnScale;
                         goVFX.transform.position = spawnPos;
                     }
@@ -576,7 +566,7 @@ namespace STELLAREST_2D
 
                 case VFXEnv.Dust:
                     {
-                        goVFX = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_ENV_DUST, null, true);
+                        goVFX = Managers.Resource.Instantiate(FixedValue.Load.VFX_ENV_DUST, null, true);
                         goVFX.transform.localScale = spawnScale;
                         goVFX.transform.position = spawnPos;
                     }
@@ -584,7 +574,7 @@ namespace STELLAREST_2D
 
                 case VFXEnv.Stun:
                     {
-                        goVFX = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_ENV_STUN, null, true);
+                        goVFX = Managers.Resource.Instantiate(FixedValue.Load.VFX_ENV_STUN, null, true);
                         goVFX.transform.localScale = spawnScale;
                         goVFX.transform.position = spawnPos;
                     }
@@ -592,7 +582,7 @@ namespace STELLAREST_2D
 
                 case VFXEnv.Slow:
                     {
-                        goVFX = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_ENV_SLOW, null, true);
+                        goVFX = Managers.Resource.Instantiate(FixedValue.Load.VFX_ENV_SLOW, null, true);
                         goVFX.transform.localScale = spawnScale;
                         goVFX.transform.position = spawnPos;
                     }
@@ -600,7 +590,7 @@ namespace STELLAREST_2D
 
                 case VFXEnv.Silence:
                     {
-                        goVFX = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_ENV_SILENCE, null, true);
+                        goVFX = Managers.Resource.Instantiate(FixedValue.Load.VFX_ENV_SILENCE, null, true);
                         goVFX.transform.localScale = spawnScale;
                         goVFX.transform.position = spawnPos;
                     }
@@ -608,7 +598,7 @@ namespace STELLAREST_2D
 
                 case VFXEnv.Targeted:
                     {
-                        goVFX = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_ENV_TARGETED, null, true);
+                        goVFX = Managers.Resource.Instantiate(FixedValue.Load.VFX_ENV_TARGETED, null, true);
                         goVFX.transform.localScale = spawnScale;
                         goVFX.transform.position = spawnPos;
                     }
@@ -616,7 +606,7 @@ namespace STELLAREST_2D
 
                 case VFXEnv.QuestionMark:
                     {
-                        goVFX = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_ENV_QUESTION_MARK, null, true);
+                        goVFX = Managers.Resource.Instantiate(FixedValue.Load.VFX_ENV_QUESTION_MARK, null, true);
                         goVFX.transform.localScale = spawnScale;
                         goVFX.transform.position = spawnPos;
                     }
@@ -633,14 +623,14 @@ namespace STELLAREST_2D
             {
                 case VFXEnv.GemGather:
                     {
-                        goVFX = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_ENV_GEM_GATHER, null, true);
+                        goVFX = Managers.Resource.Instantiate(FixedValue.Load.VFX_ENV_GEM_GATHER, null, true);
                         goVFX.transform.position = spawnPos;
                     }
                     break;
 
                 case VFXEnv.GemExplosion:
                     {
-                        goVFX = Managers.Resource.Instantiate(Define.Labels.Prefabs.VFX_ENV_GEM_EXPLOSION, null, true);
+                        goVFX = Managers.Resource.Instantiate(FixedValue.Load.VFX_ENV_GEM_EXPLOSION, null, true);
                         goVFX.transform.position = spawnPos;
                     }
                     break;

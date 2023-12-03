@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
-using STELLAREST_2D.UI;
 using UnityEngine;
-using UnityEngine.Diagnostics;
+
+using static STELLAREST_2D.Define;
 
 namespace STELLAREST_2D
 {
@@ -18,18 +18,18 @@ namespace STELLAREST_2D
         {
             switch (this.Owner.SkillAnimationType)
             {
-                case Define.SkillAnimationType.DefaultMasteryAction:
+                case SkillAnimationType.Attack:
                     AnimController.Play(UPPER_ATTACK);
                     break;
 
-                case Define.SkillAnimationType.EliteAction:
+                case SkillAnimationType.ElitePlus:
                     {
                         AnimController.StopPlayback(); // FORCE DEACTIVATE ANIMATION AGAIN.
                         AnimController.Play(UPPER_ELITE_SEQUENCE);
                     }
                     break;
 
-                case Define.SkillAnimationType.UltimateAction:
+                case SkillAnimationType.UltimatePlus:
                     break;
             }
         }

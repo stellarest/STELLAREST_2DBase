@@ -2,10 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+using static STELLAREST_2D.Define;
 using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
 using VFXImpact = STELLAREST_2D.Define.TemplateIDs.VFX.ImpactHit;
 using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
-using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 using STELLAREST_2D.Data;
 
 namespace STELLAREST_2D
@@ -146,14 +146,9 @@ namespace STELLAREST_2D
 
         protected virtual void InitChildObject(int templateID)
         {
-            Indicator = Utils.FindChild<Transform>(this.gameObject,
-                Define.INDICATOR, true);
-
-            FireSocket = Utils.FindChild<Transform>(this.gameObject,
-                Define.FIRE_SOCKET, true);
-
-            AnimTransform = Utils.FindChild<Transform>(this.gameObject,
-                Define.ANIMATION_BODY, true);
+            Indicator = Utils.FindChild<Transform>(this.gameObject, FixedValue.Find.INDICATOR, true);
+            FireSocket = Utils.FindChild<Transform>(this.gameObject, FixedValue.Find.FIRE_SOCKET, true);
+            AnimTransform = Utils.FindChild<Transform>(this.gameObject, FixedValue.Find.ANIMATION_BODY, true);
         }
 
         protected virtual void InitBaseComponents()
@@ -237,9 +232,9 @@ namespace STELLAREST_2D
             goUniqueSkills.transform.SetParent(SkillBook.transform);
             goUniqueSkills.transform.localPosition = Vector3.zero;
             goUniqueSkills.transform.localScale = Vector3.one;
-            foreach (Define.TemplateIDs.Status.Skill templateOrigin in creatureData.UniqueSkills)
+            foreach (FixedValue.TemplateID.Skill uniqueSkillTemplateID in creatureData.UniqueSkills)
             {
-                int templateID = (int)templateOrigin;
+                int templateID = (int)uniqueSkillTemplateID;
                 if (Managers.Data.SkillsDict.TryGetValue(templateID, out SkillData dataOrigin) == false)
                     Utils.LogCritical(nameof(CreatureController), nameof(LoadUniqueSkills), $"TemplateID : {templateID}");
 
@@ -265,9 +260,9 @@ namespace STELLAREST_2D
             goPublicSkills.transform.SetParent(SkillBook.transform);
             goPublicSkills.transform.localPosition = Vector3.zero;
             goPublicSkills.transform.localScale = Vector3.one;
-            foreach (Define.TemplateIDs.Status.Skill templateOrigin in creatureData.PublicSkills)
+            foreach (FixedValue.TemplateID.Skill publicSkillTemplateID in creatureData.PublicSkills)
             {
-                int templateID = (int)templateOrigin;
+                int templateID = (int)publicSkillTemplateID;
                 if (Managers.Data.SkillsDict.TryGetValue(templateID, out Data.SkillData dataOrigin) == false)
                     Utils.LogCritical(nameof(CreatureController), nameof(LoadPublicSkills), $"TemplateID : {templateID}");
 
@@ -300,7 +295,6 @@ namespace STELLAREST_2D
         }
 
         public virtual void ShowMuzzle() { }
-
         public virtual void OnDamaged(CreatureController attacker, SkillBase from)
         {
             if (this.IsValid() == false)
@@ -397,7 +391,6 @@ namespace STELLAREST_2D
         // +++ UTILS +++
         public bool IsPlayer => this.ObjectType == Define.ObjectType.Player;
         public bool IsMonster => this.ObjectType == Define.ObjectType.Monster;
-
         public bool IsHitFrom_ThrowingStar { get; set; } = false;
         public bool IsHitFrom_LazerBolt { get; set; } = false;
 

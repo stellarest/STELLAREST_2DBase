@@ -1,7 +1,5 @@
 using System.Collections;
-using System.Runtime.CompilerServices;
 using STELLAREST_2D.Data;
-using UnityEditor.Rendering.Universal;
 using UnityEngine;
 
 namespace STELLAREST_2D
@@ -353,12 +351,9 @@ namespace STELLAREST_2D
         {
             Vector3 startPos = spear._head.transform.position;
             Vector3 targetPos = spear._target.Center.position;
-            //Vector3 toTargetDir = (targetPos - startPos).normalized;
 
             spear._lerpStartPos = startPos;
             spear._savingLerpStartPos = startPos;
-
-            //spear._lerpEndPos = startPos + (toTargetDir * SEARCH_TARGET_RANGE);
             spear._lerpEndPos = startPos + (spear.transform.up * SEARCH_TARGET_RANGE);
 
             if (spear._trail != null)

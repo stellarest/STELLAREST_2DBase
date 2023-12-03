@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+using static STELLAREST_2D.Define;
+
 namespace STELLAREST_2D
 {
     public class KnightAnimationController : PlayerAnimationController
@@ -16,18 +18,18 @@ namespace STELLAREST_2D
         {
             switch (this.Owner.SkillAnimationType)
             {
-                case Define.SkillAnimationType.DefaultMasteryAction:
+                case SkillAnimationType.Attack:
                     AnimController.Play(UPPER_ATTACK);
                     break;
 
-                case Define.SkillAnimationType.EliteAction:
+                case SkillAnimationType.ElitePlus:
                     {
                         AnimController.StopPlayback();
                         AnimController.Play(UPPER_ELITE_SEQUENCE);
                     }
                     break;
 
-                case Define.SkillAnimationType.UltimateAction:
+                case SkillAnimationType.UltimatePlus:
                     break;
             }
         }

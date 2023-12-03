@@ -8,13 +8,11 @@ using Debug = UnityEngine.Debug;
 
 using static STELLAREST_2D.Define;
 using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
-using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
-using PlayerTemplateID = STELLAREST_2D.Define.TemplateIDs.Creatures.Player;
 
 /*
     [ Gary_Paladin ]
-    * Atk   : Low - Average             * Atk Speed : Average
+    * Power : Low - Average             * Attack Speed : Average
     * Armor : Very High                 * Movement Speed : Low
 
     [ Gary_Knight ]
@@ -31,8 +29,8 @@ namespace STELLAREST_2D
     [System.Serializable]
     public class PlayerBodyParts
     {
-        public PlayerBodyParts(Transform hair, Transform armLeft, Transform armRight, Transform handLeft, Transform handRight, 
-                    Transform legLeft, Transform legRight)
+        public PlayerBodyParts(Transform hair, Transform armLeft, Transform armRight,
+                                Transform handLeft, Transform handRight, Transform legLeft, Transform legRight)
         {
             this.Hair = hair;
             this.ArmLeft = armLeft;
@@ -44,11 +42,11 @@ namespace STELLAREST_2D
             this.LegLeft = legLeft;
             this.LegRight = legRight;
 
-            if (Hair == null || ArmLeft == null || ArmRight == null || HandLeft == null || HandRight == null ||
-                LegLeft == null || LegRight == null)
+            if (Hair == null || ArmLeft == null || ArmRight == null || HandLeft == null || HandRight == null || LegLeft == null || LegRight == null)
                 Utils.LogCritical(nameof(PlayerController), nameof(PlayerBodyParts));
         }
 
+        #region Public Settings All Player Characters
         [field: SerializeField] public Transform Hair { get; private set; } = null;
         [field: SerializeField] public Transform ArmLeft { get; private set; } = null;
         [field: SerializeField] public Transform ArmRight { get; private set; } = null;
@@ -58,23 +56,24 @@ namespace STELLAREST_2D
 
         [field: SerializeField] public Transform LegLeft { get; private set; } = null;
         [field: SerializeField] public Transform LegRight { get; private set; } = null;
+        #endregion
 
+        #region Settings Manually on Player Characters
         [field: SerializeField] public Transform HandLeft_MeleeWeapon { get; set; } = null;
         [field: SerializeField] public Transform HandRight_MeleeWeapon { get; set; } = null;
         [field: SerializeField] public Transform RangedWeapon { get; set; } = null;
+        #endregion
     }
 
     public class PlayerController : CreatureController
     {
-        //private readonly float GEM_COLLECTION_FIXED_DIST = 5f; // +++ NO DATE SHEET +++
-        private readonly float FIXED_MINIMUM_COLLECT_RANGE = 5f;
-        protected float _armBowFixedAngle = 110f; // REINA에서 뺴야함
-        private float _armRifleFixedAngle = 146f; // CHRISTIAN에서 빼야함
+        protected float _armBowFixedAngle = 110f;
+        private float _armRifleFixedAngle = 146f;
         [field: SerializeField] public PlayerBodyParts BodyParts { get; protected set; } = null;
         public PlayerAnimationController PlayerAnimController { get; private set; } = null;
 
-        public override bool this[CrowdControl crowdControlType] 
-        { 
+        public override bool this[CrowdControl crowdControlType]
+        {
             get => base[crowdControlType];
             set
             {
@@ -103,6 +102,7 @@ namespace STELLAREST_2D
             }
         }
 
+        // TODO
         public override float SpeedModifier
         {
             get => base.SpeedModifier;
@@ -148,17 +148,26 @@ namespace STELLAREST_2D
         protected override void InitChildObject(int templateID)
         {
             base.InitChildObject(templateID);
-            this.BodyParts = new PlayerBodyParts(
-                hair: Utils.PlayerBodyPartsFinder.Find(this.gameObject, Utils.PlayerBodyPartsFinder.HAIR),
-                armLeft: Utils.PlayerBodyPartsFinder.Find(this.gameObject, Utils.PlayerBodyPartsFinder.ARM_LEFT),
-                armRight: Utils.PlayerBodyPartsFinder.Find(this.gameObject, Utils.PlayerBodyPartsFinder.ARM_RIGHT),
-                handLeft: Utils.PlayerBodyPartsFinder.Find(this.gameObject, Utils.PlayerBodyPartsFinder.HAND_LEFT),
-                handRight: Utils.PlayerBodyPartsFinder.Find(this.gameObject, Utils.PlayerBodyPartsFinder.HAND_RIGHT),
-                legLeft: Utils.PlayerBodyPartsFinder.Find(this.gameObject, Utils.PlayerBodyPartsFinder.LEG_LEFT),
-                legRight: Utils.PlayerBodyPartsFinder.Find(this.gameObject, Utils.PlayerBodyPartsFinder.LEG_RIGHT)
-            );
+            // this.BodyParts = new PlayerBodyParts(
+            //     hair: Utils.PlayerBodyPartsFinder.Find(this.gameObject, Utils.PlayerBodyPartsFinder.HAIR),
+            //     armLeft: Utils.PlayerBodyPartsFinder.Find(this.gameObject, Utils.PlayerBodyPartsFinder.ARM_LEFT),
+            //     armRight: Utils.PlayerBodyPartsFinder.Find(this.gameObject, Utils.PlayerBodyPartsFinder.ARM_RIGHT),
+            //     handLeft: Utils.PlayerBodyPartsFinder.Find(this.gameObject, Utils.PlayerBodyPartsFinder.HAND_LEFT),
+            //     handRight: Utils.PlayerBodyPartsFinder.Find(this.gameObject, Utils.PlayerBodyPartsFinder.HAND_RIGHT),
+            //     legLeft: Utils.PlayerBodyPartsFinder.Find(this.gameObject, Utils.PlayerBodyPartsFinder.LEG_LEFT),
+            //     legRight: Utils.PlayerBodyPartsFinder.Find(this.gameObject, Utils.PlayerBodyPartsFinder.LEG_RIGHT)
+            // );
 
-            Center = Utils.FindChild<Transform>(AnimTransform.gameObject, "Pelvis", true);
+            this.BodyParts = new PlayerBodyParts(
+                hair: Utils.FindChild<Transform>(this.gameObject, FixedValue.Find.PLAYER_HAIR),
+                armLeft: Utils.FindChild<Transform>(this.gameObject, FixedValue.Find.PLAYER_ARM_LEFT),
+                armRight: Utils.FindChild<Transform>(this.gameObject, FixedValue.Find.PLAYER_ARM_RIGHT),
+                handLeft: Utils.FindChild<Transform>(this.gameObject, FixedValue.Find.PLAYER_HAND_LEFT),
+                handRight: Utils.FindChild<Transform>(this.gameObject, FixedValue.Find.PLAYER_HAND_RIGHT),
+                legLeft: Utils.FindChild<Transform>(this.gameObject, FixedValue.Find.PLAYER_LEG_LEFT),
+                legRight: Utils.FindChild<Transform>(this.gameObject, FixedValue.Find.PLAYER_LEG_RIGHT));
+
+            Center = Utils.FindChild<Transform>(AnimTransform.gameObject, FixedValue.Find.PLAYER_PELVIS, true);
             SetPlayerWeapon(templateID);
         }
 
@@ -166,33 +175,33 @@ namespace STELLAREST_2D
         {
             switch (templateID)
             {
-                case (int)PlayerTemplateID.Gary_Paladin:
-                    {
-                        this.BodyParts.HandLeft_MeleeWeapon = Utils.PlayerBodyPartsFinder.Find(this.BodyParts.HandLeft.gameObject, Utils.PlayerBodyPartsFinder.SHIELD);
-                        this.BodyParts.HandRight_MeleeWeapon = Utils.PlayerBodyPartsFinder.Find(this.BodyParts.HandRight.gameObject, Utils.PlayerBodyPartsFinder.MELEE_WEAPON);
-                    }
+                case (int)FixedValue.TemplateID.Player.Gary_Paladin:
+                    // this.BodyParts.HandLeft_MeleeWeapon = Utils.PlayerBodyPartsFinder.Find(this.BodyParts.HandLeft.gameObject, Utils.PlayerBodyPartsFinder.SHIELD);
+                    // this.BodyParts.HandRight_MeleeWeapon = Utils.PlayerBodyPartsFinder.Find(this.BodyParts.HandRight.gameObject, Utils.PlayerBodyPartsFinder.MELEE_WEAPON);
+                    this.BodyParts.HandLeft_MeleeWeapon = Utils.FindChild<Transform>(this.BodyParts.HandLeft.gameObject, FixedValue.Find.PLAYER_SHIELD);
+                    this.BodyParts.HandRight_MeleeWeapon = Utils.FindChild<Transform>(this.BodyParts.HandRight.gameObject, FixedValue.Find.PLAYER_MELEE_WEAPON);
                     break;
 
-                case (int)PlayerTemplateID.Gary_Knight:
-                case (int)PlayerTemplateID.Gary_PhantomKnight:
-                    this.BodyParts.HandRight_MeleeWeapon = Utils.PlayerBodyPartsFinder.Find(this.BodyParts.HandRight.gameObject, Utils.PlayerBodyPartsFinder.MELEE_WEAPON);
+                case (int)FixedValue.TemplateID.Player.Gary_Knight:
+                case (int)FixedValue.TemplateID.Player.Gary_PhantomKnight:
+                    //this.BodyParts.HandRight_MeleeWeapon = Utils.PlayerBodyPartsFinder.Find(this.BodyParts.HandRight.gameObject, Utils.PlayerBodyPartsFinder.MELEE_WEAPON);
+                    this.BodyParts.HandRight_MeleeWeapon = Utils.FindChild<Transform>(this.BodyParts.HandRight.gameObject, FixedValue.Find.PLAYER_MELEE_WEAPON);
                     break;
 
-                case (int)PlayerTemplateID.Reina_ArrowMaster:
-                case (int)PlayerTemplateID.Reina_ElementalArcher:
-                case (int)PlayerTemplateID.Reina_ForestGuardian:
-                    {
-                        GameObject foreArmL2 = Utils.FindChild(this.BodyParts.ArmLeft.gameObject, Utils.PlayerBodyPartsFinder.FOREARM_LEFT_2, true);
-                        this.BodyParts.RangedWeapon = Utils.PlayerBodyPartsFinder.Find(foreArmL2, Utils.PlayerBodyPartsFinder.BOW);
-                    }
+                case (int)FixedValue.TemplateID.Player.Reina_ArrowMaster:
+                case (int)FixedValue.TemplateID.Player.Reina_ElementalArcher:
+                case (int)FixedValue.TemplateID.Player.Reina_ForestGuardian:
+                    //this.BodyParts.RangedWeapon = Utils.PlayerBodyPartsFinder.Find(foreArmL2, Utils.PlayerBodyPartsFinder.BOW);
+                    GameObject foreArmL2 = Utils.FindChild(this.BodyParts.ArmLeft.gameObject, FixedValue.Find.PLAYER_FOREARM_LEFT_2, true);
+                    this.BodyParts.RangedWeapon = Utils.FindChild<Transform>(foreArmL2, FixedValue.Find.PLAYER_BOW);
                     break;
 
-                case (int)PlayerTemplateID.Kenneth_Assassin:
-                case (int)PlayerTemplateID.Kenneth_Ninja:
-                    {
-                        this.BodyParts.HandLeft_MeleeWeapon = Utils.PlayerBodyPartsFinder.Find(this.BodyParts.HandLeft.gameObject, Utils.PlayerBodyPartsFinder.MELEE_WEAPON);
-                        this.BodyParts.HandRight_MeleeWeapon = Utils.PlayerBodyPartsFinder.Find(this.BodyParts.HandRight.gameObject, Utils.PlayerBodyPartsFinder.MELEE_WEAPON);
-                    }
+                case (int)FixedValue.TemplateID.Player.Kenneth_Assassin:
+                case (int)FixedValue.TemplateID.Player.Kenneth_Ninja:
+                    // this.BodyParts.HandLeft_MeleeWeapon = Utils.PlayerBodyPartsFinder.Find(this.BodyParts.HandLeft.gameObject, Utils.PlayerBodyPartsFinder.MELEE_WEAPON);
+                    // this.BodyParts.HandRight_MeleeWeapon = Utils.PlayerBodyPartsFinder.Find(this.BodyParts.HandRight.gameObject, Utils.PlayerBodyPartsFinder.MELEE_WEAPON);
+                    this.BodyParts.HandLeft_MeleeWeapon = Utils.FindChild<Transform>(this.BodyParts.HandLeft.gameObject, FixedValue.Find.PLAYER_MELEE_WEAPON);
+                    this.BodyParts.HandRight_MeleeWeapon = Utils.FindChild<Transform>(this.BodyParts.HandRight.gameObject, FixedValue.Find.PLAYER_MELEE_WEAPON);
                     break;
             }
         }
@@ -250,20 +259,20 @@ namespace STELLAREST_2D
         }
 
         [Conditional("UNITY_EDITOR")]
-        private void DevSkillFlag(SkillTemplate skillTemplate)
+        private void DevSkillFlag(FixedValue.TemplateID.Skill skillTemplateID)
         {
-            SkillBook.LevelUp(skillTemplate);
-            SkillBook.Activate(skillTemplate);
+            SkillBook.LevelUp(skillTemplateID);
+            SkillBook.Activate(skillTemplateID);
 
-            if (skillTemplate == SkillBook.MasteryAttackTemplate)
+            if (skillTemplateID == SkillBook.MasteryAttackTemplate)
             {
-                SkillBase skill = SkillBook.GetLastLearnedSkillMember(skillTemplate);
+                SkillBase skill = SkillBook.GetLastLearnedSkillMember(skillTemplateID);
                 if (skill.Data.Grade > Define.InGameGrade.Default)
                     this.RendererController.OnRefreshRenderer?.Invoke(skill.Data.Grade);
             }
         }
 
-        public SkillTemplate TestSkillTemplate = SkillTemplate.None;
+        public FixedValue.TemplateID.Skill TestSkillTemplate = FixedValue.TemplateID.Skill.None;
         public float TestAddCooldownRatio = 0f;
         private void Update()
         {
@@ -278,15 +287,15 @@ namespace STELLAREST_2D
                 DevSkillFlag(SkillBook.EliteActionTemplate);
 
             if (Input.GetKeyDown(KeyCode.Alpha1))
-                DevSkillFlag(SkillTemplate.ThrowingStar);
+                DevSkillFlag(FixedValue.TemplateID.Skill.ThrowingStar);
             if (Input.GetKeyDown(KeyCode.Alpha2))
-                DevSkillFlag(SkillTemplate.Boomerang);
+                DevSkillFlag(FixedValue.TemplateID.Skill.Boomerang);
             if (Input.GetKeyDown(KeyCode.Alpha3))
-                DevSkillFlag(SkillTemplate.LazerBolt);
+                DevSkillFlag(FixedValue.TemplateID.Skill.LazerBolt);
             if (Input.GetKeyDown(KeyCode.Alpha4))
-                DevSkillFlag(SkillTemplate.Spear);
+                DevSkillFlag(FixedValue.TemplateID.Skill.Spear);
             if (Input.GetKeyDown(KeyCode.Alpha5))
-                DevSkillFlag(SkillTemplate.BombTrap);
+                DevSkillFlag(FixedValue.TemplateID.Skill.BombTrap);
 
             // Face Test
             // if (Input.GetKeyDown(KeyCode.Alpha8))
@@ -407,14 +416,14 @@ namespace STELLAREST_2D
                 _armBowFixedAngle = -110f;
             }
 
-            LocalScale = new Vector3((int)LookAtDir * Define.PLAYER_LOCAL_SCALE_X * -1f, Define.PLAYER_LOCAL_SCALE_Y, 1);
+            LocalScale = new Vector3((int)LookAtDir * FixedValue.Numeric.PLAYER_LOCAL_SCALE_X * -1f, FixedValue.Numeric.PLAYER_LOCAL_SCALE_Y, 1);
         }
         private void CollectGems()
         {
             float sqrCollectDist = Stat.CollectRange * Stat.CollectRange;
             // var allSpawnedGems = Managers.Object.Gems.ToList();
             //var findGems = Managers.Object.GridController.GatherObjects(transform.position, GEM_COLLECTION_FIXED_DIST).ToList();
-            var findGems = Managers.Object.GridController.Gather(Define.ObjectType.Gem, this.Center.position, FIXED_MINIMUM_COLLECT_RANGE).ToList();
+            var findGems = Managers.Object.GridController.Gather(Define.ObjectType.Gem, this.Center.position, FixedValue.Numeric.MINIMUM_ENV_COLLECT_RANGE).ToList();
             foreach (var gem in findGems)
             {
                 GemController gc = gem.GetComponent<GemController>();

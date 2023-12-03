@@ -1,13 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using DG.Tweening;
-using STELLAREST_2D.Data;
-using UnityEngine;
 using System.Linq;
+using DG.Tweening;
+using UnityEngine;
 
-using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
+using static STELLAREST_2D.Define;
+using STELLAREST_2D.Data;
 
 namespace STELLAREST_2D
 {
@@ -62,9 +61,9 @@ namespace STELLAREST_2D
 
             // HitCollider = GetComponent<CircleCollider2D>();
             // HitCollider.enabled = false;
-            _child = this.Owner.SkillBook.ForceGetSkillMember(SkillTemplate.PhantomSoul_Elite_Solo, 0).GetComponent<PhantomSoulChild>();
+            _child = this.Owner.SkillBook.ForceGetSkillMember(FixedValue.TemplateID.Skill.PhantomSoul_Elite_Solo, 0).GetComponent<PhantomSoulChild>();
             _child.SetParent(this);
-            this.Owner.SkillBook.LevelUp(SkillTemplate.PhantomSoul_Elite_Solo);
+            this.Owner.SkillBook.LevelUp(FixedValue.TemplateID.Skill.PhantomSoul_Elite_Solo);
 
             this.Owner.OnLookAtDirChanged += this.OnLookAtDirChangedHandler;
             Utils.Log("ADD EVENT : this.OnLookAtDirChangedHandler");
@@ -78,7 +77,7 @@ namespace STELLAREST_2D
 
         protected override void DoSkillJob(Action callback = null)
         {
-            this.Owner.SkillBook.Deactivate(SkillTemplate.PhantomKnightMastery);
+            this.Owner.SkillBook.Deactivate(FixedValue.TemplateID.Skill.PhantomKnightMastery);
             this.transform.localPosition = new Vector3(INITIAL_LOCAL_POS_X * (int)this.Owner.LookAtDir, INITIAL_LOCAL_POS_Y, 0f);
 
             this.Owner.ReserveSkillAnimationType(this.Data.AnimationType);
@@ -150,7 +149,7 @@ namespace STELLAREST_2D
         private IEnumerator CoActivatePhantomSoulChild_Temp()
         {
             yield return new WaitForSeconds(3f);
-            this.Owner.SkillBook.Activate(SkillTemplate.PhantomSoul_Elite_Solo);
+            this.Owner.SkillBook.Activate(FixedValue.TemplateID.Skill.PhantomSoul_Elite_Solo);
             yield return null;
         }
 

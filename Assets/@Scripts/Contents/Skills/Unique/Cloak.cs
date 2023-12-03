@@ -1,14 +1,9 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using STELLAREST_2D;
-using STELLAREST_2D.Data;
 using UnityEngine;
-using UnityEngine.VFX;
 
-using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
+using static STELLAREST_2D.Define;
+using STELLAREST_2D.Data;
 using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
 
 namespace STELLAREST_2D
@@ -24,7 +19,6 @@ namespace STELLAREST_2D
 
         또는, 죽음의 위기에서 100%의 확률 -> 85%의 확률 -> 60% -> 45% -> 30% -> 15%(고정)
     */
-
     public class Cloak : UniqueSkill
     {
         private ParticleSystem[] _burstGroup = null;
@@ -53,7 +47,7 @@ namespace STELLAREST_2D
         protected override void DoSkillJob(Action callback = null)
         {
             _ownerController.PlayerAnimController.SetCanEnterNextState(false);
-            this.Owner.SkillBook.Deactivate(SkillTemplate.NinjaMastery);
+            this.Owner.SkillBook.Deactivate(FixedValue.TemplateID.Skill.NinjaMastery);
             this.Owner.CreatureRendererController.HideWeapons(true);
             
             this.Owner.ReserveSkillAnimationType(this.Data.AnimationType);
@@ -92,14 +86,14 @@ namespace STELLAREST_2D
             this.Owner.CreatureRendererController.HideWeapons(false);
             //_ownerController.CreatureRendererController.ChangeWeapon(SpriteManager.WeaponType.NinjaSword); 이거 의미가 없는것같기도 하고
 
-            SkillBase ninjaSlash = this.Owner.SkillBook.ForceGetSkillMember(SkillTemplate.NinjaSlash_Elite_Solo, 0);
+            SkillBase ninjaSlash = this.Owner.SkillBook.ForceGetSkillMember(FixedValue.TemplateID.Skill.NinjaSlash_Elite_Solo, 0);
             if (ninjaSlash.IsLearned == false)
             {
-                this.Owner.SkillBook.LevelUp(SkillTemplate.NinjaSlash_Elite_Solo);
-                this.Owner.SkillBook.Activate(SkillTemplate.NinjaSlash_Elite_Solo);
+                this.Owner.SkillBook.LevelUp(FixedValue.TemplateID.Skill.NinjaSlash_Elite_Solo);
+                this.Owner.SkillBook.Activate(FixedValue.TemplateID.Skill.NinjaSlash_Elite_Solo);
             }
             else
-                this.Owner.SkillBook.Activate(SkillTemplate.NinjaSlash_Elite_Solo);
+                this.Owner.SkillBook.Activate(FixedValue.TemplateID.Skill.NinjaSlash_Elite_Solo);
 
             this.Owner.RigidBody.constraints &= ~RigidbodyConstraints2D.FreezePositionX;
             this.Owner.RigidBody.constraints &= ~RigidbodyConstraints2D.FreezePositionY;
@@ -134,9 +128,9 @@ namespace STELLAREST_2D
             this.Owner.Stat.ResetMovementSpeed();
             Managers.Game.OnStopAction?.Invoke(false);
 
-            this.Owner.SkillBook.Deactivate(SkillTemplate.NinjaSlash_Elite_Solo);
-            this.Owner.SkillBook.Deactivate(SkillTemplate.Cloak_Elite_Solo);
-            this.Owner.SkillBook.Activate(SkillTemplate.NinjaMastery);
+            this.Owner.SkillBook.Deactivate(FixedValue.TemplateID.Skill.NinjaSlash_Elite_Solo);
+            this.Owner.SkillBook.Deactivate(FixedValue.TemplateID.Skill.Cloak_Elite_Solo);
+            this.Owner.SkillBook.Activate(FixedValue.TemplateID.Skill.NinjaMastery);
         }
     }
 }

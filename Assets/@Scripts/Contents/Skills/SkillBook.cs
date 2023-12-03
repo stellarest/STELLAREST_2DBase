@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-using STELLAREST_2D.Data;
-using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
 using static STELLAREST_2D.Define;
+using STELLAREST_2D.Data;
 
 // default skill, action skill
 namespace STELLAREST_2D
@@ -98,24 +97,24 @@ namespace STELLAREST_2D
                         SkillBase unlockSkill = Members[0].Unlock();
                         if (unlockSkill.Data.HasEventHandler && unlockSkill.Data.SkillType == Define.SkillType.Unique)
                         {
-                            if (unlockSkill.Data.OriginalTemplate == Book.MasteryAttackTemplate)
+                            if (unlockSkill.Data.FirstTemplateID == Book.MasteryAttackTemplate)
                             {
                                 unlockSkill.Owner.AnimCallback.OnActiveMasteryAction -= unlockSkill.GetComponent<UniqueSkill>().OnActiveMasteryActionHandler;
                                 unlockSkill.Owner.AnimCallback.OnActiveMasteryAction += unlockSkill.GetComponent<UniqueSkill>().OnActiveMasteryActionHandler;
                                 Utils.Log($"Add Event : AnimCallback.OnActiveMasteryAction += {unlockSkill.Data.Name}");
                             }
-                            else if (unlockSkill.Data.OriginalTemplate == Book.EliteActionTemplate)
+                            else if (unlockSkill.Data.FirstTemplateID == Book.EliteActionTemplate)
                             {
                                 unlockSkill.Owner.AnimCallback.OnActiveEliteAction += unlockSkill.GetComponent<UniqueSkill>().OnActiveEliteActionHandler;
                                 Utils.Log($"Add Event : AnimCallback.OnActiveEliteAction += {unlockSkill.Data.Name}");
                             }
-                            else if (unlockSkill.Data.OriginalTemplate == SkillTemplate.StabPoisonDagger_Elite_Solo)
+                            else if (unlockSkill.Data.FirstTemplateID == FixedValue.TemplateID.Skill.StabPoisonDagger_Elite_Solo)
                             {
                                 unlockSkill.Owner.AnimCallback.OnActiveMasteryAction -= unlockSkill.GetComponent<UniqueSkill>().OnActiveMasteryActionHandler;
                                 unlockSkill.Owner.AnimCallback.OnActiveMasteryAction += unlockSkill.GetComponent<UniqueSkill>().OnActiveMasteryActionHandler;
                                 Utils.Log($"Add Event : AnimCallback.OnActiveMasteryAction += {unlockSkill.Data.Name}");
                             }
-                            else if (unlockSkill.Data.OriginalTemplate == SkillTemplate.NinjaSlash_Elite_Solo)
+                            else if (unlockSkill.Data.FirstTemplateID == FixedValue.TemplateID.Skill.NinjaSlash_Elite_Solo)
                             {
                                 unlockSkill.Owner.AnimCallback.OnActiveMasteryAction -= unlockSkill.GetComponent<UniqueSkill>().OnActiveMasteryActionHandler;
                                 unlockSkill.Owner.AnimCallback.OnActiveMasteryAction += unlockSkill.GetComponent<UniqueSkill>().OnActiveMasteryActionHandler;
@@ -131,12 +130,12 @@ namespace STELLAREST_2D
                         SkillBase deactiveSkill = Members[i - 1].DeactiveForce();
                         if (deactiveSkill.Data.HasEventHandler && deactiveSkill.Data.SkillType == Define.SkillType.Unique)
                         {
-                            if (deactiveSkill.Data.OriginalTemplate == Book.MasteryAttackTemplate)
+                            if (deactiveSkill.Data.FirstTemplateID == Book.MasteryAttackTemplate)
                             {
                                 deactiveSkill.Owner.AnimCallback.OnActiveMasteryAction -= deactiveSkill.GetComponent<UniqueSkill>().OnActiveMasteryActionHandler;
                                 Utils.Log($"Release Event : AnimCallback.OnActiveMasteryAction -= {deactiveSkill.Data.Name}");
                             }
-                            else if (deactiveSkill.Data.OriginalTemplate == Book.EliteActionTemplate)
+                            else if (deactiveSkill.Data.FirstTemplateID == Book.EliteActionTemplate)
                             {
                                 deactiveSkill.Owner.AnimCallback.OnActiveEliteAction -= deactiveSkill.GetComponent<UniqueSkill>().OnActiveEliteActionHandler;
                                 Utils.Log($"Release Event : AnimCallback.OnActiveEliteAction -= {deactiveSkill.Data.Name}");
@@ -147,12 +146,12 @@ namespace STELLAREST_2D
                         SkillBase unlockSkill = Members[i].Unlock();
                         if (unlockSkill.Data.HasEventHandler && unlockSkill.Data.SkillType == Define.SkillType.Unique)
                         {
-                            if (unlockSkill.Data.OriginalTemplate == Book.MasteryAttackTemplate)
+                            if (unlockSkill.Data.FirstTemplateID == Book.MasteryAttackTemplate)
                             {
                                 unlockSkill.Owner.AnimCallback.OnActiveMasteryAction += unlockSkill.GetComponent<UniqueSkill>().OnActiveMasteryActionHandler;
                                 Utils.Log($"Add Event : AnimCallback.OnActiveMasteryAction += {unlockSkill.Data.Name}");
                             }
-                            else if (unlockSkill.Data.OriginalTemplate == Book.EliteActionTemplate)
+                            else if (unlockSkill.Data.FirstTemplateID == Book.EliteActionTemplate)
                             {
                                 unlockSkill.Owner.AnimCallback.OnActiveEliteAction += unlockSkill.GetComponent<UniqueSkill>().OnActiveEliteActionHandler;
                                 Utils.Log($"Add Event : AnimCallback.OnActiveEliteAction += {unlockSkill.Data.Name}");
@@ -248,9 +247,9 @@ namespace STELLAREST_2D
     {
         public CreatureController Owner { get; set; }
 
-        public SkillTemplate MasteryAttackTemplate { get; private set; } = SkillTemplate.None;
-        public SkillTemplate EliteActionTemplate { get; private set; } = SkillTemplate.None;
-        public SkillTemplate UltimateActionTemplate { get; private set; } = SkillTemplate.None;
+        public FixedValue.TemplateID.Skill MasteryAttackTemplate { get; private set; } = FixedValue.TemplateID.Skill.None;
+        public FixedValue.TemplateID.Skill EliteActionTemplate { get; private set; } = FixedValue.TemplateID.Skill.None;
+        public FixedValue.TemplateID.Skill UltimateActionTemplate { get; private set; } = FixedValue.TemplateID.Skill.None;
 
         // +++ Key(int) : Skill Origin Template, Value : SkillGroup +++
         [System.Serializable] public class SkillGroupDictionary : SerializableGroupDictionary<int, SkillGroup> { }
@@ -274,58 +273,55 @@ namespace STELLAREST_2D
                     SkillBase skill = group.Value.Members[i].SkillOrigin;
                     if (skill.Data.SkillType == Define.SkillType.Unique)
                     {
-                        switch (skill.Data.OriginalTemplate)
+                        switch (skill.Data.FirstTemplateID)
                         {
-                            case SkillTemplate.PaladinMastery:
-                            case SkillTemplate.KnightMastery:
-                            case SkillTemplate.PhantomKnightMastery:
+                            case FixedValue.TemplateID.Skill.PaladinMastery:
+                            case FixedValue.TemplateID.Skill.KnightMastery:
+                            case FixedValue.TemplateID.Skill.PhantomKnightMastery:
 
-                            case SkillTemplate.ArrowMasterMastery:
-                            case SkillTemplate.ElementalArcherMastery:
-                            case SkillTemplate.ForestGuardianMastery:
+                            case FixedValue.TemplateID.Skill.ArrowMasterMastery:
+                            case FixedValue.TemplateID.Skill.ElementalArcherMastery:
+                            case FixedValue.TemplateID.Skill.ForestGuardianMastery:
 
-                            case SkillTemplate.AssassinMastery:
-                            case SkillTemplate.NinjaMastery:
-                            case SkillTemplate.ThiefMastery:
-                                this.MasteryAttackTemplate = skill.Data.OriginalTemplate;
+                            case FixedValue.TemplateID.Skill.AssassinMastery:
+                            case FixedValue.TemplateID.Skill.NinjaMastery:
+                                this.MasteryAttackTemplate = skill.Data.FirstTemplateID;
                                 break;
 
-                            case SkillTemplate.Shield_Elite_Solo:
-                            case SkillTemplate.SecondWind_Elite_Solo:
-                            case SkillTemplate.PhantomSoul_Elite_Solo:
+                            case FixedValue.TemplateID.Skill.Shield_Elite_Solo:
+                            case FixedValue.TemplateID.Skill.SecondWind_Elite_Solo:
+                            case FixedValue.TemplateID.Skill.PhantomSoul_Elite_Solo:
 
-                            case SkillTemplate.Concentration_Elite_Solo:
-                            case SkillTemplate.ElementalShock_Elite_Solo:
-                            case SkillTemplate.ForestBarrier_Elite_Solo:
+                            case FixedValue.TemplateID.Skill.Concentration_Elite_Solo:
+                            case FixedValue.TemplateID.Skill.ElementalShock_Elite_Solo:
+                            case FixedValue.TemplateID.Skill.ForestBarrier_Elite_Solo:
 
-                            case SkillTemplate.PoisonDagger_Elite_Solo:
-                            case SkillTemplate.Cloak_Elite_Solo:
-                            case SkillTemplate.SmokeBomb_Elite_Solo:
+                            case FixedValue.TemplateID.Skill.PoisonDagger_Elite_Solo:
+                            case FixedValue.TemplateID.Skill.Cloak_Elite_Solo:
                                 {
-                                    if (skill.Data.OriginalTemplate == SkillTemplate.Shield_Elite_Solo)
+                                    if (skill.Data.FirstTemplateID == FixedValue.TemplateID.Skill.Shield_Elite_Solo)
                                         this.CachedShield = skill.GetComponent<Shield>();
-                                    else if (skill.Data.OriginalTemplate == SkillTemplate.SecondWind_Elite_Solo)
+                                    else if (skill.Data.FirstTemplateID == FixedValue.TemplateID.Skill.SecondWind_Elite_Solo)
                                         this.CachedSecondWind = skill.GetComponent<SecondWind>();
-                                    else if (skill.Data.OriginalTemplate == SkillTemplate.ForestBarrier_Elite_Solo)
+                                    else if (skill.Data.FirstTemplateID == FixedValue.TemplateID.Skill.ForestBarrier_Elite_Solo)
                                         this.CachedForestBarrier = skill.GetComponent<ForestBarrier>();
 
-                                    this.EliteActionTemplate = skill.Data.OriginalTemplate;
+                                    this.EliteActionTemplate = skill.Data.FirstTemplateID;
                                 }
                                 break;
 
 
-                            case SkillTemplate.JudgementOfHeaven_Ultimate_Solo:
-                            case SkillTemplate.StormBlade_Ultimate_Solo:
-                            case SkillTemplate.Metamorphosis_Ultimate_Solo:
+                            case FixedValue.TemplateID.Skill.JudgementOfHeaven_Ultimate_Solo:
+                            case FixedValue.TemplateID.Skill.StormBlade_Ultimate_Solo:
+                            case FixedValue.TemplateID.Skill.Metamorphosis_Ultimate_Solo:
 
-                            case SkillTemplate.ArrowShower_Ultimate_Solo:
-                            case SkillTemplate.ElementalCharge_Ultimate_Solo:
-                            case SkillTemplate.SummonBlackPanther_Ultimate_Solo:
+                            case FixedValue.TemplateID.Skill.ArrowShower_Ultimate_Solo:
+                            case FixedValue.TemplateID.Skill.ElementalCharge_Ultimate_Solo:
+                            case FixedValue.TemplateID.Skill.SummonBlackPanther_Ultimate_Solo:
 
-                            case SkillTemplate.CounterStrike_Ultimate_Solo:
-                            case SkillTemplate.CloneTechnique_Ultimate_Solo:
-                            case SkillTemplate.LetsSweep_Ultimate_Solo:
-                                this.UltimateActionTemplate = skill.Data.OriginalTemplate;
+                            case FixedValue.TemplateID.Skill.CounterStrike_Ultimate_Solo:
+                            case FixedValue.TemplateID.Skill.CloneTechnique_Ultimate_Solo:
+                                this.UltimateActionTemplate = skill.Data.FirstTemplateID;
                                 break;
                         }
 
@@ -341,67 +337,67 @@ namespace STELLAREST_2D
             Utils.LogAddEvent(nameof(this.Owner.Stat.OnResetSkillCooldown), nameof(OnResetSkillCooldownHandler));
         }
 
-        public void OnAddSkillCooldownRatioHandler(SkillTemplate templateOrigin, float addRatio)
+        public void OnAddSkillCooldownRatioHandler(FixedValue.TemplateID.Skill skillTemplateID, float addRatio)
         {
-            SkillBase currentSkill = GetLastLearnedSkillMember(templateOrigin);
+            SkillBase currentSkill = GetLastLearnedSkillMember(skillTemplateID);
             if (currentSkill == null)
                 return;
             
             float cooldown = currentSkill.Data.Cooldown;
             currentSkill.Data.Cooldown = cooldown + (cooldown * addRatio);
 
-            Deactivate(templateOrigin);
-            Activate(templateOrigin);
+            Deactivate(skillTemplateID);
+            Activate(skillTemplateID);
 
             Utils.Log($"Apply Cooldown : {currentSkill.Data.Name}");
         }
 
-        public void OnResetSkillCooldownHandler(SkillTemplate templateOrigin)
+        public void OnResetSkillCooldownHandler(FixedValue.TemplateID.Skill skillTemplateID)
         {
-            SkillBase currentSkill = GetLastLearnedSkillMember(templateOrigin);
+            SkillBase currentSkill = GetLastLearnedSkillMember(skillTemplateID);
             if (currentSkill == null)
                 return;
 
             currentSkill.Data.Cooldown = currentSkill.InitialCooldown;
 
-            Deactivate(templateOrigin);
-            Activate(templateOrigin);
+            Deactivate(skillTemplateID);
+            Activate(skillTemplateID);
 
             Utils.Log($"Reset Cooldown : {currentSkill.Data.Name}");
         }
 
-        public void ReserveNextSequence(SkillTemplate currentEnd)
+        public void ReserveNextSequence(FixedValue.TemplateID.Skill currentEnd)
         {
         }
 
-        public Define.InGameGrade GetCurrentSkillGrade(SkillTemplate skillTemplate)
+        public Define.InGameGrade GetCurrentSkillGrade(FixedValue.TemplateID.Skill skillTemplate)
         {
             if (SkillGroupsDict.TryGetValue((int)skillTemplate, out SkillGroup group) == false)
-                Utils.LogCritical(nameof(SkillBook), nameof(GetCurrentSkillGrade), "Failed to load Skill Template.");
+                Utils.LogCritical(nameof(SkillBook), nameof(GetCurrentSkillGrade), "Failed to load Skill Group.");
 
             return group.GetLastLearnedSkillMember().Data.Grade;
         }
 
-        public void LevelUp(SkillTemplate templateOrigin)
+        public void LevelUp(FixedValue.TemplateID.Skill skillTemplateID)
         {
-            SkillBase newSkill = Unlock(templateOrigin);
+            SkillBase newSkill = Unlock(skillTemplateID);
             /*
                 DO SOMETHING BELOW
             */
         }
 
-        private SkillBase Unlock(SkillTemplate templateOrigin)
+        private SkillBase Unlock(FixedValue.TemplateID.Skill skillTemplateID)
         {
-            if (SkillGroupsDict.TryGetValue((int)templateOrigin, out SkillGroup group) == false)
-                Utils.LogCritical(nameof(SkillBook), nameof(Unlock), $"Check TemplateID : {templateOrigin}");
+            if (SkillGroupsDict.TryGetValue((int)skillTemplateID, out SkillGroup group) == false)
+                Utils.LogCritical(nameof(SkillBook), nameof(Unlock), $"Input : {skillTemplateID}");
 
             return group.Unlock();
         }
 
-        public void Activate(SkillTemplate templateOrigin)
+        public void Activate(FixedValue.TemplateID.Skill skillTemplateID)
         {
-            if (SkillGroupsDict.TryGetValue((int)templateOrigin, out SkillGroup group) == false)
-                Utils.LogCritical(nameof(SkillBook), nameof(Activate), $"Check TemplateID : {templateOrigin}");
+            if (SkillGroupsDict.TryGetValue((int)skillTemplateID, out SkillGroup group) == false)
+                Utils.LogCritical(nameof(SkillBook), nameof(Activate), $"Input : {skillTemplateID}");
 
             group.Activate();
         }
@@ -412,10 +408,10 @@ namespace STELLAREST_2D
                 group.Value.Activate();
         }
 
-        public void Deactivate(SkillTemplate templateOrigin)
+        public void Deactivate(FixedValue.TemplateID.Skill skillTemplateID)
         {
-            if (SkillGroupsDict.TryGetValue((int)templateOrigin, out SkillGroup group) == false)
-                Utils.LogCritical(nameof(SkillBook), nameof(Deactivate), $"Check TemplateID : {templateOrigin}");
+            if (SkillGroupsDict.TryGetValue((int)skillTemplateID, out SkillGroup group) == false)
+                Utils.LogCritical(nameof(SkillBook), nameof(Deactivate), $"Input : {skillTemplateID}");
 
             group.Deactivate();
         }
@@ -426,22 +422,22 @@ namespace STELLAREST_2D
                 group.Value.Deactivate();
         }
 
-        public SkillBase GetLastLearnedSkillMember(SkillTemplate templateOrigin)
+        public SkillBase GetLastLearnedSkillMember(FixedValue.TemplateID.Skill skillTemplateID)
         {
-            if (SkillGroupsDict.TryGetValue((int)templateOrigin, out SkillGroup group) == false)
-                Utils.LogCritical(nameof(SkillBook), nameof(GetLastLearnedSkillMember), $"Check TemplateID : {templateOrigin}");
+            if (SkillGroupsDict.TryGetValue((int)skillTemplateID, out SkillGroup group) == false)
+                Utils.LogCritical(nameof(SkillBook), nameof(GetLastLearnedSkillMember), $"Input : {skillTemplateID}");
 
             SkillBase skill = group.GetLastLearnedSkillMember();
             if (skill == null)
-                Utils.LogStrong(nameof(SkillGroup), nameof(GetLastLearnedSkillMember), "You need to unlock first skill.");
+                Utils.LogStrong(nameof(SkillGroup), nameof(GetLastLearnedSkillMember), "Please Unlock First Skill in advance.");
 
             return skill;
         }
 
-        public SkillBase ForceGetSkillMember(SkillTemplate templateOrigin, int idxOfGroupMember)
+        public SkillBase ForceGetSkillMember(FixedValue.TemplateID.Skill skillTemplateID, int idxOfGroupMember)
         {
-            if (SkillGroupsDict.TryGetValue((int)templateOrigin, out SkillGroup group) == false)
-                Utils.LogCritical(nameof(SkillBook), nameof(ForceGetSkillMember), $"Check TemplateID : {templateOrigin}");
+            if (SkillGroupsDict.TryGetValue((int)skillTemplateID, out SkillGroup group) == false)
+                Utils.LogCritical(nameof(SkillBook), nameof(ForceGetSkillMember), $"Input : {skillTemplateID}");
 
             for (int i = 0; i < group.MemberCount; ++i)
             {
@@ -453,7 +449,7 @@ namespace STELLAREST_2D
         }
 
         // callback 전용 메서드 정의
-        public void RandomizeSequenceGroup(SkillTemplate prevTemplateOrigin)
+        public void RandomizeSequenceGroup(FixedValue.TemplateID.Skill prevTemplateOrigin)
         {
             this.Deactivate(prevTemplateOrigin); // End Prev Sequence Skill Template
             //Utils.Log("Randomize Sequence Something if you want to.");
@@ -497,16 +493,11 @@ namespace STELLAREST_2D
                     {
                         if (skillOrigin.Data.SkillType == Define.SkillType.Unique)
                         {
-                            if (skillOrigin.Owner.AnimCallback.OnActiveMasteryAction != null)
-                            {
-                                skillOrigin.Owner.AnimCallback.OnActiveMasteryAction -= skillOrigin.GetComponent<UniqueSkill>().OnActiveMasteryActionHandler;
-                                Utils.Log($"Release Event : AnimCallback.OnActiveMasteryAction -= {skillOrigin.Data.Name}");
-                            }
-                            else if (skillOrigin.Owner.AnimCallback.OnActiveEliteAction != null)
-                            {
-                                skillOrigin.Owner.AnimCallback.OnActiveEliteAction -= skillOrigin.GetComponent<UniqueSkill>().OnActiveEliteActionHandler;
-                                Utils.Log($"Release Event : AnimCallback.OnActiveEliteAction -= {skillOrigin.Data.Name}");
-                            }
+                            skillOrigin.Owner.AnimCallback.OnActiveMasteryAction -= skillOrigin.GetComponent<UniqueSkill>().OnActiveMasteryActionHandler;
+                            Utils.Log($"Release Event : AnimCallback.OnActiveMasteryAction -= {skillOrigin.Data.Name}");
+
+                            skillOrigin.Owner.AnimCallback.OnActiveEliteAction -= skillOrigin.GetComponent<UniqueSkill>().OnActiveEliteActionHandler;
+                            Utils.Log($"Release Event : AnimCallback.OnActiveEliteAction -= {skillOrigin.Data.Name}");
                         }
                     }
                 }

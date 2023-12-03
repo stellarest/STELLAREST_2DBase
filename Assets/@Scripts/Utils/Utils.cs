@@ -3,24 +3,16 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Linq;
 using UnityEngine;
-
-using Debug = UnityEngine.Debug;
-using STELLAREST_2D.Data;
-using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
-
 //using Unity.Mathematics;
+using Debug = UnityEngine.Debug;
 
-public class ShowOnlyAttribute : PropertyAttribute
-{
-}
+using static STELLAREST_2D.Define;
+public class ShowOnlyAttribute : PropertyAttribute { }
 
 namespace STELLAREST_2D
 {
     public class Utils
     {
-        public static float CREATURES_FIXED_SHAKE_DURATION = 0.75f;
-        public static float CREATURES_FIXED_SHAKE_POWER = 0.5f;
-
         public static T GetOrAddComponent<T>(GameObject go) where T : UnityEngine.Component
         {
             T component = go.GetComponent<T>();
@@ -285,46 +277,22 @@ namespace STELLAREST_2D
             return toList;
         }
 
-        public static class PlayerBodyPartsFinder
+        public static bool IsArrowMaster(CreatureController cc) => cc?.Stat.TemplateID == (int)FixedValue.TemplateID.Player.Reina_ArrowMaster;
+        public static bool IsElementalArcher(CreatureController cc) => cc?.Stat.TemplateID == (int)FixedValue.TemplateID.Player.Reina_ElementalArcher;
+        public static bool IsForestGuardian(CreatureController cc) => cc?.Stat.TemplateID == (int)FixedValue.TemplateID.Player.Reina_ForestGuardian;
+
+        public static bool IsThief(CreatureController cc) => cc?.Stat.TemplateID == (int)FixedValue.TemplateID.Player.Kenneth_Thief;
+        public static bool IsNinja(CreatureController cc) => cc?.Stat.TemplateID == (int)FixedValue.TemplateID.Player.Kenneth_Ninja;
+
+        public static bool IsMeleeSwing(FixedValue.TemplateID.Skill skillTemplateID)
         {
-            public const string HAIR = "Hair";
-
-            public const string ARM_LEFT = "ArmL";
-            public const string ARM_RIGHT = "ArmR[1]";
-
-            public const string FOREARM_LEFT_1 = "ForearmL[1]";
-            public const string FOREARM_LEFT_2 = "ForearmL[2]";
-
-            public const string HAND_LEFT = "HandL";
-            public const string HAND_RIGHT = "HandR";
-
-            public const string LEG_LEFT = "Leg[L]";
-            public const string LEG_RIGHT = "Leg[R]";
-
-            public const string MELEE_WEAPON = "MeleeWeapon";
-            public const string SHIELD = "Shield";
-            public const string BOW = "Bow";
-
-            public static Transform Find(GameObject go, string name) => Utils.FindChild<Transform>(go, name, true);
-        }
-
-
-        public static bool IsArrowMaster(CreatureController cc) => cc?.Stat.TemplateID == (int)Define.TemplateIDs.Creatures.Player.Reina_ArrowMaster;
-        public static bool IsElementalArcher(CreatureController cc) => cc?.Stat.TemplateID == (int)Define.TemplateIDs.Creatures.Player.Reina_ElementalArcher;
-        public static bool IsForestGuardian(CreatureController cc) => cc?.Stat.TemplateID == (int)Define.TemplateIDs.Creatures.Player.Reina_ForestGuardian;
-
-        public static bool IsThief(CreatureController cc) => cc?.Stat.TemplateID == (int)Define.TemplateIDs.Creatures.Player.Kenneth_Thief;
-        public static bool IsNinja(CreatureController cc) => cc?.Stat.TemplateID == (int)Define.TemplateIDs.Creatures.Player.Kenneth_Ninja;
-
-        public static bool IsMeleeSwing(SkillTemplate templateOrigin)
-        {
-            switch (templateOrigin)
+            switch (skillTemplateID)
             {
-                case SkillTemplate.PaladinMastery:
-                case SkillTemplate.KnightMastery:
-                case SkillTemplate.PhantomKnightMastery:
-                case SkillTemplate.AssassinMastery:
-                case SkillTemplate.ThiefMastery:
+                case FixedValue.TemplateID.Skill.PaladinMastery:
+                case FixedValue.TemplateID.Skill.KnightMastery:
+                case FixedValue.TemplateID.Skill.PhantomKnightMastery:
+                case FixedValue.TemplateID.Skill.AssassinMastery:
+                case FixedValue.TemplateID.Skill.NinjaSlash_Elite_Solo:
                     return true;
 
                 default:
@@ -446,6 +414,8 @@ namespace STELLAREST_2D
     }
 }
 
+// -------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------
 // public static GameObject GetClosestTargetFromAndRange_TEMP<T>(GameObject from, float range)
 // {
 //     GameObject target = null;

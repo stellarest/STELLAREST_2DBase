@@ -1,9 +1,9 @@
 using System;
 using System.Collections;
-using STELLAREST_2D.Data;
 using UnityEngine;
 
-using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
+using static STELLAREST_2D.Define;
+using STELLAREST_2D.Data;
 
 namespace STELLAREST_2D
 {
@@ -63,7 +63,7 @@ namespace STELLAREST_2D
         public void On()
         {
             this.Owner.RendererController.OnFaceCombatHandler();
-            this.Owner.SkillBook.Deactivate(SkillTemplate.KnightMastery);
+            this.Owner.SkillBook.Deactivate(FixedValue.TemplateID.Skill.KnightMastery);
             this.Owner.ReserveSkillAnimationType(this.Data.AnimationType);
             Owner.CreatureState = Define.CreatureState.Skill;
             
@@ -125,16 +125,16 @@ namespace STELLAREST_2D
             anim.Ready();
 
             EnableParticles(_lastBuffs, true);
-            this.Owner.ReserveSkillAnimationType(Define.SkillAnimationType.DefaultMasteryAction);
+            this.Owner.ReserveSkillAnimationType(Define.SkillAnimationType.Attack);
             this.Owner.CreatureState = Define.CreatureState.Skill;
-            this.Owner.SkillBook.Activate(SkillTemplate.KnightMastery);
+            this.Owner.SkillBook.Activate(FixedValue.TemplateID.Skill.KnightMastery);
 
             yield return new WaitForSeconds(FIXED_LAST_BUFF_TIME);
             EnableParticles(_lastBuffs, false);
 
             // TODO 2
             // this.Owner.Stat.ResetArmor();
-            this.Owner.SkillBook.Deactivate(SkillTemplate.SecondWind_Elite_Solo);
+            this.Owner.SkillBook.Deactivate(FixedValue.TemplateID.Skill.SecondWind_Elite_Solo);
         }
     }
 }

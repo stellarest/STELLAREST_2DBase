@@ -1,10 +1,9 @@
 using System;
 using System.Collections;
-using STELLAREST_2D.Data;
 using UnityEngine;
 
-using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
-using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
+using static STELLAREST_2D.Define;
+using STELLAREST_2D.Data;
 
 namespace STELLAREST_2D
 {
@@ -44,7 +43,7 @@ namespace STELLAREST_2D
                 //this.Owner.SkillBook.ReserveNextSequence((SkillTemplate.BodyAttack);
                 //this.Owner.SkillBook.ReserveNextSequence(currentEnd: SkillTemplate.BodyAttack);
                 this.Owner.SetDefaultHead();
-                this.Owner.SkillBook.RandomizeSequenceGroup(SkillTemplate.BodyAttack_Solo);
+                this.Owner.SkillBook.RandomizeSequenceGroup(FixedValue.TemplateID.Skill.BodyAttack_Solo);
             }));
         }
 
@@ -56,7 +55,7 @@ namespace STELLAREST_2D
                     this.Owner.CreatureState = Define.CreatureState.Run;
 
                 Utils.Log("Deactivate Body Attack."); // 임시 개선 사항 (Deaictvate Sequence 추가해야함, 안해도 상관 없을것같긴하지만)
-                this.Owner.SkillBook.Deactivate(SkillTemplate.BodyAttack_Solo);
+                this.Owner.SkillBook.Deactivate(FixedValue.TemplateID.Skill.BodyAttack_Solo);
                 yield break;
             }
 

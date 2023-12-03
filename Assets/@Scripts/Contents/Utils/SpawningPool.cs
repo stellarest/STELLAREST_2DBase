@@ -1,7 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
+
+using static STELLAREST_2D.Define;
 
 namespace STELLAREST_2D
 {
@@ -50,7 +51,7 @@ namespace STELLAREST_2D
             // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
             // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
             Vector3 randPos = Utils.GetRandomPosition(Managers.Game.Player.transform.position, 5f, 20f);
-            MonsterController mc = Managers.Object.Spawn<MonsterController>(randPos, (int)Define.TemplateIDs.Creatures.Monster.Chicken, Define.ObjectType.Monster, true);
+            MonsterController mc = Managers.Object.Spawn<MonsterController>(randPos, (int)FixedValue.TemplateID.Monster.Chicken, Define.ObjectType.Monster, true);
             //MonsterController mc = Managers.Object.Spawn<MonsterController>(randPos, (int)Define.TemplateIDs.Monster.Chicken);
             // 개선 요망
             // randPos = new Vector3(15, 2, 0);

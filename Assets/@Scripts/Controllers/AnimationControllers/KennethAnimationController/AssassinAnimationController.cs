@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
+using static STELLAREST_2D.Define;
 
 namespace STELLAREST_2D
 {
@@ -13,30 +13,29 @@ namespace STELLAREST_2D
         private readonly int UPPER_ATTACK_ULTIMATE = Animator.StringToHash("JabMelee_Paired_Ultimate");
         private readonly int UPPER_ELITE_SEQUENCE = Animator.StringToHash("UsePoisonDagger");
 
-
         public override void Init(CreatureController owner) => base.Init(owner);
         public override void Ready() => AnimController.Play(UPPER_READY);
         public override void RunSkill()
         {
             switch (this.Owner.SkillAnimationType)
             {
-                case Define.SkillAnimationType.DefaultMasteryAction:
+                case SkillAnimationType.Attack:
                     {
-                        if (this.Owner.SkillBook.GetCurrentSkillGrade(SkillTemplate.AssassinMastery) < Define.InGameGrade.Ultimate)
+                        if (this.Owner.SkillBook.GetCurrentSkillGrade(FixedValue.TemplateID.Skill.AssassinMastery) < InGameGrade.Ultimate)
                             AnimController.Play(UPPER_ATTACK);
                         else
                             AnimController.Play(UPPER_ATTACK_ULTIMATE);
                     }
                     break;
 
-                case Define.SkillAnimationType.EliteAction:
+                case SkillAnimationType.ElitePlus:
                     {
                         AnimController.StopPlayback();
                         AnimController.Play(UPPER_ELITE_SEQUENCE);
                     }
                     break;
 
-                case Define.SkillAnimationType.UltimateAction:
+                case SkillAnimationType.UltimatePlus:
                     break;
             }
         }

@@ -1,10 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using STELLAREST_2D.Data;
 using UnityEngine;
 
-using SkillTemplate = STELLAREST_2D.Define.TemplateIDs.Status.Skill;
+using static STELLAREST_2D.Define;
+using STELLAREST_2D.Data;
 
 namespace STELLAREST_2D
 {
@@ -99,7 +99,7 @@ namespace STELLAREST_2D
 
         protected override void DoSkillJob(Action callback = null)
         {
-            this.Owner.SkillBook.Deactivate(SkillTemplate.PaladinMastery);
+            this.Owner.SkillBook.Deactivate(FixedValue.TemplateID.Skill.PaladinMastery);
             this.Owner.ReserveSkillAnimationType(this.Data.AnimationType);
             Owner.CreatureState = Define.CreatureState.Skill;
         }
@@ -118,7 +118,7 @@ namespace STELLAREST_2D
             if (_coRecoveryShield != null)
                 StopCoroutine(_coRecoveryShield);
             _coRecoveryShield = StartCoroutine(CoRecoveryShield());
-            this.Owner.SkillBook.Activate(SkillTemplate.PaladinMastery);
+            this.Owner.SkillBook.Activate(FixedValue.TemplateID.Skill.PaladinMastery);
         }
 
         private void OffShield()
@@ -159,7 +159,7 @@ namespace STELLAREST_2D
             }
 
             EnableParticles(_offShields, false);
-            this.Owner.SkillBook.Deactivate(SkillTemplate.Shield_Elite_Solo);
+            this.Owner.SkillBook.Deactivate(FixedValue.TemplateID.Skill.Shield_Elite_Solo);
         }
 
         public override void Deactivate() => base.Deactivate();

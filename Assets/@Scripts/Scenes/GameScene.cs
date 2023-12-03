@@ -1,14 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using Newtonsoft.Json.Linq;
 using Cinemachine;
-
-using STELLAREST_2D.UI; // 이 스크립트에서 UI 스크립트 사용중을 간편하게 확인할 수 있어서 .UI의 네임을 추가해주었다
 using DG.Tweening;
+using UnityEngine;
 
-using PrefabLabels = STELLAREST_2D.Define.Labels.Prefabs;
-using PlayerTemplateID = STELLAREST_2D.Define.TemplateIDs.Creatures.Player;
+using static STELLAREST_2D.Define;
+using STELLAREST_2D.UI;
 
 namespace STELLAREST_2D
 {
@@ -63,7 +58,7 @@ namespace STELLAREST_2D
             Managers.VFX.Init();
             Managers.Collision.Init();
 
-            PlayerController player = this.SpawnPlayer(PlayerTemplateID.Gary_Paladin);
+            PlayerController player = this.SpawnPlayer(FixedValue.TemplateID.Player.Gary_Paladin);
             //Managers.Game.OnGameStart += player.OnGameStartHandler;
             //Utils.Log("Add Event : Managers.Game.OnGameStart += player.OnGameStartHandler");
 
@@ -71,7 +66,7 @@ namespace STELLAREST_2D
             CMcam.GetComponent<CameraController>().SetTarget(player.gameObject);
 
             // Joystick
-            var joystick = Managers.Resource.Instantiate(PrefabLabels.UI_JOYSTICK);
+            var joystick = Managers.Resource.Instantiate(FixedValue.Load.UI_JOYSTICK);
             joystick.name = "@Joystick"; // UI_Joystick라고 하기엔 좀 애매함
 
             // Spawning Pool
@@ -126,47 +121,50 @@ namespace STELLAREST_2D
             // Managers.UI.GetFixedSceneUI<UI_GameScene>().SetGemCountRatio(_collectedGemCount / (float)_remainingTotalGemCount);
         }
 
-        private PlayerController SpawnPlayer(PlayerTemplateID templateOrigin)
-        {
-            PlayerController pc = null;
-            switch (templateOrigin)
-            {
-                case PlayerTemplateID.Gary_Paladin:
-                    pc = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)PlayerTemplateID.Gary_Paladin, Define.ObjectType.Player, isPooling: false);
-                    return pc;
-                case PlayerTemplateID.Gary_Knight:
-                    pc = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)PlayerTemplateID.Gary_Knight, Define.ObjectType.Player, isPooling: false);
-                    return pc;
-                case PlayerTemplateID.Gary_PhantomKnight:
-                    pc = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)PlayerTemplateID.Gary_PhantomKnight, Define.ObjectType.Player, isPooling: false);
-                    return pc;
+        private PlayerController SpawnPlayer(FixedValue.TemplateID.Player playerTemplateID) 
+                =>  Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)playerTemplateID, ObjectType.Player);
+
+        // private PlayerController SpawnPlayer(FixedValue.TemplateID.Player playerTemplateID)
+        // {
+        //     PlayerController pc = null;
+        //     switch (playerTemplateID)
+        //     {
+        //         case FixedValue.TemplateID.Player.Gary_Paladin:
+        //             pc = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)PlayerTemplateID.Gary_Paladin, Define.ObjectType.Player, isPooling: false);
+        //             return pc;
+        //         case FixedValue.TemplateID.Player.Gary_Knight:
+        //             pc = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)PlayerTemplateID.Gary_Knight, Define.ObjectType.Player, isPooling: false);
+        //             return pc;
+        //         case FixedValue.TemplateID.Player.Gary_PhantomKnight:
+        //             pc = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)PlayerTemplateID.Gary_PhantomKnight, Define.ObjectType.Player, isPooling: false);
+        //             return pc;
 
                 
-                case PlayerTemplateID.Reina_ArrowMaster:
-                    pc = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)PlayerTemplateID.Reina_ArrowMaster, Define.ObjectType.Player, isPooling: false);
-                    return pc;
-                case PlayerTemplateID.Reina_ElementalArcher:
-                    pc = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)PlayerTemplateID.Reina_ElementalArcher, Define.ObjectType.Player, isPooling: false);
-                    return pc;
-                case PlayerTemplateID.Reina_ForestGuardian:
-                    pc = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)PlayerTemplateID.Reina_ForestGuardian, Define.ObjectType.Player, isPooling: false);
-                    return pc;
+        //         case FixedValue.TemplateID.Player.Reina_ArrowMaster:
+        //             pc = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)PlayerTemplateID.Reina_ArrowMaster, Define.ObjectType.Player, isPooling: false);
+        //             return pc;
+        //         case FixedValue.TemplateID.Player.Reina_ElementalArcher:
+        //             pc = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)PlayerTemplateID.Reina_ElementalArcher, Define.ObjectType.Player, isPooling: false);
+        //             return pc;
+        //         case FixedValue.TemplateID.Player.Reina_ForestGuardian:
+        //             pc = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)PlayerTemplateID.Reina_ForestGuardian, Define.ObjectType.Player, isPooling: false);
+        //             return pc;
 
 
-                case PlayerTemplateID.Kenneth_Assassin:
-                    pc = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)PlayerTemplateID.Kenneth_Assassin, Define.ObjectType.Player, isPooling: false);
-                    return pc;
-                case PlayerTemplateID.Kenneth_Thief:
-                    pc = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)PlayerTemplateID.Kenneth_Thief, Define.ObjectType.Player, isPooling: false);
-                    return pc;
-                case PlayerTemplateID.Kenneth_Ninja:
-                    pc = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)PlayerTemplateID.Kenneth_Ninja, Define.ObjectType.Player, isPooling: false);
-                    return pc;
+        //         case FixedValue.TemplateID.Player.Kenneth_Assassin:
+        //             pc = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)PlayerTemplateID.Kenneth_Assassin, Define.ObjectType.Player, isPooling: false);
+        //             return pc;
+        //         case FixedValue.TemplateID.Player.Kenneth_Thief:
+        //             pc = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)PlayerTemplateID.Kenneth_Thief, Define.ObjectType.Player, isPooling: false);
+        //             return pc;
+        //         case PlayerTemplateID.Kenneth_Ninja:
+        //             pc = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)PlayerTemplateID.Kenneth_Ninja, Define.ObjectType.Player, isPooling: false);
+        //             return pc;
 
-                default:
-                    return null;
-            }
-        }
+        //         default:
+        //             return null;
+        //     }
+        // }
 
         private void OnDestroy()
         {
