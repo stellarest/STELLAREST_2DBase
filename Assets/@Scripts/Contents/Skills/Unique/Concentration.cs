@@ -5,7 +5,7 @@ using UnityEngine;
 
 using static STELLAREST_2D.Define;
 using STELLAREST_2D.Data;
-using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
+using CrowdControlType = STELLAREST_2D.Define.FixedValue.TemplateID.CrowdControl;
 
 namespace STELLAREST_2D
 {
@@ -105,7 +105,7 @@ namespace STELLAREST_2D
         private const int FIXED_MAX_TARGETING_COUNT = 3;
         private void ApplyTarget()
         {
-            if (UnityEngine.Random.Range(0f, 1f) < this.Data.CrowdControlRatio)
+            if (UnityEngine.Random.Range(0f, 1f) < this.Data.CrowdControlChance)
             {
                 var hashMons = FindMonsterTargets(FIXED_SEARCH_RANGE_FROM_OWNER);
                 foreach (var mon in hashMons)
@@ -137,7 +137,7 @@ namespace STELLAREST_2D
                         ++attempts;
                         continue;
                     }
-                    else if (monstersInRange[rndIdx][CrowdControl.Targeted])
+                    else if (monstersInRange[rndIdx][CrowdControlType.Targeted])
                     {
                         ++attempts;
                         continue;

@@ -3,7 +3,7 @@ using DG.Tweening;
 using UnityEngine;
 
 using static STELLAREST_2D.Define;
-using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
+using CrowdControlType = STELLAREST_2D.Define.FixedValue.TemplateID.CrowdControl;
 
 namespace STELLAREST_2D
 {
@@ -31,12 +31,12 @@ namespace STELLAREST_2D
                 duration = from.Data.ContinuousCrowdControlDuration;
 
             GameObject goVFX = Managers.VFX.Environment(VFXEnvType.Stun, target);
-            target[CrowdControl.Stun] = true;
+            target[CrowdControlType.Stun] = true;
             while (percent < 1f)
             {
                 if (target.IsDeadState)
                 {
-                    target[CrowdControl.Stun] = false;
+                    target[CrowdControlType.Stun] = false;
                     Managers.Resource.Destroy(goVFX);
                     yield break;
                 }
@@ -46,7 +46,7 @@ namespace STELLAREST_2D
                 percent = delta / duration;
                 yield return null;
             }
-            target[CrowdControl.Stun] = false;
+            target[CrowdControlType.Stun] = false;
             Managers.Resource.Destroy(goVFX);
         }
 
@@ -67,12 +67,12 @@ namespace STELLAREST_2D
             }
 
             GameObject goVFX = Managers.VFX.Environment(VFXEnvType.Slow, target);
-            target[CrowdControl.Slow] = true;
+            target[CrowdControlType.Slow] = true;
             while (percent < 1f)
             {
                 if (target.IsDeadState)
                 {
-                    target[CrowdControl.Slow] = false;
+                    target[CrowdControlType.Slow] = false;
                     target.ResetSpeedModifier();
                     Managers.Resource.Destroy(goVFX);
                     yield break;
@@ -83,7 +83,7 @@ namespace STELLAREST_2D
                 percent = delta / duration;
                 yield return null;
             }
-            target[CrowdControl.Slow] = false;
+            target[CrowdControlType.Slow] = false;
             Managers.Resource.Destroy(goVFX);
             target.ResetSpeedModifier();
         }
@@ -102,7 +102,7 @@ namespace STELLAREST_2D
                 intensity = from.Data.ContinuousCrowdControlIntensity;
 
             Vector3 knockBackDir = (target.Center.position - from.HitPoint).normalized;
-            target[CrowdControl.KnockBack] = true;
+            target[CrowdControlType.KnockBack] = true;
             float dustGenPercentage = 0.2f;
             while (percent < 1f)
             {
@@ -121,7 +121,7 @@ namespace STELLAREST_2D
                 percent = delta / duration;
                 yield return null;
             }
-            target[CrowdControl.KnockBack] = false;
+            target[CrowdControlType.KnockBack] = false;
         }
 
         public IEnumerator CoSilence(CreatureController target, SkillBase from, bool isCalledFromContinuous = false)
@@ -136,12 +136,12 @@ namespace STELLAREST_2D
 
             target.SkillBook.DeactivateAll();
             GameObject goVFX = Managers.VFX.Environment(VFXEnvType.Silence, target);
-            target[CrowdControl.Slience] = true;
+            target[CrowdControlType.Slience] = true;
             while (percent < 1f)
             {
                 if (target.IsDeadState)
                 {
-                    target[CrowdControl.Slience] = false;
+                    target[CrowdControlType.Slience] = false;
                     Managers.Resource.Destroy(goVFX);
                     yield break;
                 }
@@ -152,7 +152,7 @@ namespace STELLAREST_2D
                 yield return null;
             }
 
-            target[CrowdControl.Slience] = false;
+            target[CrowdControlType.Slience] = false;
             Managers.Resource.Destroy(goVFX);
             target.SkillBook.ActivateAll();
         }
@@ -165,12 +165,12 @@ namespace STELLAREST_2D
             goVFX.transform.DORotate(new Vector3(0f, 0f, 360f), 1.5f, RotateMode.FastBeyond360).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo);
             goVFX.transform.DOScale(Vector3.one * 2.5f, 1f).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo);
 
-            target[CrowdControl.Targeted] = true;
+            target[CrowdControlType.Targeted] = true;
             yield return new WaitUntil(delegate ()
             {
                 if (target.IsDeadState)
                 {
-                    target[CrowdControl.Targeted] = false;
+                    target[CrowdControlType.Targeted] = false;
                     goVFX.transform.localScale = initScale;
                     goVFX.transform.localRotation = initRot;
                     goVFX.transform.DOKill();
@@ -185,7 +185,7 @@ namespace STELLAREST_2D
 
             if (goVFX != null)
             {
-                target[CrowdControl.Targeted] = false;
+                target[CrowdControlType.Targeted] = false;
                 goVFX.transform.localScale = initScale;
                 goVFX.transform.localRotation = initRot;
                 goVFX.transform.DOKill();
@@ -207,7 +207,7 @@ namespace STELLAREST_2D
             if (isCalledFromContinuous)
                 intensity = from.Data.ContinuousCrowdControlIntensity;
 
-            target[CrowdControl.Poison] = true;
+            target[CrowdControlType.Poison] = true;
             target.StartCoroutine(Managers.VFX.CoMatPoison(target, duration, delegate
             {
                 target.RendererController.OnFaceDeadHandler();
@@ -223,7 +223,7 @@ namespace STELLAREST_2D
             {
                 if (target.IsDeadState)
                 {
-                    target[CrowdControl.Poison] = false;
+                    target[CrowdControlType.Poison] = false;
                     yield break;
                 }
 
@@ -231,13 +231,13 @@ namespace STELLAREST_2D
                 dotPoisionDmgInterval += Time.deltaTime;
                 if (dotPoisionDmgInterval >= FIXED_TAKE_DOT_DMG_INTERVAL)
                 {
-                    target.OnFixedDamaged(Random.Range(minDotDmg, maxDotDmg), CrowdControl.Poison);
+                    target.OnFixedDamaged(Random.Range(minDotDmg, maxDotDmg), CrowdControlType.Poison);
                     dotPoisionDmgInterval = 0f;
                 }
 
                 yield return null;
             }
-            target[CrowdControl.Poison] = false;
+            target[CrowdControlType.Poison] = false;
         }
     }
 }

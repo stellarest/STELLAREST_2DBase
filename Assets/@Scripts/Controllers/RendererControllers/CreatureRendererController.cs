@@ -7,7 +7,7 @@ using DamageNumbersPro;
 
 using static STELLAREST_2D.Define;
 using STELLAREST_2D.Data;
-using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
+using CrowdControlType = STELLAREST_2D.Define.FixedValue.TemplateID.CrowdControl;
 using FaceType = STELLAREST_2D.Define.FaceType;
 //using PlayerTemplateID = STELLAREST_2D.Define.TemplateIDs.Creatures.Player;
 
@@ -87,7 +87,7 @@ namespace STELLAREST_2D
                 {
                     case FaceType.Default:
                         {
-                            if (this.OwnerAsCreature[CrowdControl.Stun])
+                            if (this.OwnerAsCreature[CrowdControlType.Stun])
                                 return;
 
                             if (this.OwnerAsCreature.IsDeadState)

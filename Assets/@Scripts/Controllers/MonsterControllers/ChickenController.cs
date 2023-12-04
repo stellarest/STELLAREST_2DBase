@@ -3,13 +3,13 @@ using DG.Tweening;
 using UnityEngine;
 
 using static STELLAREST_2D.Define;
-using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
+using CrowdControlType = STELLAREST_2D.Define.FixedValue.TemplateID.CrowdControl;
 
 namespace STELLAREST_2D
 {
     public class ChickenController : MonsterController
     {
-        public override bool this[CrowdControl crowdControlType]
+        public override bool this[CrowdControlType crowdControlType]
         {
             get => base[crowdControlType];
             set
@@ -17,9 +17,9 @@ namespace STELLAREST_2D
                 base[crowdControlType] = value;
                 switch (crowdControlType)
                 {
-                    case CrowdControl.Stun:
+                    case CrowdControlType.Stun:
                         {
-                            if (this[CrowdControl.Stun])
+                            if (this[CrowdControlType.Stun])
                             {
                                 this.SetDeadHead();
                                 this.SkillBook.DeactivateAll();
@@ -28,7 +28,7 @@ namespace STELLAREST_2D
                                 transform.DOShakePosition(FixedValue.Numeric.STANDARD_CREATURE_SHAKE_DURATION, FixedValue.Numeric.STANDARD_CREATURE_SHAKE_POWER);
                                 transform.DOShakeScale(FixedValue.Numeric.STANDARD_CREATURE_SHAKE_DURATION, FixedValue.Numeric.STANDARD_CREATURE_SHAKE_POWER);
                             }
-                            else if (this[CrowdControl.Stun] == false)
+                            else if (this[CrowdControlType.Stun] == false)
                             {
                                 this.SetDefaultHead();
                                 ReadyToAction(onStartImmediately: true); // true or false로 기믹을 줘도될것같긴한데 일단 그냥 즉시 움직이도록
@@ -36,9 +36,9 @@ namespace STELLAREST_2D
                         }
                         break;
 
-                    case CrowdControl.Slience:
+                    case CrowdControlType.Slience:
                         {
-                            if (this[CrowdControl.Slience] == false)
+                            if (this[CrowdControlType.Slience] == false)
                             {
                                 if (this.CreatureState == Define.CreatureState.Idle)
                                 {
@@ -71,7 +71,7 @@ namespace STELLAREST_2D
             if (onStartImmediately)
             {
                 IsCompleteReadyToAction = true;
-                if (this[CrowdControl.Stun]) // CHECK THIS
+                if (this[CrowdControlType.Stun]) // CHECK THIS
                     this.CreatureState = Define.CreatureState.Idle;
                 else
                     this.CreatureState = Define.CreatureState.Run;
@@ -90,7 +90,7 @@ namespace STELLAREST_2D
             }
 
             IsCompleteReadyToAction = true;
-            if (this[CrowdControl.Stun])
+            if (this[CrowdControlType.Stun])
                 this.CreatureState = Define.CreatureState.Idle;
             else
                 this.CreatureState = Define.CreatureState.Run;
@@ -126,11 +126,11 @@ namespace STELLAREST_2D
                 if (this.MainTarget != null)
                 {
                     toTargetDir = (MainTarget.Center.position - this.Center.position);
-                    if (this[CrowdControl.Stun] == false && this.LockFlip == false)
+                    if (this[CrowdControlType.Stun] == false && this.LockFlip == false)
                         Flip(toTargetDir.x > 0 ? -1 : 1);
                 }
 
-                if (this[CrowdControl.Slience])
+                if (this[CrowdControlType.Slience])
                 {
                     if (toTargetDir.sqrMagnitude > this.Stat.CollectRange * this.Stat.CollectRange)
                         this.CreatureState = Define.CreatureState.Run;

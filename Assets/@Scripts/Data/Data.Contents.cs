@@ -90,13 +90,13 @@ namespace STELLAREST_2D.Data
         public bool IsImpactPointOnTarget;
         //public Define.SkillAnimationType AnimationType;
         public Define.FixedValue.TemplateID.SkillAnimation SkillAnimationTemplateID;
-        public Define.TemplateIDs.CrowdControl CrowdControlType;
-        public float CrowdControlRatio;
+        public Define.FixedValue.TemplateID.CrowdControl CrowdControlTemplateID;
+        public float CrowdControlChance;
         public float CrowdControlDuration;
         public float CrowdControlIntensity;
-        public Define.TemplateIDs.CrowdControl ContinuousCrowdControlType;
-        public Define.FixedValue.TemplateID.VFX.ImpactHit ContinuousCC_VFX_ImpactHit_TemplateID; // 사실 필요한지 모르겠...
-        public float ContinuousCrowdControlRatio;
+        public Define.FixedValue.TemplateID.CrowdControl ContinuousCrowdControlTemplateID;
+        public Define.FixedValue.TemplateID.VFX.ImpactHit ContinuousCrowdControl_VFX_ImpactHit_TemplateID; // 사실 필요한지 모르겠...
+        public float ContinuousCrowdControlChance;
         public float ContinuousCrowdControlDuration;
         public float ContinuousCrowdControlIntensity;
         public float Cooldown;

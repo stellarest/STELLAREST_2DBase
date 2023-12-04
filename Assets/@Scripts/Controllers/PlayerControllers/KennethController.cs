@@ -18,8 +18,6 @@ namespace STELLAREST_2D
             if (Utils.IsNinja(this))
                 Managers.VFX.Muzzle(VFXMuzzleType.White, this);
         }
-
-        protected override void UpdateSkill() => PlayerAnimController.RunSkill();
     }
 }
 

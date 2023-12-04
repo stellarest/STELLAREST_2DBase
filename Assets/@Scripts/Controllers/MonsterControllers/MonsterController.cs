@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 using static STELLAREST_2D.Define;
-using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
+using CrowdControlType = STELLAREST_2D.Define.FixedValue.TemplateID.CrowdControl;
 
 namespace STELLAREST_2D
 {
@@ -94,7 +94,7 @@ namespace STELLAREST_2D
             if (this.IsCompleteReadyToAction == false)
                 return false;
 
-            if (IsIdleState || IsSkillState || IsDeadState || this[CrowdControl.Stun])
+            if (IsIdleState || IsSkillState || IsDeadState || this[CrowdControlType.Stun])
                 return false;
 
             return true;
@@ -148,7 +148,7 @@ namespace STELLAREST_2D
             this.RigidBody.MovePosition(toTargetMovement);
             if (Utils.IsArriveToTarget(this.Center, this.MainTarget.transform, minDistance))
             {
-                if (this[CrowdControl.Slience] == false)
+                if (this[CrowdControlType.Slience] == false)
                     this.CreatureState = Define.CreatureState.Skill;
                 else
                     this.CreatureState = Define.CreatureState.Idle;
@@ -224,7 +224,7 @@ namespace STELLAREST_2D
                         Flip(toTargetDir.x > 0 ? -1 : 1);
                 }
 
-                if (this[CrowdControl.Slience])
+                if (this[CrowdControlType.Slience])
                 {
                     if (toTargetDir.sqrMagnitude > this.Stat.CollectRange * this.Stat.CollectRange)
                         this.CreatureState = Define.CreatureState.Run;

@@ -30,27 +30,10 @@ namespace STELLAREST_2D
         public enum SkillAnimationType { None = -1, Attack = 101, ElitePlus = 201, C1ElitePlus = 202, UltimatePlus = 301, }
         public enum VFXMuzzleType { None = -1, White, }
         public enum VFXTrailType { None = -1, Wind, Light }
-        public enum VFXEnvType { None = -1, Spawn, Damage, Dodge, Skull, Dust, Stun, Slow, Silence, Targeted, Poison,
-                                GemGather, GemExplosion, Font_Percentage, QuestionMark, KnockBack, WindTrail, Max = 999, }
-
-        // TODO : REFACTOR
-        public static class TemplateIDs
+        public enum VFXEnvType
         {
-            public enum CrowdControl
-            {
-                None = -1,
-                Stun = 300100,
-                Slow = 300101,
-                KnockBack = 300102,
-                Slience = 300103,
-                Blind = 300104,
-                Charm = 300105,
-                Flee = 300106,
-                Sleep = 300107,
-                Targeted = 300108,
-                Poison = 300109,
-                MaxCount = 10
-            }
+            None = -1, Spawn, Damage, Dodge, Skull, Dust, Stun, Slow, Silence, Targeted, Poison,
+            GemGather, GemExplosion, Font_Percentage, QuestionMark, KnockBack, WindTrail, Max = 999,
         }
 
         #region Public Fixed Value
@@ -149,6 +132,7 @@ namespace STELLAREST_2D
                 public const string ANIM_PARAM_CREATURE_ENTER_NEXT_STATE_TRIGGER = "EnterNextState";
                 public const string ANIM_PARAM_CREATURE_ENTER_NEXT_STATE_BOOLEAN = "CanEnterNextState";
 
+                // PlayerAnimationController, Player(Childs)AnimationController
                 public const string ANIM_PARAM_PLAYER_READY_MELEE_1H = "ReadyMelee1H";
                 public const string ANIM_PARAM_PLAYER_READY_MELEE_2H = "ReadyMelee2H";
                 public const string ANIM_PARAM_PLAYER_READY_BOW = "ReadyBow";
@@ -164,13 +148,16 @@ namespace STELLAREST_2D
                 public const string ANIM_PARAM_PLAYER_SHIELD = "Shield";
                 public const string ANIM_PARAM_PLAYER_SECOND_WIND = "SecondWind";
                 public const string ANIM_PARAM_PLAYER_PHANTOM_SOUL = "PhantomSoul";
+
                 public const string ANIM_PARAM_PLAYER_CONCENTRATION = "Concentration";
                 public const string ANIM_PARAM_PLAYER_ELEMENTAL_SHOCK = "ElementalShock";
                 public const string ANIM_PARAM_PLAYER_FOREST_BARRIER = "ForestBarrier";
+
                 public const string ANIM_PARAM_PLAYER_POISON_DAGGER = "PoisonDagger";
                 public const string ANIM_PARAM_PLAYER_CLOAK = "Cloak";
                 public const string ANIM_PARAM_PLAYER_NINJA_SLASH = "NinjaSlash";
-                
+
+                // MonsterAnimationController
                 public const string ANIM_PARAM_MONSTER_ATTACK = "Attack";
             }
 
@@ -290,6 +277,22 @@ namespace STELLAREST_2D
                     MasteryElitePlus_C1 = 1002,
                     MasteryUltimatePlus = 1003,
                     Max = 999
+                }
+
+                public enum CrowdControl
+                {
+                    None = -1,
+                    Stun = 300100,
+                    Slow = 300101,
+                    KnockBack = 300102,
+                    Slience = 300103,
+                    Blind = 300104,
+                    Charm = 300105,
+                    Flee = 300106,
+                    Sleep = 300107,
+                    Targeted = 300108,
+                    Poison = 300109,
+                    MaxCount = 10
                 }
 
                 public static class VFX

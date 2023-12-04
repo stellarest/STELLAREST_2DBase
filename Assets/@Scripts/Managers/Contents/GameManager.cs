@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 using static STELLAREST_2D.Define;
-using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
+using CrowdControlType = STELLAREST_2D.Define.FixedValue.TemplateID.CrowdControl;
 
 namespace STELLAREST_2D
 {
@@ -58,7 +58,7 @@ namespace STELLAREST_2D
             bool isCritical = false;
             float dmgSkill = UnityEngine.Random.Range(from.Data.MinDamage, from.Data.MaxDamage);
             float dmgResult = dmgSkill + (dmgSkill * attacker.Stat.DamageUpRate);
-            if (UnityEngine.Random.Range(0f, 1f) <= attacker.Stat.CriticalChance || target[CrowdControl.Targeted])
+            if (UnityEngine.Random.Range(0f, 1f) <= attacker.Stat.CriticalChance || target[CrowdControlType.Targeted])
             {
                 isCritical = true;
                 float criticalRatio = UnityEngine.Random.Range(MIN_CRITICAL_RATIO, MAX_CRITICAL_RATIO);
@@ -69,7 +69,7 @@ namespace STELLAREST_2D
             return (dmgResult, isCritical);
         }
 
-        public bool TryCrowdControl(SkillBase from) => UnityEngine.Random.Range(0f, 1f) <= from.Data.CrowdControlRatio;
+        public bool TryCrowdControl(SkillBase from) => UnityEngine.Random.Range(0f, 1f) <= from.Data.CrowdControlChance;
         public bool TryCrowdControl(float ratio) => UnityEngine.Random.Range(0f, 1f) <= ratio;
 
         private int _gem = 0;

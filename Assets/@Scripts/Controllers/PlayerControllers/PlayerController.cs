@@ -7,7 +7,7 @@ using System.Diagnostics;
 using Debug = UnityEngine.Debug;
 
 using static STELLAREST_2D.Define;
-using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
+using CrowdControlType = STELLAREST_2D.Define.FixedValue.TemplateID.CrowdControl;
 
 namespace STELLAREST_2D
 {
@@ -57,7 +57,7 @@ namespace STELLAREST_2D
         [field: SerializeField] public PlayerBodyParts BodyParts { get; protected set; } = null;
         public PlayerAnimationController PlayerAnimController { get; private set; } = null;
 
-        public override bool this[CrowdControl crowdControlType]
+        public override bool this[CrowdControlType crowdControlType]
         {
             get => base[crowdControlType];
             set
@@ -65,7 +65,7 @@ namespace STELLAREST_2D
                 base[crowdControlType] = value;
                 switch (crowdControlType)
                 {
-                    case CrowdControl.Stun:
+                    case CrowdControlType.Stun:
                         {
                             if (base[crowdControlType])
                             {
@@ -205,7 +205,7 @@ namespace STELLAREST_2D
             if (this.IsDeadState)
                 return;
 
-            if (this[CrowdControl.Stun])
+            if (this[CrowdControlType.Stun])
                 return;
 
             this.MoveDir = moveDir;
@@ -329,7 +329,7 @@ namespace STELLAREST_2D
         private void MoveByJoystick()
         {
             Vector3 dir = MoveDir.normalized * (Stat.MovementSpeed * this.SpeedModifier) * Time.deltaTime;
-            if (this[CrowdControl.KnockBack] == false)
+            if (this[CrowdControlType.KnockBack] == false)
                 transform.position += dir;
 
             if (IsMoving)

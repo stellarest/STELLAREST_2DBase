@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using static STELLAREST_2D.Define;
-using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
+using CrowdControlType = STELLAREST_2D.Define.FixedValue.TemplateID.CrowdControl;
 using STELLAREST_2D.Data;
 
 namespace STELLAREST_2D
@@ -52,7 +52,7 @@ namespace STELLAREST_2D
         
         private const int FIRST_CROWD_CONTROL_ID = 300100;
         [SerializeField] private CrowdControlState[] _ccStates = null;
-        public virtual bool this[CrowdControl crowdControlType]
+        public virtual bool this[CrowdControlType crowdControlType]
         {
             get => _ccStates[(int)crowdControlType % FIRST_CROWD_CONTROL_ID].IsOn;
             set => _ccStates[(int)crowdControlType % FIRST_CROWD_CONTROL_ID].IsOn = value;
@@ -149,9 +149,9 @@ namespace STELLAREST_2D
 
         private void InitCrowdControlStates()
         {
-            CrowdControl ccState = CrowdControl.Stun;
-            _ccStates = new CrowdControlState[(int)CrowdControl.MaxCount];
-            for (int i = 0; i < (int)CrowdControl.MaxCount; ++i, ++ccState)
+            CrowdControlType ccState = CrowdControlType.Stun;
+            _ccStates = new CrowdControlState[(int)CrowdControlType.MaxCount];
+            for (int i = 0; i < (int)CrowdControlType.MaxCount; ++i, ++ccState)
             {
                 _ccStates[i] = new CrowdControlState();
                 _ccStates[i].Tag = ccState.ToString();
@@ -332,7 +332,7 @@ namespace STELLAREST_2D
             }
         }
 
-        public void OnFixedDamaged(float fixedDamage, CrowdControl vfxForDamage = CrowdControl.None)
+        public void OnFixedDamaged(float fixedDamage, CrowdControlType vfxForDamage = CrowdControlType.None)
         {
             if (this.IsValid() == false || this.IsDeadState)
                 return;
@@ -343,10 +343,10 @@ namespace STELLAREST_2D
             
             switch (vfxForDamage)
             {
-                case CrowdControl.None:
+                case CrowdControlType.None:
                     return;
 
-                case CrowdControl.Poison:
+                case CrowdControlType.Poison:
                 {
                     Managers.VFX.PoisonDamage(this, fixedDamage);
                     break;
@@ -435,13 +435,13 @@ namespace STELLAREST_2D
         {
             // TryContinuousCrowControl
             // 연속된 CC기 이므로, 이전 CC기가 걸려야 다음 CC기가 걸릴지 여부를 판단
-            CrowdControl ccType = from.Data.CrowdControlType;
+            CrowdControlType ccType = from.Data.CrowdControlTemplateID;
             switch (ccType)
             {
-                case CrowdControl.None:
+                case CrowdControlType.None:
                     return;
 
-                case CrowdControl.Stun:
+                case CrowdControlType.Stun:
                     {
                         if (this[ccType] == false)
                         {
@@ -453,7 +453,7 @@ namespace STELLAREST_2D
                     }
                     break;
 
-                case CrowdControl.Slow:
+                case CrowdControlType.Slow:
                     {
                         if (this[ccType] == false)
                         {
@@ -465,7 +465,7 @@ namespace STELLAREST_2D
                     }
                     break;
 
-                case CrowdControl.KnockBack:
+                case CrowdControlType.KnockBack:
                     {
                         if (this[ccType] == false)
                         {
@@ -477,7 +477,7 @@ namespace STELLAREST_2D
                     }
                     break;
 
-                case CrowdControl.Slience:
+                case CrowdControlType.Slience:
                     {
                         if (this[ccType] == false)
                         {
@@ -489,7 +489,7 @@ namespace STELLAREST_2D
                     }
                     break;
 
-                case CrowdControl.Targeted:
+                case CrowdControlType.Targeted:
                     {
                         if (this[ccType] == false)
                         {
@@ -501,7 +501,7 @@ namespace STELLAREST_2D
                     }
                     break;
 
-                case CrowdControl.Poison:
+                case CrowdControlType.Poison:
                     {
                         if (this[ccType] == false)
                         {
@@ -518,20 +518,20 @@ namespace STELLAREST_2D
 
         private void TryContinuousCrowControl(CreatureController target, SkillBase from)
         {
-            if (Managers.Game.TryCrowdControl(from.Data.ContinuousCrowdControlRatio) == false)
+            if (Managers.Game.TryCrowdControl(from.Data.ContinuousCrowdControlChance) == false)
                 return;
 
-            CrowdControl continuousCCType = from.Data.ContinuousCrowdControlType;
+            CrowdControlType continuousCCType = from.Data.ContinuousCrowdControlTemplateID;
             switch (continuousCCType)
             {
-                case CrowdControl.None:
+                case CrowdControlType.None:
                     return;
 
-                case CrowdControl.Stun:
+                case CrowdControlType.Stun:
                     {
                         if (this[continuousCCType] == false)
                         {
-                            Managers.VFX.ImpactHit(from.Data.ContinuousCC_VFX_ImpactHit_TemplateID, target, from);
+                            Managers.VFX.ImpactHit(from.Data.ContinuousCrowdControl_VFX_ImpactHit_TemplateID, target, from);
                             StartCoroutine(Managers.CrowdControl.CoStun(this, from, true));
                         }
                         else
@@ -539,11 +539,11 @@ namespace STELLAREST_2D
                     }
                     break;
 
-                case CrowdControl.Slow:
+                case CrowdControlType.Slow:
                     {
                         if (this[continuousCCType] == false)
                         {
-                            Managers.VFX.ImpactHit(from.Data.ContinuousCC_VFX_ImpactHit_TemplateID, target, from);
+                            Managers.VFX.ImpactHit(from.Data.ContinuousCrowdControl_VFX_ImpactHit_TemplateID, target, from);
                             StartCoroutine(Managers.CrowdControl.CoSlow(this, from, true));
                         }
                         else
@@ -551,11 +551,11 @@ namespace STELLAREST_2D
                     }
                     break;
 
-                case CrowdControl.KnockBack:
+                case CrowdControlType.KnockBack:
                     {
                         if (this[continuousCCType] == false)
                         {
-                            Managers.VFX.ImpactHit(from.Data.ContinuousCC_VFX_ImpactHit_TemplateID, target, from);
+                            Managers.VFX.ImpactHit(from.Data.ContinuousCrowdControl_VFX_ImpactHit_TemplateID, target, from);
                             StartCoroutine(Managers.CrowdControl.CoKnockBack(this, from, true));
                         }
                         else
@@ -563,11 +563,11 @@ namespace STELLAREST_2D
                     }
                     break;
 
-                case CrowdControl.Slience:
+                case CrowdControlType.Slience:
                     {
                         if (this[continuousCCType] == false)
                         {
-                            Managers.VFX.ImpactHit(from.Data.ContinuousCC_VFX_ImpactHit_TemplateID, target, from);
+                            Managers.VFX.ImpactHit(from.Data.ContinuousCrowdControl_VFX_ImpactHit_TemplateID, target, from);
                             StartCoroutine(Managers.CrowdControl.CoSilence(this, from, true));
                         }
                         else
@@ -575,11 +575,11 @@ namespace STELLAREST_2D
                     }
                     break;
 
-                case CrowdControl.Targeted:
+                case CrowdControlType.Targeted:
                     {
                         if (this[continuousCCType] == false)
                         {
-                            Managers.VFX.ImpactHit(from.Data.ContinuousCC_VFX_ImpactHit_TemplateID, target, from);
+                            Managers.VFX.ImpactHit(from.Data.ContinuousCrowdControl_VFX_ImpactHit_TemplateID, target, from);
                             StartCoroutine(Managers.CrowdControl.CoTargeted(this, from, true));
                         }
                         else
@@ -587,11 +587,11 @@ namespace STELLAREST_2D
                     }
                     break;
 
-                case CrowdControl.Poison:
+                case CrowdControlType.Poison:
                     {
                         if (this[continuousCCType] == false)
                         {
-                            Managers.VFX.ImpactHit(from.Data.ContinuousCC_VFX_ImpactHit_TemplateID, target, from);
+                            Managers.VFX.ImpactHit(from.Data.ContinuousCrowdControl_VFX_ImpactHit_TemplateID, target, from);
                             StartCoroutine(Managers.CrowdControl.CoPoisoning(this, from, true));
                         }
                         else
