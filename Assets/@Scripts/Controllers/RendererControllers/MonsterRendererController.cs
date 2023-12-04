@@ -8,7 +8,9 @@ using FaceType = STELLAREST_2D.Define.FaceType;
 namespace STELLAREST_2D
 {
     /*
-        +++ YOU HAVE TO CHANGE OBJECT NAME (HEAD -> EYES) IN ADVANCE +++
+        +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        +++ Check Eye Object in Hierarchy (HEAD -> EYES) IN ADVANCE +++
+        +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     */
     public class MonsterRendererController : CreatureRendererController
     {

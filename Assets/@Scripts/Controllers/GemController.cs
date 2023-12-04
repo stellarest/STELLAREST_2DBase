@@ -1,9 +1,9 @@
 using System.Collections;
+using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 
 using static STELLAREST_2D.Define;
-using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
 
 namespace STELLAREST_2D
 {
@@ -57,8 +57,7 @@ namespace STELLAREST_2D
         private Coroutine _coMoveToPlayer = null;
         public void GetGem()
         {
-            //Managers.Effect.ShowGemGather(this);
-            Managers.VFX.Environment(VFXEnv.GemGather, this.transform.position);
+            Managers.VFX.Environment(VFXEnvType.GemGather, this.transform.position);
             Managers.Object.GridController.Remove(this.ObjectType, gameObject);
             if (this.IsValid() && _coMoveToPlayer == null)
             {
@@ -108,7 +107,7 @@ namespace STELLAREST_2D
                     //Managers.Effect.ShowGemExplosion(this);
                     //Managers.VFX.Environment(VFXEnv.GemExplosion, this.transform.position);
                     Managers.Game.Gem += (int)this.GemSize;
-                    Managers.VFX.Environment(VFXEnv.GemExplosion, Managers.Game.Player.Center.position);
+                    Managers.VFX.Environment(VFXEnvType.GemExplosion, Managers.Game.Player.Center.position);
                     Managers.Object.Despawn(this);
                     yield break;
                 }

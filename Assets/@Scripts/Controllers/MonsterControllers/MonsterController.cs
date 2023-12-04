@@ -4,9 +4,8 @@ using STELLAREST_2D.UI;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
+using static STELLAREST_2D.Define;
 using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
-using UnityEngine.VFX;
 
 namespace STELLAREST_2D
 {
@@ -23,14 +22,14 @@ namespace STELLAREST_2D
             set
             {
                 base.SpeedModifier = value;
-                MonsterAnimController.SetAnimationSpeed(base.SpeedModifier);
+                //MonsterAnimController.SetAnimationSpeed(base.SpeedModifier);
             }
         }
 
         public override void ResetSpeedModifier()
         {
             base.ResetSpeedModifier();
-            MonsterAnimController.SetAnimationSpeed(base.SpeedModifier);
+            //MonsterAnimController.SetAnimationSpeed(base.SpeedModifier);
         }
 
         [SerializeField] private Sprite _defaultHead = null;
@@ -50,7 +49,7 @@ namespace STELLAREST_2D
             {
                 base.Init(templateID);
                 LateInit();
-                MonsterAnimController = AnimController as MonsterAnimationController;
+                MonsterAnimController = CreatureAnimController as MonsterAnimationController;
                 Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.MonsterBody);
                 
                 Managers.Game.OnPlayerIsDead += OnPlayerIsDeadHandler;
@@ -68,9 +67,9 @@ namespace STELLAREST_2D
             EnterInGame(templateID);
         }
 
-        protected override void InitChildObject(int templateID)
+        protected override void InitChild(int templateID)
         {
-            base.InitChildObject(templateID);
+            base.InitChild(templateID);
             Center = Utils.FindChild<Transform>(AnimTransform.gameObject, "Body", true);
         }
 
@@ -80,7 +79,7 @@ namespace STELLAREST_2D
             
             InitCreatureStat(templateID);
             ClearCrowdControlStates();
-            ClearHitFroms();
+            ClearHitFrom();
 
             IsCompleteReadyToAction = false;
             ReadyToAction(false);
@@ -176,36 +175,42 @@ namespace STELLAREST_2D
             }
         }
 
-        public override void UpdateAnimation()
+        protected override void UpdateAnimation()
         {
             switch (CreatureState)
             {
-                case Define.CreatureState.Idle:
+                case CreatureState.Idle:
                     UpdateIdle();
-                    //MonsterAnimController.Idle();
-                    // if (_coIdleTick != null)
-                    //     StopCoroutine(_coIdleTick);
-                    // _coIdleTick = StartCoroutine(CoIdleTick());
                     break;
 
-                case Define.CreatureState.Run:
+                case CreatureState.Run:
                     StopIdleTick();
                     UpdateRun();
                     break;
 
-                case Define.CreatureState.Skill:
+                case CreatureState.Skill:
                     StopIdleTick();
                     UpdateSkill();
                     break;
 
-                case Define.CreatureState.Dead:
+                case CreatureState.Dead:
                     StopIdleTick();
                     OnDead();
                     break;
             }
         }
 
-        protected override IEnumerator CoIdleTick()
+        protected Coroutine _coIdleTick = null;
+        //private IEnumerator CoIdleTick() { yield return null; }
+        protected void StopIdleTick()
+        {
+            if (_coIdleTick != null)
+                StopCoroutine(_coIdleTick);
+
+            _coIdleTick = null;
+        }
+
+        protected virtual IEnumerator CoIdleTick()
         {
             MonsterAnimController.Idle();
             //RendererController.MonsterHead.sprite = this.DefaultHead;
@@ -259,7 +264,7 @@ namespace STELLAREST_2D
             }
         }
 
-        public void OnVFXEnvTargetHandler(VFXEnv vfxEnvType) => Managers.VFX.Environment(vfxEnvType, this);
+        public void OnVFXEnvTargetHandler(VFXEnvType vfxEnvType) => Managers.VFX.Environment(vfxEnvType, this);
 
         public override void OnDamaged(CreatureController attacker, SkillBase from)
         {
@@ -292,7 +297,7 @@ namespace STELLAREST_2D
 
             //StartCoroutine(CoDespawn());
             StartCoroutine(Managers.VFX.CoMatFadeOut(this, 
-                        startCallback: () => Managers.VFX.Environment(VFXEnv.Skull, this), 
+                        startCallback: () => Managers.VFX.Environment(VFXEnvType.Skull, this), 
                         endCallback: () => Managers.Object.Despawn(this)));
         }
 

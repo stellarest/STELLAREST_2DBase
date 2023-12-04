@@ -2,12 +2,11 @@ using System;
 using System.Collections;
 using Assets.HeroEditor.Common.Scripts.Common;
 using STELLAREST_2D.Data;
-using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 
-using VFXImpact = STELLAREST_2D.Define.TemplateIDs.VFX.ImpactHit;
-using VFXTrail = STELLAREST_2D.Define.TemplateIDs.VFX.Trail;
+using static STELLAREST_2D.Define;
+//using VFXTrail = STELLAREST_2D.Define.TemplateIDs.VFX.Trail;
 
 namespace STELLAREST_2D
 {
@@ -103,8 +102,9 @@ namespace STELLAREST_2D
 
         protected override void DoSkillJob(System.Action callback = null)
         {
-            Owner.ReserveSkillAnimationType(this.Data.AnimationType);
-            Owner.CreatureState = Define.CreatureState.Skill;
+            this.Owner.CreatureSkillAnimType = this.Data.SkillAnimationTemplateID;
+            this.Owner.CreatureState = CreatureState.Skill;
+            callback?.Invoke();
         }
 
         public override void OnActiveMasteryActionHandler()
@@ -127,7 +127,7 @@ namespace STELLAREST_2D
             }
 
             if (TrailSocket != null)
-                Managers.VFX.Trail(VFXTrail.Wind, this, this.Owner);
+                Managers.VFX.Trail(VFXTrailType.Wind, this, this.Owner);
         }
 
         private void LaunchForestGuardianMastery()
@@ -137,7 +137,7 @@ namespace STELLAREST_2D
                 _goChild.SetActive(false);
 
             if (TrailSocket != null)
-                _trail = Managers.VFX.Trail(VFXTrail.Light, this, this.Owner);
+                _trail = Managers.VFX.Trail(VFXTrailType.Light, this, this.Owner);
         }
 
         private void LaunchNinjaMasteryUltimate()
@@ -199,7 +199,9 @@ namespace STELLAREST_2D
 
                         // 400103
                         // Managers.VFX.ImpactHit(Define.Im)
-                        GameObject goImpactHit = Managers.VFX.ImpactHit(VFXImpact.SmokePuff, cc, this);
+                        // *** 
+                        //GameObject goImpactHit = Managers.VFX.ImpactHit(FixedValue.TemplateID.VFX.ImpactHit.SmokePuff, cc, this);
+                        GameObject goImpactHit = Managers.VFX.ImpactHit(this.Data.VFX_ImpactHit_TemplateID, cc, this);
                         goImpactHit.transform.localScale = Vector3.one * 5.5f;
 
                         Vector3 firstHitPos = this.transform.position;

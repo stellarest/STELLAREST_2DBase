@@ -2,8 +2,8 @@ using System.Collections;
 using DG.Tweening;
 using UnityEngine;
 
+using static STELLAREST_2D.Define;
 using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
-using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
 
 namespace STELLAREST_2D
 {
@@ -30,7 +30,7 @@ namespace STELLAREST_2D
             else
                 duration = from.Data.ContinuousCrowdControlDuration;
 
-            GameObject goVFX = Managers.VFX.Environment(VFXEnv.Stun, target);
+            GameObject goVFX = Managers.VFX.Environment(VFXEnvType.Stun, target);
             target[CrowdControl.Stun] = true;
             while (percent < 1f)
             {
@@ -41,7 +41,7 @@ namespace STELLAREST_2D
                     yield break;
                 }
 
-                goVFX.transform.position = target.LoadVFXEnvSpawnPos(VFXEnv.Stun);
+                goVFX.transform.position = target.LoadVFXEnvSpawnPos(VFXEnvType.Stun);
                 delta += Time.deltaTime;
                 percent = delta / duration;
                 yield return null;
@@ -66,7 +66,7 @@ namespace STELLAREST_2D
                 target.SpeedModifier *= from.Data.ContinuousCrowdControlIntensity;
             }
 
-            GameObject goVFX = Managers.VFX.Environment(VFXEnv.Slow, target);
+            GameObject goVFX = Managers.VFX.Environment(VFXEnvType.Slow, target);
             target[CrowdControl.Slow] = true;
             while (percent < 1f)
             {
@@ -78,7 +78,7 @@ namespace STELLAREST_2D
                     yield break;
                 }
 
-                goVFX.transform.position = target.LoadVFXEnvSpawnPos(VFXEnv.Slow);
+                goVFX.transform.position = target.LoadVFXEnvSpawnPos(VFXEnvType.Slow);
                 delta += Time.deltaTime;
                 percent = delta / duration;
                 yield return null;
@@ -111,7 +111,7 @@ namespace STELLAREST_2D
                     if (percent > dustGenPercentage)
                     {
                         dustGenPercentage += GENERATE_VFX_DUST_INTERVAL_TO_PLAYER;
-                        Managers.VFX.Environment(VFXEnv.Dust, target);
+                        Managers.VFX.Environment(VFXEnvType.Dust, target);
                     }
                 }
 
@@ -135,7 +135,7 @@ namespace STELLAREST_2D
                 duration = from.Data.ContinuousCrowdControlDuration;
 
             target.SkillBook.DeactivateAll();
-            GameObject goVFX = Managers.VFX.Environment(VFXEnv.Silence, target);
+            GameObject goVFX = Managers.VFX.Environment(VFXEnvType.Silence, target);
             target[CrowdControl.Slience] = true;
             while (percent < 1f)
             {
@@ -146,7 +146,7 @@ namespace STELLAREST_2D
                     yield break;
                 }
 
-                goVFX.transform.position = target.LoadVFXEnvSpawnPos(VFXEnv.Silence);
+                goVFX.transform.position = target.LoadVFXEnvSpawnPos(VFXEnvType.Silence);
                 delta += Time.deltaTime;
                 percent = delta / duration;
                 yield return null;
@@ -161,7 +161,7 @@ namespace STELLAREST_2D
         {
             Vector3 initScale = Vector3.one;
             Quaternion initRot = Quaternion.identity;
-            GameObject goVFX = Managers.VFX.Environment(VFXEnv.Targeted, target);
+            GameObject goVFX = Managers.VFX.Environment(VFXEnvType.Targeted, target);
             goVFX.transform.DORotate(new Vector3(0f, 0f, 360f), 1.5f, RotateMode.FastBeyond360).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo);
             goVFX.transform.DOScale(Vector3.one * 2.5f, 1f).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo);
 
@@ -179,7 +179,7 @@ namespace STELLAREST_2D
                     return true;
                 }
 
-                goVFX.transform.position = target.LoadVFXEnvSpawnPos(VFXEnv.Targeted);
+                goVFX.transform.position = target.LoadVFXEnvSpawnPos(VFXEnvType.Targeted);
                 return from.IsStopped;
             });
 

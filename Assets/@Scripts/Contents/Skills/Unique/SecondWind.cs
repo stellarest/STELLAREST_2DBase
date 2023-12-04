@@ -64,8 +64,9 @@ namespace STELLAREST_2D
         {
             this.Owner.RendererController.OnFaceCombatHandler();
             this.Owner.SkillBook.Deactivate(FixedValue.TemplateID.Skill.KnightMastery);
-            this.Owner.ReserveSkillAnimationType(this.Data.AnimationType);
-            Owner.CreatureState = Define.CreatureState.Skill;
+
+            this.Owner.CreatureSkillAnimType = this.Data.SkillAnimationTemplateID;
+            this.Owner.CreatureState = CreatureState.Skill;
             
             EnableParticles(_onGroup, true);
             StartCoroutine(CoOnSecondWind());
@@ -118,15 +119,17 @@ namespace STELLAREST_2D
         {
             // TODO 1
             // this.Owner.Stat.AddArmorRatio(Define.MAX_ARMOR_RATE);
-
-            KnightAnimationController anim = this.Owner.AnimController.GetComponent<KnightAnimationController>();
+            KnightAnimationController anim = this.Owner.CreatureAnimController.GetComponent<KnightAnimationController>();
             anim.EnterNextState();
+
+            //this.Owner.CreatureAnimController.EnterNextState();
             yield return new WaitForSeconds(1f);
             anim.Ready();
 
             EnableParticles(_lastBuffs, true);
-            this.Owner.ReserveSkillAnimationType(Define.SkillAnimationType.Attack);
-            this.Owner.CreatureState = Define.CreatureState.Skill;
+
+            // this.Owner.ReserveSkillAnimationType(Define.SkillAnimationType.Attack);
+            // this.Owner.CreatureState = Define.CreatureState.Skill;
             this.Owner.SkillBook.Activate(FixedValue.TemplateID.Skill.KnightMastery);
 
             yield return new WaitForSeconds(FIXED_LAST_BUFF_TIME);

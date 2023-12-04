@@ -8,30 +8,13 @@ namespace STELLAREST_2D
 {
     public class ForestGuardianAnimationController : PlayerAnimationController
     {
-        private readonly int UPPER_READY = Animator.StringToHash("ReadyBow");
-        private readonly int UPPER_ATTACK = Animator.StringToHash("RangedShot");
-        private readonly int UPPER_ELITE_SEQUENCE = Animator.StringToHash("UseForestBarrier");
-
-        public override void Init(CreatureController owner) => base.Init(owner);
-        public override void Ready() => AnimController.Play(UPPER_READY);
-        public override void RunSkill()
+        public override void Init(CreatureController owner)
         {
-            switch (this.Owner.SkillAnimationType)
-            {
-                case SkillAnimationType.Attack:
-                    AnimController.Play(UPPER_ATTACK);
-                    break;
-
-                case SkillAnimationType.ElitePlus:
-                    {
-                        AnimController.StopPlayback();
-                        AnimController.Play(UPPER_ELITE_SEQUENCE);
-                    }
-                    break;
-
-                case SkillAnimationType.UltimatePlus:
-                    break;
-            }
+            base.Init(owner);
+            this.UPPER_READY = Animator.StringToHash(FixedValue.Find.ANIM_PARAM_PLAYER_READY_BOW);
+            this.UPPER_ATTACK = Animator.StringToHash(FixedValue.Find.ANIM_PARAM_PLAYER_RANGED_ARROW_SHOT);
+            this.UPPER_MASTERY_ELITE_PLUS = Animator.StringToHash(FixedValue.Find.ANIM_PARAM_PLAYER_FOREST_BARRIER);
+            this.UPPER_MASTERY_ULTIMATE_PLUS = Animator.StringToHash("");
         }
     }
 }

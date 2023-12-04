@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-using VFXMuzzle = STELLAREST_2D.Define.TemplateIDs.VFX.Muzzle;
+using static STELLAREST_2D.Define;
 
 namespace STELLAREST_2D
 {
@@ -16,7 +16,7 @@ namespace STELLAREST_2D
         public override void ShowMuzzle()
         {
             if (Utils.IsNinja(this))
-                Managers.VFX.Muzzle(VFXMuzzle.Bow, this);
+                Managers.VFX.Muzzle(VFXMuzzleType.White, this);
         }
 
         protected override void UpdateSkill() => PlayerAnimController.RunSkill();

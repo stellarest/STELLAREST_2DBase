@@ -8,52 +8,50 @@ namespace STELLAREST_2D
 {
     public class NinjaAnimationController : PlayerAnimationController
     {
-        private readonly int UPPER_READY = Animator.StringToHash("ReadyMelee1H");
-        private readonly int UPPER_ATTACK = Animator.StringToHash("ThrowKunai");
-        private readonly int UPPER_ATTACK_ELITE = Animator.StringToHash("ThrowKunai_Elite");
-        private readonly int UPPER_ATTACK_ULTIMATE = Animator.StringToHash("ThrowKunai_Ultimate");
+        private readonly int UPPER_ATTACK_ELITE = Animator.StringToHash(FixedValue.Find.ANIM_PARAM_PLAYER_THROW_KUNAI_ELITE);
+        private readonly int UPPER_ATTACK_ULTIMATE = Animator.StringToHash(FixedValue.Find.ANIM_PARAM_PLAYER_THROW_KUNAI_ULTIMATE);
+        private readonly int UPPER_MASTERY_ELITE_PLUS_C1 = Animator.StringToHash(FixedValue.Find.ANIM_PARAM_PLAYER_NINJA_SLASH);
+        private readonly int LOWER_PLAYER_NINJA_RUN = Animator.StringToHash(FixedValue.Find.ANIM_PARAM_PLAYER_NINJA_RUN);
         
-        private readonly int UPPER_ELITE_ACTION = Animator.StringToHash("UseCloak");
-        private readonly int UPPER_CONTINUOUS_ELITE_ACTION = Animator.StringToHash("NinjaSlash");
-        private readonly int LOWER_NINJA_RUN = Animator.StringToHash("NinjaRun");
         public override void Init(CreatureController owner)
         {
             base.Init(owner);
+            this.UPPER_READY = Animator.StringToHash(FixedValue.Find.ANIM_PARAM_PLAYER_READY_MELEE_1H);
+            this.UPPER_ATTACK = Animator.StringToHash(FixedValue.Find.ANIM_PARAM_PLAYER_THROW_KUNAI);
+            this.UPPER_MASTERY_ELITE_PLUS = Animator.StringToHash(FixedValue.Find.ANIM_PARAM_PLAYER_CLOAK);
+            this.UPPER_MASTERY_ULTIMATE_PLUS = Animator.StringToHash("");
+
             SetMovementSpeed(2f);
         }
 
-        public override void Run() => AnimController.Play(LOWER_NINJA_RUN);
-        public override void Ready() => AnimController.Play(UPPER_READY);
-        public override void RunSkill()
+        public override void Run() => CreatureAnimator.Play(LOWER_PLAYER_NINJA_RUN);
+
+        public override void Skill(FixedValue.TemplateID.SkillAnimation skillAnimType = FixedValue.TemplateID.SkillAnimation.None)
         {
-            switch (this.Owner.SkillAnimationType)
+            switch (skillAnimType)
             {
-                case SkillAnimationType.Attack:
+                case FixedValue.TemplateID.SkillAnimation.MasteryAttack:
                     {
-                        if (this.Owner.SkillBook.GetCurrentSkillGrade(FixedValue.TemplateID.Skill.NinjaMastery) == InGameGrade.Default)
-                            AnimController.Play(UPPER_ATTACK);
+                        if (this.Owner.SkillBook.GetCurrentSkillGrade(FixedValue.TemplateID.Skill.AssassinMastery) < InGameGrade.Ultimate)
+                            CreatureAnimator.Play(UPPER_ATTACK);
                         else if (this.Owner.SkillBook.GetCurrentSkillGrade(FixedValue.TemplateID.Skill.NinjaMastery) == InGameGrade.Elite)
-                            AnimController.Play(UPPER_ATTACK_ELITE);
+                            CreatureAnimator.Play(UPPER_ATTACK_ELITE);
                         else
-                            AnimController.Play(UPPER_ATTACK_ULTIMATE);
+                            CreatureAnimator.Play(UPPER_ATTACK_ULTIMATE);
                     }
                     break;
 
-                case SkillAnimationType.ElitePlus:
-                    {
-                        AnimController.StopPlayback();
-                        AnimController.Play(UPPER_ELITE_ACTION);
-                    }
+                case FixedValue.TemplateID.SkillAnimation.MasteryElitePlus:
+                    CreatureAnimator.StopPlayback();
+                    CreatureAnimator.Play(UPPER_MASTERY_ELITE_PLUS);
                     break;
 
-                case SkillAnimationType.C1ElitePlus:
-                    {
-                        AnimController.StopPlayback();
-                        AnimController.Play(UPPER_CONTINUOUS_ELITE_ACTION);
-                    }
+                case FixedValue.TemplateID.SkillAnimation.MasteryElitePlus_C1:
+                    CreatureAnimator.StopPlayback();
+                    CreatureAnimator.Play(UPPER_MASTERY_ELITE_PLUS_C1);
                     break;
 
-                case SkillAnimationType.UltimatePlus:
+                case FixedValue.TemplateID.SkillAnimation.MasteryUltimatePlus:
                     break;
             }
         }

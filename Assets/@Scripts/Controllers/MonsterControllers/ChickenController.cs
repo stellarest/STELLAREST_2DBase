@@ -3,7 +3,6 @@ using DG.Tweening;
 using UnityEngine;
 
 using static STELLAREST_2D.Define;
-using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
 using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
 
 namespace STELLAREST_2D
@@ -141,11 +140,7 @@ namespace STELLAREST_2D
             }
         }
 
-        protected override void UpdateRun()
-        {
-            MonsterAnimController.Run();
-        }
-
+        protected override void UpdateRun() => MonsterAnimController.Run();
         protected override void UpdateSkill()
         {
             if (this.SkillBook != null)
@@ -155,58 +150,58 @@ namespace STELLAREST_2D
             }
         }
 
-        public override Vector3 LoadVFXEnvSpawnScale(VFXEnv templateOrigin)
+        public override Vector3 LoadVFXEnvSpawnScale(VFXEnvType vfxEnvType)
         {
-            switch (templateOrigin)
+            switch (vfxEnvType)
             {
-                case VFXEnv.Skull:
+                case VFXEnvType.Skull:
                     return Vector3.one * 2f;
 
-                case VFXEnv.Stun:
+                case VFXEnvType.Stun:
                     return Vector3.one * 2.5f;
 
-                case VFXEnv.Slow:
+                case VFXEnvType.Slow:
                     return new Vector3(1.85f, 1f, 1f);
 
-                case VFXEnv.QuestionMark:
+                case VFXEnvType.QuestionMark:
                     return Vector3.one * 2.5f;
 
                 default:
-                    return base.LoadVFXEnvSpawnScale(templateOrigin);
+                    return base.LoadVFXEnvSpawnScale(vfxEnvType);
             }
         }
 
-        public override Vector3 LoadVFXEnvSpawnPos(VFXEnv templateOrigin)
+        public override Vector3 LoadVFXEnvSpawnPos(VFXEnvType vfxEnvType)
         {
-            switch (templateOrigin)
+            switch (vfxEnvType)
             {
-                case VFXEnv.Spawn:
+                case VFXEnvType.Spawn:
                     return (transform.position + (Vector3.up * 2.5f)) + new Vector3(0.1f, 1.2f, 1f);
 
-                case VFXEnv.Poison:
-                case VFXEnv.Damage:
+                case VFXEnvType.Poison:
+                case VFXEnvType.Damage:
                     return (transform.position + (Vector3.up * 2.5f)) - Vector3.up;
 
-                case VFXEnv.Dust:
+                case VFXEnvType.Dust:
                     return transform.position;
 
-                case VFXEnv.Stun:
+                case VFXEnvType.Stun:
                     return (transform.position + (Vector3.up * 1.83f));
 
-                case VFXEnv.Slow:
+                case VFXEnvType.Slow:
                     return (transform.position + new Vector3(0f, -0.5f, 0f));
 
-                case VFXEnv.Silence:
+                case VFXEnvType.Silence:
                     return (Center.position + new Vector3(-1f, 1.05f, 0f));
 
-                case VFXEnv.Targeted:
+                case VFXEnvType.Targeted:
                     return Center.position;
 
-                case VFXEnv.QuestionMark:
+                case VFXEnvType.QuestionMark:
                     return Center.position + (Vector3.up * 2f);
 
                 default:
-                    return base.LoadVFXEnvSpawnPos(templateOrigin);
+                    return base.LoadVFXEnvSpawnPos(vfxEnvType);
             }
         }
     }

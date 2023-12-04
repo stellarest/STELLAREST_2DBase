@@ -396,6 +396,18 @@ namespace STELLAREST_2D
         }
 
         [Conditional("UNITY_EDITOR")]
+        public static void LogEndMethod(object method, object message = null, object obj = null)
+        {
+            Utils.Log("\n");
+            Utils.Log($"End Method : ({nameof(method)})");
+            if (message != null)
+                Utils.Log(message);
+            if (obj != null)
+                Utils.Log(obj);
+            Utils.Log("\n");
+        }
+
+        [Conditional("UNITY_EDITOR")]
         public static void LogAddEvent(object caller, object subscriber) => Utils.Log($"Add Event : {caller} += {subscriber}");
 
         [Conditional("UNITY_EDITOR")]

@@ -1,13 +1,11 @@
 using System.Collections;
 using DamageNumbersPro;
+using SpriteTrail;
 using UnityEngine;
 
-using SpriteTrail;
 using static STELLAREST_2D.Define;
-using VFXMuzzle = STELLAREST_2D.Define.TemplateIDs.VFX.Muzzle;
-using VFXImpact = STELLAREST_2D.Define.TemplateIDs.VFX.ImpactHit;
-using VFXTrail = STELLAREST_2D.Define.TemplateIDs.VFX.Trail;
-using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
+//using VFXMuzzle = STELLAREST_2D.Define.TemplateIDs.VFX.Muzzle;
+//using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
 using MaterialColor = STELLAREST_2D.Define.MaterialColor;
 
 namespace STELLAREST_2D
@@ -346,16 +344,16 @@ namespace STELLAREST_2D
         //=======================================================================================================
         //=======================================================================================================
         //=======================================================================================================
-        public void Muzzle(VFXMuzzle templateOrigin, CreatureController target)
+        public void Muzzle(VFXMuzzleType muzzleType, CreatureController target)
         {
             Vector3 muzzlePoint = Vector3.zero;
-            switch (templateOrigin)
+            switch (muzzleType)
             {
-                case VFXMuzzle.None:
+                case VFXMuzzleType.None:
                     return;
 
-                case VFXMuzzle.Bow:
-                    GameObject go = Managers.Resource.Instantiate(FixedValue.Load.VFX_MUZZLE_BOW, null, true);
+                case VFXMuzzleType.White:
+                    GameObject go = Managers.Resource.Instantiate(FixedValue.Load.VFX_MUZZLE_WHITE, null, true);
                     go.transform.position = target.FireSocketPosition;
                     MovementToOwner movementToOwner = go.GetComponent<MovementToOwner>();
                     movementToOwner.IsOnFireSocket = true;
@@ -370,7 +368,7 @@ namespace STELLAREST_2D
             }
         }
 
-        public GameObject ImpactHit(VFXImpact templateOrigin, CreatureController target, SkillBase from)
+        public GameObject ImpactHit(FixedValue.TemplateID.VFX.ImpactHit templateID, CreatureController target, SkillBase from)
         {
             Vector3 impactPoint = Vector3.zero;
             if (from.Data.IsImpactPointOnTarget)
@@ -384,32 +382,32 @@ namespace STELLAREST_2D
 
             // VFX_IMPACT_HIT
             GameObject goImpactHit = null;
-            switch (templateOrigin)
+            switch (templateID)
             {
-                case VFXImpact.None:
+                case FixedValue.TemplateID.VFX.ImpactHit.None:
                     return goImpactHit;
 
-                case VFXImpact.Hit:
+                case FixedValue.TemplateID.VFX.ImpactHit.Hit:
                     goImpactHit = Managers.Resource.Instantiate(FixedValue.Load.VFX_IMPACT_HIT_DEFAULT, null, true);
                     break;
 
-                case VFXImpact.Leaves:
+                case FixedValue.TemplateID.VFX.ImpactHit.Leaves:
                     goImpactHit = Managers.Resource.Instantiate(FixedValue.Load.VFX_IMPACT_HIT_LEAVES, null, true);
                     break;
 
-                case VFXImpact.Light:
+                case FixedValue.TemplateID.VFX.ImpactHit.Light:
                     goImpactHit = Managers.Resource.Instantiate(FixedValue.Load.VFX_IMPACT_HIT_LIGHT, null, true);
                     break;
 
-                case VFXImpact.SmokePuff:
+                case FixedValue.TemplateID.VFX.ImpactHit.SmokePuff:
                     goImpactHit = Managers.Resource.Instantiate(FixedValue.Load.VFX_IMPACT_HIT_SMOKE_PUFF, null, true);
                     break;
 
-                case VFXImpact.Incinvible:
+                case FixedValue.TemplateID.VFX.ImpactHit.Incinvible:
                     goImpactHit = Managers.Resource.Instantiate(FixedValue.Load.VFX_IMPACT_HIT_INVINCIBLE, null, true);
                     break;
 
-                case VFXImpact.Poison:
+                case FixedValue.TemplateID.VFX.ImpactHit.Poison:
                     goImpactHit = Managers.Resource.Instantiate(FixedValue.Load.VFX_IMPACT_HIT_POISON, null, true);
                     break;
             }
@@ -418,7 +416,7 @@ namespace STELLAREST_2D
             return goImpactHit;
         }
 
-        public GameObject Trail(VFXTrail trailType, BaseController targetInSocket, CreatureController owner)
+        public GameObject Trail(VFXTrailType trailType, BaseController targetInSocket, CreatureController owner)
         {
             if (targetInSocket.TrailSocket == null)
                 Utils.LogCritical(nameof(VFXManager), nameof(Trail), "You have to set TrailSocket in advance if you want to use Trail.");
@@ -426,10 +424,10 @@ namespace STELLAREST_2D
             GameObject goTrail = null;
             switch (trailType)
             {
-                case VFXTrail.None:
+                case VFXTrailType.None:
                     return goTrail;
 
-                case VFXTrail.Wind:
+                case VFXTrailType.Wind:
                     {
                         goTrail = Managers.Resource.Instantiate(FixedValue.Load.VFX_TRAIL_WIND, null, true);
                         TrailTarget trailTarget = goTrail.GetComponent<TrailTarget>();
@@ -439,7 +437,7 @@ namespace STELLAREST_2D
                     }
                     break;
 
-                case VFXTrail.Light:
+                case VFXTrailType.Light:
                     {
                         goTrail = Managers.Resource.Instantiate(FixedValue.Load.VFX_TRAIL_LIGHT, null, true);
                         TrailTarget trailTarget = goTrail.GetComponent<TrailTarget>();
@@ -461,8 +459,8 @@ namespace STELLAREST_2D
                 return;
 
             Vector3 spawnPos = (cc?.IsPlayer == false && cc.GetComponent<MonsterController>() != null)
-                                ? cc.GetComponent<MonsterController>().LoadVFXEnvSpawnPos(VFXEnv.Damage)
-                                : cc.GetComponent<PlayerController>().LoadVFXEnvSpawnPos(VFXEnv.Damage);
+                                ? cc.GetComponent<MonsterController>().LoadVFXEnvSpawnPos(VFXEnvType.Damage)
+                                : cc.GetComponent<PlayerController>().LoadVFXEnvSpawnPos(VFXEnvType.Damage);
 
 #if UNITY_EDITOR
             if (spawnPos == Vector3.zero)
@@ -505,8 +503,8 @@ namespace STELLAREST_2D
                 return;
 
             Vector3 spawnPos = (target?.IsPlayer == false && target.GetComponent<MonsterController>() != null)
-                                ? target.GetComponent<MonsterController>().LoadVFXEnvSpawnPos(VFXEnv.Poison)
-                                : target.GetComponent<PlayerController>().LoadVFXEnvSpawnPos(VFXEnv.Damage);
+                                ? target.GetComponent<MonsterController>().LoadVFXEnvSpawnPos(VFXEnvType.Poison)
+                                : target.GetComponent<PlayerController>().LoadVFXEnvSpawnPos(VFXEnvType.Damage);
 
             Managers.Resource.Load<GameObject>(FixedValue.Load.VFX_ENG_DAMAGE_POISON)
                             .GetComponent<DamageNumber>().Spawn(spawnPos, damage, followedTransform: target.Center);
@@ -523,7 +521,7 @@ namespace STELLAREST_2D
                 dmgNumber.lifetime = 0.75f;
         }
 
-        public GameObject Environment(VFXEnv templateOrigin, CreatureController target)
+        public GameObject Environment(VFXEnvType vfxEnvType, CreatureController target)
         {
             GameObject goVFX = null;
 
@@ -531,17 +529,17 @@ namespace STELLAREST_2D
             // spawnScale = (target?.IsPlayer == false && target.GetComponent<MonsterController>() != null)
             //             ? target.GetComponent<MonsterController>().LoadVFXEnvSpawnScale(templateOrigin)
             //             : target.GetComponent<PlayerController>().LoadVFXEnvSpawnScale(templateOrigin);
-            Vector3 spawnScale = target.LoadVFXEnvSpawnScale(templateOrigin);
+            Vector3 spawnScale = target.LoadVFXEnvSpawnScale(vfxEnvType);
 
             // Vector3 spawnPos = Vector3.zero;
             // spawnPos = (target?.IsPlayer == false && target.GetComponent<MonsterController>() != null)
             //             ? target.GetComponent<MonsterController>().LoadVFXEnvSpawnPos(templateOrigin)
             //             : target.GetComponent<PlayerController>().LoadVFXEnvSpawnPos(templateOrigin);
-            Vector3 spawnPos = target.LoadVFXEnvSpawnPos(templateOrigin);
+            Vector3 spawnPos = target.LoadVFXEnvSpawnPos(vfxEnvType);
 
-            switch (templateOrigin)
+            switch (vfxEnvType)
             {
-                case VFXEnv.Spawn:
+                case VFXEnvType.Spawn:
                     {
                         goVFX = Managers.Resource.Instantiate(FixedValue.Load.VFX_ENV_SPAWN, null, true);
                         goVFX.transform.localScale = spawnScale;
@@ -549,14 +547,14 @@ namespace STELLAREST_2D
                     }
                     break;
 
-                case VFXEnv.Dodge:
+                case VFXEnvType.Dodge:
                     {
                         Managers.Resource.Load<GameObject>(FixedValue.Load.VFX_ENV_DAMAGE_TO_PLAYER_DODGE_FONT)
                                          .GetComponent<DamageNumber>().Spawn(spawnPos);
                     }
                     break;
 
-                case VFXEnv.Skull:
+                case VFXEnvType.Skull:
                     {
                         goVFX = Managers.Resource.Instantiate(FixedValue.Load.VFX_ENV_SKULL, null, true);
                         goVFX.transform.localScale = spawnScale;
@@ -564,7 +562,7 @@ namespace STELLAREST_2D
                     }
                     break;
 
-                case VFXEnv.Dust:
+                case VFXEnvType.Dust:
                     {
                         goVFX = Managers.Resource.Instantiate(FixedValue.Load.VFX_ENV_DUST, null, true);
                         goVFX.transform.localScale = spawnScale;
@@ -572,7 +570,7 @@ namespace STELLAREST_2D
                     }
                     break;
 
-                case VFXEnv.Stun:
+                case VFXEnvType.Stun:
                     {
                         goVFX = Managers.Resource.Instantiate(FixedValue.Load.VFX_ENV_STUN, null, true);
                         goVFX.transform.localScale = spawnScale;
@@ -580,7 +578,7 @@ namespace STELLAREST_2D
                     }
                     break;
 
-                case VFXEnv.Slow:
+                case VFXEnvType.Slow:
                     {
                         goVFX = Managers.Resource.Instantiate(FixedValue.Load.VFX_ENV_SLOW, null, true);
                         goVFX.transform.localScale = spawnScale;
@@ -588,7 +586,7 @@ namespace STELLAREST_2D
                     }
                     break;
 
-                case VFXEnv.Silence:
+                case VFXEnvType.Silence:
                     {
                         goVFX = Managers.Resource.Instantiate(FixedValue.Load.VFX_ENV_SILENCE, null, true);
                         goVFX.transform.localScale = spawnScale;
@@ -596,7 +594,7 @@ namespace STELLAREST_2D
                     }
                     break;
 
-                case VFXEnv.Targeted:
+                case VFXEnvType.Targeted:
                     {
                         goVFX = Managers.Resource.Instantiate(FixedValue.Load.VFX_ENV_TARGETED, null, true);
                         goVFX.transform.localScale = spawnScale;
@@ -604,7 +602,7 @@ namespace STELLAREST_2D
                     }
                     break;
 
-                case VFXEnv.QuestionMark:
+                case VFXEnvType.QuestionMark:
                     {
                         goVFX = Managers.Resource.Instantiate(FixedValue.Load.VFX_ENV_QUESTION_MARK, null, true);
                         goVFX.transform.localScale = spawnScale;
@@ -616,19 +614,19 @@ namespace STELLAREST_2D
             return goVFX;
         }
 
-        public GameObject Environment(VFXEnv templateOrigin, Vector3 spawnPos)
+        public GameObject Environment(VFXEnvType vfxEnvType, Vector3 spawnPos)
         {
             GameObject goVFX = null;
-            switch (templateOrigin)
+            switch (vfxEnvType)
             {
-                case VFXEnv.GemGather:
+                case VFXEnvType.GemGather:
                     {
                         goVFX = Managers.Resource.Instantiate(FixedValue.Load.VFX_ENV_GEM_GATHER, null, true);
                         goVFX.transform.position = spawnPos;
                     }
                     break;
 
-                case VFXEnv.GemExplosion:
+                case VFXEnvType.GemExplosion:
                     {
                         goVFX = Managers.Resource.Instantiate(FixedValue.Load.VFX_ENV_GEM_EXPLOSION, null, true);
                         goVFX.transform.position = spawnPos;
@@ -642,51 +640,3 @@ namespace STELLAREST_2D
         private Material MakeClonedMaterial(Material matTarget) => new Material(matTarget);
     }
 }
-
-// -------------------------------------------------------------------------------------
-// -------------------------------------------------------------------------------------
-// private const float DEFAULT_DMG_SPAWN_HEIGHT = 2.5f;
-// private Vector3 GetSpawnPosForDamageFont(CreatureController cc)
-// {
-//     Vector3 spawnPos = cc.transform.position + (Vector3.up * DEFAULT_DMG_SPAWN_HEIGHT);
-//     if (cc?.IsPlayer() == false)
-//     {
-//         MonsterController mc = cc.GetComponent<MonsterController>();
-//         switch (mc.MonsterType)
-//         {
-//             case Define.MonsterType.Chicken:
-//                 return (spawnPos -= Vector3.up);
-//         }
-//     }
-
-//     return spawnPos;
-// }
-
-// public IEnumerator CoClonedMaterial(Define.MaterialType matType, BaseController bc, SpriteRenderer spr, float desiredTime, System.Action callback)
-// {
-//     if (bc.IsValid() == false)
-//         yield break; ;
-
-//     Material matOrigin = spr.material;
-//     Material clonedStrongTintWhiteMat = null;
-//     switch (matType)
-//     {
-//         case Define.MaterialType.StrongTintWhite:
-//             {
-//                 clonedStrongTintWhiteMat = new Material(Mat_StrongTint);
-//                 spr.material = clonedStrongTintWhiteMat;
-//             }
-//             break;
-//     }
-
-//     float percent = 0f;
-//     while (percent < 1f)
-//     {
-//         percent += Time.deltaTime / desiredTime;
-//         clonedStrongTintWhiteMat.SetFloat(SHADER_STRONG_TINT_FADE, percent);
-//         yield return null;
-//     }
-
-//     callback?.Invoke(); // START BOMB
-//     spr.material = matOrigin; // RESET MATERIAL
-// }

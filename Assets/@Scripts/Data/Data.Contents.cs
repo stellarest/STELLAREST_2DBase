@@ -86,15 +86,16 @@ namespace STELLAREST_2D.Data
         public bool IsColliderHalfRatio;
         public int MaxBounceCount;
         public int MaxPenetrationCount;
-        public Define.TemplateIDs.VFX.ImpactHit VFX_ImpactHit;
+        public Define.FixedValue.TemplateID.VFX.ImpactHit VFX_ImpactHit_TemplateID;
         public bool IsImpactPointOnTarget;
-        public Define.SkillAnimationType AnimationType;
+        //public Define.SkillAnimationType AnimationType;
+        public Define.FixedValue.TemplateID.SkillAnimation SkillAnimationTemplateID;
         public Define.TemplateIDs.CrowdControl CrowdControlType;
         public float CrowdControlRatio;
         public float CrowdControlDuration;
         public float CrowdControlIntensity;
         public Define.TemplateIDs.CrowdControl ContinuousCrowdControlType;
-        public Define.TemplateIDs.VFX.ImpactHit VFX_ImpactHit_ForContinuousCrowdControl;
+        public Define.FixedValue.TemplateID.VFX.ImpactHit ContinuousCC_VFX_ImpactHit_TemplateID; // 사실 필요한지 모르겠...
         public float ContinuousCrowdControlRatio;
         public float ContinuousCrowdControlDuration;
         public float ContinuousCrowdControlIntensity;

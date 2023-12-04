@@ -97,7 +97,7 @@ namespace STELLAREST_2D
             set
             {
                 _movementSpeed = value;
-                this.Owner.AnimController.SetMovementSpeed(_movementSpeed);
+                this.Owner.CreatureAnimController.SetMovementSpeed(_movementSpeed);
             }
         }
 

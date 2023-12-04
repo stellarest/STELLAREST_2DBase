@@ -53,10 +53,11 @@ namespace STELLAREST_2D
         {
             _isEndOfSkill = false;
             this.Owner.SkillBook.Deactivate(FixedValue.TemplateID.Skill.AssassinMastery);
-            _ownerController.PlayerAnimController.SetCanEnterNextState(false);
+            _ownerController.PlayerAnimController.EnterNextState(false);
 
-            this.Owner.ReserveSkillAnimationType(this.Data.AnimationType);
-            Owner.CreatureState = Define.CreatureState.Skill;
+            this.Owner.CreatureSkillAnimType = this.Data.SkillAnimationTemplateID;
+            this.Owner.CreatureState = CreatureState.Skill;
+            callback?.Invoke();
         }
 
         public override void OnActiveEliteActionHandler()
@@ -113,7 +114,7 @@ namespace STELLAREST_2D
             //     StartCoroutine(CoOffPoisonDagger());
             // });
             
-            _ownerController.PlayerAnimController.SetCanEnterNextState(true);
+            _ownerController.PlayerAnimController.EnterNextState(true);
             yield return new WaitForSeconds(FIXED_AFTER_COMPLETED_CHARGE_WAIT_TIME);
             if (this.Owner.SkillBook.ForceGetSkillMember(FixedValue.TemplateID.Skill.StabPoisonDagger_Elite_Solo, 0).IsLearned == false)
             {
@@ -126,21 +127,19 @@ namespace STELLAREST_2D
 
         private IEnumerator CoOffPoisonDagger()
         {
-            _ownerController.PlayerAnimController.SetCanEnterNextState(false);
+            _ownerController.PlayerAnimController.EnterNextState(false);
             _isEndOfSkill = true;
 
-            this.Owner.ReserveSkillAnimationType(this.Data.AnimationType);
-            Owner.CreatureState = Define.CreatureState.Skill;
+            this.Owner.CreatureSkillAnimType = this.Data.SkillAnimationTemplateID;
+            this.Owner.CreatureState = CreatureState.Skill;
 
-            //_burstGroup[0].transform.SetParent(null);
-            //TakeOffFromParent(_burstGroup[0]);
             TakeOffParticlesFromParent(_burstGroup);
             EnableParticles(_burstGroup, true);
 
             this.Owner.SkillBook.Deactivate(FixedValue.TemplateID.Skill.StabPoisonDagger_Elite_Solo);
             yield return new WaitUntil(() => this.WaitUntilEndOfPlayingParticles(_burstGroup));
             yield return new WaitForSeconds(FIXED_AFTER_COMPLETED_CHARGE_WAIT_TIME);
-            _ownerController.PlayerAnimController.SetCanEnterNextState(true);
+            _ownerController.PlayerAnimController.EnterNextState(true);
 
             //TakeOnToParent(_burstGroup);
             TakeOnParticlesFromParent(_burstGroup, this.transform);

@@ -2,14 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-using VFXMuzzle = STELLAREST_2D.Define.TemplateIDs.VFX.Muzzle;
+using static STELLAREST_2D.Define;
 
 namespace STELLAREST_2D
 {
     public class ReinaController : PlayerController
     {
         public override void Init(int templateID) => base.Init(templateID);
-        public override void ShowMuzzle() => Managers.VFX.Muzzle(VFXMuzzle.Bow, this);
+        public override void ShowMuzzle() => Managers.VFX.Muzzle(VFXMuzzleType.White, this);
 
         [field: SerializeField] public bool LockHandle { get; set; } = false;
         private void LateUpdate()
@@ -23,7 +23,5 @@ namespace STELLAREST_2D
                 BodyParts.ArmLeft.localRotation = Quaternion.Euler(0, 0, modifiedAngle);
             }
         }
-        
-        protected override void UpdateSkill() => PlayerAnimController.RunSkill();
     }
 }

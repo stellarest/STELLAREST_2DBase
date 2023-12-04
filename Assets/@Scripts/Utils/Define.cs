@@ -5,28 +5,20 @@ namespace STELLAREST_2D
 {
     public static class Define
     {
-        // enum temps
         public enum InGameStage { Forest, Volcano } // temp
-        /*
-            +++++ In Game Difficulty +++++
-            * Normal, Hard, Expert : Forest (FIXED_FOREST_STAGE_MAX_WAVE_COUNT : 20) (per stage level, total 60)
-            * Master, Extreme : Volcano (FIXED_VOLCANO_STAGE_MAX_WAVE_COUNT : 30) (per stage level, total 60)
-        */
         public enum InGameDifficulty { Normal, Hard, Expert, Master, Extreme } // temp
-        public enum WaveType { None, Elite, MiddleBoss, Boss } // temp
+        public enum WaveType { None, Elite, Boss } // temp
         public enum Scene { Unknown, DevScene, GameScene, } // temp
         public enum Sound { BGM, SFX, } // temp
-        public enum StageType { Normal, MiddleBoss, Boss, } // temp
-
-
+        public enum StageType { Normal, Boss, } // temp
         public enum UIEvent { Click, Pressed, PointerDown, PointerUp, BeginDrag, Drag, EndDrag, }
         public enum InitialStatDescGrade { None, VeryLow, Low, Average, High, VeryHigh }
         public enum ObjectType { None = -1, Player = 1, Monster, Skill, Projectile, Gem, Soul }
         public enum MonsterType { None = -1, Chicken = 1, }
         public enum InGameGrade { Default = 1, Elite, Ultimate }
         public enum SortingOrder { Map = 100, Player = 200, Item = 209, Monster = 210, Skill = 230, EnvEffect = 255 }
-        public enum SkillType { None = -1, Unique = 1, Public = 2 }
-        public enum CreatureState { Idle = 0, Walk = 1, Run = 2, Skill = 3, Invincible = 4, Dead = 999 }
+        public enum SkillType { None = -1, Unique = 1, Public }
+        public enum CreatureState { Idle, Walk, Run, Skill, Invincible, Dead }
         public enum CollisionLayers { Default = 0, PlayerBody = 6, PlayerAttack = 7, MonsterBody = 8, MonsterAttack = 9 }
         public enum LookAtDirection { Left = 1, Right = -1 }
         public enum HitFromType { None = -1, ThrowingStar = 1, LazerBolt = 2, All = 9 }
@@ -36,8 +28,12 @@ namespace STELLAREST_2D
         public enum GemSize { Normal = 1, Large = 2 }
         public enum StrongTintColor { White, Red, Green }
         public enum SkillAnimationType { None = -1, Attack = 101, ElitePlus = 201, C1ElitePlus = 202, UltimatePlus = 301, }
+        public enum VFXMuzzleType { None = -1, White, }
+        public enum VFXTrailType { None = -1, Wind, Light }
+        public enum VFXEnvType { None = -1, Spawn, Damage, Dodge, Skull, Dust, Stun, Slow, Silence, Targeted, Poison,
+                                GemGather, GemExplosion, Font_Percentage, QuestionMark, KnockBack, WindTrail, Max = 999, }
 
-
+        // TODO : REFACTOR
         public static class TemplateIDs
         {
             public enum CrowdControl
@@ -55,61 +51,9 @@ namespace STELLAREST_2D
                 Poison = 300109,
                 MaxCount = 10
             }
-
-            public static class VFX
-            {
-                public enum Muzzle
-                {
-                    None = -1,
-                    Bow,
-                }
-
-                public enum ImpactHit
-                {
-                    None = -1,
-                    Hit = 400100,
-                    Leaves = 400101,
-                    Light = 400102,
-                    SmokePuff = 400103,
-                    Incinvible = 400104,
-                    Poison = 400105,
-                }
-
-                public enum Trail
-                {
-                    None = -1,
-                    Wind,
-                    Light,
-                }
-
-                public enum Environment
-                {
-                    None = -1,
-                    Spawn,
-                    Damage,
-                    Dodge,
-
-                    Skull,
-                    Dust,
-                    Stun,
-                    Slow,
-                    Silence,
-                    Targeted,
-                    Poison,
-
-                    GemGather,
-                    GemExplosion,
-                    Font_Percentage,
-                    QuestionMark,
-
-                    KnockBack,
-                    WindTrail,
-                    Max = 999,
-                }
-            }
         }
 
-        #region Public Constant Value
+        #region Public Fixed Value
         /// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         /// +++++ Sprite Addressable Key Name == File Name !! (ex) Mouth_Sick.sprite = Mouth_Sick +++++
         /// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -142,7 +86,7 @@ namespace STELLAREST_2D
                 public const string MAT_POISON = "Poison.mat";
                 public const string SO_SPT_BLOB = "SO_SPT_BLOB.asset";
                 public const string SO_SPT_POS = "SO_SPT_POS.asset";
-                public const string VFX_MUZZLE_BOW = "VFX_Muzzle_Bow.prefab";
+                public const string VFX_MUZZLE_WHITE = "VFX_Muzzle_White.prefab";
                 public const string VFX_IMPACT_HIT_DEFAULT = "VFX_Impact_Hit_Default.prefab";
                 public const string VFX_IMPACT_HIT_LEAVES = "VFX_Impact_Hit_Leaves.prefab";
                 public const string VFX_IMPACT_HIT_LIGHT = "VFX_Impact_Hit_Light.prefab";
@@ -193,12 +137,47 @@ namespace STELLAREST_2D
                 public const string PLAYER_SHIELD = "Shield";
                 public const string PLAYER_BOW = "Bow";
                 public const string PLAYER_PELVIS = "Pelvis";
+
+                // CreatureAnimationController
+                public const string ANIM_PARAM_CREATURE_IDLE = "Idle";
+                public const string ANIM_PARAM_CREATURE_RUN = "Run";
+                public const string ANIM_PARAM_PLAYER_NINJA_RUN = "NinjaRun";
+                public const string ANIM_PARAM_CREATURE_STUN = "Stun";
+                public const string ANIM_PARAM_CREATURE_DEAD = "Dead";
+                public const string ANIM_PARAM_CREATURE_ANIM_SPEED = "AnimationSpeed";
+                public const string ANIM_PARAM_CREATURE_MOVEMENT_SPEED = "MovementSpeed";
+                public const string ANIM_PARAM_CREATURE_ENTER_NEXT_STATE_TRIGGER = "EnterNextState";
+                public const string ANIM_PARAM_CREATURE_ENTER_NEXT_STATE_BOOLEAN = "CanEnterNextState";
+
+                public const string ANIM_PARAM_PLAYER_READY_MELEE_1H = "ReadyMelee1H";
+                public const string ANIM_PARAM_PLAYER_READY_MELEE_2H = "ReadyMelee2H";
+                public const string ANIM_PARAM_PLAYER_READY_BOW = "ReadyBow";
+                public const string ANIM_PARAM_PLAYER_SLASH_MELEE_1H = "SlashMelee1H";
+                public const string ANIM_PARAM_PLAYER_SLASH_MELEE_2H = "SlashMelee2H";
+                public const string ANIM_PARAM_PLAYER_RANGED_ARROW_SHOT = "RangedArrowShot";
+                public const string ANIM_PARAM_PLAYER_JAB_MELEE_1H = "JabMelee1H";
+                public const string ANIM_PARAM_PLAYER_JAB_MELEE_PAIRED_ULTIMATE = "JabMelee_Paired_Ultimate";
+                public const string ANIM_PARAM_PLAYER_THROW_KUNAI = "ThrowKunai";
+                public const string ANIM_PARAM_PLAYER_THROW_KUNAI_ELITE = "ThrowKunai_Elite";
+                public const string ANIM_PARAM_PLAYER_THROW_KUNAI_ULTIMATE = "ThrowKunai_Ultimate";
+
+                public const string ANIM_PARAM_PLAYER_SHIELD = "Shield";
+                public const string ANIM_PARAM_PLAYER_SECOND_WIND = "SecondWind";
+                public const string ANIM_PARAM_PLAYER_PHANTOM_SOUL = "PhantomSoul";
+                public const string ANIM_PARAM_PLAYER_CONCENTRATION = "Concentration";
+                public const string ANIM_PARAM_PLAYER_ELEMENTAL_SHOCK = "ElementalShock";
+                public const string ANIM_PARAM_PLAYER_FOREST_BARRIER = "ForestBarrier";
+                public const string ANIM_PARAM_PLAYER_POISON_DAGGER = "PoisonDagger";
+                public const string ANIM_PARAM_PLAYER_CLOAK = "Cloak";
+                public const string ANIM_PARAM_PLAYER_NINJA_SLASH = "NinjaSlash";
+                
+                public const string ANIM_PARAM_MONSTER_ATTACK = "Attack";
             }
 
             public static class Numeric
             {
-                public const int FOREST_STAGE_MAX_WAVE_COUNT = 20; // temp (memo)
-                public const int VOLCANO_STAGE_MAX_WAVE_COUNT = 30; // temp (memo)
+                public const int FOREST_STAGE_MAX_WAVE_PER_STAGE_LEVELS = 20; // temp (memo)
+                public const int VOLCANO_STAGE_MAX_WAVE_PER_STAGE_LEVELS = 30; // temp (memo)
 
                 // VFXManager
                 public const float HIT_DURATION = 1F;
@@ -301,6 +280,30 @@ namespace STELLAREST_2D
                     BombTrap = 900112,
 
                     BodyAttack_Solo = 901100
+                }
+
+                public enum SkillAnimation
+                {
+                    None = -1,
+                    MasteryAttack = 1000,
+                    MasteryElitePlus = 1001,
+                    MasteryElitePlus_C1 = 1002,
+                    MasteryUltimatePlus = 1003,
+                    Max = 999
+                }
+
+                public static class VFX
+                {
+                    public enum ImpactHit
+                    {
+                        None = -1,
+                        Hit = 400100,
+                        Leaves = 400101,
+                        Light = 400102,
+                        SmokePuff = 400103,
+                        Incinvible = 400104,
+                        Poison = 400105,
+                    }
                 }
             }
         }

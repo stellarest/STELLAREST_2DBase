@@ -4,25 +4,9 @@ using UnityEngine;
 
 using static STELLAREST_2D.Define;
 using STELLAREST_2D.Data;
-using VFXImpact = STELLAREST_2D.Define.TemplateIDs.VFX.ImpactHit;
 
 namespace STELLAREST_2D
 {
-    /*
-        [ Ability Info : Forest Barrier (Elite Action, Forest Guardian) ]
-        (Currently Temped Set : lv.3)
-
-        lv.1 : 매 웨이브마다 숲의 보호막을 1회 활성화한다. 숲의 보호막은 2회의 공격을 보호해준다.
-               숲의 보호막이 활성화되어 있는 동안 이동 속도가 5% 증가한다.
-               (+ 숲의 보호막이 비활성화 될 때, 맵 전체에 있는 모든 적에게 2초간 침묵시킨다.)
-        lv.2 : 매 웨이브마다 숲의 보호막을 1회 활성화한다. 숲의 보호막은 3회의 공격을 보호해준다.
-               숲의 보호막이 활성화되어 있는 동안 이동 속도가 10% 증가한다.
-               (+ 숲의 보호막이 비활성화 될 때, 맵 전체에 있는 모든 적에게 3초간 침묵시킨다.)
-        lv.3 : 매 웨이브마다 숲의 보호막을 1회 활성화한다. 숲의 보호막은 5회의 공격을 보호해준다.
-               숲의 보호막이 활성화되어 있는 동안 이동 속도가 20% 증가한다.
-               (+ 숲의 보호막이 비활성화 될 때, 맵 전체에 있는 모든 적에게 5초간 침묵시킨다.)
-    */
-
     public class ForestBarrier : UniqueSkill
     {
         private ParticleSystem[] _particles = null;
@@ -44,7 +28,9 @@ namespace STELLAREST_2D
                 else
                 {
                     EnableParticles(_particles, false);
-                    Managers.VFX.ImpactHit(VFXImpact.Leaves, this.Owner, this);
+                    //Managers.VFX.ImpactHit(FixedValue.TemplateID.VFX.ImpactHit.Leaves, this.Owner, this);
+                    Managers.VFX.ImpactHit(this.Data.VFX_ImpactHit_TemplateID, this.Owner, this);
+
                     this.Owner.SkillBook.Deactivate(FixedValue.TemplateID.Skill.ForestBarrier_Elite_Solo);
                     this.Owner.Stat.ResetMovementSpeed();
                 }
@@ -90,16 +76,17 @@ namespace STELLAREST_2D
         private IEnumerator CoOnForestBarrier(Action callback = null)
         {
             this.Owner.SkillBook.Deactivate(FixedValue.TemplateID.Skill.ForestGuardianMastery);
-            _ownerController.PlayerAnimController.SetCanEnterNextState(false);
+            _ownerController.PlayerAnimController.EnterNextState(false);
             _ownerController.LockHandle = true;
 
-            this.Owner.ReserveSkillAnimationType(this.Data.AnimationType);
-            Owner.CreatureState = Define.CreatureState.Skill;
+            this.Owner.CreatureSkillAnimType = this.Data.SkillAnimationTemplateID;
+            this.Owner.CreatureState = CreatureState.Skill;
+            callback?.Invoke();
             this.IsOnBarrier = true;
 
             yield return new WaitForSeconds(FIXED_WAIT_TIME_AFTER_SKILL);
             _ownerController.LockHandle = false;
-            _ownerController.PlayerAnimController.SetCanEnterNextState(true);
+            _ownerController.PlayerAnimController.EnterNextState(true);
             this.Owner.SkillBook.Activate(FixedValue.TemplateID.Skill.ForestGuardianMastery);
         }
     }

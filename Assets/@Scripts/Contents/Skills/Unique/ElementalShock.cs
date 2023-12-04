@@ -7,25 +7,6 @@ using STELLAREST_2D.Data;
 
 namespace STELLAREST_2D
 {
-    /*
-        [ Ability Info : Elemental Shock (Elite Action, Elemental Archer) ]
-        (Currently Temped Set : lv.3)
-
-        // TODO : 개선 사항 
-        lv.1 피해를 입을 때, 10%의 확률로 Elemental Shock를 발동시키고, 동시에 받게 되는 피해량 또한 10% 감소한다. (쿨타임 12초) -- 쿨타임도 있어야함
-        Elemental Shock는 주변의 적에게 [n]만큼의 데미지를 입히고, 1초 동안 기절과 함께 4초 동안 30% 감속시킨다.
-
-        lv.2 피해를 입을 때, 15%의 확률로 Elemental Shock를 발동시키고, 동시에 받게 되는 피해량 또한 15% 감소한다. (쿨타임 12초)
-        Elemental Shock는 주변의 적에게 [n + (n * ratio)]만큼의 데미지를 입히고, 2초 동안 기절과 함께 4초 동안 40% 감속시킨다.
-
-        lv.3 피해를 입을 때, 30%의 확률로 Elemental Shock를 발동시키고, 동시에 받게 되는 피해량 또한 30% 감소한다. (쿨타임 12초)
-        Elemental Shock는 주변의 적에게 [n + (n * ratio)]만큼의 데미지를 입히고, 3초 동안 기절과 함께 7초 동안 70% 감속시킨다.
-        
-        lv.1 : 주변의 적에게 [n]만큼의 데미지를 입히고, 1초 동안 기절과 함께 4초 동안 30% 감속시킨다.
-        lv.2 : 주변의 적에게 [n + (n * ratio)]만큼의 데미지를 입히고, 2초 동안 기절과 함께 4초 동안 40% 감속시킨다.
-        lv.3 : 주변의 적에게 [n + (n * ratio)]만큼의 데미지를 입히고, 3초 동안 기절과 함께 7초 동안 70% 감속시킨다.
-    */
-
     public class ElementalShock : UniqueSkill
     {
         private ParticleSystem[] _particles = null;
@@ -68,12 +49,13 @@ namespace STELLAREST_2D
 
         protected override void DoSkillJob(Action callback = null)
         {
-            _ownerController.PlayerAnimController.SetCanEnterNextState(false);
+            _ownerController.PlayerAnimController.EnterNextState(false);
             _ownerController.LockHandle = true;
 
             this.Owner.SkillBook.Deactivate(FixedValue.TemplateID.Skill.ElementalArcherMastery);
-            this.Owner.ReserveSkillAnimationType(this.Data.AnimationType);
-            Owner.CreatureState = Define.CreatureState.Skill;
+            this.Owner.CreatureSkillAnimType = this.Data.SkillAnimationTemplateID;
+            this.Owner.CreatureState = CreatureState.Skill;
+            callback?.Invoke();
 
             EnableParticles(_particles, true);
             StartCoroutine(CoElementalShock());
@@ -101,7 +83,7 @@ namespace STELLAREST_2D
             _ownerController.LockHandle = false;
             this.Owner.SkillBook.Activate(FixedValue.TemplateID.Skill.ElementalArcherMastery);
             EnableParticles(_particles, false);
-            _ownerController.PlayerAnimController.SetCanEnterNextState(true);
+            _ownerController.PlayerAnimController.EnterNextState(true);
         }
 
         private void OnTriggerEnter2D(Collider2D other)

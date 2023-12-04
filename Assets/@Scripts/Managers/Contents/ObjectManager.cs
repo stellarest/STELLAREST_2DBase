@@ -2,8 +2,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using static STELLAREST_2D.Define;
-using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
-// using DamageNumbersPro;
 
 namespace STELLAREST_2D
 {
@@ -75,7 +73,7 @@ namespace STELLAREST_2D
 
                                     chicken.Init(templateID);
                                     Monsters.Add(chicken);
-                                    Managers.VFX.Environment(VFXEnv.Spawn, chicken);
+                                    Managers.VFX.Environment(VFXEnvType.Spawn, chicken);
 
                                     return chicken as T;
                                 }

@@ -1,8 +1,8 @@
 using System;
 using UnityEngine;
 
+using static STELLAREST_2D.Define;
 using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
-using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
 
 namespace STELLAREST_2D
 {
@@ -42,7 +42,7 @@ namespace STELLAREST_2D
         public PlayerController Player { get => Managers.Object?.Player; }
 
         public System.Action OnPlayerIsDead = null;
-        public System.Action<VFXEnv> OnVFXEnvTarget = null;
+        public System.Action<VFXEnvType> OnVFXEnvTarget = null;
         public System.Action<bool> OnStopAction = null;
 
         private const float MIN_CRITICAL_RATIO = 1.5f;

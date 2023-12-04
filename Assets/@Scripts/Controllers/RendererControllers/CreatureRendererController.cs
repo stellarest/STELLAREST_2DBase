@@ -9,7 +9,6 @@ using static STELLAREST_2D.Define;
 using STELLAREST_2D.Data;
 using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
 using FaceType = STELLAREST_2D.Define.FaceType;
-using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
 //using PlayerTemplateID = STELLAREST_2D.Define.TemplateIDs.Creatures.Player;
 
 namespace STELLAREST_2D
@@ -429,7 +428,7 @@ namespace STELLAREST_2D
         public override void OnFaceCombatHandler() => this.FaceType = FaceType.Combat;
         public override void OnFaceDeadHandler() => this.FaceType = FaceType.Dead;
         public void OnFaceBunny() => this.FaceType = FaceType.Bunny;
-        public override void OnDustVFXHandler() => Managers.VFX.Environment(VFXEnv.Dust, this.OwnerAsCreature);
+        public override void OnDustVFXHandler() => Managers.VFX.Environment(VFXEnvType.Dust, this.OwnerAsCreature);
 
         public void HideFace(bool isOnHide)
         {

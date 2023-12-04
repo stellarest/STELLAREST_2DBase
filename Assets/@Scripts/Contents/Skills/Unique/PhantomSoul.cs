@@ -80,8 +80,9 @@ namespace STELLAREST_2D
             this.Owner.SkillBook.Deactivate(FixedValue.TemplateID.Skill.PhantomKnightMastery);
             this.transform.localPosition = new Vector3(INITIAL_LOCAL_POS_X * (int)this.Owner.LookAtDir, INITIAL_LOCAL_POS_Y, 0f);
 
-            this.Owner.ReserveSkillAnimationType(this.Data.AnimationType);
-            Owner.CreatureState = Define.CreatureState.Skill;
+            this.Owner.CreatureSkillAnimType = this.Data.SkillAnimationTemplateID;
+            this.Owner.CreatureState = CreatureState.Skill;
+            callback?.Invoke();
         }
 
         public override void OnActiveEliteActionHandler()

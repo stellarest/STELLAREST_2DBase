@@ -4,7 +4,6 @@ using UnityEngine;
 
 using static STELLAREST_2D.Define;
 using STELLAREST_2D.Data;
-using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
 
 namespace STELLAREST_2D
 {
@@ -46,12 +45,13 @@ namespace STELLAREST_2D
         private const float FIXED_ADD_MOVEMENT_RATIO = 0.5F;
         protected override void DoSkillJob(Action callback = null)
         {
-            _ownerController.PlayerAnimController.SetCanEnterNextState(false);
+            _ownerController.PlayerAnimController.EnterNextState(false);
             this.Owner.SkillBook.Deactivate(FixedValue.TemplateID.Skill.NinjaMastery);
             this.Owner.CreatureRendererController.HideWeapons(true);
-            
-            this.Owner.ReserveSkillAnimationType(this.Data.AnimationType);
-            Owner.CreatureState = Define.CreatureState.Skill;
+
+            this.Owner.CreatureSkillAnimType = this.Data.SkillAnimationTemplateID;
+            this.Owner.CreatureState = CreatureState.Skill;
+            callback?.Invoke();
 
             TakeOffParticlesFromParent(_burstGroup);
             EnableParticles(_burstGroup, true);
@@ -63,7 +63,7 @@ namespace STELLAREST_2D
         private void StartCloak()
         {
             Managers.Game.OnStopAction?.Invoke(true);
-            Managers.Game.OnVFXEnvTarget?.Invoke(VFXEnv.QuestionMark);
+            Managers.Game.OnVFXEnvTarget?.Invoke(VFXEnvType.QuestionMark);
 
             this.Owner.CreatureRendererController.OnFaceBunny();
             this.Owner.Stat.AddMovementSpeedRatio(FIXED_ADD_MOVEMENT_RATIO);
@@ -72,7 +72,7 @@ namespace STELLAREST_2D
         private void EndCloak() 
         {
             TakeOnParticlesFromParent(_burstGroup, _parentOrigin);
-            _ownerController.PlayerAnimController.SetCanEnterNextState(true);
+            _ownerController.PlayerAnimController.EnterNextState(true);
             this.Owner.CreatureRendererController.OnFaceDefaultHandler();
             StartCoroutine(CoNinjaSlash());
         }

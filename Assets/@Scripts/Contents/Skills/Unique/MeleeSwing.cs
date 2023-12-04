@@ -1,7 +1,9 @@
 using System.Collections;
-using STELLAREST_2D.Data;
-using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine;
+
+using static STELLAREST_2D.Define;
+using STELLAREST_2D.Data;
 
 namespace STELLAREST_2D
 {
@@ -68,8 +70,9 @@ namespace STELLAREST_2D
 
         protected override void DoSkillJob(System.Action callback = null)
         {
-            Owner.ReserveSkillAnimationType(this.Data.AnimationType);
-            Owner.CreatureState = Define.CreatureState.Skill;
+            this.Owner.CreatureSkillAnimType = this.Data.SkillAnimationTemplateID;
+            this.Owner.CreatureState = CreatureState.Skill;
+            callback?.Invoke();
         }
 
         public override void OnActiveMasteryActionHandler()

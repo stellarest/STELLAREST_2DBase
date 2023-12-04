@@ -7,22 +7,7 @@ using System.Diagnostics;
 using Debug = UnityEngine.Debug;
 
 using static STELLAREST_2D.Define;
-using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
 using CrowdControl = STELLAREST_2D.Define.TemplateIDs.CrowdControl;
-
-/*
-    [ Gary_Paladin ]
-    * Power : Low - Average             * Attack Speed : Average
-    * Armor : Very High                 * Movement Speed : Low
-
-    [ Gary_Knight ]
-    * Atk : High - Very High            * Atk Speed : Very Low
-    * Armor : Average                   * Movement Speed : Low
-
-    [ Gary_Phantom Knight ]
-    * Atk : Very Low - Very High        * Atk Speed : High
-    * Armor : Average                   * Movement Speed : Average
-*/
 
 namespace STELLAREST_2D
 {
@@ -94,7 +79,8 @@ namespace STELLAREST_2D
                                     return;
 
                                 SkillBook.ActivateAll();
-                                PlayerAnimController.Stand();
+                                //PlayerAnimController.Stand();
+                                PlayerAnimController.Idle();
                             }
                         }
                         break;
@@ -126,7 +112,7 @@ namespace STELLAREST_2D
             {
                 base.Init(templateID);
                 if (PlayerAnimController == null)
-                    PlayerAnimController = AnimController as PlayerAnimationController;
+                    PlayerAnimController = CreatureAnimController as PlayerAnimationController;
 
                 Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.PlayerBody);
                 AddCallbacks();
@@ -145,27 +131,17 @@ namespace STELLAREST_2D
             _prevLookAtDir = this.LookAtDir;
         }
 
-        protected override void InitChildObject(int templateID)
+        protected override void InitChild(int templateID)
         {
-            base.InitChildObject(templateID);
-            // this.BodyParts = new PlayerBodyParts(
-            //     hair: Utils.PlayerBodyPartsFinder.Find(this.gameObject, Utils.PlayerBodyPartsFinder.HAIR),
-            //     armLeft: Utils.PlayerBodyPartsFinder.Find(this.gameObject, Utils.PlayerBodyPartsFinder.ARM_LEFT),
-            //     armRight: Utils.PlayerBodyPartsFinder.Find(this.gameObject, Utils.PlayerBodyPartsFinder.ARM_RIGHT),
-            //     handLeft: Utils.PlayerBodyPartsFinder.Find(this.gameObject, Utils.PlayerBodyPartsFinder.HAND_LEFT),
-            //     handRight: Utils.PlayerBodyPartsFinder.Find(this.gameObject, Utils.PlayerBodyPartsFinder.HAND_RIGHT),
-            //     legLeft: Utils.PlayerBodyPartsFinder.Find(this.gameObject, Utils.PlayerBodyPartsFinder.LEG_LEFT),
-            //     legRight: Utils.PlayerBodyPartsFinder.Find(this.gameObject, Utils.PlayerBodyPartsFinder.LEG_RIGHT)
-            // );
-
+            base.InitChild(templateID);
             this.BodyParts = new PlayerBodyParts(
-                hair: Utils.FindChild<Transform>(this.gameObject, FixedValue.Find.PLAYER_HAIR),
-                armLeft: Utils.FindChild<Transform>(this.gameObject, FixedValue.Find.PLAYER_ARM_LEFT),
-                armRight: Utils.FindChild<Transform>(this.gameObject, FixedValue.Find.PLAYER_ARM_RIGHT),
-                handLeft: Utils.FindChild<Transform>(this.gameObject, FixedValue.Find.PLAYER_HAND_LEFT),
-                handRight: Utils.FindChild<Transform>(this.gameObject, FixedValue.Find.PLAYER_HAND_RIGHT),
-                legLeft: Utils.FindChild<Transform>(this.gameObject, FixedValue.Find.PLAYER_LEG_LEFT),
-                legRight: Utils.FindChild<Transform>(this.gameObject, FixedValue.Find.PLAYER_LEG_RIGHT));
+                hair: Utils.FindChild<Transform>(this.gameObject, FixedValue.Find.PLAYER_HAIR, recursive: true),
+                armLeft: Utils.FindChild<Transform>(this.gameObject, FixedValue.Find.PLAYER_ARM_LEFT, recursive: true),
+                armRight: Utils.FindChild<Transform>(this.gameObject, FixedValue.Find.PLAYER_ARM_RIGHT, recursive: true),
+                handLeft: Utils.FindChild<Transform>(this.gameObject, FixedValue.Find.PLAYER_HAND_LEFT, recursive: true),
+                handRight: Utils.FindChild<Transform>(this.gameObject, FixedValue.Find.PLAYER_HAND_RIGHT, recursive: true),
+                legLeft: Utils.FindChild<Transform>(this.gameObject, FixedValue.Find.PLAYER_LEG_LEFT, recursive: true),
+                legRight: Utils.FindChild<Transform>(this.gameObject, FixedValue.Find.PLAYER_LEG_RIGHT, recursive: true));
 
             Center = Utils.FindChild<Transform>(AnimTransform.gameObject, FixedValue.Find.PLAYER_PELVIS, true);
             SetPlayerWeapon(templateID);
@@ -176,30 +152,24 @@ namespace STELLAREST_2D
             switch (templateID)
             {
                 case (int)FixedValue.TemplateID.Player.Gary_Paladin:
-                    // this.BodyParts.HandLeft_MeleeWeapon = Utils.PlayerBodyPartsFinder.Find(this.BodyParts.HandLeft.gameObject, Utils.PlayerBodyPartsFinder.SHIELD);
-                    // this.BodyParts.HandRight_MeleeWeapon = Utils.PlayerBodyPartsFinder.Find(this.BodyParts.HandRight.gameObject, Utils.PlayerBodyPartsFinder.MELEE_WEAPON);
                     this.BodyParts.HandLeft_MeleeWeapon = Utils.FindChild<Transform>(this.BodyParts.HandLeft.gameObject, FixedValue.Find.PLAYER_SHIELD);
                     this.BodyParts.HandRight_MeleeWeapon = Utils.FindChild<Transform>(this.BodyParts.HandRight.gameObject, FixedValue.Find.PLAYER_MELEE_WEAPON);
                     break;
 
                 case (int)FixedValue.TemplateID.Player.Gary_Knight:
                 case (int)FixedValue.TemplateID.Player.Gary_PhantomKnight:
-                    //this.BodyParts.HandRight_MeleeWeapon = Utils.PlayerBodyPartsFinder.Find(this.BodyParts.HandRight.gameObject, Utils.PlayerBodyPartsFinder.MELEE_WEAPON);
                     this.BodyParts.HandRight_MeleeWeapon = Utils.FindChild<Transform>(this.BodyParts.HandRight.gameObject, FixedValue.Find.PLAYER_MELEE_WEAPON);
                     break;
 
                 case (int)FixedValue.TemplateID.Player.Reina_ArrowMaster:
                 case (int)FixedValue.TemplateID.Player.Reina_ElementalArcher:
                 case (int)FixedValue.TemplateID.Player.Reina_ForestGuardian:
-                    //this.BodyParts.RangedWeapon = Utils.PlayerBodyPartsFinder.Find(foreArmL2, Utils.PlayerBodyPartsFinder.BOW);
                     GameObject foreArmL2 = Utils.FindChild(this.BodyParts.ArmLeft.gameObject, FixedValue.Find.PLAYER_FOREARM_LEFT_2, true);
                     this.BodyParts.RangedWeapon = Utils.FindChild<Transform>(foreArmL2, FixedValue.Find.PLAYER_BOW);
                     break;
 
                 case (int)FixedValue.TemplateID.Player.Kenneth_Assassin:
                 case (int)FixedValue.TemplateID.Player.Kenneth_Ninja:
-                    // this.BodyParts.HandLeft_MeleeWeapon = Utils.PlayerBodyPartsFinder.Find(this.BodyParts.HandLeft.gameObject, Utils.PlayerBodyPartsFinder.MELEE_WEAPON);
-                    // this.BodyParts.HandRight_MeleeWeapon = Utils.PlayerBodyPartsFinder.Find(this.BodyParts.HandRight.gameObject, Utils.PlayerBodyPartsFinder.MELEE_WEAPON);
                     this.BodyParts.HandLeft_MeleeWeapon = Utils.FindChild<Transform>(this.BodyParts.HandLeft.gameObject, FixedValue.Find.PLAYER_MELEE_WEAPON);
                     this.BodyParts.HandRight_MeleeWeapon = Utils.FindChild<Transform>(this.BodyParts.HandRight.gameObject, FixedValue.Find.PLAYER_MELEE_WEAPON);
                     break;
@@ -249,7 +219,6 @@ namespace STELLAREST_2D
         }
 
         public void OnGameStartHandler() => StartCoroutine(CoPlayerGameStart());
-
         private const float PLAYER_GAME_START_TIME = 1.75f;
         private IEnumerator CoPlayerGameStart()
         {
@@ -331,51 +300,31 @@ namespace STELLAREST_2D
             //     Debug.DrawLine(this.Center.position, mon.Center.position, Color.magenta, -1f);
         }
 
-        private IEnumerator CoPercentageTemp()
-        {
-            float delta = 0f;
-            float desiredTime = 2f;
-
-            float percentage = 0f;
-            int percent = 0;
-            while (percentage < 1f)
-            {
-                delta += Time.deltaTime;
-                percentage = delta / desiredTime;
-
-                percent = Mathf.FloorToInt(percentage * 100);
-
-                // SkillTemplate으로 빼서 관리하는게 좋을듯
-                //Managers.VFX.Percentage(VFXEnv.Font_Percentage, this, percent);
-                yield return null;
-            }
-        }
-
-        public override void UpdateAnimation()
+        protected override void UpdateAnimation()
         {
             switch (CreatureState)
             {
-                case Define.CreatureState.Idle:
-                    PlayerAnimController.Stand();
+                case CreatureState.Idle:
+                    UpdateIdle();
                     break;
 
-                case Define.CreatureState.Run:
-                    PlayerAnimController.Run();
+                case CreatureState.Run:
+                    UpdateRun();
                     break;
 
-                case Define.CreatureState.Skill:
-                    //PlayerAnimController.Attack();
+                case CreatureState.Skill:
                     UpdateSkill();
-                    // 메서드로 따로 빼도 될지
-                    // if (this.IsDeadState && this.RendererController.CurrentFaceState != Define.FaceExpressionType.Dead)
-                    //     this.RendererController.OnFaceDeadHandler();
                     break;
 
-                case Define.CreatureState.Dead:
+                case CreatureState.Dead:
                     OnDead();
                     break;
             }
         }
+
+        protected override void UpdateIdle() => PlayerAnimController.Idle();
+        protected override void UpdateRun() => PlayerAnimController.Run();
+        protected override void UpdateSkill() => PlayerAnimController.Skill(this.CreatureSkillAnimType);
 
         private void MoveByJoystick()
         {
@@ -436,57 +385,57 @@ namespace STELLAREST_2D
             //Debug.Log($"Find Gem : {findGems.Count} / Total Gem : {allSpawnedGems.Count}");
         }
 
-        public override Vector3 LoadVFXEnvSpawnScale(VFXEnv templateOrigin)
+        public override Vector3 LoadVFXEnvSpawnScale(VFXEnvType vfxEnvType)
         {
-            switch (templateOrigin)
+            switch (vfxEnvType)
             {
-                case VFXEnv.Skull:
+                case VFXEnvType.Skull:
                     return Vector3.one * 2f;
 
-                case VFXEnv.Stun:
+                case VFXEnvType.Stun:
                     return Vector3.one * 2.5f;
 
-                case VFXEnv.Slow:
+                case VFXEnvType.Slow:
                     return new Vector3(2.25f, 1f, 1f);
 
-                case VFXEnv.Silence:
+                case VFXEnvType.Silence:
                     return Vector3.one * 1.25f;
 
                 default:
-                    return base.LoadVFXEnvSpawnScale(templateOrigin);
+                    return base.LoadVFXEnvSpawnScale(vfxEnvType);
             }
         }
 
-        public override Vector3 LoadVFXEnvSpawnPos(VFXEnv templateOrigin)
+        public override Vector3 LoadVFXEnvSpawnPos(VFXEnvType vfxEnvType)
         {
-            switch (templateOrigin)
+            switch (vfxEnvType)
             {
-                case VFXEnv.Spawn:
+                case VFXEnvType.Spawn:
                     return (transform.position + (Vector3.up * 2.5f));
 
-                case VFXEnv.Damage:
+                case VFXEnvType.Damage:
                     return (transform.position + (Vector3.up * 2.5f));
 
-                case VFXEnv.Dodge:
+                case VFXEnvType.Dodge:
                     return (transform.position + (Vector3.up * 2.95f));
 
-                case VFXEnv.Dust:
+                case VFXEnvType.Dust:
                     return this.BodyParts.LegRight.position + (Vector3.down * 0.35f);
 
-                case VFXEnv.Stun:
+                case VFXEnvType.Stun:
                     return (transform.position + (Vector3.up * 1.83f));
 
-                case VFXEnv.Slow:
+                case VFXEnvType.Slow:
                     return (transform.position + new Vector3(0f, -1.25f, 0f));
 
-                case VFXEnv.Silence:
+                case VFXEnvType.Silence:
                     return (Center.position + new Vector3(-1.65f, 2.55f, 0f));
 
-                case VFXEnv.Poison:
+                case VFXEnvType.Poison:
                     return (transform.position + (Vector3.up * 2.5f));
 
                 default:
-                    return base.LoadVFXEnvSpawnPos(templateOrigin);
+                    return base.LoadVFXEnvSpawnPos(vfxEnvType);
             }
         }
 
@@ -501,14 +450,13 @@ namespace STELLAREST_2D
         protected override void OnDead()
         {
             base.OnDead();
-            PlayerAnimController.DeathBack();
+            PlayerAnimController.Dead();
             this.RendererController.OnFaceDeadHandler();
             Managers.Game.OnPlayerIsDead?.Invoke();
 #if UNITY_EDITOR
             IsStillDeadEyes();
 #endif
         }
-
         private void OnDestroy()
             => RemoveCallbacks();
 

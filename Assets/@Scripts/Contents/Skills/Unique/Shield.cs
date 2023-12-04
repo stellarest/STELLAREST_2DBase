@@ -100,8 +100,9 @@ namespace STELLAREST_2D
         protected override void DoSkillJob(Action callback = null)
         {
             this.Owner.SkillBook.Deactivate(FixedValue.TemplateID.Skill.PaladinMastery);
-            this.Owner.ReserveSkillAnimationType(this.Data.AnimationType);
-            Owner.CreatureState = Define.CreatureState.Skill;
+            this.Owner.CreatureSkillAnimType = this.Data.SkillAnimationTemplateID;
+            this.Owner.CreatureState = CreatureState.Skill;
+            callback?.Invoke();
         }
 
         public override void OnActiveEliteActionHandler() => this.IsOnShield = true;
