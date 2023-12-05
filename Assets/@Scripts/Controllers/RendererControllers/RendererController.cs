@@ -109,11 +109,7 @@ namespace STELLAREST_2D
             currentTrail = trailPreset;
         }
 
-        public void InitRendererController(BaseController owner)
-        {
-            this.Owner = owner;
-        }
-
+        public void InitRendererController(BaseController owner) => this.Owner = owner;
         public virtual void InitRendererController(BaseController owner, CreatureData initialCreatureData)
         {
             this.InitRendererController(owner);

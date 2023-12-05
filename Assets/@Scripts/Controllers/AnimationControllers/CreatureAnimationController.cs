@@ -16,12 +16,18 @@ namespace STELLAREST_2D
         private readonly int CREATURE_RUN = Animator.StringToHash(FixedValue.Find.ANIM_PARAM_CREATURE_RUN);
         private readonly int CREATURE_STUN = Animator.StringToHash(FixedValue.Find.ANIM_PARAM_CREATURE_STUN);
         private readonly int CREATURE_DEAD = Animator.StringToHash(FixedValue.Find.ANIM_PARAM_CREATURE_DEAD);
-
         private readonly int CREATURE_ANIM_SPEED = Animator.StringToHash(FixedValue.Find.ANIM_PARAM_CREATURE_ANIM_SPEED);
         public void SetAnimationSpeed(float animSpeed) => CreatureAnimator.SetFloat(CREATURE_ANIM_SPEED, animSpeed);
 
         private readonly int CREATURE_MOVEMENT_SPEED = Animator.StringToHash(FixedValue.Find.ANIM_PARAM_CREATURE_MOVEMENT_SPEED);
-        public void SetMovementSpeed(float movementSpeed) => CreatureAnimator.SetFloat(CREATURE_MOVEMENT_SPEED, movementSpeed);
+        public void SetMovementSpeed(float movementSpeed)
+        {
+            float movementSpeedMultiplierResult = Mathf.Clamp01(movementSpeed / FixedValue.Numeric.CREATURE_MAX_MOVEMENT_SPEED) 
+                                                    * FixedValue.Numeric.CREATURE_MAX_MOVEMENT_SPEED_ANIM_MULTIPLIER;
+
+            CreatureAnimator.SetFloat(CREATURE_MOVEMENT_SPEED, movementSpeedMultiplierResult);
+            Utils.LogEndMethod(nameof(SetMovementSpeed));
+        }
 
         private readonly int CREATURE_ENTER_NEXT_STATE_TRIGGER = Animator.StringToHash(FixedValue.Find.ANIM_PARAM_CREATURE_ENTER_NEXT_STATE_TRIGGER);
         public void EnterNextState() => CreatureAnimator.SetTrigger(CREATURE_ENTER_NEXT_STATE_TRIGGER);

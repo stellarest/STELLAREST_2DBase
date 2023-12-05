@@ -164,8 +164,8 @@ namespace STELLAREST_2D
                 case (int)FixedValue.TemplateID.Player.Reina_ArrowMaster:
                 case (int)FixedValue.TemplateID.Player.Reina_ElementalArcher:
                 case (int)FixedValue.TemplateID.Player.Reina_ForestGuardian:
-                    GameObject foreArmL2 = Utils.FindChild(this.BodyParts.ArmLeft.gameObject, FixedValue.Find.PLAYER_FOREARM_LEFT_2, true);
-                    this.BodyParts.RangedWeapon = Utils.FindChild<Transform>(foreArmL2, FixedValue.Find.PLAYER_BOW);
+                    GameObject foreArmL2 = Utils.FindChild(this.BodyParts.ArmLeft.gameObject, FixedValue.Find.PLAYER_FOREARM_LEFT_2, recursive: true);
+                    this.BodyParts.RangedWeapon = Utils.FindChild<Transform>(foreArmL2, FixedValue.Find.PLAYER_BOW, recursive: true);
                     break;
 
                 case (int)FixedValue.TemplateID.Player.Kenneth_Assassin:

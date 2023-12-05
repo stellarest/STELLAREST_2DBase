@@ -15,19 +15,12 @@ namespace STELLAREST_2D
             this.Name = creatureData.Name;
             this.Description = creatureData.Description;
 
-            if (creatureData.InitialStatDescGrade_MinPower == InitialStatDescGrade.None || creatureData.InitialStatDescGrade_MaxPower == InitialStatDescGrade.None)
-                Utils.LogCritical(nameof(CreatureStat), nameof(CreatureStat), "Not allowed initial zero value for display(Min and Max Power)");
-
-            this.InitialStatDesc_MinPower = creatureData.InitialStatDescGrade_MinPower;
-            this.InitialStatDesc_MaxPower = creatureData.InitialStatDescGrade_MaxPower;
-            this.InitialStatDesc_AttackSpeed = creatureData.InitialStatDescGrade_AttackSpeed;
-            this.InitialStatDesc_Armor = creatureData.InitialStatDescGrade_Armor;
-            this.InitialStatDesc_MovementSpeed = creatureData.InitialStatDescGrade_MovementSpeed;
-
             this.MaxHP = creatureData.InitialMaxHP;
             this.HP = creatureData.InitialMaxHP;
-            this.Armor = creatureData.InitialArmor;
-            this._movementSpeed = creatureData.InitialMovementSpeed;
+            this.InitialStatDescGrade_Power = creatureData.InitialStatDescGrade_Power;
+            this.InitialStatDescGrade_AttackSpeed = creatureData.InitialStatDescGrade_AttackSpeed;
+            InitArmorRate(creatureData.InitialStatDescGrade_Armor);
+            InitMovementSpeed(creatureData.InitialStatDescGrade_MovementSpeed);
 
             this.InitialSkillDesc_MasteryUniqueSkillIcon = creatureData.InitialSkillDesc_MasteryUniqueSkillIcon;
             this.InitialSkillDesc_MasteryUniqueDescription = creatureData.InitialSkillDesc_MasteryUniqueSkillDescription;
@@ -49,11 +42,10 @@ namespace STELLAREST_2D
         public string Description { get; private set; } = string.Empty;
 
         #region SET PREV FOR USING UI LATER
-        public InitialStatDescGrade InitialStatDesc_MinPower { get; private set; } = InitialStatDescGrade.None;
-        public InitialStatDescGrade InitialStatDesc_MaxPower { get; private set; } = InitialStatDescGrade.None;
-        public InitialStatDescGrade InitialStatDesc_AttackSpeed { get; private set; } = InitialStatDescGrade.None;
-        public InitialStatDescGrade InitialStatDesc_Armor { get; private set; } = InitialStatDescGrade.None;
-        public InitialStatDescGrade InitialStatDesc_MovementSpeed { get; private set; } = InitialStatDescGrade.None;
+        public InitialStatDescGrade InitialStatDescGrade_Power { get; private set; } = InitialStatDescGrade.None;
+        public InitialStatDescGrade InitialStatDescGrade_AttackSpeed { get; private set; } = InitialStatDescGrade.None;
+        public InitialStatDescGrade InitialStatDescGrade_Armor { get; private set; } = InitialStatDescGrade.None;
+        public InitialStatDescGrade InitialStatDescGrade_MovementSpeed { get; private set; } = InitialStatDescGrade.None;
 
         public Sprite InitialSkillDesc_MasteryUniqueSkillIcon { get; private set; } = null;
         public string InitialSkillDesc_MasteryUniqueDescription { get; private set; } = string.Empty;
@@ -88,8 +80,8 @@ namespace STELLAREST_2D
 
         [field: SerializeField] public float CriticalChance { get; set; } = 0f;
         [field: SerializeField] public float PublicSkillCooldownRate { get; set; } = 0f;
-
         [field: SerializeField] public float DodgeChance { get; set; } = 0f;
+
         [SerializeField] private float _movementSpeed = 0f;
         public float MovementSpeed
         {
@@ -97,7 +89,7 @@ namespace STELLAREST_2D
             set
             {
                 _movementSpeed = value;
-                this.Owner.CreatureAnimController.SetMovementSpeed(_movementSpeed);
+                this.Owner.CreatureAnimController.SetMovementSpeed(MovementSpeed);
             }
         }
 
@@ -109,5 +101,58 @@ namespace STELLAREST_2D
         }
 
         public void ResetMovementSpeed() => this.MovementSpeed = _movementSpeedOrigin;
+
+        private void InitArmorRate(InitialStatDescGrade initialArmorGrade)
+        {
+            switch (initialArmorGrade)
+            {
+                case InitialStatDescGrade.None:
+                    this.Armor = FixedValue.Numeric.INITIAL_ARMOR_RATE_NONE;
+                    this.InitialStatDescGrade_Armor = initialArmorGrade;
+                    break;
+
+                case InitialStatDescGrade.Low:
+                    this.Armor = FixedValue.Numeric.INITIAL_ARMOR_RATE_LOW;
+                    this.InitialStatDescGrade_Armor = initialArmorGrade;
+                    break;
+
+                case InitialStatDescGrade.Average:
+                    this.Armor = FixedValue.Numeric.INITIAL_ARMOR_RATE_AVERAGE;
+                    this.InitialStatDescGrade_Armor = initialArmorGrade;
+                    break;
+
+                case InitialStatDescGrade.Great:
+                    this.Armor = FixedValue.Numeric.INITIAL_ARMOR_RATE_HIGH;
+                    this.InitialStatDescGrade_Armor = initialArmorGrade;
+                    break;
+            }
+        }
+
+        private void InitMovementSpeed(InitialStatDescGrade initialMovementSpeedGrade)
+        {
+            if (initialMovementSpeedGrade == InitialStatDescGrade.None)
+                Utils.LogCritical(nameof(CreatureState), nameof(InitMovementSpeed), "Not allowed to set \"None\" value on initial movement speed.");
+
+            switch (initialMovementSpeedGrade)
+            {
+                case InitialStatDescGrade.Low:
+                    //this._movementSpeed = FixedValue.Numeric.INITIAL_MOVEMENT_SPEED_LOW;
+                    this.MovementSpeed = FixedValue.Numeric.INITIAL_MOVEMENT_SPEED_LOW; // Use Property
+                    this.InitialStatDescGrade_MovementSpeed = initialMovementSpeedGrade;
+                    break;
+
+                case InitialStatDescGrade.Average:
+                    //this._movementSpeed = FixedValue.Numeric.INITIAL_MOVEMENT_SPEED_AVERAGE;
+                    this.MovementSpeed = FixedValue.Numeric.INITIAL_MOVEMENT_SPEED_AVERAGE; // Use Property
+                    this.InitialStatDescGrade_MovementSpeed = initialMovementSpeedGrade;
+                    break;
+
+                case InitialStatDescGrade.Great:
+                    //this._movementSpeed = FixedValue.Numeric.INITIAL_MOVEMENT_SPEED_HIGH;
+                    this.MovementSpeed = FixedValue.Numeric.INITIAL_MOVEMENT_SPEED_HIGH; // Use Property
+                    this.InitialStatDescGrade_MovementSpeed = initialMovementSpeedGrade;
+                    break;
+            }
+        }
     }
 }

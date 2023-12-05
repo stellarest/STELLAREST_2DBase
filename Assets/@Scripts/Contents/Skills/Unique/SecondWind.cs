@@ -137,7 +137,7 @@ namespace STELLAREST_2D
 
             // TODO 2
             // this.Owner.Stat.ResetArmor();
-            this.Owner.SkillBook.Deactivate(FixedValue.TemplateID.Skill.SecondWind_Elite_Solo);
+            this.Owner.SkillBook.Deactivate(FixedValue.TemplateID.Skill.Unlock_KnightMastery_Elite);
         }
     }
 }

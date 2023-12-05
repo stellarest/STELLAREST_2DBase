@@ -35,8 +35,8 @@ namespace STELLAREST_2D
             get => AnimTransform.transform.localScale;
             set => AnimTransform.transform.localScale = value;
         }
-        public bool IsFacingRight => this.LookAtDir == Define.LookAtDirection.Right;
-        public System.Action<Define.LookAtDirection> OnLookAtDirChanged = null;
+        public bool IsFacingRight => this.LookAtDir == LookAtDirection.Right;
+        public System.Action<LookAtDirection> OnLookAtDirChanged = null;
         public AnimationCallback AnimCallback { get; protected set; } = null;
         public CreatureAnimationController CreatureAnimController { get; protected set; } = null;
         public Rigidbody2D RigidBody { get; protected set; } = null;
@@ -44,7 +44,6 @@ namespace STELLAREST_2D
         [field: SerializeField] public CreatureStat Stat { get; protected set; } = null;
 
         public bool IsInvincible { get; set; } = false;
-
         // ************** TODO *************** 고쳐야함 개판임
         public const float ORIGIN_SPEED_MODIFIER = 1F;
         public virtual float SpeedModifier { get; set; } = 1f;
@@ -213,9 +212,9 @@ namespace STELLAREST_2D
                     if (data.UsePresetLocalScale == false)
                         go.transform.localScale = Vector3.one;
 
-                    UniqueSkill actionSkill = go.GetComponent<UniqueSkill>();
-                    actionSkill.InitOrigin(this, data);
-                    SkillBook.SkillGroupsDict.AddGroup(templateID, new SkillGroup(actionSkill));
+                    UniqueSkill uniqueSkill = go.GetComponent<UniqueSkill>();
+                    uniqueSkill.InitOrigin(this, data);
+                    SkillBook.SkillGroupsDict.AddGroup(templateID, new SkillGroup(uniqueSkill));
                 }
             }
         }

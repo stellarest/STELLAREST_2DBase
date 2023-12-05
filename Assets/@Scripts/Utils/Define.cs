@@ -1,5 +1,5 @@
 
-#define USE_LINQ
+// #define USE_LINQ
 
 namespace STELLAREST_2D
 {
@@ -12,7 +12,7 @@ namespace STELLAREST_2D
         public enum Sound { BGM, SFX, } // temp
         public enum StageType { Normal, Boss, } // temp
         public enum UIEvent { Click, Pressed, PointerDown, PointerUp, BeginDrag, Drag, EndDrag, }
-        public enum InitialStatDescGrade { None, VeryLow, Low, Average, High, VeryHigh }
+        public enum InitialStatDescGrade { None = -1, Low = 1, Average, Great, Unknown }
         public enum ObjectType { None = -1, Player = 1, Monster, Skill, Projectile, Gem, Soul }
         public enum MonsterType { None = -1, Chicken = 1, }
         public enum InGameGrade { Default = 1, Elite, Ultimate }
@@ -27,7 +27,6 @@ namespace STELLAREST_2D
         public enum FaceType { Default = 1, Combat, Dead, Bunny, }
         public enum GemSize { Normal = 1, Large = 2 }
         public enum StrongTintColor { White, Red, Green }
-        public enum SkillAnimationType { None = -1, Attack = 101, ElitePlus = 201, C1ElitePlus = 202, UltimatePlus = 301, }
         public enum VFXMuzzleType { None = -1, White, }
         public enum VFXTrailType { None = -1, Wind, Light }
         public enum VFXEnvType
@@ -124,7 +123,6 @@ namespace STELLAREST_2D
                 // CreatureAnimationController
                 public const string ANIM_PARAM_CREATURE_IDLE = "Idle";
                 public const string ANIM_PARAM_CREATURE_RUN = "Run";
-                public const string ANIM_PARAM_PLAYER_NINJA_RUN = "NinjaRun";
                 public const string ANIM_PARAM_CREATURE_STUN = "Stun";
                 public const string ANIM_PARAM_CREATURE_DEAD = "Dead";
                 public const string ANIM_PARAM_CREATURE_ANIM_SPEED = "AnimationSpeed";
@@ -166,6 +164,30 @@ namespace STELLAREST_2D
                 public const int FOREST_STAGE_MAX_WAVE_PER_STAGE_LEVELS = 20; // temp (memo)
                 public const int VOLCANO_STAGE_MAX_WAVE_PER_STAGE_LEVELS = 30; // temp (memo)
 
+                /*
+                    Armor None : 0%
+                    Armor Low : 5%
+                    Armor Average : 15%
+                    Armor Great : 30%
+
+                    Movement Speed Low : 7.05f
+                    Movement Speed Average : 8.2f
+                    Movement Speed Great : 9.35f
+                */
+                // CreatureStat
+                public const float INITIAL_ARMOR_RATE_NONE = 0F;
+                public const float INITIAL_ARMOR_RATE_LOW = 0.03F;
+                public const float INITIAL_ARMOR_RATE_AVERAGE = 0.1F;
+                public const float INITIAL_ARMOR_RATE_HIGH = 0.3F;
+                public const float CREATURE_MAX_ARMOR_RATE = 0.6F;
+                public const float CREATURE_MAX_DODGE_CHANCE = 0.7F;
+
+                public const float INITIAL_MOVEMENT_SPEED_LOW = 8F;
+                public const float INITIAL_MOVEMENT_SPEED_AVERAGE = 9.5F;
+                public const float INITIAL_MOVEMENT_SPEED_HIGH = 12F;
+                public const float CREATURE_MAX_MOVEMENT_SPEED = 20F;
+                public const float CREATURE_MAX_MOVEMENT_SPEED_ANIM_MULTIPLIER = 3F;
+
                 // VFXManager
                 public const float HIT_DURATION = 1F;
                 public const float HOLOGRAM_SPEED_POWER = 20F;
@@ -193,6 +215,7 @@ namespace STELLAREST_2D
             {
                 public enum Player
                 {
+                    None = -1,
                     Gary_Paladin = 100100,
                     Gary_Knight = 100200,
                     Gary_PhantomKnight = 100300,
@@ -208,58 +231,58 @@ namespace STELLAREST_2D
 
                 public enum Monster
                 {
+                    None = -1,
                     Chicken = 900100,
                 }
+
+                /*
+                    Mastery : 시작시 lv.1
+                    Unlock_Elite.. : Mastery Elite 달성시 lv.1
+                    Unlock Ultimate.. : Mastery Ultimate 달성시 lv.1 
+                */
 
                 public enum Skill
                 {
                     None = -1,
 
-                    // +++ PALADIN +++
+                    // *** Unique Skills ***
                     PaladinMastery = 100100,
-                    Shield_Elite_Solo = 100103, // ELITE_SOLO 이름 바꿔야할듯,,,
-                    JudgementOfHeaven_Ultimate_Solo = 100106,
+                    Unlock_PaladinMastery_Elite = 100103,  // Shield
+                    Unlock_PaladinMastery_Ultimate = 100106, // Judgement
 
-                    // +++ KNIGHT +++
                     KnightMastery = 100200,
-                    SecondWind_Elite_Solo = 100203,
-                    StormBlade_Ultimate_Solo = 100206,
+                    Unlock_KnightMastery_Elite = 100203, // Second Wind
+                    Unlock_KnightMastery_Ultimate = 100206, // Storm Blade
 
-                    // +++ PHANTOM KNIGHT +++
                     PhantomKnightMastery = 100300,
-                    SummonPhantomSoul_Elite_Solo = 100303,
-                    PhantomSoul_Elite_Solo = 100306,
-                    Metamorphosis_Ultimate_Solo = 100309,
+                    Unlock_PhantomKnightMastery_Elite = 100303, // Summon : Phantom Soul
+                    Unlock_PhantomKnightMastery_Elite_C1 = 100306, // Phantom Soul
+                    Unlock_PhantomKnightMastery_Ultimate = 100309, // Metamorphosis
 
-                    // +++ ARROW MASTERY +++
                     ArrowMasterMastery = 200100,
-                    Concentration_Elite_Solo = 200103,
-                    ArrowShower_Ultimate_Solo = 200106,
+                    Unlock_ArrowMasterMastery_Elite = 200103, // Concentration
+                    Unlock_ArrowMasterMastery_Ultimate = 200106, // Arrow Time
 
-                    // +++ ELEMENTAL ARCHER +++
                     ElementalArcherMastery = 200200,
-                    ElementalShock_Elite_Solo = 200203,
-                    ElementalCharge_Ultimate_Solo = 200206,
+                    Unlock_ElementalArcherMastery_Elite = 200203, // Elemental Shock
+                    Unlock_ElementalArcherMasstery_Ultimate = 200206, // Elemental Charge
 
-                    // +++ FOREST GUARDIAN +++
                     ForestGuardianMastery = 200300,
-                    ForestBarrier_Elite_Solo = 200303,
-                    SummonBlackPanther_Ultimate_Solo = 200306,
+                    Unlock_ForestGuardian_Elite = 200303, // Forest Barrier
+                    Unlock_ForestGuardian_Ultimate = 200306, // Summon : Battle Panther
 
-                    // +++ ASSASSIN +++
-                    AssassinMastery = 300100,
-                    PoisonDagger_Elite_Solo = 300103,
                     // SkillGroupDictionary, DictionaryGroupMaxCount(_numberGroups)으로 인해서 현재는 3씩 증가시켜야함 (임시)
-                    StabPoisonDagger_Elite_Solo = 300106,
-                    CounterStrike_Ultimate_Solo = 300109,
+                    AssassinMastery = 300100,
+                    Unlock_AssassinMastery_Elite = 300103, // PoisonDagger
+                    Unlock_AssassinMastery_Elite_C1 = 300106, // Stab - PoisonDagger
+                    Unlock_AssassinMastery_Ultimate = 300109, // Counter Strike
 
-                    // +++ NINJA +++
                     NinjaMastery = 300200,
-                    Cloak_Elite_Solo = 300203,
-                    NinjaSlash_Elite_Solo = 300206,
-                    CloneTechnique_Ultimate_Solo = 300209,
+                    Unlock_NinjaMastery_Elite = 300203, // Cloak
+                    Unlock_NinjaMastery_Elite_C1 = 300206, // Ninja Slash
+                    Unlock_NinjaMastery_Ultimate = 300209, // Clone Technique
 
-                    // +++ PUBLIC +++
+                    // *** Public Skills ***
                     ThrowingStar = 900100,
                     Boomerang = 900103,
                     LazerBolt = 900106,
@@ -272,11 +295,10 @@ namespace STELLAREST_2D
                 public enum SkillAnimation
                 {
                     None = -1,
-                    MasteryAttack = 1000,
-                    MasteryElitePlus = 1001,
-                    MasteryElitePlus_C1 = 1002,
-                    MasteryUltimatePlus = 1003,
-                    Max = 999
+                    Mastery = 100100,
+                    Unlock_Mastery_Elite = 200100,
+                    Unlock_Mastery_Elite_C1 = 200101,
+                    Unlock_Mastery_Ultimate = 300100,
                 }
 
                 public enum CrowdControl

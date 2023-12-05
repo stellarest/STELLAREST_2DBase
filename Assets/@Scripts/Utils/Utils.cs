@@ -292,7 +292,7 @@ namespace STELLAREST_2D
                 case FixedValue.TemplateID.Skill.KnightMastery:
                 case FixedValue.TemplateID.Skill.PhantomKnightMastery:
                 case FixedValue.TemplateID.Skill.AssassinMastery:
-                case FixedValue.TemplateID.Skill.NinjaSlash_Elite_Solo:
+                case FixedValue.TemplateID.Skill.Unlock_NinjaMastery_Elite_C1:
                     return true;
 
                 default:

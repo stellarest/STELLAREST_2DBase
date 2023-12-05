@@ -17,16 +17,16 @@ namespace STELLAREST_2D
         {
             switch (skillAnimType)
             {
-                case FixedValue.TemplateID.SkillAnimation.MasteryAttack:
+                case FixedValue.TemplateID.SkillAnimation.Mastery:
                     CreatureAnimator.Play(UPPER_ATTACK);
                     break;
 
-                case FixedValue.TemplateID.SkillAnimation.MasteryElitePlus:
+                case FixedValue.TemplateID.SkillAnimation.Unlock_Mastery_Elite:
                     CreatureAnimator.StopPlayback();
                     CreatureAnimator.Play(UPPER_MASTERY_ELITE_PLUS);
                     break;
 
-                case FixedValue.TemplateID.SkillAnimation.MasteryUltimatePlus:
+                case FixedValue.TemplateID.SkillAnimation.Unlock_Mastery_Ultimate:
                     break;
             }
         }

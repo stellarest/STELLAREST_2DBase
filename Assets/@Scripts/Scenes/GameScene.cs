@@ -22,8 +22,8 @@ namespace STELLAREST_2D
         }
 
         private SpawningPool _spawningPool;
-        private Define.StageType _stageType;
-        public Define.StageType StageType
+        private StageType _stageType;
+        public StageType StageType
         {
             get => _stageType;
             set
@@ -33,13 +33,13 @@ namespace STELLAREST_2D
                 {
                     switch (value)
                     {
-                        case Define.StageType.Normal:
+                        case StageType.Normal:
                             {
                                 _spawningPool.Stopped = false;
                             }
                             break;
 
-                        case Define.StageType.Boss:
+                        case StageType.Boss:
                             {
                                 _spawningPool.Stopped = true;
                             }
@@ -58,7 +58,7 @@ namespace STELLAREST_2D
             Managers.VFX.Init();
             Managers.Collision.Init();
 
-            PlayerController player = this.SpawnPlayer(FixedValue.TemplateID.Player.Gary_Paladin);
+            PlayerController player = this.SpawnPlayer(FixedValue.TemplateID.Player.Gary_PhantomKnight);
             //Managers.Game.OnGameStart += player.OnGameStartHandler;
             //Utils.Log("Add Event : Managers.Game.OnGameStart += player.OnGameStartHandler");
 

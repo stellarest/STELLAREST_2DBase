@@ -13,16 +13,12 @@ namespace STELLAREST_2D.Data
         public string Description;
         public string PrimaryLabel;
 
-        public Define.InitialStatDescGrade InitialStatDescGrade_MinPower;
-        public Define.InitialStatDescGrade InitialStatDescGrade_MaxPower;
+        public float InitialMaxHP;
+        public Define.InitialStatDescGrade InitialStatDescGrade_Power;
         public Define.InitialStatDescGrade InitialStatDescGrade_AttackSpeed;
         public Define.InitialStatDescGrade InitialStatDescGrade_Armor;
         public Define.InitialStatDescGrade InitialStatDescGrade_MovementSpeed;
 
-        public float InitialMaxHP;
-        public float InitialArmor;
-        public float InitialMovementSpeed;
-        
         public Sprite InitialSkillDesc_MasteryUniqueSkillIcon;
         public string InitialSkillDesc_MasteryUniqueSkillDescription;
         public Sprite InitialSkillDesc_EliteUniqueSkillIcon;

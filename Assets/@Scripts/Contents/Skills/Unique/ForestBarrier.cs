@@ -31,7 +31,7 @@ namespace STELLAREST_2D
                     //Managers.VFX.ImpactHit(FixedValue.TemplateID.VFX.ImpactHit.Leaves, this.Owner, this);
                     Managers.VFX.ImpactHit(this.Data.VFX_ImpactHit_TemplateID, this.Owner, this);
 
-                    this.Owner.SkillBook.Deactivate(FixedValue.TemplateID.Skill.ForestBarrier_Elite_Solo);
+                    this.Owner.SkillBook.Deactivate(FixedValue.TemplateID.Skill.Unlock_ForestGuardian_Elite);
                     this.Owner.Stat.ResetMovementSpeed();
                 }
             }
