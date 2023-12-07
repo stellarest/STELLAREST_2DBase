@@ -32,12 +32,12 @@ namespace STELLAREST_2D
                     }
                     break;
 
-                case FixedValue.TemplateID.SkillAnimation.Unlock_Mastery_Elite:
+                case FixedValue.TemplateID.SkillAnimation.Unique_Elite:
                     CreatureAnimator.StopPlayback();
                     CreatureAnimator.Play(UPPER_MASTERY_ELITE_PLUS);
                     break;
 
-                case FixedValue.TemplateID.SkillAnimation.Unlock_Mastery_Ultimate:
+                case FixedValue.TemplateID.SkillAnimation.Unique_Ultimate:
                     break;
             }
         }

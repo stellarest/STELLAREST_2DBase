@@ -2,36 +2,50 @@ using UnityEngine;
 
 using static STELLAREST_2D.Define;
 using STELLAREST_2D.Data;
+using UnityEngine.UIElements.Experimental;
 
 namespace STELLAREST_2D
 {
+    #region Constructor
     [System.Serializable]
     public class CreatureStat
     {
         public CreatureStat(CreatureController owner, CreatureData creatureData)
         {
             this.Owner = owner;
-            this.TemplateID = creatureData.TemplateID;
+            this.TemplateID = (int)creatureData.TemplateID;
             this.Name = creatureData.Name;
             this.Description = creatureData.Description;
 
+            this.InitialPowerDisplay = creatureData.StatGradeDesc_Power;
+            this.InitialAttackSpeedDisplay = creatureData.StatGradeDesc_AttackSpeed;
+            this.InitialArmorDisplay = creatureData.StatGradeDesc_Armor;
+            this.InitialMovementSpeedDisplay = creatureData.StatGradeDesc_MovementSpeed;
+
             this.MaxHP = creatureData.InitialMaxHP;
             this.HP = creatureData.InitialMaxHP;
-            this.InitialStatDescGrade_Power = creatureData.InitialStatDescGrade_Power;
-            this.InitialStatDescGrade_AttackSpeed = creatureData.InitialStatDescGrade_AttackSpeed;
-            InitArmorRate(creatureData.InitialStatDescGrade_Armor);
-            InitMovementSpeed(creatureData.InitialStatDescGrade_MovementSpeed);
 
-            this.InitialSkillDesc_MasteryUniqueSkillIcon = creatureData.InitialSkillDesc_MasteryUniqueSkillIcon;
-            this.InitialSkillDesc_MasteryUniqueDescription = creatureData.InitialSkillDesc_MasteryUniqueSkillDescription;
-            this.InitialSkillDesc_EliteUniqueSkillIcon = creatureData.InitialSkillDesc_EliteUniqueSkillIcon;
-            this.InitialSkillDesc_EliteUniqueSkillDescription = creatureData.InitialSkillDesc_EliteUniqueSkillDescription;
-            this.InitialSkillDesc_UltimateUniqueSkillIcon = creatureData.InitialSkillDesc_UltimateUniqueSkillIcon;
-            this.InitialSkillDesc_UltimateUniqueSkillDescription = creatureData.InitialSkillDesc_UltimateUniqueSkillDescription;
+            this._initialArmor = creatureData.InitialArmor;
+            this.Armor = creatureData.InitialArmor;
+
+            this._initialMovementSpeed = creatureData.InitialMovementSpeed;
+            this.MovementSpeed = creatureData.InitialMovementSpeed;
+
+            this.MasterySkillIcon = creatureData.Icon_MasterySkill;
+            this.MasterySkillDesc = creatureData.Desc_MasterySkill;
+
+            this.UniqueEliteSkillIcon = creatureData.Icon_UniqueEliteSkill;
+            this.UniqueEliteSkillDesc = creatureData.Desc_UniqueEliteSkill;
+
+            this.UniqueUltimateSkillIcon = creatureData.Icon_UniqueUltimateSkill;
+            this.UniqueUltimateSkillDesc = creatureData.Desc_UniqueUltimateSkill;
         }
+        #endregion
 
         #region Event
-        // +++++ Mastery Attack Template : Cooldown is Attack Speed +++++
+        // *************************************************
+        // *** Mastery Attack : Cooldown is Attack Speed ***
+        // *************************************************
         public System.Action<FixedValue.TemplateID.Skill, float> OnAddSkillCooldownRatio = null;
         public System.Action<FixedValue.TemplateID.Skill> OnResetSkillCooldown = null;
         #endregion
@@ -41,22 +55,12 @@ namespace STELLAREST_2D
         [field: SerializeField] public string Name { get; private set; } = string.Empty;
         public string Description { get; private set; } = string.Empty;
 
-        #region SET PREV FOR USING UI LATER
-        public InitialStatDescGrade InitialStatDescGrade_Power { get; private set; } = InitialStatDescGrade.None;
-        public InitialStatDescGrade InitialStatDescGrade_AttackSpeed { get; private set; } = InitialStatDescGrade.None;
-        public InitialStatDescGrade InitialStatDescGrade_Armor { get; private set; } = InitialStatDescGrade.None;
-        public InitialStatDescGrade InitialStatDescGrade_MovementSpeed { get; private set; } = InitialStatDescGrade.None;
+        public string InitialPowerDisplay { get; private set; } = string.Empty;
+        public string InitialAttackSpeedDisplay { get; private set; } = string.Empty;
+        public string InitialArmorDisplay { get; private set; } = string.Empty;
+        public string InitialMovementSpeedDisplay { get; private set; } = string.Empty;
 
-        public Sprite InitialSkillDesc_MasteryUniqueSkillIcon { get; private set; } = null;
-        public string InitialSkillDesc_MasteryUniqueDescription { get; private set; } = string.Empty;
-
-        public Sprite InitialSkillDesc_EliteUniqueSkillIcon { get; private set; } = null;
-        public string InitialSkillDesc_EliteUniqueSkillDescription { get; private set; } = string.Empty;
-
-        public Sprite InitialSkillDesc_UltimateUniqueSkillIcon { get; private set; } = null;
-        public string InitialSkillDesc_UltimateUniqueSkillDescription { get; private set; } = string.Empty;
-        #endregion
-
+        #region Stat
         [field: SerializeField] public int Level { get; set; } = 0;
         [field: SerializeField] public int LevelUpPoint { get; set; } = 0;
         [field: SerializeField] public int TotalEXP { get; set; } = 0;
@@ -66,22 +70,11 @@ namespace STELLAREST_2D
         [field: SerializeField] public float MaxShieldHP { get; set; } = 0f;
         [field: SerializeField] public float ShieldHP { get; set; } = 0f;
 
-        // +++++ ARMOR +++++
+        private float _initialArmor = 0f;
         [SerializeField] private float _armor = 0f;
-        private float _armorPrev = 0f;
-        private float _armorTotalUpRatio = 0f;
-        public float Armor { get => _armor; private set => _armor = value; } // 외부에서는 Armor만 알고 있으면 됨.
+        public float Armor { get => _armor; private set => _armor = value; }
 
-        [field: SerializeField] public float CollectRange { get; set; } = FixedValue.Numeric.INITIAL_COLLECT_RANGE;
-        [field: SerializeField] public float Luck { get; set; } = 0f;
-        [field: SerializeField] public float HPRegenerationRate { get; set; } = 0f;
-        [field: SerializeField] public float HPStealRate { get; set; } = 0f;
-        [field: SerializeField] public float DamageUpRate { get; set; } = 0f;
-
-        [field: SerializeField] public float CriticalChance { get; set; } = 0f;
-        [field: SerializeField] public float PublicSkillCooldownRate { get; set; } = 0f;
-        [field: SerializeField] public float DodgeChance { get; set; } = 0f;
-
+        private float _initialMovementSpeed = 0f;
         [SerializeField] private float _movementSpeed = 0f;
         public float MovementSpeed
         {
@@ -93,66 +86,37 @@ namespace STELLAREST_2D
             }
         }
 
+        [field: SerializeField] public float CollectRange { get; set; } = FixedValue.Numeric.INITIAL_COLLECT_RANGE;
+        [field: SerializeField] public float Luck { get; set; } = 0f;
+        [field: SerializeField] public float HPRegenerationRate { get; set; } = 0f;
+        [field: SerializeField] public float HPStealRate { get; set; } = 0f;
+        [field: SerializeField] public float DamageUpRate { get; set; } = 0f; // DMG UP RATE ALL OF SKILLS
+        [field: SerializeField] public float CriticalChance { get; set; } = 0f;
+        [field: SerializeField] public float CooldownRate { get; set; } = 0f; // COOLDOWN RATE ALL OF SKILLS
+        [field: SerializeField] public float DodgeChance { get; set; } = 0f;
+        #endregion
+
+        public Sprite MasterySkillIcon { get; private set; } = null;
+        public string MasterySkillDesc { get; private set; } = string.Empty;
+
+        public Sprite UniqueEliteSkillIcon { get; private set; } = null;
+        public string UniqueEliteSkillDesc { get; private set; } = string.Empty;
+
+        public Sprite UniqueUltimateSkillIcon { get; private set; } = null;
+        public string UniqueUltimateSkillDesc { get; private set; } = string.Empty;
+
+        public void EnterInGame()
+        {
+            this.HP = this.MaxHP;
+        }
+
+        // TODO : 확인 후 개선 필요
         private float _movementSpeedOrigin = 0f;
         public void AddMovementSpeedRatio(float ratio)
         {
             _movementSpeedOrigin = this.MovementSpeed;
             this.MovementSpeed = this.MovementSpeed + (this.MovementSpeed * ratio);
         }
-
         public void ResetMovementSpeed() => this.MovementSpeed = _movementSpeedOrigin;
-
-        private void InitArmorRate(InitialStatDescGrade initialArmorGrade)
-        {
-            switch (initialArmorGrade)
-            {
-                case InitialStatDescGrade.None:
-                    this.Armor = FixedValue.Numeric.INITIAL_ARMOR_RATE_NONE;
-                    this.InitialStatDescGrade_Armor = initialArmorGrade;
-                    break;
-
-                case InitialStatDescGrade.Low:
-                    this.Armor = FixedValue.Numeric.INITIAL_ARMOR_RATE_LOW;
-                    this.InitialStatDescGrade_Armor = initialArmorGrade;
-                    break;
-
-                case InitialStatDescGrade.Average:
-                    this.Armor = FixedValue.Numeric.INITIAL_ARMOR_RATE_AVERAGE;
-                    this.InitialStatDescGrade_Armor = initialArmorGrade;
-                    break;
-
-                case InitialStatDescGrade.Great:
-                    this.Armor = FixedValue.Numeric.INITIAL_ARMOR_RATE_HIGH;
-                    this.InitialStatDescGrade_Armor = initialArmorGrade;
-                    break;
-            }
-        }
-
-        private void InitMovementSpeed(InitialStatDescGrade initialMovementSpeedGrade)
-        {
-            if (initialMovementSpeedGrade == InitialStatDescGrade.None)
-                Utils.LogCritical(nameof(CreatureState), nameof(InitMovementSpeed), "Not allowed to set \"None\" value on initial movement speed.");
-
-            switch (initialMovementSpeedGrade)
-            {
-                case InitialStatDescGrade.Low:
-                    //this._movementSpeed = FixedValue.Numeric.INITIAL_MOVEMENT_SPEED_LOW;
-                    this.MovementSpeed = FixedValue.Numeric.INITIAL_MOVEMENT_SPEED_LOW; // Use Property
-                    this.InitialStatDescGrade_MovementSpeed = initialMovementSpeedGrade;
-                    break;
-
-                case InitialStatDescGrade.Average:
-                    //this._movementSpeed = FixedValue.Numeric.INITIAL_MOVEMENT_SPEED_AVERAGE;
-                    this.MovementSpeed = FixedValue.Numeric.INITIAL_MOVEMENT_SPEED_AVERAGE; // Use Property
-                    this.InitialStatDescGrade_MovementSpeed = initialMovementSpeedGrade;
-                    break;
-
-                case InitialStatDescGrade.Great:
-                    //this._movementSpeed = FixedValue.Numeric.INITIAL_MOVEMENT_SPEED_HIGH;
-                    this.MovementSpeed = FixedValue.Numeric.INITIAL_MOVEMENT_SPEED_HIGH; // Use Property
-                    this.InitialStatDescGrade_MovementSpeed = initialMovementSpeedGrade;
-                    break;
-            }
-        }
     }
 }

@@ -116,13 +116,13 @@ namespace STELLAREST_2D
             
             _ownerController.PlayerAnimController.EnterNextState(true);
             yield return new WaitForSeconds(FIXED_AFTER_COMPLETED_CHARGE_WAIT_TIME);
-            if (this.Owner.SkillBook.ForceGetSkillMember(FixedValue.TemplateID.Skill.Unlock_AssassinMastery_Elite_C1, 0).IsLearned == false)
+            if (this.Owner.SkillBook.ForceGetSkillMember(FixedValue.TemplateID.Skill.Assassin_Unique_Elite_C1, 0).IsLearned == false)
             {
-                this.Owner.SkillBook.LevelUp(FixedValue.TemplateID.Skill.Unlock_AssassinMastery_Elite_C1);
-                this.Owner.SkillBook.Activate(FixedValue.TemplateID.Skill.Unlock_AssassinMastery_Elite_C1);
+                this.Owner.SkillBook.LevelUp(FixedValue.TemplateID.Skill.Assassin_Unique_Elite_C1);
+                this.Owner.SkillBook.Activate(FixedValue.TemplateID.Skill.Assassin_Unique_Elite_C1);
             }
             else
-                this.Owner.SkillBook.Activate(FixedValue.TemplateID.Skill.Unlock_AssassinMastery_Elite_C1);
+                this.Owner.SkillBook.Activate(FixedValue.TemplateID.Skill.Assassin_Unique_Elite_C1);
         }
 
         private IEnumerator CoOffPoisonDagger()
@@ -136,7 +136,7 @@ namespace STELLAREST_2D
             TakeOffParticlesFromParent(_burstGroup);
             EnableParticles(_burstGroup, true);
 
-            this.Owner.SkillBook.Deactivate(FixedValue.TemplateID.Skill.Unlock_AssassinMastery_Elite_C1);
+            this.Owner.SkillBook.Deactivate(FixedValue.TemplateID.Skill.Assassin_Unique_Elite_C1);
             yield return new WaitUntil(() => this.WaitUntilEndOfPlayingParticles(_burstGroup));
             yield return new WaitForSeconds(FIXED_AFTER_COMPLETED_CHARGE_WAIT_TIME);
             _ownerController.PlayerAnimController.EnterNextState(true);
@@ -146,7 +146,7 @@ namespace STELLAREST_2D
             EnableParticles(_burstGroup, false);
 
             yield return new WaitForSeconds(FIXED_AFTER_COMPLETED_CHARGE_WAIT_TIME);
-            this.Owner.SkillBook.Deactivate(FixedValue.TemplateID.Skill.Unlock_AssassinMastery_Elite);
+            this.Owner.SkillBook.Deactivate(FixedValue.TemplateID.Skill.Assassin_Unique_Elite);
             this.Owner.SkillBook.Activate(FixedValue.TemplateID.Skill.AssassinMastery);
             
             yield break; // END OF SKILL

@@ -58,7 +58,7 @@ namespace STELLAREST_2D
             Managers.VFX.Init();
             Managers.Collision.Init();
 
-            PlayerController player = this.SpawnPlayer(FixedValue.TemplateID.Player.Gary_PhantomKnight);
+            PlayerController player = this.SpawnPlayer(FixedValue.TemplateID.Player.Gary_Paladin);
             //Managers.Game.OnGameStart += player.OnGameStartHandler;
             //Utils.Log("Add Event : Managers.Game.OnGameStart += player.OnGameStartHandler");
 
@@ -70,7 +70,7 @@ namespace STELLAREST_2D
             joystick.name = "@Joystick"; // UI_Joystick라고 하기엔 좀 애매함
 
             // Spawning Pool
-            // _spawningPool = gameObject.AddComponent<SpawningPool>();
+            _spawningPool = gameObject.AddComponent<SpawningPool>();
             Managers.Game.OnKillCountChanged -= this.OnKillCountChangedHandler;
             Managers.Game.OnGemCountChanged += this.OnGemCountChangedHandler;
 

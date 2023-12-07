@@ -108,13 +108,13 @@ namespace STELLAREST_2D
                                 unlockSkill.Owner.AnimCallback.OnActiveEliteAction += unlockSkill.GetComponent<UniqueSkill>().OnActiveEliteActionHandler;
                                 Utils.Log($"Add Event : AnimCallback.OnActiveEliteAction += {unlockSkill.Data.Name}");
                             }
-                            else if (unlockSkill.Data.FirstTemplateID == FixedValue.TemplateID.Skill.Unlock_AssassinMastery_Elite_C1)
+                            else if (unlockSkill.Data.FirstTemplateID == FixedValue.TemplateID.Skill.Assassin_Unique_Elite_C1)
                             {
                                 unlockSkill.Owner.AnimCallback.OnActiveMasteryAction -= unlockSkill.GetComponent<UniqueSkill>().OnActiveMasteryActionHandler;
                                 unlockSkill.Owner.AnimCallback.OnActiveMasteryAction += unlockSkill.GetComponent<UniqueSkill>().OnActiveMasteryActionHandler;
                                 Utils.Log($"Add Event : AnimCallback.OnActiveMasteryAction += {unlockSkill.Data.Name}");
                             }
-                            else if (unlockSkill.Data.FirstTemplateID == FixedValue.TemplateID.Skill.Unlock_NinjaMastery_Elite_C1)
+                            else if (unlockSkill.Data.FirstTemplateID == FixedValue.TemplateID.Skill.Ninja_Unique_Elite_C1)
                             {
                                 unlockSkill.Owner.AnimCallback.OnActiveMasteryAction -= unlockSkill.GetComponent<UniqueSkill>().OnActiveMasteryActionHandler;
                                 unlockSkill.Owner.AnimCallback.OnActiveMasteryAction += unlockSkill.GetComponent<UniqueSkill>().OnActiveMasteryActionHandler;
@@ -288,22 +288,22 @@ namespace STELLAREST_2D
                                 this.MasteryAttackTemplate = skill.Data.FirstTemplateID;
                                 break;
 
-                            case FixedValue.TemplateID.Skill.Unlock_PaladinMastery_Elite:
-                            case FixedValue.TemplateID.Skill.Unlock_KnightMastery_Elite:
-                            case FixedValue.TemplateID.Skill.Unlock_PhantomKnightMastery_Elite_C1:
+                            case FixedValue.TemplateID.Skill.Paladin_Unique_Elite:
+                            case FixedValue.TemplateID.Skill.Knight_Unique_Elite:
+                            case FixedValue.TemplateID.Skill.PhantomKnight_Unique_Elite_C1:
 
-                            case FixedValue.TemplateID.Skill.Unlock_ArrowMasterMastery_Elite:
-                            case FixedValue.TemplateID.Skill.Unlock_ElementalArcherMastery_Elite:
-                            case FixedValue.TemplateID.Skill.Unlock_ForestGuardian_Elite:
+                            case FixedValue.TemplateID.Skill.ArrowMaster_Unique_Elite:
+                            case FixedValue.TemplateID.Skill.ElementalArcher_Unique_Elite:
+                            case FixedValue.TemplateID.Skill.ForestGuardian_Unique_Elite:
 
-                            case FixedValue.TemplateID.Skill.Unlock_AssassinMastery_Elite:
-                            case FixedValue.TemplateID.Skill.Unlock_NinjaMastery_Elite:
+                            case FixedValue.TemplateID.Skill.Assassin_Unique_Elite:
+                            case FixedValue.TemplateID.Skill.Ninja_Unique_Elite:
                                 {
-                                    if (skill.Data.FirstTemplateID == FixedValue.TemplateID.Skill.Unlock_PaladinMastery_Elite)
+                                    if (skill.Data.FirstTemplateID == FixedValue.TemplateID.Skill.Paladin_Unique_Elite)
                                         this.CachedShield = skill.GetComponent<Shield>();
-                                    else if (skill.Data.FirstTemplateID == FixedValue.TemplateID.Skill.Unlock_KnightMastery_Elite)
+                                    else if (skill.Data.FirstTemplateID == FixedValue.TemplateID.Skill.Knight_Unique_Elite)
                                         this.CachedSecondWind = skill.GetComponent<SecondWind>();
-                                    else if (skill.Data.FirstTemplateID == FixedValue.TemplateID.Skill.Unlock_ForestGuardian_Elite)
+                                    else if (skill.Data.FirstTemplateID == FixedValue.TemplateID.Skill.ForestGuardian_Unique_Elite)
                                         this.CachedForestBarrier = skill.GetComponent<ForestBarrier>();
 
                                     this.EliteActionTemplate = skill.Data.FirstTemplateID;
@@ -311,16 +311,16 @@ namespace STELLAREST_2D
                                 break;
 
 
-                            case FixedValue.TemplateID.Skill.Unlock_PaladinMastery_Ultimate:
-                            case FixedValue.TemplateID.Skill.Unlock_KnightMastery_Ultimate:
-                            case FixedValue.TemplateID.Skill.Unlock_PhantomKnightMastery_Ultimate:
+                            case FixedValue.TemplateID.Skill.Paladin_Unique_Ultimate:
+                            case FixedValue.TemplateID.Skill.Knight_Unique_Ultimate:
+                            case FixedValue.TemplateID.Skill.PhantomKnight_Unique_Ultimate:
 
-                            case FixedValue.TemplateID.Skill.Unlock_ArrowMasterMastery_Ultimate:
-                            case FixedValue.TemplateID.Skill.Unlock_ElementalArcherMasstery_Ultimate:
-                            case FixedValue.TemplateID.Skill.Unlock_ForestGuardian_Ultimate:
+                            case FixedValue.TemplateID.Skill.ArrowMaster_Unique_Ultimate:
+                            case FixedValue.TemplateID.Skill.ElementalArcher_Unique_Ultimate:
+                            case FixedValue.TemplateID.Skill.ForestGuardian_Unique_Ultimate:
 
-                            case FixedValue.TemplateID.Skill.Unlock_AssassinMastery_Ultimate:
-                            case FixedValue.TemplateID.Skill.Unlock_NinjaMastery_Ultimate:
+                            case FixedValue.TemplateID.Skill.Assassin_Unique_Ultimate:
+                            case FixedValue.TemplateID.Skill.Ninja_Unique_Ultimate:
                                 this.UltimateActionTemplate = skill.Data.FirstTemplateID;
                                 break;
                         }

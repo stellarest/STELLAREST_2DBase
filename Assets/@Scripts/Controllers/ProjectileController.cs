@@ -196,13 +196,13 @@ namespace STELLAREST_2D
                     break;
 
                 case FixedValue.TemplateID.Skill.AssassinMastery:
-                case FixedValue.TemplateID.Skill.Unlock_AssassinMastery_Elite_C1:
+                case FixedValue.TemplateID.Skill.Assassin_Unique_Elite_C1:
                     StartDestroy(_lifeTime);
                     OnSetParticleInfo?.Invoke(_indicatorAngle, _initialLookAtDir, _continuousAngle, _continuousFlipX, _continuousFlipY);
                     _coProjectile = StartCoroutine(CoMeleeSwing());
                     break;
                 //case FixedValue.TemplateID.Skill.ThiefMastery:
-                case FixedValue.TemplateID.Skill.Unlock_NinjaMastery_Elite_C1:
+                case FixedValue.TemplateID.Skill.Ninja_Unique_Elite_C1:
                     StartDestroy(_lifeTime);
                     OnSetParticleInfo?.Invoke(_indicatorAngle, _initialLookAtDir, _continuousAngle, _continuousFlipX, _continuousFlipY);
                     //_shootDir = Quaternion.Euler(0, 0, _continuousAngle * -1) * _shootDir;
@@ -227,7 +227,7 @@ namespace STELLAREST_2D
                         _coProjectile = StartCoroutine(CoBoomerangUltimate());
                     break;
 
-                case FixedValue.TemplateID.Skill.Unlock_PhantomKnightMastery_Elite_C1:
+                case FixedValue.TemplateID.Skill.PhantomKnight_Unique_Elite_C1:
                     StartDestroy(_lifeTime);
                     _coProjectile = StartCoroutine(CoPhantomSoulChild());
                     break;
@@ -574,7 +574,7 @@ namespace STELLAREST_2D
                     }
                     break;
 
-                case FixedValue.TemplateID.Skill.Unlock_PhantomKnightMastery_Elite_C1:
+                case FixedValue.TemplateID.Skill.PhantomKnight_Unique_Elite_C1:
                     Managers.Object.Despawn(this);
                     break;
             }

@@ -160,7 +160,7 @@ namespace STELLAREST_2D
             }
 
             EnableParticles(_offShields, false);
-            this.Owner.SkillBook.Deactivate(FixedValue.TemplateID.Skill.Unlock_PaladinMastery_Elite);
+            this.Owner.SkillBook.Deactivate(FixedValue.TemplateID.Skill.Paladin_Unique_Elite);
         }
 
         public override void Deactivate() => base.Deactivate();

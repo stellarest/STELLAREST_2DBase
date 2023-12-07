@@ -12,7 +12,11 @@ namespace STELLAREST_2D
         public enum Sound { BGM, SFX, } // temp
         public enum StageType { Normal, Boss, } // temp
         public enum UIEvent { Click, Pressed, PointerDown, PointerUp, BeginDrag, Drag, EndDrag, }
-        public enum InitialStatDescGrade { None = -1, Low = 1, Average, Great, Unknown }
+        //public enum CreatureStatGrade { None = -1, Low = 1, Average, High, }
+        
+        // (None - Very Low) - Low - Average - Great
+        // public enum CreatureStatGrade { None = -1, VeryLow, Low, Average, Great }
+
         public enum ObjectType { None = -1, Player = 1, Monster, Skill, Projectile, Gem, Soul }
         public enum MonsterType { None = -1, Chicken = 1, }
         public enum InGameGrade { Default = 1, Elite, Ultimate }
@@ -164,27 +168,19 @@ namespace STELLAREST_2D
                 public const int FOREST_STAGE_MAX_WAVE_PER_STAGE_LEVELS = 20; // temp (memo)
                 public const int VOLCANO_STAGE_MAX_WAVE_PER_STAGE_LEVELS = 30; // temp (memo)
 
-                /*
-                    Armor None : 0%
-                    Armor Low : 5%
-                    Armor Average : 15%
-                    Armor Great : 30%
-
-                    Movement Speed Low : 7.05f
-                    Movement Speed Average : 8.2f
-                    Movement Speed Great : 9.35f
-                */
                 // CreatureStat
                 public const float INITIAL_ARMOR_RATE_NONE = 0F;
                 public const float INITIAL_ARMOR_RATE_LOW = 0.03F;
                 public const float INITIAL_ARMOR_RATE_AVERAGE = 0.1F;
                 public const float INITIAL_ARMOR_RATE_HIGH = 0.3F;
+
                 public const float CREATURE_MAX_ARMOR_RATE = 0.6F;
                 public const float CREATURE_MAX_DODGE_CHANCE = 0.7F;
 
                 public const float INITIAL_MOVEMENT_SPEED_LOW = 8F;
                 public const float INITIAL_MOVEMENT_SPEED_AVERAGE = 9.5F;
                 public const float INITIAL_MOVEMENT_SPEED_HIGH = 12F;
+
                 public const float CREATURE_MAX_MOVEMENT_SPEED = 20F;
                 public const float CREATURE_MAX_MOVEMENT_SPEED_ANIM_MULTIPLIER = 3F;
 
@@ -247,40 +243,40 @@ namespace STELLAREST_2D
 
                     // *** Unique Skills ***
                     PaladinMastery = 100100,
-                    Unlock_PaladinMastery_Elite = 100103,  // Shield
-                    Unlock_PaladinMastery_Ultimate = 100106, // Judgement
+                    Paladin_Unique_Elite = 100103,  // Shield
+                    Paladin_Unique_Ultimate = 100106, // Judgement
 
                     KnightMastery = 100200,
-                    Unlock_KnightMastery_Elite = 100203, // Second Wind
-                    Unlock_KnightMastery_Ultimate = 100206, // Storm Blade
+                    Knight_Unique_Elite = 100203, // Second Wind
+                    Knight_Unique_Ultimate = 100206, // Storm Blade
 
                     PhantomKnightMastery = 100300,
-                    Unlock_PhantomKnightMastery_Elite = 100303, // Summon : Phantom Soul
-                    Unlock_PhantomKnightMastery_Elite_C1 = 100306, // Phantom Soul
-                    Unlock_PhantomKnightMastery_Ultimate = 100309, // Metamorphosis
+                    PhantomKnight_Unique_Elite = 100303, // Summon : Phantom Soul
+                    PhantomKnight_Unique_Elite_C1 = 100306, // Phantom Soul
+                    PhantomKnight_Unique_Ultimate = 100309, // Metamorphosis
 
                     ArrowMasterMastery = 200100,
-                    Unlock_ArrowMasterMastery_Elite = 200103, // Concentration
-                    Unlock_ArrowMasterMastery_Ultimate = 200106, // Arrow Time
+                    ArrowMaster_Unique_Elite = 200103, // Concentration
+                    ArrowMaster_Unique_Ultimate = 200106, // Arrow Time
 
                     ElementalArcherMastery = 200200,
-                    Unlock_ElementalArcherMastery_Elite = 200203, // Elemental Shock
-                    Unlock_ElementalArcherMasstery_Ultimate = 200206, // Elemental Charge
+                    ElementalArcher_Unique_Elite = 200203, // Elemental Shock
+                    ElementalArcher_Unique_Ultimate = 200206, // Elemental Charge
 
                     ForestGuardianMastery = 200300,
-                    Unlock_ForestGuardian_Elite = 200303, // Forest Barrier
-                    Unlock_ForestGuardian_Ultimate = 200306, // Summon : Battle Panther
+                    ForestGuardian_Unique_Elite = 200303, // Forest Barrier
+                    ForestGuardian_Unique_Ultimate = 200306, // Summon : Battle Panther
 
                     // SkillGroupDictionary, DictionaryGroupMaxCount(_numberGroups)으로 인해서 현재는 3씩 증가시켜야함 (임시)
                     AssassinMastery = 300100,
-                    Unlock_AssassinMastery_Elite = 300103, // PoisonDagger
-                    Unlock_AssassinMastery_Elite_C1 = 300106, // Stab - PoisonDagger
-                    Unlock_AssassinMastery_Ultimate = 300109, // Counter Strike
+                    Assassin_Unique_Elite = 300103, // PoisonDagger
+                    Assassin_Unique_Elite_C1 = 300106, // Stab - PoisonDagger
+                    Assassin_Unique_Ultimate = 300109, // Counter Strike
 
                     NinjaMastery = 300200,
-                    Unlock_NinjaMastery_Elite = 300203, // Cloak
-                    Unlock_NinjaMastery_Elite_C1 = 300206, // Ninja Slash
-                    Unlock_NinjaMastery_Ultimate = 300209, // Clone Technique
+                    Ninja_Unique_Elite = 300203, // Cloak
+                    Ninja_Unique_Elite_C1 = 300206, // Ninja Slash
+                    Ninja_Unique_Ultimate = 300209, // Clone Technique
 
                     // *** Public Skills ***
                     ThrowingStar = 900100,
@@ -296,9 +292,9 @@ namespace STELLAREST_2D
                 {
                     None = -1,
                     Mastery = 100100,
-                    Unlock_Mastery_Elite = 200100,
-                    Unlock_Mastery_Elite_C1 = 200101,
-                    Unlock_Mastery_Ultimate = 300100,
+                    Unique_Elite = 200100,
+                    Unique_Elite_C1 = 200101,
+                    Unique_Ultimate = 300100,
                 }
 
                 public enum CrowdControl

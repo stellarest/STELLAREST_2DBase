@@ -86,14 +86,14 @@ namespace STELLAREST_2D
             this.Owner.CreatureRendererController.HideWeapons(false);
             //_ownerController.CreatureRendererController.ChangeWeapon(SpriteManager.WeaponType.NinjaSword); 이거 의미가 없는것같기도 하고
 
-            SkillBase ninjaSlash = this.Owner.SkillBook.ForceGetSkillMember(FixedValue.TemplateID.Skill.Unlock_NinjaMastery_Elite_C1, 0);
+            SkillBase ninjaSlash = this.Owner.SkillBook.ForceGetSkillMember(FixedValue.TemplateID.Skill.Ninja_Unique_Elite_C1, 0);
             if (ninjaSlash.IsLearned == false)
             {
-                this.Owner.SkillBook.LevelUp(FixedValue.TemplateID.Skill.Unlock_NinjaMastery_Elite_C1);
-                this.Owner.SkillBook.Activate(FixedValue.TemplateID.Skill.Unlock_NinjaMastery_Elite_C1);
+                this.Owner.SkillBook.LevelUp(FixedValue.TemplateID.Skill.Ninja_Unique_Elite_C1);
+                this.Owner.SkillBook.Activate(FixedValue.TemplateID.Skill.Ninja_Unique_Elite_C1);
             }
             else
-                this.Owner.SkillBook.Activate(FixedValue.TemplateID.Skill.Unlock_NinjaMastery_Elite_C1);
+                this.Owner.SkillBook.Activate(FixedValue.TemplateID.Skill.Ninja_Unique_Elite_C1);
 
             this.Owner.RigidBody.constraints &= ~RigidbodyConstraints2D.FreezePositionX;
             this.Owner.RigidBody.constraints &= ~RigidbodyConstraints2D.FreezePositionY;
@@ -128,8 +128,8 @@ namespace STELLAREST_2D
             this.Owner.Stat.ResetMovementSpeed();
             Managers.Game.OnStopAction?.Invoke(false);
 
-            this.Owner.SkillBook.Deactivate(FixedValue.TemplateID.Skill.Unlock_NinjaMastery_Elite_C1);
-            this.Owner.SkillBook.Deactivate(FixedValue.TemplateID.Skill.Unlock_NinjaMastery_Elite);
+            this.Owner.SkillBook.Deactivate(FixedValue.TemplateID.Skill.Ninja_Unique_Elite_C1);
+            this.Owner.SkillBook.Deactivate(FixedValue.TemplateID.Skill.Ninja_Unique_Elite);
             this.Owner.SkillBook.Activate(FixedValue.TemplateID.Skill.NinjaMastery);
         }
     }

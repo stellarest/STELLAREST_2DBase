@@ -105,8 +105,8 @@ namespace STELLAREST_2D
             if (this.CanEnterRunState() == false)
                 return;
 
-            // if (this.MainTarget != null)
-            //     MoveToTarget(MainTarget, this.Stat.CollectRange * this.Stat.CollectRange);
+            if (this.MainTarget != null)
+                MoveToTarget(MainTarget, this.Stat.CollectRange * this.Stat.CollectRange);
         }
 
         public void StartMovementToRandomPoint()
