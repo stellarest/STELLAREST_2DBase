@@ -2,7 +2,6 @@ using System;
 using UnityEngine;
 
 using static STELLAREST_2D.Define;
-using CrowdControlType = STELLAREST_2D.Define.FixedValue.TemplateID.CrowdControl;
 
 namespace STELLAREST_2D
 {
@@ -69,8 +68,7 @@ namespace STELLAREST_2D
             return (dmgResult, isCritical);
         }
 
-        public bool TryCrowdControl(SkillBase from) => UnityEngine.Random.Range(0f, 1f) <= from.Data.CrowdControlChance;
-        public bool TryCrowdControl(float ratio) => UnityEngine.Random.Range(0f, 1f) <= ratio;
+        public bool TryCrowdControl(float ccChance) => UnityEngine.Random.Range(0f, 1f) <= ccChance;
 
         private int _gem = 0;
         public event Action<int> OnGemCountChanged = null;

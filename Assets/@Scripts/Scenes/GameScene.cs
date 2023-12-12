@@ -58,7 +58,7 @@ namespace STELLAREST_2D
             Managers.VFX.Init();
             Managers.Collision.Init();
 
-            PlayerController player = this.SpawnPlayer(FixedValue.TemplateID.Player.Gary_Paladin);
+            PlayerController player = this.SpawnPlayer(FixedValue.TemplateID.Player.Gary_Knight);
             //Managers.Game.OnGameStart += player.OnGameStartHandler;
             //Utils.Log("Add Event : Managers.Game.OnGameStart += player.OnGameStartHandler");
 
@@ -67,7 +67,7 @@ namespace STELLAREST_2D
 
             // Joystick
             var joystick = Managers.Resource.Instantiate(FixedValue.Load.UI_JOYSTICK);
-            joystick.name = "@Joystick"; // UI_Joystick라고 하기엔 좀 애매함
+            joystick.name = FixedValue.Find.JOYSTICK; // UI_Joystick라고 하기엔 좀 애매함
 
             // Spawning Pool
             _spawningPool = gameObject.AddComponent<SpawningPool>();
@@ -123,48 +123,6 @@ namespace STELLAREST_2D
 
         private PlayerController SpawnPlayer(FixedValue.TemplateID.Player playerTemplateID) 
                 =>  Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)playerTemplateID, ObjectType.Player);
-
-        // private PlayerController SpawnPlayer(FixedValue.TemplateID.Player playerTemplateID)
-        // {
-        //     PlayerController pc = null;
-        //     switch (playerTemplateID)
-        //     {
-        //         case FixedValue.TemplateID.Player.Gary_Paladin:
-        //             pc = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)PlayerTemplateID.Gary_Paladin, Define.ObjectType.Player, isPooling: false);
-        //             return pc;
-        //         case FixedValue.TemplateID.Player.Gary_Knight:
-        //             pc = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)PlayerTemplateID.Gary_Knight, Define.ObjectType.Player, isPooling: false);
-        //             return pc;
-        //         case FixedValue.TemplateID.Player.Gary_PhantomKnight:
-        //             pc = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)PlayerTemplateID.Gary_PhantomKnight, Define.ObjectType.Player, isPooling: false);
-        //             return pc;
-
-                
-        //         case FixedValue.TemplateID.Player.Reina_ArrowMaster:
-        //             pc = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)PlayerTemplateID.Reina_ArrowMaster, Define.ObjectType.Player, isPooling: false);
-        //             return pc;
-        //         case FixedValue.TemplateID.Player.Reina_ElementalArcher:
-        //             pc = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)PlayerTemplateID.Reina_ElementalArcher, Define.ObjectType.Player, isPooling: false);
-        //             return pc;
-        //         case FixedValue.TemplateID.Player.Reina_ForestGuardian:
-        //             pc = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)PlayerTemplateID.Reina_ForestGuardian, Define.ObjectType.Player, isPooling: false);
-        //             return pc;
-
-
-        //         case FixedValue.TemplateID.Player.Kenneth_Assassin:
-        //             pc = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)PlayerTemplateID.Kenneth_Assassin, Define.ObjectType.Player, isPooling: false);
-        //             return pc;
-        //         case FixedValue.TemplateID.Player.Kenneth_Thief:
-        //             pc = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)PlayerTemplateID.Kenneth_Thief, Define.ObjectType.Player, isPooling: false);
-        //             return pc;
-        //         case PlayerTemplateID.Kenneth_Ninja:
-        //             pc = Managers.Object.Spawn<PlayerController>(Vector3.zero, (int)PlayerTemplateID.Kenneth_Ninja, Define.ObjectType.Player, isPooling: false);
-        //             return pc;
-
-        //         default:
-        //             return null;
-        //     }
-        // }
 
         private void OnDestroy()
         {

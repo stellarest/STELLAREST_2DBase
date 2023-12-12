@@ -3,13 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-using DamageNumbersPro;
-
 using static STELLAREST_2D.Define;
 using STELLAREST_2D.Data;
-using CrowdControlType = STELLAREST_2D.Define.FixedValue.TemplateID.CrowdControl;
 using FaceType = STELLAREST_2D.Define.FaceType;
-//using PlayerTemplateID = STELLAREST_2D.Define.TemplateIDs.Creatures.Player;
 
 namespace STELLAREST_2D
 {
@@ -181,62 +177,28 @@ namespace STELLAREST_2D
                 return;
 
             base.InitRendererController(owner, initialCreatureData);
-            InitModels(initialCreatureData);
+            InitCreatureModels(initialCreatureData);
             InitFace(initialCreatureData);
             InitWeapons(initialCreatureData);
         }
 
-        private void InitModels(CreatureData initialCreatureData)
+        private void InitCreatureModels(CreatureData initialCreatureData)
         {
             RendererModerator rendererModerator = new RendererModerator();
-
-            // +++ NOT INSTANTIATED OBJECT +++
-            GameObject go = Managers.Resource.Load<GameObject>(initialCreatureData.PrimaryLabel);
-            SpriteRenderer[] SPRs = go.GetComponentsInChildren<SpriteRenderer>(includeInactive: true);
-            BaseContainer[] BCs = new BaseContainer[SPRs.Length];
-            for (int i = 0; i < SPRs.Length; ++i)
+            InGameGrade keyGrade = InGameGrade.Default;
+            for (int i = 0; i < initialCreatureData.PrimaryLabels.Length; ++i)
             {
-                Material matCloned = new Material(SPRs[i].sharedMaterial);
-                //Material matCloned = new Material(SPRs[i].material);
-
-                Color colorOrigin = new Color(SPRs[i].color.r, SPRs[i].color.g, SPRs[i].color.g, SPRs[i].color.a);
-                BCs[i] = new BaseContainer(SPRs[i].name, matCloned, colorOrigin);
-            }
-            rendererModerator.AddRendererContainers(Define.InGameGrade.Default, BCs, SPRs);
-
-            // INIT REST OF THE NEXT GRADE MODELS
-            List<SkillBase> skills = new List<SkillBase>();
-            foreach (KeyValuePair<int, SkillGroup> pair in this.OwnerAsCreature.SkillBook.SkillGroupsDict)
-            {
-                for (int i = 0; i < pair.Value.MemberCount; ++i)
-                    skills.Add(pair.Value.Members[i].SkillOrigin);
-            }
-
-            SkillBase[] modelingLabelSkills = skills.Where(s => s.Data.ModelingLabel.Length > 0).ToArray();
-            if (modelingLabelSkills.Length > 0)
-            {
-                for (int i = 0; i < modelingLabelSkills.Length; ++i)
+                GameObject go = Managers.Resource.Load<GameObject>(initialCreatureData.PrimaryLabels[i]);
+                SpriteRenderer[] SPRs = go.GetComponentsInChildren<SpriteRenderer>(includeInactive: true);
+                BaseRenderer[] BRs = new BaseRenderer[SPRs.Length];
+                for (int j = 0; j < SPRs.Length; ++j)
                 {
-                    Define.InGameGrade keyGrade = modelingLabelSkills[i].Data.Grade;
-                    string modelingLabel = modelingLabelSkills[i].Data.ModelingLabel;
-                    go = Managers.Resource.Load<GameObject>(modelingLabel);
-                    if (go == null)
-                    {
-                        Utils.LogCritical(nameof(CreatureRendererController), nameof(InitModels), $"Faield to load model : {modelingLabel}");
-                        return;
-                    }
-
-                    SPRs = go.GetComponentsInChildren<SpriteRenderer>(includeInactive: true);
-                    BCs = new BaseContainer[SPRs.Length];
-                    for (int j = 0; j < SPRs.Length; ++j)
-                    {
-                        Material matOrigin = new Material(SPRs[j].sharedMaterial);
-                        Color colorOrigin = new Color(SPRs[j].color.r, SPRs[j].color.g, SPRs[j].color.g, SPRs[j].color.a);
-                        BCs[j] = new BaseContainer(SPRs[j].name, matOrigin, colorOrigin);
-                    }
-
-                    rendererModerator.AddRendererContainers(keyGrade, BCs, SPRs);
+                    Material matCloned = new Material(SPRs[j].sharedMaterial);
+                    Color colorOrigin = new Color(SPRs[j].color.r, SPRs[j].color.g, SPRs[j].color.g, SPRs[j].color.a);
+                    BRs[j] = new BaseRenderer(SPRs[j].name, matCloned, colorOrigin);
                 }
+
+                rendererModerator.AddRendererContainers(keyGrade++, BRs, SPRs);
             }
 
             RendererModeratorDict.Add(this.OwnerAsCreature, rendererModerator);
@@ -364,8 +326,7 @@ namespace STELLAREST_2D
         {
             if (InitialLoadedFaceContainersDict.TryGetValue(keyGrade, out FaceContainer[] initialLoadedFaceContainers) == false)
             {
-                Utils.LogCritical(nameof(CreatureRendererController), nameof(OnRefreshRendererHandler),
-                                    $"Failed to called \"OnRefreshFaceContainerDictHandler\" : {keyGrade}");
+                Utils.LogCritical(nameof(CreatureRendererController), nameof(OnRefreshRendererHandler), $"Input : {keyGrade}");
                 return;
             }
             else if (this.KeyGrade == Define.InGameGrade.Ultimate)
@@ -409,7 +370,7 @@ namespace STELLAREST_2D
                 {
                     if (nextSPRs[i].name.Contains(OwnerSPRs[i].name))
                     {
-                        // nextSPRs[i].sprite가 갖고 있는것만 집어 넣어 넣으면 해결
+                        // nextSPRs[i].sprite가 갖고 있는것만 넣으면 해결
                         if (nextSPRs[i].sprite != null)
                         {
                             OwnerSPRs[i].gameObject.SetActive(nextSPRs[i].gameObject.activeSelf);
@@ -618,3 +579,61 @@ namespace STELLAREST_2D
         }
     }
 }
+
+/*
+        // private void InitModels(CreatureData initialCreatureData)
+        // {
+        //     RendererModerator rendererModerator = new RendererModerator();
+
+        //     // +++ NOT INSTANTIATED OBJECT +++
+        //     GameObject go = Managers.Resource.Load<GameObject>(initialCreatureData.PrimaryLabel);
+        //     SpriteRenderer[] SPRs = go.GetComponentsInChildren<SpriteRenderer>(includeInactive: true);
+        //     BaseContainer[] BCs = new BaseContainer[SPRs.Length];
+        //     for (int i = 0; i < SPRs.Length; ++i)
+        //     {
+        //         Material matCloned = new Material(SPRs[i].sharedMaterial);
+        //         //Material matCloned = new Material(SPRs[i].material);
+
+        //         Color colorOrigin = new Color(SPRs[i].color.r, SPRs[i].color.g, SPRs[i].color.g, SPRs[i].color.a);
+        //         BCs[i] = new BaseContainer(SPRs[i].name, matCloned, colorOrigin);
+        //     }
+        //     rendererModerator.AddRendererContainers(Define.InGameGrade.Default, BCs, SPRs);
+
+        //     // INIT REST OF THE NEXT GRADE MODELS
+        //     List<SkillBase> skills = new List<SkillBase>();
+        //     foreach (KeyValuePair<int, SkillGroup> pair in this.OwnerAsCreature.SkillBook.SkillGroupsDict)
+        //     {
+        //         for (int i = 0; i < pair.Value.MemberCount; ++i)
+        //             skills.Add(pair.Value.Members[i].SkillOrigin);
+        //     }
+
+        //     SkillBase[] modelingLabelSkills = skills.Where(s => s.Data.OwnerModelingLabel.Length > 0).ToArray();
+        //     if (modelingLabelSkills.Length > 0)
+        //     {
+        //         for (int i = 0; i < modelingLabelSkills.Length; ++i)
+        //         {
+        //             Define.InGameGrade keyGrade = modelingLabelSkills[i].Data.Grade;
+        //             string modelingLabel = modelingLabelSkills[i].Data.OwnerModelingLabel;
+        //             go = Managers.Resource.Load<GameObject>(modelingLabel);
+        //             if (go == null)
+        //             {
+        //                 Utils.LogCritical(nameof(CreatureRendererController), nameof(InitModels), $"Faield to load model : {modelingLabel}");
+        //                 return;
+        //             }
+
+        //             SPRs = go.GetComponentsInChildren<SpriteRenderer>(includeInactive: true);
+        //             BCs = new BaseContainer[SPRs.Length];
+        //             for (int j = 0; j < SPRs.Length; ++j)
+        //             {
+        //                 Material matOrigin = new Material(SPRs[j].sharedMaterial);
+        //                 Color colorOrigin = new Color(SPRs[j].color.r, SPRs[j].color.g, SPRs[j].color.g, SPRs[j].color.a);
+        //                 BCs[j] = new BaseContainer(SPRs[j].name, matOrigin, colorOrigin);
+        //             }
+
+        //             rendererModerator.AddRendererContainers(keyGrade, BCs, SPRs);
+        //         }
+        //     }
+
+        //     RendererModeratorDict.Add(this.OwnerAsCreature, rendererModerator);
+        // }
+*/

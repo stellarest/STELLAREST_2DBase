@@ -10,8 +10,9 @@ namespace STELLAREST_2D.Data
     {
         public int TemplateID;
         public string Name;
+        public Sprite Icon;
         public string Description;
-        public string PrimaryLabel;
+        public string[] PrimaryLabels;
 
         public string StatGradeDesc_Power;
         public string StatGradeDesc_AttackSpeed;
@@ -55,20 +56,29 @@ namespace STELLAREST_2D.Data
     public class SkillData
     {
         public int TemplateID;
-        public Define.FixedValue.TemplateID.Skill FirstTemplateID;
-        public Define.SkillType SkillType;
+        public Define.FixedValue.TemplateID.Skill TemplateOrigin;
+
         public string Name;
+        public Sprite Icon;
         public string Description;
         public string PrimaryLabel;
-        public string ModelingLabel;
-        public bool HasEventHandler;
-        public bool IsProjectile;
-        public bool IsOnFireSocket;
-        public bool UsePresetLocalScale;
-        public bool UsePresetParticleInfo;
-        public float AddtionalSpawnHeightRatio;
+
+        public Define.SkillType Type;
+        public Define.SkillAnimationType AnimationType;
+        public Define.VFXImpactHitType VFXImpactHitType;
+
         public Define.InGameGrade Grade;
         public Define.InGameGrade MaxGrade;
+        public int GradeTotalCount;
+
+        public bool IsProjectile;
+        public bool IsLaunchedFromEventHandler;
+        public bool IsLaunchedFromFireSocket;
+        public bool IsVFXImpactPointOnTarget;
+        public bool UsePresetLocalScale;
+        public bool UsePresetParticleInfo;
+        public bool UseColliderHalfLifeTime;
+
         public float MinDamage;
         public float MaxDamage;
         public float MovementSpeed;
@@ -80,24 +90,18 @@ namespace STELLAREST_2D.Data
         public float[] ContinuousAngles;
         public float[] ContinuousFlipXs;
         public float[] ContinuousFlipYs;
-        public Vector3[] ScaleInterpolations;
-        public bool[] IsOnlyVisibles;
-        public bool IsColliderHalfRatio;
+        public Vector3[] TargetScaleInterpolations;
+        public Vector3 AdditionalSpawnPosFromOwner;
         public int MaxBounceCount;
         public int MaxPenetrationCount;
-        public Define.FixedValue.TemplateID.VFX.ImpactHit VFX_ImpactHit_TemplateID;
-        public bool IsImpactPointOnTarget;
-        //public Define.SkillAnimationType AnimationType;
-        public Define.FixedValue.TemplateID.SkillAnimation SkillAnimationTemplateID;
-        public Define.FixedValue.TemplateID.CrowdControl CrowdControlTemplateID;
-        public float CrowdControlChance;
-        public float CrowdControlDuration;
-        public float CrowdControlIntensity;
-        public Define.FixedValue.TemplateID.CrowdControl ContinuousCrowdControlTemplateID;
-        public Define.FixedValue.TemplateID.VFX.ImpactHit ContinuousCrowdControl_VFX_ImpactHit_TemplateID; // 사실 필요한지 모르겠...
-        public float ContinuousCrowdControlChance;
-        public float ContinuousCrowdControlDuration;
-        public float ContinuousCrowdControlIntensity;
+        
+        public Define.CrowdControlType[] CrowdControlTypes;
+        public float[] CrowdControlChances;
+        public float[] CrowdControlDurations;
+        public float[] CrowdControlIntensities;
+        public AdditionalCustomValue[] AdditionalCustomValues;
+
+        public float LevelUpCost;            
         public float Cooldown;
     }
 

@@ -65,14 +65,16 @@ namespace STELLAREST_2D
         [field: SerializeField] public int LevelUpPoint { get; set; } = 0;
         [field: SerializeField] public int TotalEXP { get; set; } = 0;
 
-        [field: SerializeField] public float MaxHP { get; set; } = 0f;
+        [SerializeField] private float _maxHP = 0f;
+        public float MaxHP { get => _maxHP; set { _maxHP = value; HP = _maxHP; } }
+    
         [field: SerializeField] public float HP { get; set; } = 0f;
-        [field: SerializeField] public float MaxShieldHP { get; set; } = 0f;
+        public float MaxShieldHP { get; set; } = 0f;
         [field: SerializeField] public float ShieldHP { get; set; } = 0f;
 
         private float _initialArmor = 0f;
         [SerializeField] private float _armor = 0f;
-        public float Armor { get => _armor; private set => _armor = value; }
+        public float Armor { get => _armor; set => _armor = value; }
 
         private float _initialMovementSpeed = 0f;
         [SerializeField] private float _movementSpeed = 0f;

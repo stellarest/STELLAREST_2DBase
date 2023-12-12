@@ -23,11 +23,11 @@ namespace STELLAREST_2D
         }
 
         //public override void Run() => CreatureAnimator.Play(LOWER_PLAYER_NINJA_RUN);
-        public override void Skill(FixedValue.TemplateID.SkillAnimation skillAnimType = FixedValue.TemplateID.SkillAnimation.None)
+        public override void Skill(SkillAnimationType skillAnimType = SkillAnimationType.None)
         {
             switch (skillAnimType)
             {
-                case FixedValue.TemplateID.SkillAnimation.Mastery:
+                case SkillAnimationType.Unique_Mastery:
                     {
                         if (this.Owner.SkillBook.GetCurrentSkillGrade(FixedValue.TemplateID.Skill.NinjaMastery) < InGameGrade.Ultimate)
                             CreatureAnimator.Play(UPPER_ATTACK);
@@ -38,17 +38,17 @@ namespace STELLAREST_2D
                     }
                     break;
 
-                case FixedValue.TemplateID.SkillAnimation.Unique_Elite:
+                case SkillAnimationType.Unique_Elite:
                     CreatureAnimator.StopPlayback();
                     CreatureAnimator.Play(UPPER_MASTERY_ELITE_PLUS);
                     break;
 
-                case FixedValue.TemplateID.SkillAnimation.Unique_Elite_C1:
+                case SkillAnimationType.Unique_Elite_C1:
                     CreatureAnimator.StopPlayback();
                     CreatureAnimator.Play(UPPER_MASTERY_ELITE_PLUS_C1);
                     break;
 
-                case FixedValue.TemplateID.SkillAnimation.Unique_Ultimate:
+                case SkillAnimationType.Unique_Ultimate:
                     break;
             }
         }

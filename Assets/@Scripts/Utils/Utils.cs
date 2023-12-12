@@ -288,7 +288,7 @@ namespace STELLAREST_2D
         {
             switch (skillTemplateID)
             {
-                case FixedValue.TemplateID.Skill.PaladinMastery:
+                case FixedValue.TemplateID.Skill.Paladin_Unique_Mastery:
                 case FixedValue.TemplateID.Skill.KnightMastery:
                 case FixedValue.TemplateID.Skill.PhantomKnightMastery:
                 case FixedValue.TemplateID.Skill.AssassinMastery:

@@ -3,7 +3,6 @@ using DG.Tweening;
 using UnityEngine;
 
 using static STELLAREST_2D.Define;
-using CrowdControlType = STELLAREST_2D.Define.FixedValue.TemplateID.CrowdControl;
 
 namespace STELLAREST_2D
 {
@@ -36,9 +35,9 @@ namespace STELLAREST_2D
                         }
                         break;
 
-                    case CrowdControlType.Slience:
+                    case CrowdControlType.Silence:
                         {
-                            if (this[CrowdControlType.Slience] == false)
+                            if (this[CrowdControlType.Silence] == false)
                             {
                                 if (this.CreatureState == Define.CreatureState.Idle)
                                 {
@@ -56,7 +55,7 @@ namespace STELLAREST_2D
 
         protected override void LateInit()
         {
-            SkillBook.LevelUp(FixedValue.TemplateID.Skill.BodyAttack_Solo);
+            SkillBook.LevelUp(FixedValue.TemplateID.Skill.Monster_Unique_BodyAttack);
             //SkillBook.LevelUp(SkillTemplate.ThrowingStar);
         }
 
@@ -130,7 +129,7 @@ namespace STELLAREST_2D
                         Flip(toTargetDir.x > 0 ? -1 : 1);
                 }
 
-                if (this[CrowdControlType.Slience])
+                if (this[CrowdControlType.Silence])
                 {
                     if (toTargetDir.sqrMagnitude > this.Stat.CollectRange * this.Stat.CollectRange)
                         this.CreatureState = Define.CreatureState.Run;
@@ -146,7 +145,7 @@ namespace STELLAREST_2D
             if (this.SkillBook != null)
             {
                 this.MonsterAnimController.Attack();
-                this.SkillBook.Activate(FixedValue.TemplateID.Skill.BodyAttack_Solo);
+                this.SkillBook.Activate(FixedValue.TemplateID.Skill.Monster_Unique_BodyAttack);
             }
         }
 

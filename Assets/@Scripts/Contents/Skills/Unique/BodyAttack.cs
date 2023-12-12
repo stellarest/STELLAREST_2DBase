@@ -43,7 +43,7 @@ namespace STELLAREST_2D
                 //this.Owner.SkillBook.ReserveNextSequence((SkillTemplate.BodyAttack);
                 //this.Owner.SkillBook.ReserveNextSequence(currentEnd: SkillTemplate.BodyAttack);
                 this.Owner.SetDefaultHead();
-                this.Owner.SkillBook.RandomizeSequenceGroup(FixedValue.TemplateID.Skill.BodyAttack_Solo);
+                this.Owner.SkillBook.RandomizeSequenceGroup(FixedValue.TemplateID.Skill.Monster_Unique_BodyAttack);
             }));
         }
 
@@ -55,7 +55,7 @@ namespace STELLAREST_2D
                     this.Owner.CreatureState = Define.CreatureState.Run;
 
                 Utils.Log("Deactivate Body Attack."); // 임시 개선 사항 (Deaictvate Sequence 추가해야함, 안해도 상관 없을것같긴하지만)
-                this.Owner.SkillBook.Deactivate(FixedValue.TemplateID.Skill.BodyAttack_Solo);
+                this.Owner.SkillBook.Deactivate(FixedValue.TemplateID.Skill.Monster_Unique_BodyAttack);
                 yield break;
             }
 

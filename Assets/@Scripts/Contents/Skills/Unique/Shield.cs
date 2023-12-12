@@ -8,12 +8,6 @@ using STELLAREST_2D.Data;
 
 namespace STELLAREST_2D
 {
-    /*
-        [ Paladin Mastery lv.2 - Shield ]
-        - 매 웨이브마다 최대 체력의 50%에 해당하는 쉴드 획득
-        - TODO : 쉴드가 활성화되어 있을 때, 모든 상태이상 면역
-    */
-
     public class Shield : UniqueSkill
     {
         private ParticleSystem[] _onShields = null;
@@ -99,8 +93,8 @@ namespace STELLAREST_2D
 
         protected override void DoSkillJob(Action callback = null)
         {
-            this.Owner.SkillBook.Deactivate(FixedValue.TemplateID.Skill.PaladinMastery);
-            this.Owner.CreatureSkillAnimType = this.Data.SkillAnimationTemplateID;
+            this.Owner.SkillBook.Deactivate(FixedValue.TemplateID.Skill.Paladin_Unique_Mastery);
+            this.Owner.CreatureSkillAnimType = this.Data.AnimationType;
             this.Owner.CreatureState = CreatureState.Skill;
             callback?.Invoke();
         }
@@ -119,7 +113,7 @@ namespace STELLAREST_2D
             if (_coRecoveryShield != null)
                 StopCoroutine(_coRecoveryShield);
             _coRecoveryShield = StartCoroutine(CoRecoveryShield());
-            this.Owner.SkillBook.Activate(FixedValue.TemplateID.Skill.PaladinMastery);
+            this.Owner.SkillBook.Activate(FixedValue.TemplateID.Skill.Paladin_Unique_Mastery);
         }
 
         private void OffShield()

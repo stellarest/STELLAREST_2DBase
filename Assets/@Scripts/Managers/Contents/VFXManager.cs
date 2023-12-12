@@ -4,9 +4,6 @@ using SpriteTrail;
 using UnityEngine;
 
 using static STELLAREST_2D.Define;
-//using VFXMuzzle = STELLAREST_2D.Define.TemplateIDs.VFX.Muzzle;
-//using VFXEnv = STELLAREST_2D.Define.TemplateIDs.VFX.Environment;
-using MaterialColor = STELLAREST_2D.Define.MaterialColor;
 
 namespace STELLAREST_2D
 {
@@ -65,7 +62,7 @@ namespace STELLAREST_2D
                         else if (bc.ObjectType == Define.ObjectType.Monster)
                             bc.RendererController.SetMaterial(MatHit_Monster);
 
-                        yield return new WaitForSeconds(FixedValue.Numeric.HIT_DURATION);
+                        yield return new WaitForSeconds(FixedValue.Numeric.MAT_HIT_DURATION);
                         bc.RendererController.ResetMaterial();
                         endCallback?.Invoke();
                     }
@@ -368,10 +365,10 @@ namespace STELLAREST_2D
             }
         }
 
-        public GameObject ImpactHit(FixedValue.TemplateID.VFX.ImpactHit templateID, CreatureController target, SkillBase from)
+        public GameObject ImpactHit(VFXImpactHitType vfxImpactHitType, CreatureController target, SkillBase from)
         {
             Vector3 impactPoint = Vector3.zero;
-            if (from.Data.IsImpactPointOnTarget)
+            if (from.Data.IsVFXImpactPointOnTarget)
             {
                 float additionalPointX = UnityEngine.Random.Range(0f, 0.5f);
                 float additionalPointY = UnityEngine.Random.Range(0f, 1f);
@@ -382,32 +379,32 @@ namespace STELLAREST_2D
 
             // VFX_IMPACT_HIT
             GameObject goImpactHit = null;
-            switch (templateID)
+            switch (vfxImpactHitType)
             {
-                case FixedValue.TemplateID.VFX.ImpactHit.None:
+                case VFXImpactHitType.None:
                     return goImpactHit;
 
-                case FixedValue.TemplateID.VFX.ImpactHit.Hit:
+                case VFXImpactHitType.Hit:
                     goImpactHit = Managers.Resource.Instantiate(FixedValue.Load.VFX_IMPACT_HIT_DEFAULT, null, true);
                     break;
 
-                case FixedValue.TemplateID.VFX.ImpactHit.Leaves:
+                case VFXImpactHitType.Leaves:
                     goImpactHit = Managers.Resource.Instantiate(FixedValue.Load.VFX_IMPACT_HIT_LEAVES, null, true);
                     break;
 
-                case FixedValue.TemplateID.VFX.ImpactHit.Light:
+                case VFXImpactHitType.Light:
                     goImpactHit = Managers.Resource.Instantiate(FixedValue.Load.VFX_IMPACT_HIT_LIGHT, null, true);
                     break;
 
-                case FixedValue.TemplateID.VFX.ImpactHit.SmokePuff:
+                case VFXImpactHitType.SmokePuff:
                     goImpactHit = Managers.Resource.Instantiate(FixedValue.Load.VFX_IMPACT_HIT_SMOKE_PUFF, null, true);
                     break;
 
-                case FixedValue.TemplateID.VFX.ImpactHit.Incinvible:
+                case VFXImpactHitType.Incinvible:
                     goImpactHit = Managers.Resource.Instantiate(FixedValue.Load.VFX_IMPACT_HIT_INVINCIBLE, null, true);
                     break;
 
-                case FixedValue.TemplateID.VFX.ImpactHit.Poison:
+                case VFXImpactHitType.Poison:
                     goImpactHit = Managers.Resource.Instantiate(FixedValue.Load.VFX_IMPACT_HIT_POISON, null, true);
                     break;
             }

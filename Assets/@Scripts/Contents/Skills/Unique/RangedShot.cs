@@ -102,7 +102,7 @@ namespace STELLAREST_2D
 
         protected override void DoSkillJob(System.Action callback = null)
         {
-            this.Owner.CreatureSkillAnimType = this.Data.SkillAnimationTemplateID;
+            this.Owner.CreatureSkillAnimType = this.Data.AnimationType;
             this.Owner.CreatureState = CreatureState.Skill;
             callback?.Invoke();
         }
@@ -197,11 +197,7 @@ namespace STELLAREST_2D
                                 continuousAngles[i] = continuousAngles[i - 1] * -1;
                         }
 
-                        // 400103
-                        // Managers.VFX.ImpactHit(Define.Im)
-                        // *** 
-                        //GameObject goImpactHit = Managers.VFX.ImpactHit(FixedValue.TemplateID.VFX.ImpactHit.SmokePuff, cc, this);
-                        GameObject goImpactHit = Managers.VFX.ImpactHit(this.Data.VFX_ImpactHit_TemplateID, cc, this);
+                        GameObject goImpactHit = Managers.VFX.ImpactHit(this.Data.VFXImpactHitType, cc, this);
                         goImpactHit.transform.localScale = Vector3.one * 5.5f;
 
                         Vector3 firstHitPos = this.transform.position;
@@ -214,7 +210,7 @@ namespace STELLAREST_2D
                             clone.SR.enabled = true;
 
                             float clonedMovementSpeed = this.Data.MovementSpeed + (this.Data.MovementSpeed * 0.5f);
-                            clone.PC.SetOptionsManually(_clonedKunaiShootDir, clonedMovementSpeed, this.Data.Duration, 1f, continuousAngles[i], false, false);
+                            clone.PC.SetOptionsManually(_clonedKunaiShootDir, clonedMovementSpeed, this.Data.Duration, 1f, continuousAngles[i], false);
                             clone.PC.Launch();
                             //clonesPC[i] = clone.PC;
                             //clone.PC.Launch();

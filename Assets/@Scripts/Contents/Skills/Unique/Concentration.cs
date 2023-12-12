@@ -5,7 +5,6 @@ using UnityEngine;
 
 using static STELLAREST_2D.Define;
 using STELLAREST_2D.Data;
-using CrowdControlType = STELLAREST_2D.Define.FixedValue.TemplateID.CrowdControl;
 
 namespace STELLAREST_2D
 {
@@ -52,7 +51,7 @@ namespace STELLAREST_2D
         protected override void DoSkillJob(Action callback = null)
         {
             this.Owner.SkillBook.Deactivate(FixedValue.TemplateID.Skill.ArrowMasterMastery);
-            this.Owner.CreatureSkillAnimType = this.Data.SkillAnimationTemplateID;
+            this.Owner.CreatureSkillAnimType = this.Data.AnimationType;
             this.Owner.CreatureState = CreatureState.Skill;
             callback?.Invoke();
             StartCoroutine(CoConcentration());
@@ -84,13 +83,18 @@ namespace STELLAREST_2D
             float originMinDamage = skill.Data.MinDamage;
             float originMaxDamage = skill.Data.MaxDamage;
 
-            skill.Data.MinDamage += (skill.Data.MinDamage * this.Data.CrowdControlIntensity);
-            skill.Data.MaxDamage += (skill.Data.MaxDamage * this.Data.CrowdControlIntensity);
+            // skill.Data.MinDamage += (skill.Data.MinDamage * this.Data.CrowdControlIntensity);
+            // skill.Data.MaxDamage += (skill.Data.MaxDamage * this.Data.CrowdControlIntensity);
+
+            skill.Data.MinDamage += (skill.Data.MinDamage * 0.5f);
+            skill.Data.MaxDamage += (skill.Data.MaxDamage * 0.5f);
             
             this.Owner.SkillBook.Activate(FixedValue.TemplateID.Skill.ArrowMasterMastery);
             EnableParticles(_buffs, true);
 
-            yield return new WaitForSeconds(this.Data.CrowdControlDuration);
+            //yield return new WaitForSeconds(this.Data.CrowdControlDurations);
+            yield return new WaitForSeconds(this.Data.CrowdControlDurations[0]);
+
             skill.Data.MinDamage = originMinDamage;
             skill.Data.MaxDamage = originMaxDamage;
 
@@ -105,7 +109,14 @@ namespace STELLAREST_2D
         private const int FIXED_MAX_TARGETING_COUNT = 3;
         private void ApplyTarget()
         {
-            if (UnityEngine.Random.Range(0f, 1f) < this.Data.CrowdControlChance)
+            // if (UnityEngine.Random.Range(0f, 1f) < this.Data.CrowdControlChances)
+            // {
+            //     var hashMons = FindMonsterTargets(FIXED_SEARCH_RANGE_FROM_OWNER);
+            //     foreach (var mon in hashMons)
+            //         Managers.CrowdControl.Apply(mon, this);
+            // }
+
+            if (UnityEngine.Random.Range(0f, 1f) < this.Data.CrowdControlChances[0])
             {
                 var hashMons = FindMonsterTargets(FIXED_SEARCH_RANGE_FROM_OWNER);
                 foreach (var mon in hashMons)

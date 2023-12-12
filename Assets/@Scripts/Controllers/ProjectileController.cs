@@ -10,7 +10,7 @@ namespace STELLAREST_2D
         public ProjectileLaunchInfoEventArgs(Define.LookAtDirection lootAtDir, Vector3 shootDir, Vector3 localScale, Vector3 indicatorAngle,
                     float movementSpeed, float rotationSpeed, float lifeTime, float continuousAngle, float continuousSpeedRatio,
                     float continuousFlipX, float continuousFlipY, float interpolateTargetScaleX, float interpolateTargetScaleY, 
-                    bool isOnlyVisible, bool isColliderHalfRatio, int maxBounceCount, int maxPenetrationCount)
+                    bool isColliderHalfRatio, int maxBounceCount, int maxPenetrationCount)
         {
             this.LookAtDir = lootAtDir;
             this.ShootDir = shootDir;
@@ -26,7 +26,6 @@ namespace STELLAREST_2D
             this.ContinuousFlipY = continuousFlipY;
             this.InterpolateTargetScaleX = interpolateTargetScaleX;
             this.InterpolateTargetScaleY = interpolateTargetScaleY;
-            this.IsOnlyVisible = isOnlyVisible;
             this.IsColliderHalfRatio = isColliderHalfRatio;
 
             this.MaxBounceCount = maxBounceCount;
@@ -47,7 +46,6 @@ namespace STELLAREST_2D
         public float ContinuousFlipY { get; private set; } = 0f;
         public float InterpolateTargetScaleX { get; private set; } = 0f;
         public float InterpolateTargetScaleY { get; private set; } = 0f;
-        public bool IsOnlyVisible { get; private set; } = false;
         public bool IsColliderHalfRatio { get; private set; } = false;
         public int MaxBounceCount { get; private set; } = 0;
         public int MaxPenetrationCount { get; private set; } = 0;
@@ -74,9 +72,6 @@ namespace STELLAREST_2D
         private Vector3 _interpolateStartScale = Vector3.zero;
         private Vector3 _interpolateTargetScale = Vector3.zero;
         private bool _isOnReadyInterpolateScale = false;
-
-        private bool _isOnlyVisible = false;
-        public void SetIsOnlyVisible(bool isOnlyVisible) => this._isOnlyVisible = isOnlyVisible;
 
         private bool _isColliderHalfRatio = false;
         private bool _isOffParticle = false;
@@ -126,7 +121,6 @@ namespace STELLAREST_2D
             else
                 this._isOnReadyInterpolateScale = false;
 
-            this._isOnlyVisible = e.IsOnlyVisible;
             _isOffParticle = false;
 
             _bounceCount = 0;
@@ -138,31 +132,26 @@ namespace STELLAREST_2D
 
         // TEMP
         public void SetOptionsManually(Vector3 shootDir, float movementSpeed, float lifeTime,
-                                float continuousSpeedRatio, float continuousAngle, bool isOnlyVisible, bool isColliderHalfRatio)
+                                float continuousSpeedRatio, float continuousAngle, bool isColliderHalfRatio)
         {
             this._shootDir = shootDir;
             this._movementSpeed = movementSpeed;
             this._lifeTime = lifeTime;
             this._continuousSpeedRatio = continuousSpeedRatio;
             this._continuousAngle = continuousAngle;
-            this._isOnlyVisible = isOnlyVisible;
             this._isColliderHalfRatio = isColliderHalfRatio;
         }
 
         public void Launch()
         {
-            FixedValue.TemplateID.Skill skillOriginTemplate = this.Data.FirstTemplateID;
-            HitCollider.enabled = (_isOnlyVisible) ? false : true;
-            //HitCollider.enabled = (_isOnlyVisible) ? (HitCollider.enabled != false) : true;
-            // _movementSpeed *= _continuousSpeedRatio;
-            // Utils.Log("Movement Speed : " + _movementSpeed);
+            FixedValue.TemplateID.Skill skillOriginTemplate = this.Data.TemplateOrigin;
 
             if (this._isColliderHalfRatio)
                 StartCoroutine(CoPreDisableCollider(this._lifeTime * 0.5f));
             
             switch (skillOriginTemplate)
             {
-                case FixedValue.TemplateID.Skill.PaladinMastery:
+                case FixedValue.TemplateID.Skill.Paladin_Unique_Mastery:
                     StartDestroy(_lifeTime);
                     OnSetParticleInfo?.Invoke(_indicatorAngle, _initialLookAtDir, _continuousAngle, _continuousFlipX, _continuousFlipY);
                     _coProjectile = StartCoroutine(CoMeleeSwing());
@@ -518,7 +507,7 @@ namespace STELLAREST_2D
             if (cc.IsValid() == false)
                 return;
 
-            switch (this.Data.FirstTemplateID)
+            switch (this.Data.TemplateOrigin)
             {
                 case FixedValue.TemplateID.Skill.ThrowingStar:
                     _shootDir = NextBounceTarget(cc, Define.HitFromType.ThrowingStar);

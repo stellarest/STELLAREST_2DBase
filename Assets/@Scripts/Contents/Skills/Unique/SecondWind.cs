@@ -65,7 +65,7 @@ namespace STELLAREST_2D
             this.Owner.RendererController.OnFaceCombatHandler();
             this.Owner.SkillBook.Deactivate(FixedValue.TemplateID.Skill.KnightMastery);
 
-            this.Owner.CreatureSkillAnimType = this.Data.SkillAnimationTemplateID;
+            this.Owner.CreatureSkillAnimType = this.Data.AnimationType;
             this.Owner.CreatureState = CreatureState.Skill;
             
             EnableParticles(_onGroup, true);

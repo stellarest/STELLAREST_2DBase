@@ -26,7 +26,6 @@ namespace STELLAREST_2D
                                                     * FixedValue.Numeric.CREATURE_MAX_MOVEMENT_SPEED_ANIM_MULTIPLIER;
 
             CreatureAnimator.SetFloat(CREATURE_MOVEMENT_SPEED, movementSpeedMultiplierResult);
-            Utils.LogEndMethod(nameof(SetMovementSpeed));
         }
 
         private readonly int CREATURE_ENTER_NEXT_STATE_TRIGGER = Animator.StringToHash(FixedValue.Find.ANIM_PARAM_CREATURE_ENTER_NEXT_STATE_TRIGGER);

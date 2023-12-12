@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using static STELLAREST_2D.Define;
-using CrowdControlType = STELLAREST_2D.Define.FixedValue.TemplateID.CrowdControl;
 using STELLAREST_2D.Data;
 
 namespace STELLAREST_2D
@@ -49,7 +48,15 @@ namespace STELLAREST_2D
         public virtual float SpeedModifier { get; set; } = 1f;
         public virtual void ResetSpeedModifier() => SpeedModifier = ORIGIN_SPEED_MODIFIER;
         
-        private const int FIRST_CROWD_CONTROL_ID = 300100;
+        // private const int FIRST_CROWD_CONTROL_ID = 300100;
+        //[SerializeField] private CrowdControlState[] _ccStates = null;
+        // public virtual bool this[CrowdControlType crowdControlType]
+        // {
+        //     get => _ccStates[(int)crowdControlType % FIRST_CROWD_CONTROL_ID].IsOn;
+        //     set => _ccStates[(int)crowdControlType % FIRST_CROWD_CONTROL_ID].IsOn = value;
+        // }
+
+        private const int FIRST_CROWD_CONTROL_ID = 100;
         [SerializeField] private CrowdControlState[] _ccStates = null;
         public virtual bool this[CrowdControlType crowdControlType]
         {
@@ -59,7 +66,7 @@ namespace STELLAREST_2D
 
         public SkillBook SkillBook { get; protected set; } = null;
 
-        public FixedValue.TemplateID.SkillAnimation CreatureSkillAnimType { get; set; } =  FixedValue.TemplateID.SkillAnimation.None;
+        public SkillAnimationType CreatureSkillAnimType { get; set; } =  SkillAnimationType.None;
         [SerializeField] private CreatureState _cretureState = CreatureState.Idle;
         public Define.CreatureState CreatureState { get => _cretureState; set { _cretureState = value; UpdateAnimation(); } }
         protected virtual void UpdateAnimation() { }
@@ -197,16 +204,38 @@ namespace STELLAREST_2D
             goUniqueSkills.transform.SetParent(SkillBook.transform);
             goUniqueSkills.transform.localPosition = Vector3.zero;
             goUniqueSkills.transform.localScale = Vector3.one;
-            foreach (FixedValue.TemplateID.Skill uniqueSkillTemplateID in creatureData.UniqueSkills)
+            foreach (FixedValue.TemplateID.Skill uniqueSkillTemplateOrigin in creatureData.UniqueSkills)
             {
-                int templateID = (int)uniqueSkillTemplateID;
-                if (Managers.Data.SkillsDict.TryGetValue(templateID, out SkillData dataOrigin) == false)
-                    Utils.LogCritical(nameof(CreatureController), nameof(LoadUniqueSkills), $"Input : {templateID}");
+                int templateOrigin = (int)uniqueSkillTemplateOrigin;
+                if (Managers.Data.SkillsDict.TryGetValue(templateOrigin, out SkillData skillData) == false)
+                    Utils.LogCritical(nameof(CreatureController), nameof(LoadUniqueSkills), $"Input : {templateOrigin}");
 
-                for (int i = templateID; i < templateID + (int)dataOrigin.MaxGrade; ++i)
+                // Mastery
+                // 100100
+                // 3
+
+                // Unique Elite
+                // 100103 ~ 100104
+                // for (int i = templateID; i < templateID + (int)skillData.MaxGrade; ++i)
+                // {
+                //     SkillData data = Managers.Data.SkillsDict[i];
+                //     GameObject go = Managers.Resource.Instantiate(data.PrimaryLabel);
+                //     go.name = data.Name;
+                //     go.transform.SetParent(goUniqueSkills.transform);
+                //     go.transform.localPosition = Vector3.zero;
+                //     if (data.UsePresetLocalScale == false)
+                //         go.transform.localScale = Vector3.one;
+
+                //     UniqueSkill uniqueSkill = go.GetComponent<UniqueSkill>();
+                //     uniqueSkill.InitOrigin(this, data);
+                //     SkillBook.SkillGroupsDict.AddGroup(templateID, new SkillGroup(uniqueSkill));
+                // }
+
+                for (int i = templateOrigin; i < templateOrigin + skillData.GradeTotalCount; ++i)
                 {
                     SkillData data = Managers.Data.SkillsDict[i];
                     GameObject go = Managers.Resource.Instantiate(data.PrimaryLabel);
+                    go.name = data.Name;
                     go.transform.SetParent(goUniqueSkills.transform);
                     go.transform.localPosition = Vector3.zero;
                     if (data.UsePresetLocalScale == false)
@@ -214,35 +243,36 @@ namespace STELLAREST_2D
 
                     UniqueSkill uniqueSkill = go.GetComponent<UniqueSkill>();
                     uniqueSkill.InitOrigin(this, data);
-                    SkillBook.SkillGroupsDict.AddGroup(templateID, new SkillGroup(uniqueSkill));
+                    SkillBook.SkillGroupsDict.AddGroup(templateOrigin, new SkillGroup(uniqueSkill));
                 }
             }
         }
 
         private void LoadPublicSkills(CreatureData creatureData)
         {
-            GameObject goPublicSkills = new GameObject { name = "@PublicSkills " };
+            GameObject goPublicSkills = new GameObject { name = "@PublicSkills" };
             goPublicSkills.transform.SetParent(SkillBook.transform);
             goPublicSkills.transform.localPosition = Vector3.zero;
             goPublicSkills.transform.localScale = Vector3.one;
             foreach (FixedValue.TemplateID.Skill publicSkillTemplateID in creatureData.PublicSkills)
             {
                 int templateID = (int)publicSkillTemplateID;
-                if (Managers.Data.SkillsDict.TryGetValue(templateID, out Data.SkillData dataOrigin) == false)
+                if (Managers.Data.SkillsDict.TryGetValue(templateID, out Data.SkillData skillData) == false)
                     Utils.LogCritical(nameof(CreatureController), nameof(LoadPublicSkills), $"Input : {templateID}");
 
-                for (int i = templateID; i < templateID + (int)dataOrigin.MaxGrade; ++i)
+                for (int i = templateID; i < templateID + (int)skillData.MaxGrade; ++i)
                 {
                     SkillData data = Managers.Data.SkillsDict[i];
                     GameObject go = Managers.Resource.Instantiate(data.PrimaryLabel);
+                    go.name = data.Name;
                     go.transform.SetParent(goPublicSkills.transform);
                     go.transform.localPosition = Vector3.zero;
                     if (data.UsePresetLocalScale == false)
                         go.transform.localScale = Vector3.one;
 
-                    PublicSkill defaultSkill = go.GetComponent<PublicSkill>();
-                    defaultSkill.InitOrigin(this, data);
-                    SkillBook.SkillGroupsDict.AddGroup(i, new SkillGroup(defaultSkill));
+                    PublicSkill publicSkill = go.GetComponent<PublicSkill>();
+                    publicSkill.InitOrigin(this, data);
+                    SkillBook.SkillGroupsDict.AddGroup(i, new SkillGroup(publicSkill));
                 }
             }
         }
@@ -267,7 +297,7 @@ namespace STELLAREST_2D
 
             if (this.IsInvincible || this.SkillBook.IsOnBarrier)
             {
-                Managers.VFX.ImpactHit(FixedValue.TemplateID.VFX.ImpactHit.Incinvible, this, from);
+                Managers.VFX.ImpactHit(VFXImpactHitType.Incinvible, this, from);
                 if (this.SkillBook.IsOnBarrier)
                     this.SkillBook.HitBarrier();
                 
@@ -303,7 +333,7 @@ namespace STELLAREST_2D
                 this.Stat.HP -= dmgResult;
 
             Managers.VFX.Damage(this, dmgResult, isCritical);
-            Managers.VFX.ImpactHit(from.Data.VFX_ImpactHit_TemplateID, this, from); // --> 메모리 문제 발생시, 크리티컬 쪽에서 스폰 체크
+            Managers.VFX.ImpactHit(from.Data.VFXImpactHitType, this, from); // --> 메모리 문제 발생시, 크리티컬 쪽에서 스폰 체크
 
             if (this.Stat.HP <= 0 && this.IsDeadState == false)
             {
@@ -318,8 +348,8 @@ namespace STELLAREST_2D
             else
             {
                 // Crowd Control (CC)
-                if (Managers.Game.TryCrowdControl(from))
-                    Managers.CrowdControl.Apply(this, from);
+                //if (Managers.Game.TryCrowdControl(from))
+                Managers.CrowdControl.Apply(this, from);
 
                 if (this.SkillBook.IsOnShield == false)
                 {
@@ -345,7 +375,7 @@ namespace STELLAREST_2D
                 case CrowdControlType.None:
                     return;
 
-                case CrowdControlType.Poison:
+                case CrowdControlType.Poisoned:
                 {
                     Managers.VFX.PoisonDamage(this, fixedDamage);
                     break;
@@ -430,174 +460,51 @@ namespace STELLAREST_2D
         public void SetBattleHead() => this.RendererController.OnFaceCombatHandler();
         public void SetDeadHead() => this.RendererController.OnFaceDeadHandler();
 
-        public void RequestApplyingCrowdControl(SkillBase from)
+        public void TryCrowdControl(SkillBase from)
         {
-            // TryContinuousCrowControl
-            // 연속된 CC기 이므로, 이전 CC기가 걸려야 다음 CC기가 걸릴지 여부를 판단
-            CrowdControlType ccType = from.Data.CrowdControlTemplateID;
-            switch (ccType)
+            CrowdControlType[] ccTypes = new CrowdControlType[from.Data.CrowdControlTypes.Length];
+            for (int i = 0; i < from.Data.CrowdControlTypes.Length; ++i)
             {
-                case CrowdControlType.None:
+                if (this[ccTypes[i]])
+                {
+                    Utils.Log($"Already {ccTypes[i]}");
+                    continue;
+                }
+
+                float ccChance = from.Data.CrowdControlChances[i];
+                if (Managers.Game.TryCrowdControl(ccChance) == false)
                     return;
-
-                case CrowdControlType.Stun:
+                else
+                {
+                    float ccDuration = from.Data.CrowdControlDurations[i];
+                    float ccIntensity = from.Data.CrowdControlIntensities[i];
+                    switch (ccTypes[i])
                     {
-                        if (this[ccType] == false)
-                        {
-                            StartCoroutine(Managers.CrowdControl.CoStun(this, from));
-                            TryContinuousCrowControl(this, from);
-                        }
-                        else
-                            Utils.Log("Already Stun,,,");
-                    }
-                    break;
+                        case CrowdControlType.Stun:
+                            StartCoroutine(Managers.CrowdControl.CoStun(this, ccDuration));
+                            continue;
 
-                case CrowdControlType.Slow:
-                    {
-                        if (this[ccType] == false)
-                        {
-                            StartCoroutine(Managers.CrowdControl.CoSlow(this, from));
-                            TryContinuousCrowControl(this, from);
-                        }
-                        else
-                            Utils.Log("Already Slow,,,");
-                    }
-                    break;
+                        case CrowdControlType.Slow:
+                            StartCoroutine(Managers.CrowdControl.CoSlow(this, ccDuration, ccIntensity));
+                            continue;
 
-                case CrowdControlType.KnockBack:
-                    {
-                        if (this[ccType] == false)
-                        {
-                            StartCoroutine(Managers.CrowdControl.CoKnockBack(this, from));
-                            TryContinuousCrowControl(this, from);
-                        }
-                        else
-                            Utils.Log("Already KnockBack,,,");
-                    }
-                    break;
+                        case CrowdControlType.KnockBack:
+                            StartCoroutine(Managers.CrowdControl.CoKnockBack(this, ccDuration, ccIntensity, from.HitPoint));
+                            continue;
 
-                case CrowdControlType.Slience:
-                    {
-                        if (this[ccType] == false)
-                        {
-                            StartCoroutine(Managers.CrowdControl.CoSilence(this, from));
-                            TryContinuousCrowControl(this, from);
-                        }
-                        else
-                            Utils.Log("Already Silence,,,");
-                    }
-                    break;
+                        case CrowdControlType.Silence:
+                            StartCoroutine(Managers.CrowdControl.CoSilence(this, ccDuration));
+                            continue;
 
-                case CrowdControlType.Targeted:
-                    {
-                        if (this[ccType] == false)
-                        {
+                        case CrowdControlType.Targeted:
                             StartCoroutine(Managers.CrowdControl.CoTargeted(this, from));
-                            TryContinuousCrowControl(this, from);
-                        }
-                        else
-                            Utils.Log("Already Targeted,,,");
+                            continue;
+
+                        case CrowdControlType.Poisoned:
+                            StartCoroutine(Managers.CrowdControl.CoPoisoned(this, ccDuration, from.Data.MinDamage, from.Data.MaxDamage));
+                            continue;
                     }
-                    break;
-
-                case CrowdControlType.Poison:
-                    {
-                        if (this[ccType] == false)
-                        {
-                            Utils.Log("Apply Poison.");
-                            StartCoroutine(Managers.CrowdControl.CoPoisoning(this, from));
-                            TryContinuousCrowControl(this, from);
-                        }
-                        else
-                            Utils.Log("Already Poison,,,");
-                    }
-                    break;
-            }
-        }
-
-        private void TryContinuousCrowControl(CreatureController target, SkillBase from)
-        {
-            if (Managers.Game.TryCrowdControl(from.Data.ContinuousCrowdControlChance) == false)
-                return;
-
-            CrowdControlType continuousCCType = from.Data.ContinuousCrowdControlTemplateID;
-            switch (continuousCCType)
-            {
-                case CrowdControlType.None:
-                    return;
-
-                case CrowdControlType.Stun:
-                    {
-                        if (this[continuousCCType] == false)
-                        {
-                            Managers.VFX.ImpactHit(from.Data.ContinuousCrowdControl_VFX_ImpactHit_TemplateID, target, from);
-                            StartCoroutine(Managers.CrowdControl.CoStun(this, from, true));
-                        }
-                        else
-                            Utils.Log("Already Stun,,,");
-                    }
-                    break;
-
-                case CrowdControlType.Slow:
-                    {
-                        if (this[continuousCCType] == false)
-                        {
-                            Managers.VFX.ImpactHit(from.Data.ContinuousCrowdControl_VFX_ImpactHit_TemplateID, target, from);
-                            StartCoroutine(Managers.CrowdControl.CoSlow(this, from, true));
-                        }
-                        else
-                            Utils.Log("Already Slow,,,");
-                    }
-                    break;
-
-                case CrowdControlType.KnockBack:
-                    {
-                        if (this[continuousCCType] == false)
-                        {
-                            Managers.VFX.ImpactHit(from.Data.ContinuousCrowdControl_VFX_ImpactHit_TemplateID, target, from);
-                            StartCoroutine(Managers.CrowdControl.CoKnockBack(this, from, true));
-                        }
-                        else
-                            Utils.Log("Already KnockBack,,,");
-                    }
-                    break;
-
-                case CrowdControlType.Slience:
-                    {
-                        if (this[continuousCCType] == false)
-                        {
-                            Managers.VFX.ImpactHit(from.Data.ContinuousCrowdControl_VFX_ImpactHit_TemplateID, target, from);
-                            StartCoroutine(Managers.CrowdControl.CoSilence(this, from, true));
-                        }
-                        else
-                            Utils.Log("Already Silence,,,");
-                    }
-                    break;
-
-                case CrowdControlType.Targeted:
-                    {
-                        if (this[continuousCCType] == false)
-                        {
-                            Managers.VFX.ImpactHit(from.Data.ContinuousCrowdControl_VFX_ImpactHit_TemplateID, target, from);
-                            StartCoroutine(Managers.CrowdControl.CoTargeted(this, from, true));
-                        }
-                        else
-                            Utils.Log("Already Targeted,,,");
-                    }
-                    break;
-
-                case CrowdControlType.Poison:
-                    {
-                        if (this[continuousCCType] == false)
-                        {
-                            Managers.VFX.ImpactHit(from.Data.ContinuousCrowdControl_VFX_ImpactHit_TemplateID, target, from);
-                            StartCoroutine(Managers.CrowdControl.CoPoisoning(this, from, true));
-                        }
-                        else
-                            Utils.Log("Already Poison,,,");
-                    }
-                    break;
-
+                }                                    
             }
         }
 

@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+using static STELLAREST_2D.Define;
+
 namespace STELLAREST_2D
 {
     public class Managers : MonoBehaviour
@@ -14,10 +16,10 @@ namespace STELLAREST_2D
             {
                 if (isApplicationQuitting == false && _instance == null)
                 {
-                    GameObject go = GameObject.Find("@Managers");
+                    GameObject go = GameObject.Find(FixedValue.Find.MANAGERS);
                     if (go == null)
                     {
-                        go = new GameObject() { name = "@Managers" };
+                        go = new GameObject() { name = FixedValue.Find.MANAGERS };
                         go.AddComponent<Managers>();
                     }
 

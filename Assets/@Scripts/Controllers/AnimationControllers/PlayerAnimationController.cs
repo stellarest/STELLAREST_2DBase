@@ -13,20 +13,20 @@ namespace STELLAREST_2D
         
         public override void Init(CreatureController owner) => base.Init(owner);
         public void Ready() => CreatureAnimator.Play(UPPER_READY);
-        public virtual void Skill(FixedValue.TemplateID.SkillAnimation skillAnimType = FixedValue.TemplateID.SkillAnimation.None)
+        public virtual void Skill(SkillAnimationType skillAnimType = SkillAnimationType.None)
         {
             switch (skillAnimType)
             {
-                case FixedValue.TemplateID.SkillAnimation.Mastery:
+                case SkillAnimationType.Unique_Mastery:
                     CreatureAnimator.Play(UPPER_ATTACK);
                     break;
 
-                case FixedValue.TemplateID.SkillAnimation.Unique_Elite:
+                case SkillAnimationType.Unique_Elite:
                     CreatureAnimator.StopPlayback();
                     CreatureAnimator.Play(UPPER_MASTERY_ELITE_PLUS);
                     break;
 
-                case FixedValue.TemplateID.SkillAnimation.Unique_Ultimate:
+                case SkillAnimationType.Unique_Ultimate:
                     break;
             }
         }

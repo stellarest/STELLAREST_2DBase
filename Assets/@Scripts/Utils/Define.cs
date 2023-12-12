@@ -8,20 +8,17 @@ namespace STELLAREST_2D
         public enum InGameStage { Forest, Volcano } // temp
         public enum InGameDifficulty { Normal, Hard, Expert, Master, Extreme } // temp
         public enum WaveType { None, Elite, Boss } // temp
-        public enum Scene { Unknown, DevScene, GameScene, } // temp
-        public enum Sound { BGM, SFX, } // temp
+        public enum SceneType { Unknown, DevScene, GameScene, } // temp
+        public enum SoundType { BGM, SFX, } // temp
         public enum StageType { Normal, Boss, } // temp
         public enum UIEvent { Click, Pressed, PointerDown, PointerUp, BeginDrag, Drag, EndDrag, }
-        //public enum CreatureStatGrade { None = -1, Low = 1, Average, High, }
-        
-        // (None - Very Low) - Low - Average - Great
-        // public enum CreatureStatGrade { None = -1, VeryLow, Low, Average, Great }
-
         public enum ObjectType { None = -1, Player = 1, Monster, Skill, Projectile, Gem, Soul }
         public enum MonsterType { None = -1, Chicken = 1, }
+
+        // Default - Yellow - Purple - Red
         public enum InGameGrade { Default = 1, Elite, Ultimate }
+
         public enum SortingOrder { Map = 100, Player = 200, Item = 209, Monster = 210, Skill = 230, EnvEffect = 255 }
-        public enum SkillType { None = -1, Unique = 1, Public }
         public enum CreatureState { Idle, Walk, Run, Skill, Invincible, Dead }
         public enum CollisionLayers { Default = 0, PlayerBody = 6, PlayerAttack = 7, MonsterBody = 8, MonsterAttack = 9 }
         public enum LookAtDirection { Left = 1, Right = -1 }
@@ -37,6 +34,16 @@ namespace STELLAREST_2D
         {
             None = -1, Spawn, Damage, Dodge, Skull, Dust, Stun, Slow, Silence, Targeted, Poison,
             GemGather, GemExplosion, Font_Percentage, QuestionMark, KnockBack, WindTrail, Max = 999,
+        }
+
+        public enum SkillType { None = -1, Unique = 100, Public = 200 }
+        public enum SkillAnimationType { None = -1, Unique_Mastery = 100, Unique_Elite = 200, Unique_Elite_C1 = 201, Unique_Ultimate = 300, }
+        public enum VFXImpactHitType { None = -1, Hit = 100, Leaves, Light, SmokePuff, Incinvible, Poison, }
+        // Prev Stun : 300100
+        public enum CrowdControlType
+        {
+            None = -1, Stun = 100, Slow, KnockBack, Silence, Blind, Charm,
+            Flee, Sleep, Targeted, Poisoned, Frozen, MaxCount = 10
         }
 
         #region Public Fixed Value
@@ -104,6 +111,10 @@ namespace STELLAREST_2D
 
             public static class Find
             {
+                // Managers
+                public const string MANAGERS = "@Managers";
+                public const string JOYSTICK = "@Joystick";
+
                 // CreatureController
                 public const string INDICATOR = "Indicator";
                 public const string FIRE_SOCKET = "FireSocket";
@@ -185,7 +196,7 @@ namespace STELLAREST_2D
                 public const float CREATURE_MAX_MOVEMENT_SPEED_ANIM_MULTIPLIER = 3F;
 
                 // VFXManager
-                public const float HIT_DURATION = 1F;
+                public const float MAT_HIT_DURATION = 0.1F;
                 public const float HOLOGRAM_SPEED_POWER = 20F;
                 public const float FADE_OUT_DURATION = 1.25F;
                 public const float INSTANT_FADE_ALPHA = 0.25F;
@@ -207,6 +218,7 @@ namespace STELLAREST_2D
                 public const float STANDARD_CREATURE_SHAKE_POWER = 0.5F;
             }
 
+            // Data Dictionary에서 사용되어지는 목록,,
             public static class TemplateID
             {
                 public enum Player
@@ -228,21 +240,15 @@ namespace STELLAREST_2D
                 public enum Monster
                 {
                     None = -1,
-                    Chicken = 900100,
+                    Chicken = 800100,
                 }
-
-                /*
-                    Mastery : 시작시 lv.1
-                    Unlock_Elite.. : Mastery Elite 달성시 lv.1
-                    Unlock Ultimate.. : Mastery Ultimate 달성시 lv.1 
-                */
 
                 public enum Skill
                 {
                     None = -1,
 
-                    // *** Unique Skills ***
-                    PaladinMastery = 100100,
+                    // ***** Player Unique Skills ID *****
+                    Paladin_Unique_Mastery = 100100,
                     Paladin_Unique_Elite = 100103,  // Shield
                     Paladin_Unique_Ultimate = 100106, // Judgement
 
@@ -278,53 +284,16 @@ namespace STELLAREST_2D
                     Ninja_Unique_Elite_C1 = 300206, // Ninja Slash
                     Ninja_Unique_Ultimate = 300209, // Clone Technique
 
-                    // *** Public Skills ***
+                    // ***** Monster Unique Skills ID *****
+                    Monster_Unique_BodyAttack = 800100,
+
+                    // ***** Public Skills ID *****
                     ThrowingStar = 900100,
                     Boomerang = 900103,
                     LazerBolt = 900106,
                     Spear = 900109,
                     BombTrap = 900112,
 
-                    BodyAttack_Solo = 901100
-                }
-
-                public enum SkillAnimation
-                {
-                    None = -1,
-                    Mastery = 100100,
-                    Unique_Elite = 200100,
-                    Unique_Elite_C1 = 200101,
-                    Unique_Ultimate = 300100,
-                }
-
-                public enum CrowdControl
-                {
-                    None = -1,
-                    Stun = 300100,
-                    Slow = 300101,
-                    KnockBack = 300102,
-                    Slience = 300103,
-                    Blind = 300104,
-                    Charm = 300105,
-                    Flee = 300106,
-                    Sleep = 300107,
-                    Targeted = 300108,
-                    Poison = 300109,
-                    MaxCount = 10
-                }
-
-                public static class VFX
-                {
-                    public enum ImpactHit
-                    {
-                        None = -1,
-                        Hit = 400100,
-                        Leaves = 400101,
-                        Light = 400102,
-                        SmokePuff = 400103,
-                        Incinvible = 400104,
-                        Poison = 400105,
-                    }
                 }
             }
         }

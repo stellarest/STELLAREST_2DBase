@@ -7,9 +7,9 @@ using UnityEngine;
 
 namespace STELLAREST_2D
 {
-    public class BaseContainer
+    public class BaseRenderer
     {
-        public BaseContainer(string tag, Material matOrigin, Color colorOrigin)
+        public BaseRenderer(string tag, Material matOrigin, Color colorOrigin)
         {
             this.Tag = tag;
             this.MatOrigin = matOrigin;
@@ -38,16 +38,16 @@ namespace STELLAREST_2D
             }
         }
 
-        private BaseContainer[] _baseContainers = null;
-        public BaseContainer[] BaseContainers
+        private BaseRenderer[] _baseRenderers = null;
+        public BaseRenderer[] BaseContainers
         {
-            get => _baseContainers;
+            get => _baseRenderers;
             set
             {
-                if (_baseContainers != null && _baseContainers.Length > 0)
+                if (_baseRenderers != null && _baseRenderers.Length > 0)
                     return;
 
-                _baseContainers = value;
+                _baseRenderers = value;
             }
         }
     }
@@ -57,17 +57,17 @@ namespace STELLAREST_2D
         public Dictionary<Define.InGameGrade, RendererContainer> RendererContainerDict { get; }
                     = new Dictionary<Define.InGameGrade, RendererContainer>();
 
-        public void AddRendererContainers(Define.InGameGrade grade, BaseContainer[] baseContainers, SpriteRenderer[] SPRs)
+        public void AddRendererContainers(Define.InGameGrade grade, BaseRenderer[] baseRenderers, SpriteRenderer[] SPRs)
         {
             RendererContainer rendererContainer = new RendererContainer();
             rendererContainer.SpriteRenderers = SPRs;
-            rendererContainer.BaseContainers = baseContainers;
+            rendererContainer.BaseContainers = baseRenderers;
             RendererContainerDict.Add(grade, rendererContainer);
         }
 
         public SpriteRenderer[] GetSpriteRenderers(Define.InGameGrade grade)
             => RendererContainerDict.TryGetValue(grade, out RendererContainer value) ? value.SpriteRenderers : null;
-        public BaseContainer[] GetBaseContainers(Define.InGameGrade grade)
+        public BaseRenderer[] GetBaseRenderers(Define.InGameGrade grade)
             => RendererContainerDict.TryGetValue(grade, out RendererContainer value) ? value.BaseContainers : null;
     }
     
@@ -130,8 +130,8 @@ namespace STELLAREST_2D
 
         public SpriteRenderer[] SpriteRenderers(Define.InGameGrade grade)
             => RendererModeratorDict.TryGetValue(this.Owner, out RendererModerator value) ? value.GetSpriteRenderers(grade) : null;
-        public BaseContainer[] BaseContainers(Define.InGameGrade grade)
-            => RendererModeratorDict.TryGetValue(this.Owner, out RendererModerator value) ? value.GetBaseContainers(grade) : null;
+        public BaseRenderer[] BaseRenderers(Define.InGameGrade grade)
+            => RendererModeratorDict.TryGetValue(this.Owner, out RendererModerator value) ? value.GetBaseRenderers(grade) : null;
 
         public virtual void EnterInGame() => ResetMaterial();
         protected virtual void OnRefreshRendererHandler(Define.InGameGrade keyGrade) { }
@@ -153,7 +153,7 @@ namespace STELLAREST_2D
 
         public void ResetMaterial()
         {
-            BaseContainer[] BCs = this.BaseContainers(KeyGrade);
+            BaseRenderer[] BCs = this.BaseRenderers(KeyGrade);
             int legnth = Mathf.Min(BCs.Length, OwnerSPRs.Length);
             for (int i = 0; i < legnth; ++i)
                 OwnerSPRs[i].material = BCs[i].MatOrigin;

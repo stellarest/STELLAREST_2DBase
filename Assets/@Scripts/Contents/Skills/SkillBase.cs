@@ -5,19 +5,16 @@ using STELLAREST_2D.Data;
 
 namespace STELLAREST_2D
 {
-    /*
-        * SkillBase 
-            - Unique Skill : "캐릭터 고유의 전용 스킬". 전용 애니메이션 있을수도 있고 없을 수도 있음.
-            - Public Skill : "모든 캐릭터가 획득할 수 있는 스킬". 전용 애니메이션 있을수도 있고 없을수도 있지만 거의 없을듯.
-                             때문에, 이들의 클래스는 단순 구분용으로 작성하게 된 것.
-
-        * Player Default Skill
-        - Mastery Skill : 모든 캐릭터가 기본적으로 가지고 있는 스킬. Default -> Elite -> Ultimate 등급으로 구성
-            > Mastery Attack : 캐릭터의 기본 공격 스킬. 애니메이션 발동. (Default -> Elite -> Ultimate)
-            > Mastery Elite Plus
-            > Mastery Ultimate Plus 
-    */
-
+    [System.Serializable]
+    public class AdditionalCustomValue
+    {
+        public string Tooltip;
+        public bool Boolean;
+        public int Count;
+        public float Value;
+        public float Ratio;
+        public Vector3 Point3D;
+    }
 
     [System.Serializable]
     public class SkillBase : BaseController

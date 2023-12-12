@@ -40,7 +40,7 @@ namespace STELLAREST_2D
             {
                 case Define.ObjectType.Player:
                     {
-                        GameObject go = Managers.Resource.Instantiate(Managers.Data.CreaturesDict[templateID].PrimaryLabel, pooling: isPooling);
+                        GameObject go = Managers.Resource.Instantiate(Managers.Data.CreaturesDict[templateID].PrimaryLabels[0], pooling: isPooling);
                         go.transform.position = spawnPos;
 
                         PlayerController pc = go.GetComponent<PlayerController>();
@@ -58,7 +58,7 @@ namespace STELLAREST_2D
                         {
                             case (int)FixedValue.TemplateID.Monster.Chicken:
                                 {
-                                    GameObject go = Managers.Resource.Instantiate(Managers.Data.CreaturesDict[templateID].PrimaryLabel, pooling: isPooling);
+                                    GameObject go = Managers.Resource.Instantiate(Managers.Data.CreaturesDict[templateID].PrimaryLabels[0], pooling: isPooling);
                                     go.transform.position = spawnPos;
 
                                     for (int i = 0; i < go.transform.childCount; ++i)

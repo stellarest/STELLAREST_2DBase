@@ -5,11 +5,10 @@ using UnityEngine;
 
 namespace STELLAREST_2D
 {
-    public class HeavensJudgement : UniqueSkill
+    public class Judgement : UniqueSkill
     {
         protected override IEnumerator CoStartSkill()
         {
-            DoSkillJob();
             yield return null;
         }
 

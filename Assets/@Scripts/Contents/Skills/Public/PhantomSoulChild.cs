@@ -53,7 +53,7 @@ namespace STELLAREST_2D
             float movementSpeed = this.Data.MovementSpeed;
             float rotationSpeed = this.Data.RotationSpeed;
             float lifeTime = this.Data.Duration;
-            bool isColliderHalfRatio = this.Data.IsColliderHalfRatio;
+            bool isColliderHalfRatio = this.Data.UseColliderHalfLifeTime;
 
             float[] continuousAngles = new float[continuousCount];
             float[] continuousSpeedRatios = new float[continuousCount];
@@ -65,34 +65,32 @@ namespace STELLAREST_2D
 
             float[] interpolateTargetScaleXs = new float[continuousCount];
             float[] interpolateTargetScaleYs = new float[continuousCount];
-            bool[] isOnlyVisibles = new bool[continuousCount];
             for (int i = 0; i < continuousCount; ++i)
             {
                 continuousSpeedRatios[i] = this.Data.ContinuousSpeedRatios[i];
                 continuousFlipXs[i] = this.Data.ContinuousFlipXs[i];
                 continuousFlipYs[i] = this.Data.ContinuousFlipYs[i];
-                isOnlyVisibles[i] = this.Data.IsOnlyVisibles[i];
                 if (this.Owner.IsFacingRight == false)
                 {
                     continuousAngles[i] = this.Data.ContinuousAngles[i] * -1;
-                    interpolateTargetScaleXs[i] = this.Data.ScaleInterpolations[i].x * -1;
-                    interpolateTargetScaleYs[i] = this.Data.ScaleInterpolations[i].y;
+                    interpolateTargetScaleXs[i] = this.Data.TargetScaleInterpolations[i].x * -1;
+                    interpolateTargetScaleYs[i] = this.Data.TargetScaleInterpolations[i].y;
                 }
                 else
                 {
                     continuousAngles[i] = this.Data.ContinuousAngles[i];
-                    interpolateTargetScaleXs[i] = this.Data.ScaleInterpolations[i].x;
-                    interpolateTargetScaleYs[i] = this.Data.ScaleInterpolations[i].y;
+                    interpolateTargetScaleXs[i] = this.Data.TargetScaleInterpolations[i].x;
+                    interpolateTargetScaleYs[i] = this.Data.TargetScaleInterpolations[i].y;
                 }
             }
 
             int maxBounceCount = this.Data.MaxBounceCount;
             int maxPenetrationCount = this.Data.MaxPenetrationCount;
 
-            Vector3 spawnPosOnFirstPoint = (this.Data.IsOnFireSocket) ? this.Owner.FireSocketPosition : this.Owner.transform.position;
+            Vector3 spawnPosOnFirstPoint = (this.Data.IsLaunchedFromFireSocket) ? this.Owner.FireSocketPosition : this.Owner.transform.position;
             for (int i = 0; i < continuousCount; ++i)
             {
-                Vector3 spawnPos = (this.Data.IsOnFireSocket) ? this.Owner.FireSocketPosition : this.Owner.transform.position;
+                Vector3 spawnPos = (this.Data.IsLaunchedFromFireSocket) ? this.Owner.FireSocketPosition : this.Owner.transform.position;
                 if (Utils.IsThief(this.Owner))
                     spawnPos = spawnPosOnFirstPoint;
                 
@@ -116,7 +114,6 @@ namespace STELLAREST_2D
                         continuousFlipY: continuousFlipYs[i],
                         interpolateTargetScaleX: interpolateTargetScaleXs[i],
                         interpolateTargetScaleY: interpolateTargetScaleYs[i],
-                        isOnlyVisible: isOnlyVisibles[i],
                         isColliderHalfRatio: isColliderHalfRatio,
                         maxBounceCount: maxBounceCount,
                         maxPenetrationCount: maxPenetrationCount

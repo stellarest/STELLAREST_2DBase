@@ -5,7 +5,6 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 using static STELLAREST_2D.Define;
-using CrowdControlType = STELLAREST_2D.Define.FixedValue.TemplateID.CrowdControl;
 
 namespace STELLAREST_2D
 {
@@ -148,7 +147,7 @@ namespace STELLAREST_2D
             this.RigidBody.MovePosition(toTargetMovement);
             if (Utils.IsArriveToTarget(this.Center, this.MainTarget.transform, minDistance))
             {
-                if (this[CrowdControlType.Slience] == false)
+                if (this[CrowdControlType.Silence] == false)
                     this.CreatureState = Define.CreatureState.Skill;
                 else
                     this.CreatureState = Define.CreatureState.Idle;
@@ -224,7 +223,7 @@ namespace STELLAREST_2D
                         Flip(toTargetDir.x > 0 ? -1 : 1);
                 }
 
-                if (this[CrowdControlType.Slience])
+                if (this[CrowdControlType.Silence])
                 {
                     if (toTargetDir.sqrMagnitude > this.Stat.CollectRange * this.Stat.CollectRange)
                         this.CreatureState = Define.CreatureState.Run;
@@ -278,10 +277,6 @@ namespace STELLAREST_2D
 
             base.OnDamaged(attacker, from);
         }
-
-        // Move To CreatureState
-        // public void SetDeadHead() => RendererController.MonsterHead.sprite = this.DeadHead;
-        // public void SetDefaultHead() => RendererController.MonsterHead.sprite = this.DefaultHead;
 
         protected override void OnDead()
         {

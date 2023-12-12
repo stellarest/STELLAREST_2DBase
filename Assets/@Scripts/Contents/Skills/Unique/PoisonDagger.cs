@@ -55,7 +55,7 @@ namespace STELLAREST_2D
             this.Owner.SkillBook.Deactivate(FixedValue.TemplateID.Skill.AssassinMastery);
             _ownerController.PlayerAnimController.EnterNextState(false);
 
-            this.Owner.CreatureSkillAnimType = this.Data.SkillAnimationTemplateID;
+            this.Owner.CreatureSkillAnimType = this.Data.AnimationType;
             this.Owner.CreatureState = CreatureState.Skill;
             callback?.Invoke();
         }
@@ -130,7 +130,7 @@ namespace STELLAREST_2D
             _ownerController.PlayerAnimController.EnterNextState(false);
             _isEndOfSkill = true;
 
-            this.Owner.CreatureSkillAnimType = this.Data.SkillAnimationTemplateID;
+            this.Owner.CreatureSkillAnimType = this.Data.AnimationType;
             this.Owner.CreatureState = CreatureState.Skill;
 
             TakeOffParticlesFromParent(_burstGroup);

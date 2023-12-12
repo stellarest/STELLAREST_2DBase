@@ -68,7 +68,7 @@ namespace STELLAREST_2D
             if (leader != null)
             {
                 Tag = $"Group : {leader._skillOrigin.Data.Name}";
-                SkillType = leader._skillOrigin.Data.SkillType;
+                SkillType = leader._skillOrigin.Data.Type;
                 Members = new List<SkillMember>();
                 Members.Add(new SkillMember(leader._skillOrigin));
                 ++MemberCount;
@@ -95,26 +95,26 @@ namespace STELLAREST_2D
                     if (i == 0) // FIRST SKILL
                     {
                         SkillBase unlockSkill = Members[0].Unlock();
-                        if (unlockSkill.Data.HasEventHandler && unlockSkill.Data.SkillType == Define.SkillType.Unique)
+                        if (unlockSkill.Data.IsLaunchedFromEventHandler && unlockSkill.Data.Type == SkillType.Unique)
                         {
-                            if (unlockSkill.Data.FirstTemplateID == Book.MasteryAttackTemplate)
+                            if (unlockSkill.Data.TemplateOrigin == Book.UniqueMasteryTemplate)
                             {
                                 unlockSkill.Owner.AnimCallback.OnActiveMasteryAction -= unlockSkill.GetComponent<UniqueSkill>().OnActiveMasteryActionHandler;
                                 unlockSkill.Owner.AnimCallback.OnActiveMasteryAction += unlockSkill.GetComponent<UniqueSkill>().OnActiveMasteryActionHandler;
                                 Utils.Log($"Add Event : AnimCallback.OnActiveMasteryAction += {unlockSkill.Data.Name}");
                             }
-                            else if (unlockSkill.Data.FirstTemplateID == Book.EliteActionTemplate)
+                            else if (unlockSkill.Data.TemplateOrigin == Book.UniqueEliteTemplate)
                             {
                                 unlockSkill.Owner.AnimCallback.OnActiveEliteAction += unlockSkill.GetComponent<UniqueSkill>().OnActiveEliteActionHandler;
                                 Utils.Log($"Add Event : AnimCallback.OnActiveEliteAction += {unlockSkill.Data.Name}");
                             }
-                            else if (unlockSkill.Data.FirstTemplateID == FixedValue.TemplateID.Skill.Assassin_Unique_Elite_C1)
+                            else if (unlockSkill.Data.TemplateOrigin == FixedValue.TemplateID.Skill.Assassin_Unique_Elite_C1)
                             {
                                 unlockSkill.Owner.AnimCallback.OnActiveMasteryAction -= unlockSkill.GetComponent<UniqueSkill>().OnActiveMasteryActionHandler;
                                 unlockSkill.Owner.AnimCallback.OnActiveMasteryAction += unlockSkill.GetComponent<UniqueSkill>().OnActiveMasteryActionHandler;
                                 Utils.Log($"Add Event : AnimCallback.OnActiveMasteryAction += {unlockSkill.Data.Name}");
                             }
-                            else if (unlockSkill.Data.FirstTemplateID == FixedValue.TemplateID.Skill.Ninja_Unique_Elite_C1)
+                            else if (unlockSkill.Data.TemplateOrigin == FixedValue.TemplateID.Skill.Ninja_Unique_Elite_C1)
                             {
                                 unlockSkill.Owner.AnimCallback.OnActiveMasteryAction -= unlockSkill.GetComponent<UniqueSkill>().OnActiveMasteryActionHandler;
                                 unlockSkill.Owner.AnimCallback.OnActiveMasteryAction += unlockSkill.GetComponent<UniqueSkill>().OnActiveMasteryActionHandler;
@@ -128,14 +128,14 @@ namespace STELLAREST_2D
                     {
                         // RELEASE EVENT
                         SkillBase deactiveSkill = Members[i - 1].DeactiveForce();
-                        if (deactiveSkill.Data.HasEventHandler && deactiveSkill.Data.SkillType == Define.SkillType.Unique)
+                        if (deactiveSkill.Data.IsLaunchedFromEventHandler && deactiveSkill.Data.Type == SkillType.Unique)
                         {
-                            if (deactiveSkill.Data.FirstTemplateID == Book.MasteryAttackTemplate)
+                            if (deactiveSkill.Data.TemplateOrigin == Book.UniqueMasteryTemplate)
                             {
                                 deactiveSkill.Owner.AnimCallback.OnActiveMasteryAction -= deactiveSkill.GetComponent<UniqueSkill>().OnActiveMasteryActionHandler;
                                 Utils.Log($"Release Event : AnimCallback.OnActiveMasteryAction -= {deactiveSkill.Data.Name}");
                             }
-                            else if (deactiveSkill.Data.FirstTemplateID == Book.EliteActionTemplate)
+                            else if (deactiveSkill.Data.TemplateOrigin == Book.UniqueEliteTemplate)
                             {
                                 deactiveSkill.Owner.AnimCallback.OnActiveEliteAction -= deactiveSkill.GetComponent<UniqueSkill>().OnActiveEliteActionHandler;
                                 Utils.Log($"Release Event : AnimCallback.OnActiveEliteAction -= {deactiveSkill.Data.Name}");
@@ -144,14 +144,14 @@ namespace STELLAREST_2D
 
                         // ADD EVENT
                         SkillBase unlockSkill = Members[i].Unlock();
-                        if (unlockSkill.Data.HasEventHandler && unlockSkill.Data.SkillType == Define.SkillType.Unique)
+                        if (unlockSkill.Data.IsLaunchedFromEventHandler && unlockSkill.Data.Type == SkillType.Unique)
                         {
-                            if (unlockSkill.Data.FirstTemplateID == Book.MasteryAttackTemplate)
+                            if (unlockSkill.Data.TemplateOrigin == Book.UniqueMasteryTemplate)
                             {
                                 unlockSkill.Owner.AnimCallback.OnActiveMasteryAction += unlockSkill.GetComponent<UniqueSkill>().OnActiveMasteryActionHandler;
                                 Utils.Log($"Add Event : AnimCallback.OnActiveMasteryAction += {unlockSkill.Data.Name}");
                             }
-                            else if (unlockSkill.Data.FirstTemplateID == Book.EliteActionTemplate)
+                            else if (unlockSkill.Data.TemplateOrigin == Book.UniqueEliteTemplate)
                             {
                                 unlockSkill.Owner.AnimCallback.OnActiveEliteAction += unlockSkill.GetComponent<UniqueSkill>().OnActiveEliteActionHandler;
                                 Utils.Log($"Add Event : AnimCallback.OnActiveEliteAction += {unlockSkill.Data.Name}");
@@ -236,7 +236,7 @@ namespace STELLAREST_2D
 
         private SkillBase _skillOrigin = null;
         [field: SerializeField, ShowOnly] public string Tag { get; private set; } = string.Empty;
-        [field: SerializeField] public Define.SkillType SkillType { get; private set; } = Define.SkillType.None;
+        [field: SerializeField] public SkillType SkillType { get; private set; } = SkillType.None;
         [field: SerializeField, ShowOnly] public int MemberCount { get; private set; } = 0;
         [field: SerializeField] public List<SkillMember> Members { get; private set; } = null;
         public SkillBook Book { get; set; } = null;
@@ -247,9 +247,9 @@ namespace STELLAREST_2D
     {
         public CreatureController Owner { get; set; }
 
-        public FixedValue.TemplateID.Skill MasteryAttackTemplate { get; private set; } = FixedValue.TemplateID.Skill.None;
-        public FixedValue.TemplateID.Skill EliteActionTemplate { get; private set; } = FixedValue.TemplateID.Skill.None;
-        public FixedValue.TemplateID.Skill UltimateActionTemplate { get; private set; } = FixedValue.TemplateID.Skill.None;
+        public FixedValue.TemplateID.Skill UniqueMasteryTemplate { get; private set; } = FixedValue.TemplateID.Skill.None;
+        public FixedValue.TemplateID.Skill UniqueEliteTemplate { get; private set; } = FixedValue.TemplateID.Skill.None;
+        public FixedValue.TemplateID.Skill UniqueUltimateTemplate { get; private set; } = FixedValue.TemplateID.Skill.None;
 
         // +++ Key(int) : Skill Origin Template, Value : SkillGroup +++
         [System.Serializable] public class SkillGroupDictionary : SerializableGroupDictionary<int, SkillGroup> { }
@@ -271,11 +271,11 @@ namespace STELLAREST_2D
                 for (int i = 0; i < group.Value.MemberCount; ++i)
                 {
                     SkillBase skill = group.Value.Members[i].SkillOrigin;
-                    if (skill.Data.SkillType == Define.SkillType.Unique)
+                    if (skill.Data.Type == SkillType.Unique)
                     {
-                        switch (skill.Data.FirstTemplateID)
+                        switch (skill.Data.TemplateOrigin)
                         {
-                            case FixedValue.TemplateID.Skill.PaladinMastery:
+                            case FixedValue.TemplateID.Skill.Paladin_Unique_Mastery:
                             case FixedValue.TemplateID.Skill.KnightMastery:
                             case FixedValue.TemplateID.Skill.PhantomKnightMastery:
 
@@ -285,7 +285,7 @@ namespace STELLAREST_2D
 
                             case FixedValue.TemplateID.Skill.AssassinMastery:
                             case FixedValue.TemplateID.Skill.NinjaMastery:
-                                this.MasteryAttackTemplate = skill.Data.FirstTemplateID;
+                                this.UniqueMasteryTemplate = skill.Data.TemplateOrigin;
                                 break;
 
                             case FixedValue.TemplateID.Skill.Paladin_Unique_Elite:
@@ -299,14 +299,14 @@ namespace STELLAREST_2D
                             case FixedValue.TemplateID.Skill.Assassin_Unique_Elite:
                             case FixedValue.TemplateID.Skill.Ninja_Unique_Elite:
                                 {
-                                    if (skill.Data.FirstTemplateID == FixedValue.TemplateID.Skill.Paladin_Unique_Elite)
+                                    if (skill.Data.TemplateOrigin == FixedValue.TemplateID.Skill.Paladin_Unique_Mastery)
                                         this.CachedShield = skill.GetComponent<Shield>();
-                                    else if (skill.Data.FirstTemplateID == FixedValue.TemplateID.Skill.Knight_Unique_Elite)
+                                    else if (skill.Data.TemplateOrigin == FixedValue.TemplateID.Skill.Knight_Unique_Elite)
                                         this.CachedSecondWind = skill.GetComponent<SecondWind>();
-                                    else if (skill.Data.FirstTemplateID == FixedValue.TemplateID.Skill.ForestGuardian_Unique_Elite)
+                                    else if (skill.Data.TemplateOrigin == FixedValue.TemplateID.Skill.ForestGuardian_Unique_Elite)
                                         this.CachedForestBarrier = skill.GetComponent<ForestBarrier>();
 
-                                    this.EliteActionTemplate = skill.Data.FirstTemplateID;
+                                    this.UniqueEliteTemplate = skill.Data.TemplateOrigin;
                                 }
                                 break;
 
@@ -321,7 +321,7 @@ namespace STELLAREST_2D
 
                             case FixedValue.TemplateID.Skill.Assassin_Unique_Ultimate:
                             case FixedValue.TemplateID.Skill.Ninja_Unique_Ultimate:
-                                this.UltimateActionTemplate = skill.Data.FirstTemplateID;
+                                this.UniqueUltimateTemplate = skill.Data.TemplateOrigin;
                                 break;
                         }
 
@@ -489,9 +489,9 @@ namespace STELLAREST_2D
                 for (int i = 0; i < pair.Value.MemberCount; ++i)
                 {
                     SkillBase skillOrigin = pair.Value.Members[i].SkillOrigin;
-                    if (skillOrigin.Data.HasEventHandler)
+                    if (skillOrigin.Data.IsLaunchedFromEventHandler)
                     {
-                        if (skillOrigin.Data.SkillType == Define.SkillType.Unique)
+                        if (skillOrigin.Data.Type == SkillType.Unique)
                         {
                             skillOrigin.Owner.AnimCallback.OnActiveMasteryAction -= skillOrigin.GetComponent<UniqueSkill>().OnActiveMasteryActionHandler;
                             Utils.Log($"Release Event : AnimCallback.OnActiveMasteryAction -= {skillOrigin.Data.Name}");

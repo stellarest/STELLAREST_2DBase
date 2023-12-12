@@ -7,7 +7,6 @@ using System.Diagnostics;
 using Debug = UnityEngine.Debug;
 
 using static STELLAREST_2D.Define;
-using CrowdControlType = STELLAREST_2D.Define.FixedValue.TemplateID.CrowdControl;
 
 namespace STELLAREST_2D
 {
@@ -223,8 +222,8 @@ namespace STELLAREST_2D
         private IEnumerator CoPlayerGameStart()
         {
             yield return new WaitForSeconds(PLAYER_GAME_START_TIME);
-            SkillBook.LevelUp(SkillBook.MasteryAttackTemplate);
-            SkillBook.Activate(SkillBook.MasteryAttackTemplate);
+            SkillBook.LevelUp(SkillBook.UniqueMasteryTemplate);
+            SkillBook.Activate(SkillBook.UniqueMasteryTemplate);
         }
 
         [Conditional("UNITY_EDITOR")]
@@ -233,7 +232,7 @@ namespace STELLAREST_2D
             SkillBook.LevelUp(skillTemplateID);
             SkillBook.Activate(skillTemplateID);
 
-            if (skillTemplateID == SkillBook.MasteryAttackTemplate)
+            if (skillTemplateID == SkillBook.UniqueMasteryTemplate)
             {
                 SkillBase skill = SkillBook.GetLastLearnedSkillMember(skillTemplateID);
                 if (skill.Data.Grade > Define.InGameGrade.Default)
@@ -251,9 +250,9 @@ namespace STELLAREST_2D
 #if UNITY_EDITOR
             DEV_CLEAR_LOG();
             if (Input.GetKeyDown(KeyCode.Q))
-                DevSkillFlag(SkillBook.MasteryAttackTemplate);
+                DevSkillFlag(SkillBook.UniqueMasteryTemplate);
             if (Input.GetKeyDown(KeyCode.W))
-                DevSkillFlag(SkillBook.EliteActionTemplate);
+                DevSkillFlag(SkillBook.UniqueEliteTemplate);
 
             if (Input.GetKeyDown(KeyCode.Alpha1))
                 DevSkillFlag(FixedValue.TemplateID.Skill.ThrowingStar);
