@@ -128,7 +128,7 @@ namespace STELLAREST_2D
                     {
                         // RELEASE EVENT
                         SkillBase deactiveSkill = Members[i - 1].DeactiveForce();
-                        if (deactiveSkill.Data.IsLaunchedFromEventHandler && deactiveSkill.Data.Type == SkillType.Unique)
+                        if (deactiveSkill.Data.IsOnFromEventHandler && deactiveSkill.Data.Type == SkillType.Unique)
                         {
                             if (deactiveSkill.Data.TemplateOrigin == Book.UniqueMasteryTemplate)
                             {

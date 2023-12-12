@@ -41,92 +41,92 @@ namespace STELLAREST_2D
             }
         }
 
-        protected override IEnumerator CoCloneSkill()
-        {
-            int continuousCount = this.Data.ContinuousCount;
-            Define.LookAtDirection lootAtDir = Owner.LookAtDir;
-            Vector3 shootDir = Owner.ShootDir;
-            Vector3 localScale = Owner.LocalScale;
-            localScale *= 0.8f;
+        // protected override IEnumerator CoCloneSkill()
+        // {
+        //     int continuousCount = this.Data.ContinuousCount;
+        //     Define.LookAtDirection lootAtDir = Owner.LookAtDir;
+        //     Vector3 shootDir = Owner.ShootDir;
+        //     Vector3 localScale = Owner.LocalScale;
+        //     localScale *= 0.8f;
 
-            Vector3 indicatorAngle = Owner.Indicator.eulerAngles;
-            float movementSpeed = this.Data.MovementSpeed;
-            float rotationSpeed = this.Data.RotationSpeed;
-            float lifeTime = this.Data.Duration;
-            bool isColliderHalfRatio = this.Data.UseColliderHalfLifeTime;
+        //     Vector3 indicatorAngle = Owner.Indicator.eulerAngles;
+        //     float movementSpeed = this.Data.MovementSpeed;
+        //     float rotationSpeed = this.Data.RotationSpeed;
+        //     float lifeTime = this.Data.Duration;
+        //     bool isColliderHalfRatio = this.Data.UseColliderHalfLifeTime;
 
-            float[] continuousAngles = new float[continuousCount];
-            float[] continuousSpeedRatios = new float[continuousCount];
-            float[] continuousFlipXs = new float[continuousCount];
-            float[] continuousFlipYs = new float[continuousCount];
+        //     float[] continuousAngles = new float[continuousCount];
+        //     float[] continuousSpeedRatios = new float[continuousCount];
+        //     float[] continuousFlipXs = new float[continuousCount];
+        //     float[] continuousFlipYs = new float[continuousCount];
 
-            float [] addtionalLocalPositionXs = new float[continuousCount];
-            float [] addtionalLocalPositionYs = new float[continuousCount];
+        //     float [] addtionalLocalPositionXs = new float[continuousCount];
+        //     float [] addtionalLocalPositionYs = new float[continuousCount];
 
-            float[] interpolateTargetScaleXs = new float[continuousCount];
-            float[] interpolateTargetScaleYs = new float[continuousCount];
-            for (int i = 0; i < continuousCount; ++i)
-            {
-                continuousSpeedRatios[i] = this.Data.ContinuousSpeedRatios[i];
-                continuousFlipXs[i] = this.Data.ContinuousFlipXs[i];
-                continuousFlipYs[i] = this.Data.ContinuousFlipYs[i];
-                if (this.Owner.IsFacingRight == false)
-                {
-                    continuousAngles[i] = this.Data.ContinuousAngles[i] * -1;
-                    interpolateTargetScaleXs[i] = this.Data.TargetScaleInterpolations[i].x * -1;
-                    interpolateTargetScaleYs[i] = this.Data.TargetScaleInterpolations[i].y;
-                }
-                else
-                {
-                    continuousAngles[i] = this.Data.ContinuousAngles[i];
-                    interpolateTargetScaleXs[i] = this.Data.TargetScaleInterpolations[i].x;
-                    interpolateTargetScaleYs[i] = this.Data.TargetScaleInterpolations[i].y;
-                }
-            }
+        //     float[] interpolateTargetScaleXs = new float[continuousCount];
+        //     float[] interpolateTargetScaleYs = new float[continuousCount];
+        //     for (int i = 0; i < continuousCount; ++i)
+        //     {
+        //         continuousSpeedRatios[i] = this.Data.ContinuousSpeedRatios[i];
+        //         continuousFlipXs[i] = this.Data.ContinuousFlipXs[i];
+        //         continuousFlipYs[i] = this.Data.ContinuousFlipYs[i];
+        //         if (this.Owner.IsFacingRight == false)
+        //         {
+        //             continuousAngles[i] = this.Data.ContinuousAngles[i] * -1;
+        //             interpolateTargetScaleXs[i] = this.Data.TargetScaleInterpolations[i].x * -1;
+        //             interpolateTargetScaleYs[i] = this.Data.TargetScaleInterpolations[i].y;
+        //         }
+        //         else
+        //         {
+        //             continuousAngles[i] = this.Data.ContinuousAngles[i];
+        //             interpolateTargetScaleXs[i] = this.Data.TargetScaleInterpolations[i].x;
+        //             interpolateTargetScaleYs[i] = this.Data.TargetScaleInterpolations[i].y;
+        //         }
+        //     }
 
-            int maxBounceCount = this.Data.MaxBounceCount;
-            int maxPenetrationCount = this.Data.MaxPenetrationCount;
+        //     int maxBounceCount = this.Data.MaxBounceCount;
+        //     int maxPenetrationCount = this.Data.MaxPenetrationCount;
 
-            Vector3 spawnPosOnFirstPoint = (this.Data.IsLaunchedFromFireSocket) ? this.Owner.FireSocketPosition : this.Owner.transform.position;
-            for (int i = 0; i < continuousCount; ++i)
-            {
-                Vector3 spawnPos = (this.Data.IsLaunchedFromFireSocket) ? this.Owner.FireSocketPosition : this.Owner.transform.position;
-                if (Utils.IsThief(this.Owner))
-                    spawnPos = spawnPosOnFirstPoint;
+        //     Vector3 spawnPosOnFirstPoint = (this.Data.IsLaunchedFromFireSocket) ? this.Owner.FireSocketPosition : this.Owner.transform.position;
+        //     for (int i = 0; i < continuousCount; ++i)
+        //     {
+        //         Vector3 spawnPos = (this.Data.IsLaunchedFromFireSocket) ? this.Owner.FireSocketPosition : this.Owner.transform.position;
+        //         if (Utils.IsThief(this.Owner))
+        //             spawnPos = spawnPosOnFirstPoint;
                 
-                this._parent.PlayBursts();
-                SkillBase clone = Managers.Object.Spawn<SkillBase>(spawnPos: spawnPos, templateID: this.Data.TemplateID,
-                        spawnObjectType: Define.ObjectType.Skill, isPooling: true);
-                clone.InitClone(this.Owner, this.Data);
-                if (clone.PC != null)
-                {
-                    clone.OnProjectileLaunchInfo?.Invoke(this, new ProjectileLaunchInfoEventArgs(
-                        lootAtDir: lootAtDir,
-                        shootDir: shootDir,
-                        localScale: localScale,
-                        indicatorAngle: indicatorAngle,
-                        movementSpeed: movementSpeed,
-                        rotationSpeed: rotationSpeed,
-                        lifeTime: lifeTime,
-                        continuousAngle: continuousAngles[i],
-                        continuousSpeedRatio: continuousSpeedRatios[i],
-                        continuousFlipX: continuousFlipXs[i],
-                        continuousFlipY: continuousFlipYs[i],
-                        interpolateTargetScaleX: interpolateTargetScaleXs[i],
-                        interpolateTargetScaleY: interpolateTargetScaleYs[i],
-                        isColliderHalfRatio: isColliderHalfRatio,
-                        maxBounceCount: maxBounceCount,
-                        maxPenetrationCount: maxPenetrationCount
-                    ));
+        //         this._parent.PlayBursts();
+        //         SkillBase clone = Managers.Object.Spawn<SkillBase>(spawnPos: spawnPos, templateID: this.Data.TemplateID,
+        //                 spawnObjectType: Define.ObjectType.Skill, isPooling: true);
+        //         clone.InitClone(this.Owner, this.Data);
+        //         if (clone.PC != null)
+        //         {
+        //             clone.OnProjectileLaunchInfo?.Invoke(this, new ProjectileLaunchInfoEventArgs(
+        //                 lootAtDir: lootAtDir,
+        //                 shootDir: shootDir,
+        //                 localScale: localScale,
+        //                 indicatorAngle: indicatorAngle,
+        //                 movementSpeed: movementSpeed,
+        //                 rotationSpeed: rotationSpeed,
+        //                 lifeTime: lifeTime,
+        //                 continuousAngle: continuousAngles[i],
+        //                 continuousSpeedRatio: continuousSpeedRatios[i],
+        //                 continuousFlipX: continuousFlipXs[i],
+        //                 continuousFlipY: continuousFlipYs[i],
+        //                 interpolateTargetScaleX: interpolateTargetScaleXs[i],
+        //                 interpolateTargetScaleY: interpolateTargetScaleYs[i],
+        //                 isColliderHalfRatio: isColliderHalfRatio,
+        //                 maxBounceCount: maxBounceCount,
+        //                 maxPenetrationCount: maxPenetrationCount
+        //             ));
 
-                    clone.PC.Launch();
-                }
+        //             clone.PC.Launch();
+        //         }
 
-                yield return new WaitForSeconds(Data.ContinuousSpacing);
-            }
+        //         yield return new WaitForSeconds(Data.ContinuousSpacing);
+        //     }
 
-            Owner.AttackEndPoint = transform.position;
-        }
+        //     Owner.AttackEndPoint = transform.position;
+        // }
 
         private void OnTriggerEnter2D(Collider2D other)
         {

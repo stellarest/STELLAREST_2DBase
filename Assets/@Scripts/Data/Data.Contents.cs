@@ -71,36 +71,37 @@ namespace STELLAREST_2D.Data
         public Define.InGameGrade MaxGrade;
         public int GradeTotalCount;
 
-        public bool IsProjectile;
-        public bool IsLaunchedFromEventHandler;
-        public bool IsLaunchedFromFireSocket;
-        public bool IsVFXImpactPointOnTarget;
-        public bool UsePresetLocalScale;
-        public bool UsePresetParticleInfo;
-        public bool UseColliderHalfLifeTime;
+        public int Count;
+        public float Spacing;
 
+        public float[] ContinuousAngles;
+        public float[] ContinuousFlipXs;
+        public float[] ContinuousFlipYs;
+        public float[] AddContinuousMovementSpeedRatios;
+        public float[] AddContinuousRotationSpeedRatios;
+        public Vector3[] TargetScaleInterpolations;
+
+        public float Duration;
         public float MinDamage;
         public float MaxDamage;
         public float MovementSpeed;
         public float RotationSpeed;
-        public float Duration;
-        public int ContinuousCount;
-        public float ContinuousSpacing;
-        public float[] ContinuousSpeedRatios;
-        public float[] ContinuousAngles;
-        public float[] ContinuousFlipXs;
-        public float[] ContinuousFlipYs;
-        public Vector3[] TargetScaleInterpolations;
-        public Vector3 AdditionalSpawnPosFromOwner;
         public int MaxBounceCount;
         public int MaxPenetrationCount;
-        
+
+        public bool IsProjectile;
+        public bool IsOnFromEventHandler;
+        public bool IsOnFromFireSocket;
+        public bool IsVFXImpactPointOnTarget;
+        public bool UsePresetLocalScale;
+        public bool UsePresetParticleInfo;
+
         public Define.CrowdControlType[] CrowdControlTypes;
         public float[] CrowdControlChances;
         public float[] CrowdControlDurations;
         public float[] CrowdControlIntensities;
-        public AdditionalCustomValue[] AdditionalCustomValues;
 
+        public AdditionalCustomValue CustomValue;
         public float LevelUpCost;            
         public float Cooldown;
     }

@@ -210,8 +210,8 @@ namespace STELLAREST_2D
                             clone.SR.enabled = true;
 
                             float clonedMovementSpeed = this.Data.MovementSpeed + (this.Data.MovementSpeed * 0.5f);
-                            clone.PC.SetOptionsManually(_clonedKunaiShootDir, clonedMovementSpeed, this.Data.Duration, 1f, continuousAngles[i], false);
-                            clone.PC.Launch();
+                            clone.PC.SetOptionsManually(_clonedKunaiShootDir, clonedMovementSpeed, this.Data.Duration, 1f, continuousAngles[i]);
+                            clone.PC.Launch(this.Data.TemplateOrigin);
                             //clonesPC[i] = clone.PC;
                             //clone.PC.Launch();
                             //_coCheckIsStillHitting = StartCoroutine(this.CoCheckIsStillHitting(clone.GetComponent<RangedShot>()));

@@ -65,7 +65,8 @@ namespace STELLAREST_2D
         {
             while (true)
             {
-                if (this._currentCount < this.Data.ContinuousCount)
+                // ContinuousCount -> Count
+                if (this._currentCount < this.Data.Count)
                 {
                     _coolTimeDelta += Time.deltaTime;
                     if (_coolTimeDelta > this.Data.Cooldown)

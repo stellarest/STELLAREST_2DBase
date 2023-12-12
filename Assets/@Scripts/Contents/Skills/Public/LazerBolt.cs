@@ -45,7 +45,9 @@ namespace STELLAREST_2D
                 yield break;
 
             Vector3 spawnPos = Vector3.zero;
-            for (int i = 0; i < this.Data.ContinuousCount; ++i)
+
+            // ContinuousCount -> Count
+            for (int i = 0; i < this.Data.Count; ++i)
             {
                 spawnPos = Utils.GetRandomTargetPosition<MonsterController>(this.Owner.transform.position,
                                             FROM_TARGET_POS_MIN_RANGE, FROM_TARGET_POS_MAX_RANGE, HitFromType.LazerBolt);
@@ -57,7 +59,8 @@ namespace STELLAREST_2D
                     spawnPos = Utils.GetRandomPosition(this.Owner.transform.position);
                 clone.transform.position = spawnPos;
 
-                yield return new WaitForSeconds(this.Data.ContinuousSpacing);
+                // ContinuousSpacing -> Spacing
+                yield return new WaitForSeconds(this.Data.Spacing);
             }
         }
 

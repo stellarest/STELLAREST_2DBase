@@ -1,7 +1,9 @@
 using System.Collections;
 using UnityEngine;
 
+using static STELLAREST_2D.Define;
 using STELLAREST_2D.Data;
+using UnityEngine.Rendering;
 
 namespace STELLAREST_2D
 {
@@ -19,10 +21,10 @@ namespace STELLAREST_2D
     [System.Serializable]
     public class SkillBase : BaseController
     {
-        public System.Action<Vector3, Define.LookAtDirection, float, float, float> OnSetParticleInfo = null;
-        public System.EventHandler<ProjectileLaunchInfoEventArgs> OnProjectileLaunchInfo = null;
+        public System.Action<Vector3, LookAtDirection, float, float, float> OnSetParticleInfo = null;
+        public event System.EventHandler<ProjectileLaunchInfoEventArgs> OnProjectileLaunchInfo = null;
         public CreatureController Owner { get; protected set; } = null;
-        
+
         [field: SerializeField] public SkillData Data { get; protected set; } = null;
         public float InitialCooldown { get; protected set; } = 0f;
 
@@ -59,9 +61,9 @@ namespace STELLAREST_2D
                 if (this.RigidBody != null)
                     this.PC.RigidBody = this.RigidBody;
 
-                 if (this.HitCollider != null)
+                if (this.HitCollider != null)
                     this.PC.HitCollider = this.HitCollider;
-                
+
                 this.PC.Owner = ownerFromOrigin;
                 this.PC.Data = dataFromOrigin;
                 this.OnProjectileLaunchInfo += this.PC.OnProjectileLaunchInfoHandler;
@@ -69,12 +71,12 @@ namespace STELLAREST_2D
 
             SetClonedRootTargetOnParticleStopped();
             if (ownerFromOrigin?.IsPlayer == true)
-                Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.PlayerAttack);
+                Managers.Collision.InitCollisionLayer(gameObject, CollisionLayers.PlayerAttack);
             else
-                Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.MonsterAttack);
+                Managers.Collision.InitCollisionLayer(gameObject, CollisionLayers.MonsterAttack);
         }
 
-        public void InitCloneManually(CreatureController ownerFromOrigin, Data.SkillData dataFromOrigin)
+        public void InitCloneManually(CreatureController ownerFromOrigin, SkillData dataFromOrigin)
         {
             if (this.IsFirstPooling)
             {
@@ -100,11 +102,196 @@ namespace STELLAREST_2D
 
                 SetClonedRootTargetOnParticleStopped();
                 if (ownerFromOrigin?.IsPlayer == true)
-                    Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.PlayerAttack);
+                    Managers.Collision.InitCollisionLayer(gameObject, CollisionLayers.PlayerAttack);
                 else
-                    Managers.Collision.InitCollisionLayer(gameObject, Define.CollisionLayers.MonsterAttack);
+                    Managers.Collision.InitCollisionLayer(gameObject, CollisionLayers.MonsterAttack);
 
                 this.IsFirstPooling = false;
+            }
+        }
+
+        protected virtual IEnumerator CoGenerateProjectile()
+        {
+            if (this.Data.IsProjectile == false)
+            {
+                Utils.LogCritical(nameof(SkillBase), nameof(CoGenerateProjectile), $"Input(Data.IsProjectile / Data.Count) : {this.Data.IsProjectile} / {this.Data.Count}");
+                yield break;
+            }
+
+            Define.LookAtDirection lootAtDir = Owner.LookAtDir;
+            Vector3 shootDir = Owner.ShootDir;
+            Vector3 localScale = transform.localScale;
+            if (this.Data.UsePresetLocalScale == false)
+            {
+                localScale = Owner.LocalScale;
+                localScale *= 0.8f;
+            }
+            Vector3 indicatorAngle = Owner.Indicator.eulerAngles;
+
+            int count = this.Data.Count;
+            float spacing = this.Data.Spacing;
+
+            float duration = this.Data.Duration;
+            float movementSpeed = this.Data.MovementSpeed;
+            float rotationSpeed = this.Data.RotationSpeed;
+            int maxBounceCount = this.Data.MaxBounceCount;
+            int maxPenetrationCount = this.Data.MaxPenetrationCount;
+
+            float[] continuousAngles = new float[count];
+            float[] continuousFlipXs = new float[count];
+            float[] continuousFlipYs = new float[count];
+            float[] addContinuousMovementSpeedRatios = new float[count];
+            float[] addContinuousRotationSpeedRatios = new float[count];
+            float[] interpolateTargetScaleXs = new float[count];
+            float[] interpolateTargetScaleYs = new float[count];
+
+            Vector3 additionalSpawnPoint = Vector3.zero;
+            if ((this.Data.CustomValue != null) && (this.Data.CustomValue.Point3D != Vector3.zero))
+                additionalSpawnPoint = this.Data.CustomValue.Point3D;
+
+            if (count > 1)
+            {
+                // +++ CURRENT OWNER(LAUNCHER) INFO +++
+                for (int i = 0; i < count; ++i)
+                {
+                    addContinuousMovementSpeedRatios[i] = this.Data.AddContinuousMovementSpeedRatios[i];
+                    addContinuousRotationSpeedRatios[i] = this.Data.AddContinuousRotationSpeedRatios[i];
+                    continuousFlipXs[i] = this.Data.ContinuousFlipXs[i];
+                    continuousFlipYs[i] = this.Data.ContinuousFlipYs[i];
+                    if (this.Owner.IsFacingRight == false)
+                    {
+                        continuousAngles[i] = this.Data.ContinuousAngles[i] * -1;
+                        interpolateTargetScaleXs[i] = this.Data.TargetScaleInterpolations[i].x * -1;
+                        interpolateTargetScaleYs[i] = this.Data.TargetScaleInterpolations[i].y;
+                    }
+                    else
+                    {
+                        continuousAngles[i] = this.Data.ContinuousAngles[i];
+                        interpolateTargetScaleXs[i] = this.Data.TargetScaleInterpolations[i].x;
+                        interpolateTargetScaleYs[i] = this.Data.TargetScaleInterpolations[i].y;
+                    }
+                }
+
+                // +++ LAUNCH +++
+                for (int i = 0; i < count; ++i)
+                {
+                    Vector3 spawnPos = (this.Data.IsOnFromFireSocket) ? this.Owner.FireSocketPosition : this.Owner.transform.position + additionalSpawnPoint;
+                    SkillBase clone = Managers.Object.Spawn<SkillBase>(spawnPos: spawnPos, templateID: this.Data.TemplateID,
+                            spawnObjectType: Define.ObjectType.Skill, isPooling: true);
+                    clone.InitClone(this.Owner, this.Data);
+                    if (clone.PC != null)
+                    {
+                        clone.OnProjectileLaunchInfo?.Invoke(this, new ProjectileLaunchInfoEventArgs(
+                        lootAtDir: lootAtDir,
+                        shootDir: shootDir,
+                        indicatorAngle: indicatorAngle,
+                        localScale: localScale,
+                        angle: continuousAngles[i],
+                        flipX: continuousFlipXs[i],
+                        flipY: continuousFlipYs[i],
+                        addMovementSpeedRatio: addContinuousMovementSpeedRatios[i],
+                        addRotationSpeedRatio: addContinuousRotationSpeedRatios[i],
+                        targetScaleX: interpolateTargetScaleXs[i],
+                        targetScaleY: interpolateTargetScaleYs[i],
+                        duration: duration,
+                        movementSpeed: movementSpeed,
+                        rotationSpeed: rotationSpeed,
+                        maxBounceCount: maxBounceCount,
+                        maxPenetrationCount: maxPenetrationCount
+                        ));
+
+                        clone.PC.Launch(this.Data.TemplateOrigin);
+                    }
+
+                    yield return new WaitForSeconds(this.Data.Spacing);
+                }
+
+                Owner.AttackEndPoint = transform.position;
+            }
+            else if (count == 1)
+            {
+                if (this.Data.ContinuousAngles != null)
+                {
+                    if (this.Owner.IsFacingRight == false)
+                        continuousAngles[0] = this.Data.ContinuousAngles[0] * -1;
+                    else
+                        continuousAngles[0] = this.Data.ContinuousAngles[0];
+                }
+                else
+                    continuousAngles[0] = 0f;
+
+                if (this.Data.ContinuousFlipXs != null)
+                    continuousFlipXs[0] = this.Data.ContinuousFlipXs[0];
+                else
+                    continuousFlipXs[0] = 0f;
+
+                if (this.Data.ContinuousFlipXs != null)
+                    continuousFlipXs[0] = this.Data.ContinuousFlipXs[0];
+                else
+                    continuousFlipXs[0] = 0f;
+
+                if (this.Data.ContinuousFlipYs != null)
+                    continuousFlipYs[0] = this.Data.ContinuousFlipYs[0];
+                else
+                    continuousFlipYs[0] = 0f;
+
+                if (this.Data.AddContinuousMovementSpeedRatios != null)
+                    addContinuousMovementSpeedRatios[0] = this.Data.AddContinuousMovementSpeedRatios[0];
+                else
+                    addContinuousMovementSpeedRatios[0] = 0f;
+
+                if (this.Data.AddContinuousRotationSpeedRatios != null)
+                    addContinuousRotationSpeedRatios[0] = this.Data.AddContinuousRotationSpeedRatios[0];
+                else
+                    addContinuousRotationSpeedRatios[0] = 0f;
+
+                if (this.Data.TargetScaleInterpolations != null)
+                {
+                    if (this.Owner.IsFacingRight == false)
+                    {
+                        interpolateTargetScaleXs[0] = this.Data.TargetScaleInterpolations[0].x * -1;
+                        interpolateTargetScaleYs[0] = this.Data.TargetScaleInterpolations[0].y;
+                    }
+                    else
+                    {
+                        interpolateTargetScaleXs[0] = this.Data.TargetScaleInterpolations[0].x;
+                        interpolateTargetScaleYs[0] = this.Data.TargetScaleInterpolations[0].y;
+                    }
+                }
+                else
+                {
+                    interpolateTargetScaleXs[0] = 1f;
+                    interpolateTargetScaleYs[0] = 1f;
+                }
+
+                Vector3 spawnPos = (this.Data.IsOnFromFireSocket) ? this.Owner.FireSocketPosition : this.Owner.transform.position + additionalSpawnPoint;
+                SkillBase clone = Managers.Object.Spawn<SkillBase>(spawnPos: spawnPos, templateID: this.Data.TemplateID,
+                        spawnObjectType: Define.ObjectType.Skill, isPooling: true);
+                clone.InitClone(this.Owner, this.Data);
+                if (clone.PC != null)
+                {
+                    clone.OnProjectileLaunchInfo?.Invoke(this, new ProjectileLaunchInfoEventArgs(
+                    lootAtDir: lootAtDir,
+                    shootDir: shootDir,
+                    indicatorAngle: indicatorAngle,
+                    localScale: localScale,
+                    angle: continuousAngles[0],
+                    flipX: continuousFlipXs[0],
+                    flipY: continuousFlipYs[0],
+                    addMovementSpeedRatio: addContinuousMovementSpeedRatios[0],
+                    addRotationSpeedRatio: addContinuousRotationSpeedRatios[0],
+                    targetScaleX: interpolateTargetScaleXs[0],
+                    targetScaleY: interpolateTargetScaleYs[0],
+                    duration: duration,
+                    movementSpeed: movementSpeed,
+                    rotationSpeed: rotationSpeed,
+                    maxBounceCount: maxBounceCount,
+                    maxPenetrationCount: maxPenetrationCount
+                    ));
+
+                    clone.PC.Launch(this.Data.TemplateOrigin);
+                    Owner.AttackEndPoint = transform.position;
+                }
             }
         }
 
@@ -152,7 +339,7 @@ namespace STELLAREST_2D
             set
             {
                 _isLast = value;
-                if (_isLast == false && _isCompleteInitOrigin) 
+                if (_isLast == false && _isCompleteInitOrigin)
                     this.RequestDestroy();
             }
         }
@@ -197,7 +384,7 @@ namespace STELLAREST_2D
             this.Deactivate();
             Managers.Object.DestroySpawnedObject<SkillBase>(this);
         }
-   
+
         public void OnClonedDeactivateHandler(bool isStopped)
         {
             this.IsStopped = isStopped;
@@ -252,3 +439,49 @@ namespace STELLAREST_2D
 //         }
 //     }
 // }
+
+// int maxBounceCount = loader.MaxBounceCount;
+// int maxPenetrationCount = loader.MaxPenetrationCount;
+// Vector3 additionalSpawnPos = Vector3.zero;
+// if (this.Data.AdditionalCustomValues.Length != 0)
+//     additionalSpawnPos = this.Data.AdditionalCustomValues[0].Point3D;
+
+// Vector3 spawnPosOnFirstPoint = (this.Data.IsLaunchedFromFireSocket) ? this.Owner.FireSocketPosition : this.Owner.transform.position;
+// for (int i = 0; i < count; ++i)
+// {
+//     Vector3 spawnPos = (this.Data.IsLaunchedFromFireSocket) ? this.Owner.FireSocketPosition : this.Owner.transform.position + additionalSpawnPos;
+//     if (Utils.IsThief(this.Owner))
+//         spawnPos = spawnPosOnFirstPoint;
+
+//     SkillBase clone = Managers.Object.Spawn<SkillBase>(spawnPos: spawnPos, templateID: this.Data.TemplateID,
+//            spawnObjectType: Define.ObjectType.Skill, isPooling: true);
+//     clone.InitClone(this.Owner, this.Data);
+//     if (clone.PC != null)
+//     {
+//         clone.OnProjectileLaunchInfo?.Invoke(this, new ProjectileLaunchInfoEventArgs(
+//             lootAtDir: lootAtDir,
+//             shootDir: shootDir,
+//             localScale: localScale,
+//             indicatorAngle: indicatorAngle,
+//             movementSpeed: movementSpeed,
+//             rotationSpeed: rotationSpeed,
+//             lifeTime: duration,
+//             continuousAngle: continuousAngles[i],
+//             continuousSpeedRatio: continuousSpeedRates[i],
+//             continuousFlipX: continuousFlipXs[i],
+//             continuousFlipY: continuousFlipYs[i],
+//             interpolateTargetScaleX: interpolateTargetScaleXs[i],
+//             interpolateTargetScaleY: interpolateTargetScaleYs[i],
+//             isColliderHalfRatio: this.Data.SetColliderHalfLifeTime,
+//             maxBounceCount: maxBounceCount,
+//             maxPenetrationCount: maxPenetrationCount
+//         ));
+
+//         clone.PC.Launch();
+//     }
+
+//     yield return new WaitForSeconds(loader.ContinuousSpacing);
+// }
+
+// Owner.AttackEndPoint = transform.position;
+// yield return null;

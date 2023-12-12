@@ -1,4 +1,6 @@
+using System;
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 
 using static STELLAREST_2D.Define;
@@ -7,209 +9,171 @@ namespace STELLAREST_2D
 {
     public class ProjectileLaunchInfoEventArgs : System.EventArgs
     {
-        public ProjectileLaunchInfoEventArgs(Define.LookAtDirection lootAtDir, Vector3 shootDir, Vector3 localScale, Vector3 indicatorAngle,
-                    float movementSpeed, float rotationSpeed, float lifeTime, float continuousAngle, float continuousSpeedRatio,
-                    float continuousFlipX, float continuousFlipY, float interpolateTargetScaleX, float interpolateTargetScaleY, 
-                    bool isColliderHalfRatio, int maxBounceCount, int maxPenetrationCount)
+        public ProjectileLaunchInfoEventArgs(ProjectileLaunchInfoEventArgs arg)
         {
-            this.LookAtDir = lootAtDir;
+            this.InitialLookAtDir = arg.InitialLookAtDir;
+            this.ShootDir = arg.ShootDir;
+            this.IndicatorAngle = arg.IndicatorAngle;
+            this.StartLocalScale = arg.StartLocalScale;
+            this.Angle = arg.Angle;
+            this.FlipX = arg.FlipX;
+            this.FlipY = arg.FlipY;
+            this.AddMovementSpeedRatio = arg.AddMovementSpeedRatio;
+            this.AddRotationSpeedRatio = arg.AddRotationSpeedRatio;
+            this.TargetScale = arg.TargetScale;
+            this.IsOnTargetScale = arg.IsOnTargetScale;
+            this.Duration = arg.Duration;
+            this.MovementSpeed = arg.MovementSpeed;
+            this.RotationSpeed = arg.RotationSpeed;
+            this.MaxBounceCount = arg.MaxBounceCount;
+            this.MaxPenetrationCount = arg.MaxPenetrationCount;
+        }
+
+        public ProjectileLaunchInfoEventArgs(LookAtDirection lootAtDir, Vector3 shootDir, Vector3 indicatorAngle, Vector3 localScale,
+                    float angle, float flipX, float flipY, float addMovementSpeedRatio, float addRotationSpeedRatio, float targetScaleX, 
+                    float targetScaleY, float duration, float movementSpeed, float rotationSpeed, int maxBounceCount, int maxPenetrationCount)
+        {
+            this.InitialLookAtDir = lootAtDir;
             this.ShootDir = shootDir;
-            this.LocalScale = localScale;
             this.IndicatorAngle = indicatorAngle;
+            this.StartLocalScale = localScale;
+            this.Angle = angle;
+            this.FlipX = flipX;
+            this.FlipY = flipY;
+            this.AddMovementSpeedRatio = addMovementSpeedRatio;
+            this.AddRotationSpeedRatio = addRotationSpeedRatio;
+            if (targetScaleX > Mathf.Abs(localScale.x) && targetScaleY > Mathf.Abs(localScale.y))
+            {
+                TargetScale = new Vector3(targetScaleX, targetScaleY, 1);
+                this.IsOnTargetScale = true;
+            }
+            else if (targetScaleX > Mathf.Abs(localScale.x))
+            {
+                TargetScale = new Vector3(targetScaleX, localScale.y, 1f);
+                this.IsOnTargetScale = true;
+            }
+            else if (targetScaleY > Mathf.Abs(localScale.y))
+            {
+                TargetScale = new Vector3(localScale.x, targetScaleY, 1f);
+                this.IsOnTargetScale = true;
+            }
+
+            this.Duration = duration;
             this.MovementSpeed = movementSpeed;
             this.RotationSpeed = rotationSpeed;
-            this.LifeTime = lifeTime;
-            //this.ColliderPreDisableLifeRatio = colliderPreDisableLifeRatio;
-            this.ContinuousAngle = continuousAngle;
-            this.ContinuousSpeedRatio = continuousSpeedRatio;
-            this.ContinuousFlipX = continuousFlipX;
-            this.ContinuousFlipY = continuousFlipY;
-            this.InterpolateTargetScaleX = interpolateTargetScaleX;
-            this.InterpolateTargetScaleY = interpolateTargetScaleY;
-            this.IsColliderHalfRatio = isColliderHalfRatio;
 
             this.MaxBounceCount = maxBounceCount;
             this.MaxPenetrationCount = maxPenetrationCount;
         }
 
-        #region Properties
-        public Define.LookAtDirection LookAtDir { get; private set; } = Define.LookAtDirection.Right;
-        public Vector3 ShootDir { get; private set; } = Vector3.zero;
-        public Vector3 LocalScale { get; private set; } = Vector3.zero;
-        public Vector3 IndicatorAngle { get; private set; } = Vector3.zero;
-        public float MovementSpeed { get; private set; } = 0f;
-        public float RotationSpeed { get; private set; } = 0f;
-        public float LifeTime { get; private set; } = 0f;
-        public float ContinuousAngle { get; private set; } = 0f;
-        public float ContinuousSpeedRatio { get; private set; } = 0f;
-        public float ContinuousFlipX { get; private set; } = 0f;
-        public float ContinuousFlipY { get; private set; } = 0f;
+        public Define.LookAtDirection InitialLookAtDir { get; private set; } = Define.LookAtDirection.Right;
+        public Vector3 ShootDir { get; set; } = Vector3.zero;
+        public Vector3 IndicatorAngle { get; set; } = Vector3.zero;
+        public Vector3 StartLocalScale { get; private set; } = Vector3.zero;
+
+        public float Angle { get; set; } = 0f;
+        public float FlipX { get; set; } = 0f;
+        public float FlipY { get; set; } = 0f;
+        public float AddMovementSpeedRatio { get; set; } = 0f;
+        public float AddRotationSpeedRatio { get; set; } = 0f;
         public float InterpolateTargetScaleX { get; private set; } = 0f;
         public float InterpolateTargetScaleY { get; private set; } = 0f;
-        public bool IsColliderHalfRatio { get; private set; } = false;
+        public Vector3 TargetScale { get; private set; } = Vector3.zero;
+        public bool IsOnTargetScale { get; private set; } = false;
+
+        public float Duration { get; set; } = 0f;
+        public float MovementSpeed { get; set; } = 0f;
+        public float RotationSpeed { get; set; } = 0f;
+
         public int MaxBounceCount { get; private set; } = 0;
         public int MaxPenetrationCount { get; private set; } = 0;
-        #endregion
     }
 
-
-    // --------------------------------------------------------------------------------------------------
-    // ***** Projectile is must be skill. But, skill is not sometimes a projectil. It's just a skill. *****
-    // --------------------------------------------------------------------------------------------------
     public class ProjectileController : SkillBase
     {
-        private Define.LookAtDirection _initialLookAtDir = Define.LookAtDirection.Right;
-        private Vector3 _shootDir = Vector3.zero;
-        private Vector3 _indicatorAngle = Vector3.zero;
-        private float _movementSpeed = 0f;
-        private float _rotationSpeed = 0f;
-        private float _lifeTime = 0f;
-        private float _continuousAngle = 0f;
-        private float _continuousSpeedRatio = 0f;
-        private float _continuousFlipX = 0f;
-        private float _continuousFlipY = 0f;
+        public ProjectileLaunchInfoEventArgs Value { get; private set; } = null;
+        public int BounceCount { get; private set; } = 0;
+        public int PenetrationCount { get; private set; } = 0;
+        private bool _isOffFromOwner = false;
 
-        private Vector3 _interpolateStartScale = Vector3.zero;
-        private Vector3 _interpolateTargetScale = Vector3.zero;
-        private bool _isOnReadyInterpolateScale = false;
+        public bool CanStillBounce => (this.BounceCount++ < Value.MaxBounceCount)
+                ?   Managers.Object.Monsters.Count != this.BounceCount
+                :   false;
 
-        private bool _isColliderHalfRatio = false;
-        private bool _isOffParticle = false;
-        private int _bounceCount = 0;
-        private int _maxBounceCount = 0;
-        public bool CanStillBounce()
-        {
-            // 1, 2, 4
-            if (_bounceCount++ < _maxBounceCount)
-            {
-                if (Managers.Object.Monsters.Count == _bounceCount)
-                    return false;
-
-                return true;
-            }
-
-            return false;
-        }
-
-        private int _penetrationCount = 0;
-        private int _maxPenetrationCount = 0;
         private Coroutine _coProjectile = null;
-
         public void OnProjectileLaunchInfoHandler(object sender, ProjectileLaunchInfoEventArgs e)
         {
-            this._initialLookAtDir = e.LookAtDir;
-            this._shootDir = e.ShootDir;
-            transform.localScale = e.LocalScale; // SET LOCAL SCALE
-            this._indicatorAngle = e.IndicatorAngle;
-            this._movementSpeed = e.MovementSpeed;
-            this._rotationSpeed = e.RotationSpeed;
-            this._lifeTime = e.LifeTime;
-            //this._colliderPreDisableRatio = e.ColliderPreDisableLifeRatio;
-            this._isColliderHalfRatio = e.IsColliderHalfRatio;
-
-            this._continuousAngle = e.ContinuousAngle;
-            this._continuousSpeedRatio = e.ContinuousSpeedRatio;
-            this._continuousFlipX = e.ContinuousFlipX;
-            this._continuousFlipY = e.ContinuousFlipY;
-
-            if (e.InterpolateTargetScaleX > Mathf.Abs(e.LocalScale.x) || e.InterpolateTargetScaleY > Mathf.Abs(e.LocalScale.y))
-            {
-                this._interpolateStartScale = e.LocalScale;
-                this._interpolateTargetScale = new Vector3(e.InterpolateTargetScaleX, e.InterpolateTargetScaleY, 1);
-                this._isOnReadyInterpolateScale = true;
-            }
-            else
-                this._isOnReadyInterpolateScale = false;
-
-            _isOffParticle = false;
-
-            _bounceCount = 0;
-            _maxBounceCount = e.MaxBounceCount;
-
-            _penetrationCount = 0;
-            _maxPenetrationCount = e.MaxPenetrationCount;
+            this.Value = new ProjectileLaunchInfoEventArgs(e);
+            this._isOffFromOwner = false;
         }
 
         // TEMP
-        public void SetOptionsManually(Vector3 shootDir, float movementSpeed, float lifeTime,
-                                float continuousSpeedRatio, float continuousAngle, bool isColliderHalfRatio)
+        public void SetOptionsManually(Vector3 shootDir, float movementSpeed, float duration,
+                                float addMovementSpeedRatio, float angle)
         {
-            this._shootDir = shootDir;
-            this._movementSpeed = movementSpeed;
-            this._lifeTime = lifeTime;
-            this._continuousSpeedRatio = continuousSpeedRatio;
-            this._continuousAngle = continuousAngle;
-            this._isColliderHalfRatio = isColliderHalfRatio;
+            this.Value.ShootDir = shootDir;
+            this.Value.MovementSpeed = movementSpeed;
+            this.Value.Duration = duration;
+            this.Value.AddMovementSpeedRatio = addMovementSpeedRatio;
+            this.Value.Angle = angle;
         }
 
-        public void Launch()
+        public void Launch(FixedValue.TemplateID.Skill skillType)
         {
-            FixedValue.TemplateID.Skill skillOriginTemplate = this.Data.TemplateOrigin;
-
-            if (this._isColliderHalfRatio)
-                StartCoroutine(CoPreDisableCollider(this._lifeTime * 0.5f));
-            
-            switch (skillOriginTemplate)
+            StartCoroutine(CoColliderDuration(this.Value.Duration * 0.5f));
+            switch (skillType)
             {
+                // +++++ GARY +++++
                 case FixedValue.TemplateID.Skill.Paladin_Unique_Mastery:
-                    StartDestroy(_lifeTime);
-                    OnSetParticleInfo?.Invoke(_indicatorAngle, _initialLookAtDir, _continuousAngle, _continuousFlipX, _continuousFlipY);
+                case FixedValue.TemplateID.Skill.PhantomKnightMastery:
+                    StartDestroy(this.Value.Duration);
+                    OnSetParticleInfo?.Invoke(this.Value.IndicatorAngle, this.Value.InitialLookAtDir, this.Value.Angle, this.Value.FlipX, this.Value.FlipY);
                     _coProjectile = StartCoroutine(CoMeleeSwing());
                     break;
                 case FixedValue.TemplateID.Skill.KnightMastery:
-                    StartDestroy(_lifeTime);
-                    OnSetParticleInfo?.Invoke(_indicatorAngle, _initialLookAtDir, _continuousAngle, _continuousFlipX, _continuousFlipY);
-                    _shootDir = Quaternion.Euler(0, 0, _continuousAngle * -1) * _shootDir; // Knight Mastery
-                    _coProjectile = StartCoroutine(CoMeleeSwing());
-                    break;
-                case FixedValue.TemplateID.Skill.PhantomKnightMastery:
-                    StartDestroy(_lifeTime);
-                    OnSetParticleInfo?.Invoke(_indicatorAngle, _initialLookAtDir, _continuousAngle, _continuousFlipX, _continuousFlipY);
+                    StartDestroy(this.Value.Duration);
+                    OnSetParticleInfo?.Invoke(this.Value.IndicatorAngle, this.Value.InitialLookAtDir, this.Value.Angle, this.Value.FlipX, this.Value.FlipY);
+                    this.Value.ShootDir = Quaternion.Euler(0, 0, this.Value.Angle * -1) * this.Value.ShootDir;
                     _coProjectile = StartCoroutine(CoMeleeSwing());
                     break;
 
+                // +++++ REINA +++++
                 case FixedValue.TemplateID.Skill.ArrowMasterMastery:
-                    StartDestroy(_lifeTime);
+                case FixedValue.TemplateID.Skill.ForestGuardianMastery:
+                    StartDestroy(this.Value.Duration);
                     _coProjectile = StartCoroutine(CoRangedShot());
                     break;
                 case FixedValue.TemplateID.Skill.ElementalArcherMastery:
-                    StartDestroy(_lifeTime);
+                    StartDestroy(this.Value.Duration);
                     if (this.Data.Grade < Define.InGameGrade.Ultimate)
                         _coProjectile = StartCoroutine(CoRangedShot());
                     else
                         _coProjectile = StartCoroutine(CoRangedGuidedShot());
                     break;
-                case FixedValue.TemplateID.Skill.ForestGuardianMastery:
-                    StartDestroy(_lifeTime);
-                    _coProjectile = StartCoroutine(CoRangedShot());
-                    break;
 
+                // +++++ KENNETH +++++
                 case FixedValue.TemplateID.Skill.AssassinMastery:
                 case FixedValue.TemplateID.Skill.Assassin_Unique_Elite_C1:
-                    StartDestroy(_lifeTime);
-                    OnSetParticleInfo?.Invoke(_indicatorAngle, _initialLookAtDir, _continuousAngle, _continuousFlipX, _continuousFlipY);
-                    _coProjectile = StartCoroutine(CoMeleeSwing());
-                    break;
-                //case FixedValue.TemplateID.Skill.ThiefMastery:
                 case FixedValue.TemplateID.Skill.Ninja_Unique_Elite_C1:
-                    StartDestroy(_lifeTime);
-                    OnSetParticleInfo?.Invoke(_indicatorAngle, _initialLookAtDir, _continuousAngle, _continuousFlipX, _continuousFlipY);
-                    //_shootDir = Quaternion.Euler(0, 0, _continuousAngle * -1) * _shootDir;
+                    StartDestroy(this.Value.Duration);
+                    OnSetParticleInfo?.Invoke(this.Value.IndicatorAngle, this.Value.InitialLookAtDir, this.Value.Angle, this.Value.FlipX, this.Value.FlipY);
                     _coProjectile = StartCoroutine(CoMeleeSwing());
                     break;
                 case FixedValue.TemplateID.Skill.NinjaMastery:
-                    StartDestroy(_lifeTime);
+                    StartDestroy(this.Value.Duration);
                     _coProjectile = StartCoroutine(CoRangedShot());
                     break;
 
+                // +++++ PUBLIC SKILLS +++++
                 case FixedValue.TemplateID.Skill.ThrowingStar:
-                    StartDestroy(_lifeTime);
+                    StartDestroy(this.Value.Duration);
                     _coProjectile = StartCoroutine(CoThrowingStar());
                     break;
+
                 case FixedValue.TemplateID.Skill.Boomerang:
                     if (Data.Grade < Data.MaxGrade)
                     {
-                        StartDestroy(_lifeTime);
+                        StartDestroy(this.Value.Duration);
                         _coProjectile = StartCoroutine(CoBoomerang());
                     }
                     else
@@ -217,41 +181,37 @@ namespace STELLAREST_2D
                     break;
 
                 case FixedValue.TemplateID.Skill.PhantomKnight_Unique_Elite_C1:
-                    StartDestroy(_lifeTime);
+                    StartDestroy(this.Value.Duration);
                     _coProjectile = StartCoroutine(CoPhantomSoulChild());
                     break;
-
             }
 
-            if (_isOnReadyInterpolateScale)
-            {
-                //Utils.Log("Interpolate Scale.");
-                StartCoroutine(CoInterpolateScale());
-            }
+            if (this.Value.IsOnTargetScale)
+                StartCoroutine(CoScaleInterpolation());
         }
 
         private IEnumerator CoMeleeSwing()
         {
-            float movementSpeed = _movementSpeed * _continuousSpeedRatio;
+            float movementSpeed = this.Value.MovementSpeed * this.Value.AddMovementSpeedRatio;
             while (true)
             {
-                if (this.Owner.IsMoving && _isOffParticle == false && _movementSpeed != 0)
+                if (this.Owner.IsMoving && this._isOffFromOwner == false && this.Value.MovementSpeed != 0)
                 {
                     if (this.Owner.IsInLimitMaxPosX && this.Owner.IsInLimitMaxPosY)
                     {
                         float minSpeed = this.Owner.GetMovementPower + movementSpeed;
                         float maxSpeed = this.Owner.Stat.MovementSpeed + movementSpeed;
                         float movementPowerRatio = this.Owner.GetMovementPower / this.Owner.Stat.MovementSpeed;
-                        _movementSpeed = Mathf.Lerp(minSpeed, maxSpeed, movementPowerRatio);
+                        this.Value.MovementSpeed = Mathf.Lerp(minSpeed, maxSpeed, movementPowerRatio);
                     }
                     else
-                        _movementSpeed = this.Owner.Stat.MovementSpeed + movementSpeed;
+                        this.Value.MovementSpeed = this.Owner.Stat.MovementSpeed + movementSpeed;
                 }
                 else
-                    _movementSpeed = movementSpeed;
+                    this.Value.MovementSpeed = movementSpeed;
 
-                CheckOffSwingParticle();
-                transform.position += _shootDir * _movementSpeed * Time.deltaTime;
+                SetSwingOffFromOwner();
+                transform.position += this.Value.ShootDir * this.Value.MovementSpeed * Time.deltaTime;
 
                 yield return null;
             }
@@ -260,16 +220,16 @@ namespace STELLAREST_2D
         private IEnumerator CoRangedShot()
         {
             //_shootDir = Quaternion.Euler(0, 0, _continuousAngle) * this.Owner.ShootDir;
-            _shootDir = Quaternion.Euler(0, 0, _continuousAngle) * this._shootDir;
+            this.Value.ShootDir = Quaternion.Euler(0, 0, this.Value.Angle) * this.Value.ShootDir;
 
-            float degrees = Mathf.Atan2(_shootDir.y, _shootDir.x) * Mathf.Rad2Deg;
+            float degrees = Mathf.Atan2(this.Value.ShootDir.y, this.Value.ShootDir.x) * Mathf.Rad2Deg;
             this.transform.rotation = Quaternion.Euler(0, 0, degrees);
             this.transform.localScale = Vector3.one;
-            float movementSpeed = _movementSpeed * _continuousSpeedRatio;
+            float movementSpeed = this.Value.MovementSpeed * this.Value.AddMovementSpeedRatio;
 
             while (true)
             {
-                this.transform.position += _shootDir * movementSpeed * Time.deltaTime;
+                this.transform.position += this.Value.ShootDir * movementSpeed * Time.deltaTime;
                 yield return null;
             }
         }
@@ -277,7 +237,7 @@ namespace STELLAREST_2D
         private const float RANGED_GUIDED_SHOT_ROT_SPEED = 80f;
         private IEnumerator CoRangedGuidedShot()
         {
-            float degrees = Mathf.Atan2(_shootDir.y, _shootDir.x) * Mathf.Rad2Deg;
+            float degrees = Mathf.Atan2(this.Value.ShootDir.y, this.Value.ShootDir.x) * Mathf.Rad2Deg;
             this.transform.rotation = Quaternion.Euler(0, 0, degrees);
             this.transform.localScale = Vector3.one;
             while (true)
@@ -285,17 +245,17 @@ namespace STELLAREST_2D
                 CreatureController target = Utils.GetClosestTarget<MonsterController>(this.transform.position);
                 if (target.IsValid() && target.IsDeadState == false)
                 {
-                    _shootDir = (target.transform.position - this.transform.position).normalized;
-                    degrees = Mathf.Atan2(_shootDir.y, _shootDir.x) * Mathf.Rad2Deg;
+                    this.Value.ShootDir = (target.transform.position - this.transform.position).normalized;
+                    degrees = Mathf.Atan2(this.Value.ShootDir.y, this.Value.ShootDir.x) * Mathf.Rad2Deg;
                     this.transform.rotation = Quaternion.Slerp(this.transform.rotation, Quaternion.Euler(0, 0, degrees), Time.deltaTime * RANGED_GUIDED_SHOT_ROT_SPEED);
 
                     if (target.IsDeadState)
                         Utils.LogBreak("BREAK.");
                 }
                 else
-                    this.transform.rotation =  Quaternion.Euler(0, 0, Mathf.Atan2(_shootDir.y, _shootDir.x) * Mathf.Rad2Deg);
+                    this.transform.rotation =  Quaternion.Euler(0, 0, Mathf.Atan2(this.Value.ShootDir.y, this.Value.ShootDir.x) * Mathf.Rad2Deg);
   
-                this.transform.position += _shootDir * this._movementSpeed * Time.deltaTime;
+                this.transform.position += this.Value.ShootDir * this.Value.MovementSpeed * Time.deltaTime;
                 if (HitCollider.enabled == false)
                     HitCollider.enabled = true;
 
@@ -304,23 +264,16 @@ namespace STELLAREST_2D
         }
 
         private readonly float Sensitivity = 0.6f;
-        private void CheckOffSwingParticle()
+        private void SetSwingOffFromOwner()
         {
-            if (this.Owner.LookAtDir != _initialLookAtDir)
-                _isOffParticle = true;
+            if (this.Owner.LookAtDir != this.Value.InitialLookAtDir)
+                this._isOffFromOwner = true;
+
             if (this.Owner.IsMoving == false)
-                _isOffParticle = true;
-            if ((this.Owner.ShootDir - _shootDir).sqrMagnitude > Sensitivity * Sensitivity)
-                _isOffParticle = true;
-            
-            // ===============================================================
-            // ===============================================================
-            // if (_initialLookAtDir != Managers.Game.Player.LookAtDir)
-            //     _isOffParticle = true;
-            // if (Managers.Game.Player.IsMoving == false)
-            //     _isOffParticle = true;
-            // if ((Managers.Game.Player.ShootDir - _shootDir).sqrMagnitude > Sensitivity * Sensitivity)
-            //     _isOffParticle = true;
+                this._isOffFromOwner = true;
+
+            if ((this.Owner.ShootDir - this.Value.ShootDir).sqrMagnitude > Sensitivity * Sensitivity)
+                this._isOffFromOwner = true;
         }
 
         private IEnumerator CoThrowingStar()
@@ -328,11 +281,11 @@ namespace STELLAREST_2D
             float rotAngle = 0f;
             while (true)
             {
-                rotAngle += _rotationSpeed * Time.deltaTime;
+                rotAngle += this.Value.RotationSpeed * Time.deltaTime;
                 rotAngle %= 360f;
                 transform.rotation = Quaternion.Euler(0, 0, rotAngle);
-                float movementSpeed = Owner.Stat.MovementSpeed + this._movementSpeed;
-                transform.position += _shootDir * movementSpeed * Time.deltaTime;
+                float movementSpeed = Owner.Stat.MovementSpeed + this.Value.MovementSpeed;
+                transform.position += this.Value.ShootDir * movementSpeed * Time.deltaTime;
                 yield return null;
             }
         }
@@ -340,17 +293,17 @@ namespace STELLAREST_2D
         private IEnumerator CoBoomerang()
         {
             float rotAngle = 0f;
-            float movementSpeed = Owner.Stat.MovementSpeed + _movementSpeed;
+            float movementSpeed = Owner.Stat.MovementSpeed + this.Value.MovementSpeed;
             float decelerationIntensity = 50f; // 감속 속도를 조절하려면 필요에 따라 값을 변경
             while (true)
             {
-                rotAngle += _rotationSpeed * Time.deltaTime;
+                rotAngle += this.Value.RotationSpeed * Time.deltaTime;
                 rotAngle %= 360f;
                 transform.rotation = Quaternion.Euler(0, 0, rotAngle);
 
                 movementSpeed -= decelerationIntensity * Time.deltaTime;
                 decelerationIntensity += 0.05f;
-                transform.position += _shootDir * movementSpeed * Time.deltaTime;
+                transform.position += this.Value.ShootDir * movementSpeed * Time.deltaTime;
                 yield return null;
             }
         }
@@ -367,7 +320,7 @@ namespace STELLAREST_2D
             bool rotAround_StartEnlargeDistance = true;
 
             float rotAngle = 0f;
-            float movementSpeed = Owner.Stat.MovementSpeed + _movementSpeed;
+            float movementSpeed = Owner.Stat.MovementSpeed + this.Value.MovementSpeed;
             float decelerationIntensity = 50f;
 
             // +++ ROT AROUND BASE +++
@@ -384,25 +337,25 @@ namespace STELLAREST_2D
                     // +++ GO TO SHOOTDIR +++
                     if (isToOwner == false)
                     {
-                        rotAngle += _rotationSpeed * Time.deltaTime;
+                        rotAngle += this.Value.RotationSpeed * Time.deltaTime;
                         rotAngle %= 360f;
                         transform.rotation = Quaternion.Euler(0, 0, rotAngle);
 
                         movementSpeed -= decelerationIntensity * Time.deltaTime;
                         decelerationIntensity += 0.5f;
-                        transform.position += _shootDir * movementSpeed * Time.deltaTime;
+                        transform.position += this.Value.ShootDir * movementSpeed * Time.deltaTime;
                         if (movementSpeed < 0f || Managers.Stage.IsOutOfPos(transform.position))
                             isGoingToShootDir = false;
                     }
                     // +++ RETURN TO OWNER +++
                     else
                     {
-                        rotAngle += _rotationSpeed * Time.deltaTime;
+                        rotAngle += this.Value.RotationSpeed * Time.deltaTime;
                         rotAngle %= 360f;
                         transform.rotation = Quaternion.Euler(0, 0, rotAngle);
 
                         Vector3 toOwner = (this.Owner.transform.position - child.transform.position).normalized;
-                        transform.position += toOwner * _movementSpeed * Time.deltaTime;
+                        transform.position += toOwner * this.Value.MovementSpeed * Time.deltaTime;
                         if ((this.Owner.transform.position - child.transform.position).sqrMagnitude < 1f)
                             break;
                     }
@@ -434,7 +387,7 @@ namespace STELLAREST_2D
         private bool BoomerangUltimate_DoRotateAround(Transform child, AnimationCurve curve, ref bool rotAround_StartEnlargeDistance,
             ref float rotAngle, ref float rotAround_Delta, float rotAround_AdjustDistanceSameDesiredDuration, float rotAround_MinDistance, float rotAround_MaxDistance)
         {
-            rotAngle += _rotationSpeed * Time.deltaTime;
+            rotAngle += this.Value.RotationSpeed * Time.deltaTime;
             rotAngle %= 360f;
             transform.rotation = Quaternion.Euler(0, 0, rotAngle);
 
@@ -470,12 +423,12 @@ namespace STELLAREST_2D
         {
             while (true)
             {
-                this.transform.position += (this.Owner.FireSocketPosition - this.Owner.Center.position).normalized * _movementSpeed * Time.deltaTime;
+                this.transform.position += (this.Owner.FireSocketPosition - this.Owner.Center.position).normalized * this.Value.MovementSpeed * Time.deltaTime;
                 yield return null;
             }
         }
 
-        private IEnumerator CoInterpolateScale()
+        private IEnumerator CoScaleInterpolation()
         {
             float delta = 0f;
             float percent = 0f;
@@ -483,20 +436,19 @@ namespace STELLAREST_2D
             // TEMP REINA MASTERY INTERPOLATION
             // if (_interpolateStartScale.x < 0)
             //     transform.rotation = Quaternion.Euler(0, 0, transform.rotation.eulerAngles.z - 180f);
-
             while (percent < 1f)
             {
                 delta += Time.deltaTime;
                 percent = delta / this.Data.Duration;
-                transform.localScale = Vector3.Lerp(_interpolateStartScale, _interpolateTargetScale, percent);
+                transform.localScale = Vector3.Lerp(this.Value.StartLocalScale, this.Value.TargetScale, percent);
                 yield return null;
             }
         }
 
-        private IEnumerator CoPreDisableCollider(float seconds)
+        private IEnumerator CoColliderDuration(float duration)
         {
             this.HitCollider.enabled = true;
-            yield return new WaitForSeconds(seconds);
+            yield return new WaitForSeconds(duration);
             this.HitCollider.enabled = false;
         }
 
@@ -510,11 +462,11 @@ namespace STELLAREST_2D
             switch (this.Data.TemplateOrigin)
             {
                 case FixedValue.TemplateID.Skill.ThrowingStar:
-                    _shootDir = NextBounceTarget(cc, Define.HitFromType.ThrowingStar);
+                    this.Value.ShootDir = NextBounceTarget(cc, Define.HitFromType.ThrowingStar);
                     break;
 
                 case FixedValue.TemplateID.Skill.ArrowMasterMastery:
-                    if (_maxPenetrationCount == -1)
+                    if (this.Value.MaxPenetrationCount == -1)
                         return;
                     else
                         Managers.Object.Despawn(this);
@@ -584,12 +536,12 @@ namespace STELLAREST_2D
 
         private Vector3 NextBounceTarget(CreatureController cc, Define.HitFromType hitFromType = Define.HitFromType.None)
         {
-            if (CanStillBounce() == false)
+            if (CanStillBounce == false)
             {
                 if (this.IsValid())
                     Managers.Object.Despawn(this);
                     
-                return _shootDir;
+                return this.Value.ShootDir;
             }
 
             Vector3 shootDir = Vector3.zero;
@@ -602,15 +554,14 @@ namespace STELLAREST_2D
             }
 
             if (shootDir == Vector3.zero)
-                shootDir = _shootDir;
+                shootDir = this.Value.ShootDir;
 
             return shootDir;
         }
 
         private void OnDestroy()
         {
-            if (this.OnProjectileLaunchInfo != null)
-                this.OnProjectileLaunchInfo -= OnProjectileLaunchInfoHandler;
+            this.OnProjectileLaunchInfo -= OnProjectileLaunchInfoHandler;
         }
     }
 }

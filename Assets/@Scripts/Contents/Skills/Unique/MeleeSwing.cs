@@ -81,7 +81,7 @@ namespace STELLAREST_2D
                 return;
 
             Owner.AttackStartPoint = transform.position;
-            StartCoroutine(this.CoGenerateProjectile());
+            StartCoroutine(base.CoGenerateProjectile());
         }
 
         public void OnSetSwingParticleInfoHandler(Vector3 indicatorAngle, Define.LookAtDirection lookAtDir, float continuousAngle, float continuousFlipX, float continuousFlipY)
@@ -113,9 +113,7 @@ namespace STELLAREST_2D
         private void OnDestroy()
         {
             if (this.PC != null && this.PC.OnSetParticleInfo != null)
-            {
                 this.PC.OnSetParticleInfo -= OnSetSwingParticleInfoHandler;
-            }
         }
     }
 }
