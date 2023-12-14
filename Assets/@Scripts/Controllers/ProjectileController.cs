@@ -20,8 +20,12 @@ namespace STELLAREST_2D
             this.FlipY = arg.FlipY;
             this.AddMovementSpeedRatio = arg.AddMovementSpeedRatio;
             this.AddRotationSpeedRatio = arg.AddRotationSpeedRatio;
-            this.TargetScale = arg.TargetScale;
-            this.IsOnTargetScale = arg.IsOnTargetScale;
+            if (arg.TargetScale.x > Mathf.Abs(arg.StartLocalScale.x) || arg.TargetScale.y > Mathf.Abs(arg.StartLocalScale.y))
+            {
+                this.TargetScale = new Vector3(arg.TargetScale.x, arg.TargetScale.y, 1f);
+                this.IsOnTargetScale = true;
+            }
+
             this.Duration = arg.Duration;
             this.MovementSpeed = arg.MovementSpeed;
             this.RotationSpeed = arg.RotationSpeed;
@@ -57,6 +61,8 @@ namespace STELLAREST_2D
                 TargetScale = new Vector3(localScale.x, targetScaleY, 1f);
                 this.IsOnTargetScale = true;
             }
+            else
+                TargetScale = new Vector3(localScale.x, localScale.y, 1f);
 
             this.Duration = duration;
             this.MovementSpeed = movementSpeed;
@@ -120,6 +126,7 @@ namespace STELLAREST_2D
 
         public void Launch(FixedValue.TemplateID.Skill skillType)
         {
+            transform.localScale = new Vector3(this.Value.StartLocalScale.x, this.Value.StartLocalScale.y, 1f);
             StartCoroutine(CoColliderDuration(this.Value.Duration * 0.5f));
             switch (skillType)
             {

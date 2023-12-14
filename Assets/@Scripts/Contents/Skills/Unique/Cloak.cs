@@ -49,7 +49,7 @@ namespace STELLAREST_2D
             this.Owner.SkillBook.Deactivate(FixedValue.TemplateID.Skill.NinjaMastery);
             this.Owner.CreatureRendererController.HideWeapons(true);
 
-            this.Owner.CreatureSkillAnimType = this.Data.AnimationType;
+            this.Owner.CreatureSkillAnimType = this.Data.OwnerAnimationType;
             this.Owner.CreatureState = CreatureState.Skill;
             callback?.Invoke();
 

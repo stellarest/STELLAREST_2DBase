@@ -3,7 +3,6 @@ using UnityEngine;
 
 using static STELLAREST_2D.Define;
 using STELLAREST_2D.Data;
-using UnityEngine.Rendering;
 
 namespace STELLAREST_2D
 {
@@ -114,7 +113,7 @@ namespace STELLAREST_2D
         {
             if (this.Data.IsProjectile == false)
             {
-                Utils.LogCritical(nameof(SkillBase), nameof(CoGenerateProjectile), $"Input(Data.IsProjectile / Data.Count) : {this.Data.IsProjectile} / {this.Data.Count}");
+                Utils.LogCritical(nameof(SkillBase), nameof(CoGenerateProjectile), $"Input(Data.IsProjectile) : {this.Data.IsProjectile}");
                 yield break;
             }
 
@@ -129,8 +128,12 @@ namespace STELLAREST_2D
             Vector3 indicatorAngle = Owner.Indicator.eulerAngles;
 
             int count = this.Data.Count;
+            if (count <= 0)
+            {
+                Utils.LogCritical(nameof(SkillBase), nameof(CoGenerateProjectile), $"Input(Data.Count) : {this.Data.Count}");
+                yield break;
+            }
             float spacing = this.Data.Spacing;
-
             float duration = this.Data.Duration;
             float movementSpeed = this.Data.MovementSpeed;
             float rotationSpeed = this.Data.RotationSpeed;
@@ -151,28 +154,36 @@ namespace STELLAREST_2D
 
             if (count > 1)
             {
-                // +++ CURRENT OWNER(LAUNCHER) INFO +++
                 for (int i = 0; i < count; ++i)
                 {
-                    addContinuousMovementSpeedRatios[i] = this.Data.AddContinuousMovementSpeedRatios[i];
-                    addContinuousRotationSpeedRatios[i] = this.Data.AddContinuousRotationSpeedRatios[i];
-                    continuousFlipXs[i] = this.Data.ContinuousFlipXs[i];
-                    continuousFlipYs[i] = this.Data.ContinuousFlipYs[i];
-                    if (this.Owner.IsFacingRight == false)
-                    {
-                        continuousAngles[i] = this.Data.ContinuousAngles[i] * -1;
-                        interpolateTargetScaleXs[i] = this.Data.TargetScaleInterpolations[i].x * -1;
-                        interpolateTargetScaleYs[i] = this.Data.TargetScaleInterpolations[i].y;
-                    }
-                    else
-                    {
-                        continuousAngles[i] = this.Data.ContinuousAngles[i];
-                        interpolateTargetScaleXs[i] = this.Data.TargetScaleInterpolations[i].x;
-                        interpolateTargetScaleYs[i] = this.Data.TargetScaleInterpolations[i].y;
-                    }
-                }
+                    continuousAngles[i] = this.Data.ContinuousAngles.Length > 1
+                    ? (this.Owner.IsFacingRight ? this.Data.ContinuousAngles[i] : -this.Data.ContinuousAngles[i])
+                    : 0f;
 
-                // +++ LAUNCH +++
+                    continuousFlipXs[i] = this.Data.ContinuousFlipXs.Length > 1
+                    ? this.Data.ContinuousFlipXs[i]
+                    : 0f;
+
+                    continuousFlipYs[i] = this.Data.ContinuousFlipYs.Length > 1
+                    ? this.Data.ContinuousFlipYs[i]
+                    : 0f;
+
+                    addContinuousMovementSpeedRatios[i] = this.Data.AddContinuousMovementSpeedRatios.Length > 1
+                    ? this.Data.AddContinuousMovementSpeedRatios[i]
+                    : 1f;
+
+                    addContinuousRotationSpeedRatios[i] = this.Data.AddContinuousRotationSpeedRatios.Length > 1
+                    ? this.Data.AddContinuousMovementSpeedRatios[i]
+                    : 1f;
+
+                    interpolateTargetScaleXs[i] = this.Data.TargetScaleInterpolations.Length > 1
+                    ? (this.Owner.IsFacingRight ? this.Data.TargetScaleInterpolations[i].x : -this.Data.TargetScaleInterpolations[i].x)
+                    : (this.Owner.IsFacingRight ? localScale.x : -localScale.x);
+
+                    interpolateTargetScaleYs[i] = this.Data.TargetScaleInterpolations.Length > 1
+                    ? this.Data.TargetScaleInterpolations[i].y
+                    : localScale.y;
+                }
                 for (int i = 0; i < count; ++i)
                 {
                     Vector3 spawnPos = (this.Data.IsOnFromFireSocket) ? this.Owner.FireSocketPosition : this.Owner.transform.position + additionalSpawnPoint;
@@ -203,66 +214,40 @@ namespace STELLAREST_2D
                         clone.PC.Launch(this.Data.TemplateOrigin);
                     }
 
-                    yield return new WaitForSeconds(this.Data.Spacing);
+                    yield return new WaitForSeconds(spacing);
                 }
 
                 Owner.AttackEndPoint = transform.position;
             }
             else if (count == 1)
             {
-                if (this.Data.ContinuousAngles != null)
-                {
-                    if (this.Owner.IsFacingRight == false)
-                        continuousAngles[0] = this.Data.ContinuousAngles[0] * -1;
-                    else
-                        continuousAngles[0] = this.Data.ContinuousAngles[0];
-                }
-                else
-                    continuousAngles[0] = 0f;
+                continuousAngles[0] = this.Data.ContinuousAngles.Length == 1
+                    ? (this.Owner.IsFacingRight ? this.Data.ContinuousAngles[0] : -this.Data.ContinuousAngles[0])
+                    : 0f;
 
-                if (this.Data.ContinuousFlipXs != null)
-                    continuousFlipXs[0] = this.Data.ContinuousFlipXs[0];
-                else
-                    continuousFlipXs[0] = 0f;
+                continuousFlipXs[0] = this.Data.ContinuousFlipXs.Length == 1
+                    ? this.Data.ContinuousFlipXs[0]
+                    : 0f;
 
-                if (this.Data.ContinuousFlipXs != null)
-                    continuousFlipXs[0] = this.Data.ContinuousFlipXs[0];
-                else
-                    continuousFlipXs[0] = 0f;
+                continuousFlipYs[0] = this.Data.ContinuousFlipYs.Length == 1
+                    ? this.Data.ContinuousFlipYs[0]
+                    : 0f;
 
-                if (this.Data.ContinuousFlipYs != null)
-                    continuousFlipYs[0] = this.Data.ContinuousFlipYs[0];
-                else
-                    continuousFlipYs[0] = 0f;
+                addContinuousMovementSpeedRatios[0] = this.Data.AddContinuousMovementSpeedRatios.Length == 1
+                    ? this.Data.AddContinuousMovementSpeedRatios[0]
+                    : 1f;
 
-                if (this.Data.AddContinuousMovementSpeedRatios != null)
-                    addContinuousMovementSpeedRatios[0] = this.Data.AddContinuousMovementSpeedRatios[0];
-                else
-                    addContinuousMovementSpeedRatios[0] = 0f;
+                addContinuousRotationSpeedRatios[0] = this.Data.AddContinuousRotationSpeedRatios.Length == 1
+                    ? this.Data.AddContinuousRotationSpeedRatios[0]
+                    : 1f;
 
-                if (this.Data.AddContinuousRotationSpeedRatios != null)
-                    addContinuousRotationSpeedRatios[0] = this.Data.AddContinuousRotationSpeedRatios[0];
-                else
-                    addContinuousRotationSpeedRatios[0] = 0f;
+                interpolateTargetScaleXs[0] = this.Data.TargetScaleInterpolations.Length == 1
+                    ? (this.Owner.IsFacingRight ? this.Data.TargetScaleInterpolations[0].x : -this.Data.TargetScaleInterpolations[0].x)
+                    : (this.Owner.IsFacingRight ? localScale.x : -localScale.x);
 
-                if (this.Data.TargetScaleInterpolations != null)
-                {
-                    if (this.Owner.IsFacingRight == false)
-                    {
-                        interpolateTargetScaleXs[0] = this.Data.TargetScaleInterpolations[0].x * -1;
-                        interpolateTargetScaleYs[0] = this.Data.TargetScaleInterpolations[0].y;
-                    }
-                    else
-                    {
-                        interpolateTargetScaleXs[0] = this.Data.TargetScaleInterpolations[0].x;
-                        interpolateTargetScaleYs[0] = this.Data.TargetScaleInterpolations[0].y;
-                    }
-                }
-                else
-                {
-                    interpolateTargetScaleXs[0] = 1f;
-                    interpolateTargetScaleYs[0] = 1f;
-                }
+                interpolateTargetScaleYs[0] = this.Data.TargetScaleInterpolations.Length == 1
+                    ? this.Data.TargetScaleInterpolations[0].y
+                    : localScale.y;
 
                 Vector3 spawnPos = (this.Data.IsOnFromFireSocket) ? this.Owner.FireSocketPosition : this.Owner.transform.position + additionalSpawnPoint;
                 SkillBase clone = Managers.Object.Spawn<SkillBase>(spawnPos: spawnPos, templateID: this.Data.TemplateID,

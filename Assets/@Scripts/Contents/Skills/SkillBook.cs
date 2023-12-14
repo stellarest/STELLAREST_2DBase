@@ -95,7 +95,7 @@ namespace STELLAREST_2D
                     if (i == 0) // FIRST SKILL
                     {
                         SkillBase unlockSkill = Members[0].Unlock();
-                        if (unlockSkill.Data.IsLaunchedFromEventHandler && unlockSkill.Data.Type == SkillType.Unique)
+                        if (unlockSkill.Data.IsOnFromEventHandler && unlockSkill.Data.Type == SkillType.Unique)
                         {
                             if (unlockSkill.Data.TemplateOrigin == Book.UniqueMasteryTemplate)
                             {
@@ -144,7 +144,7 @@ namespace STELLAREST_2D
 
                         // ADD EVENT
                         SkillBase unlockSkill = Members[i].Unlock();
-                        if (unlockSkill.Data.IsLaunchedFromEventHandler && unlockSkill.Data.Type == SkillType.Unique)
+                        if (unlockSkill.Data.IsOnFromEventHandler && unlockSkill.Data.Type == SkillType.Unique)
                         {
                             if (unlockSkill.Data.TemplateOrigin == Book.UniqueMasteryTemplate)
                             {
@@ -489,7 +489,7 @@ namespace STELLAREST_2D
                 for (int i = 0; i < pair.Value.MemberCount; ++i)
                 {
                     SkillBase skillOrigin = pair.Value.Members[i].SkillOrigin;
-                    if (skillOrigin.Data.IsLaunchedFromEventHandler)
+                    if (skillOrigin.Data.IsOnFromEventHandler)
                     {
                         if (skillOrigin.Data.Type == SkillType.Unique)
                         {

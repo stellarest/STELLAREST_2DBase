@@ -231,7 +231,7 @@ namespace STELLAREST_2D
                 //     SkillBook.SkillGroupsDict.AddGroup(templateID, new SkillGroup(uniqueSkill));
                 // }
 
-                for (int i = templateOrigin; i < templateOrigin + skillData.GradeTotalCount; ++i)
+                for (int i = templateOrigin; i < templateOrigin + skillData.GradeCount; ++i)
                 {
                     SkillData data = Managers.Data.SkillsDict[i];
                     GameObject go = Managers.Resource.Instantiate(data.PrimaryLabel);
@@ -462,8 +462,15 @@ namespace STELLAREST_2D
 
         public void TryCrowdControl(SkillBase from)
         {
+            int ccCount = from.Data.CrowdControlCount;
             CrowdControlType[] ccTypes = new CrowdControlType[from.Data.CrowdControlTypes.Length];
-            for (int i = 0; i < from.Data.CrowdControlTypes.Length; ++i)
+            if (ccCount != from.Data.CrowdControlTypes.Length)
+            {
+                Utils.LogCritical(nameof(CreatureController), nameof(TryCrowdControl), $"ccCount == ccTypesLength : {ccCount == from.Data.CrowdControlTypes.Length}");
+                return;
+            }
+
+            for (int i = 0; i < ccCount; ++i)
             {
                 if (this[ccTypes[i]])
                 {

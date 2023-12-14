@@ -51,7 +51,7 @@ namespace STELLAREST_2D
         protected override void DoSkillJob(Action callback = null)
         {
             this.Owner.SkillBook.Deactivate(FixedValue.TemplateID.Skill.ArrowMasterMastery);
-            this.Owner.CreatureSkillAnimType = this.Data.AnimationType;
+            this.Owner.CreatureSkillAnimType = this.Data.OwnerAnimationType;
             this.Owner.CreatureState = CreatureState.Skill;
             callback?.Invoke();
             StartCoroutine(CoConcentration());

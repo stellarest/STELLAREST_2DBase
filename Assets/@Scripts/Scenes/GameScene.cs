@@ -70,7 +70,7 @@ namespace STELLAREST_2D
             joystick.name = FixedValue.Find.JOYSTICK; // UI_Joystick라고 하기엔 좀 애매함
 
             // Spawning Pool
-            _spawningPool = gameObject.AddComponent<SpawningPool>();
+            // _spawningPool = gameObject.AddComponent<SpawningPool>();
             Managers.Game.OnKillCountChanged -= this.OnKillCountChangedHandler;
             Managers.Game.OnGemCountChanged += this.OnGemCountChangedHandler;
 

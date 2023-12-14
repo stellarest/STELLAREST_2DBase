@@ -58,21 +58,30 @@ namespace STELLAREST_2D.Data
         public int TemplateID;
         public Define.FixedValue.TemplateID.Skill TemplateOrigin;
 
+        public Define.InGameGrade Grade;
+        public Define.InGameGrade MaxGrade;
+        public int GradeCount;
+
         public string Name;
         public Sprite Icon;
         public string Description;
         public string PrimaryLabel;
 
         public Define.SkillType Type;
-        public Define.SkillAnimationType AnimationType;
+        public Define.SkillAnimationType OwnerAnimationType;
         public Define.VFXImpactHitType VFXImpactHitType;
-
-        public Define.InGameGrade Grade;
-        public Define.InGameGrade MaxGrade;
-        public int GradeTotalCount;
 
         public int Count;
         public float Spacing;
+        public float Duration;
+        
+        public float MinDamage;
+        public float MaxDamage;
+        public float MovementSpeed;
+        public float RotationSpeed;
+        public int MaxBounceCount;
+        public int MaxPenetrationCount;
+        public AdditionalCustomValue CustomValue;
 
         public float[] ContinuousAngles;
         public float[] ContinuousFlipXs;
@@ -81,14 +90,6 @@ namespace STELLAREST_2D.Data
         public float[] AddContinuousRotationSpeedRatios;
         public Vector3[] TargetScaleInterpolations;
 
-        public float Duration;
-        public float MinDamage;
-        public float MaxDamage;
-        public float MovementSpeed;
-        public float RotationSpeed;
-        public int MaxBounceCount;
-        public int MaxPenetrationCount;
-
         public bool IsProjectile;
         public bool IsOnFromEventHandler;
         public bool IsOnFromFireSocket;
@@ -96,12 +97,12 @@ namespace STELLAREST_2D.Data
         public bool UsePresetLocalScale;
         public bool UsePresetParticleInfo;
 
+        public int CrowdControlCount;
         public Define.CrowdControlType[] CrowdControlTypes;
         public float[] CrowdControlChances;
         public float[] CrowdControlDurations;
         public float[] CrowdControlIntensities;
 
-        public AdditionalCustomValue CustomValue;
         public float LevelUpCost;            
         public float Cooldown;
     }

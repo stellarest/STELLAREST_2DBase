@@ -9,7 +9,7 @@ namespace STELLAREST_2D
         public enum InGameDifficulty { Normal, Hard, Expert, Master, Extreme } // temp
         public enum WaveType { None, Elite, Boss } // temp
         public enum SceneType { Unknown, DevScene, GameScene, } // temp
-        public enum SoundType { BGM, SFX, } // temp
+        public enum SoundType { SFX = 100, BGM = 200 } // temp
         public enum StageType { Normal, Boss, } // temp
         public enum UIEvent { Click, Pressed, PointerDown, PointerUp, BeginDrag, Drag, EndDrag, }
         public enum ObjectType { None = -1, Player = 1, Monster, Skill, Projectile, Gem, Soul }

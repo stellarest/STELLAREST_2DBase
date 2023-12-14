@@ -79,7 +79,7 @@ namespace STELLAREST_2D
             _ownerController.PlayerAnimController.EnterNextState(false);
             _ownerController.LockHandle = true;
 
-            this.Owner.CreatureSkillAnimType = this.Data.AnimationType;
+            this.Owner.CreatureSkillAnimType = this.Data.OwnerAnimationType;
             this.Owner.CreatureState = CreatureState.Skill;
             callback?.Invoke();
             this.IsOnBarrier = true;

@@ -102,7 +102,7 @@ namespace STELLAREST_2D
 
         protected override void DoSkillJob(System.Action callback = null)
         {
-            this.Owner.CreatureSkillAnimType = this.Data.AnimationType;
+            this.Owner.CreatureSkillAnimType = this.Data.OwnerAnimationType;
             this.Owner.CreatureState = CreatureState.Skill;
             callback?.Invoke();
         }
