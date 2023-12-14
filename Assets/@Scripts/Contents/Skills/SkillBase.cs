@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 using static STELLAREST_2D.Define;
@@ -9,12 +10,25 @@ namespace STELLAREST_2D
     [System.Serializable]
     public class AdditionalCustomValue
     {
-        public string Tooltip;
         public bool Boolean;
-        public int Count;
-        public float Value;
-        public float Ratio;
+#if UNITY_EDITOR
+        public string Comment_Boolean;
+#endif
+
+        public List<int> Integers;
+#if UNITY_EDITOR
+        public List<string> Comment_Integers;
+#endif
+
+        public List<float> Floatings;
+#if UNITY_EDITOR
+        public List<string> Comment_Floatings;
+#endif
+
         public Vector3 Point3D;
+#if UNITY_EDITOR
+        public string Comment_Point3D;
+#endif
     }
 
     [System.Serializable]

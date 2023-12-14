@@ -10,6 +10,12 @@ namespace STELLAREST_2D
 {
     public class Shield : UniqueSkill
     {
+        private enum ShieldValue
+        {
+            MAX_HP_RATIO,
+            RECOVERY_RATIO_PER_SECOND
+        }
+
         private ParticleSystem[] _onShields = null;
         private ParticleSystem[] _onShieldsEnter = null;
         private ParticleSystem[] _offShields = null;
@@ -28,14 +34,14 @@ namespace STELLAREST_2D
                 if (_isOnShield)
                     OnShield();
                 else
-                {
                     OffShield();
-                }
             }
         }
 
         private Coroutine _coRecoveryShield = null;
-        private const float FIXED_RECOVERY_INTERVAL = 0.75f;
+        //private const float FIXED_RECOVERY_INTERVAL = 0.75f;
+        private const float FIXED_RECOVERY_INTERVAL = 1F; // ---> 없애도 됨
+
         private const float FIXED_RECOVERY_RATIO = 0.01f;
         private IEnumerator CoRecoveryShield()
         {
@@ -51,7 +57,9 @@ namespace STELLAREST_2D
                     int recoveryCount = Mathf.FloorToInt(delta / FIXED_RECOVERY_INTERVAL);
                     for (int i = 0; i < recoveryCount; ++i)
                     {
-                        this.Owner.Stat.ShieldHP += (_shieldMaxHp * FIXED_RECOVERY_RATIO);
+                        //this.Owner.Stat.ShieldHP += (_shieldMaxHp * FIXED_RECOVERY_RATIO);
+                        this.Owner.Stat.ShieldHP += (_shieldMaxHp * _recoveryRate);
+
                         if (this.Owner.Stat.ShieldHP >= _shieldMaxHp)
                             this.Owner.Stat.ShieldHP = _shieldMaxHp;
                     }
@@ -102,12 +110,26 @@ namespace STELLAREST_2D
         public override void OnActiveEliteActionHandler() => this.IsOnShield = true;
         public void Hit() => _hitBurst.Play();
         private const float SHIELD_MAX_HP_RATIO = 0.5f;
+
+        [SerializeField] private float _maxShiledHPRatio = 0f;
+        [SerializeField] private float _recoveryRate = 0f;
         private void OnShield()
         {
+            for (int i = 0; i < this.Data.CustomValue.Floatings.Count; ++i)
+            {
+                if (i == 0)
+                    _maxShiledHPRatio = this.Data.CustomValue.Floatings[(int)ShieldValue.MAX_HP_RATIO];
+
+                if (i == 1)
+                    _recoveryRate = this.Data.CustomValue.Floatings[(int)ShieldValue.RECOVERY_RATIO_PER_SECOND];
+            }
+
             EnableParticles(_offShields, false);
             EnableParticles(_onShields, true);
 
-            _shieldMaxHp = (this.Owner.Stat.MaxHP * SHIELD_MAX_HP_RATIO);
+            //_shieldMaxHp = (this.Owner.Stat.MaxHP * SHIELD_MAX_HP_RATIO);
+            _shieldMaxHp = (this.Owner.Stat.MaxHP * _maxShiledHPRatio);
+
             this.Owner.Stat.ShieldHP = _shieldMaxHp;
 
             if (_coRecoveryShield != null)
