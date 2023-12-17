@@ -181,6 +181,7 @@ namespace STELLAREST_2D
 
             LoadUniqueSkills(creatureData);
             LoadPublicSkills(creatureData);
+            //LoadPublicSkills_Temp(creatureData);
             this.SkillBook.LateInit();
         }
 
@@ -300,12 +301,12 @@ namespace STELLAREST_2D
             if (this.SkillBook.IsOnShield)
             {
                 this.Stat.ShieldHP -= dmgResult;
+                Managers.VFX.DamageOnShield(this, dmgResult);
                 if (this.Stat.ShieldHP < 0f)
-                {
                     this.SkillBook.OffSheild();
-                }
 
                 this.SkillBook.HitShield();
+                return;
             }
             else
                 this.Stat.HP -= dmgResult;

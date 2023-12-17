@@ -292,7 +292,7 @@ namespace STELLAREST_2D
 
             if (IsChangingMaterial(bc))
                 yield break;
-            
+
             Material clonedMat = MakeClonedMaterial(Mat_Poison);
             bc.RendererController.SetMaterial(clonedMat);
             clonedMat.SetFloat(SHADER_POISON_FADE, 0f);
@@ -327,8 +327,8 @@ namespace STELLAREST_2D
                     clonedMat.SetFloat(SHADER_POISON_FADE, percent);
                 else
                 {
-                   isIncreasing = !isIncreasing;
-                   delta = 0f;
+                    isIncreasing = !isIncreasing;
+                    delta = 0f;
                 }
 
                 yield return null;
@@ -448,6 +448,10 @@ namespace STELLAREST_2D
             return goTrail;
         }
 
+        public void DamageOnShield(CreatureController cc, float damage)
+            => Managers.Resource.Load<GameObject>(FixedValue.Load.VFX_ENV_DAMAGE_TO_PLAYER_SHIELD)
+                       .GetComponent<DamageNumber>().Spawn(cc.LoadVFXEnvSpawnPos(VFXEnvType.Damage), damage);
+
         public void Damage(CreatureController cc, float damage, bool isCritical)
         {
             if (cc.IsValid() == false)
@@ -455,42 +459,25 @@ namespace STELLAREST_2D
             if (damage <= 0f)
                 return;
 
-            Vector3 spawnPos = (cc?.IsPlayer == false && cc.GetComponent<MonsterController>() != null)
-                                ? cc.GetComponent<MonsterController>().LoadVFXEnvSpawnPos(VFXEnvType.Damage)
-                                : cc.GetComponent<PlayerController>().LoadVFXEnvSpawnPos(VFXEnvType.Damage);
-
-#if UNITY_EDITOR
-            if (spawnPos == Vector3.zero)
-                Utils.LogCritical(nameof(VFXManager), nameof(Environment), "Failed to load VFX Env Spawn Pos.");
-#endif
-            if (cc.IsMonster) // 현재 크티티컬은 몬스터만 받아서 필요 없을수도
+            Vector3 spawnPos = cc.LoadVFXEnvSpawnPos(VFXEnvType.Damage);
+            if (cc.IsMonster)
             {
                 if (isCritical)
                 {
                     Managers.Resource.Load<GameObject>(FixedValue.Load.VFX_ENV_DAMAGE_TO_MONSTER_CRITICAL_FONT)
-                                     .GetComponent<DamageNumber>().Spawn(spawnPos);
+                            .GetComponent<DamageNumber>().Spawn(spawnPos);
 
                     Managers.Resource.Load<GameObject>(FixedValue.Load.VFX_ENV_DAMAGE_TO_MONSTER_CRITICAL)
-                                     .GetComponent<DamageNumber>().Spawn(spawnPos, damage);
+                            .GetComponent<DamageNumber>().Spawn(spawnPos, damage);
                 }
                 else
-                {
                     Managers.Resource.Load<GameObject>(FixedValue.Load.VFX_ENV_DAMAGE_TO_MONSTER)
-                                     .GetComponent<DamageNumber>().Spawn(spawnPos, damage);
-                }
+                            .GetComponent<DamageNumber>().Spawn(spawnPos, damage);
             }
-            else // Damage to Player
+            else
             {
-                if (cc.SkillBook.IsOnShield == false)
-                {
-                    Managers.Resource.Load<GameObject>(FixedValue.Load.VFX_ENV_DAMAGE_TO_PLAYER)
-                                    .GetComponent<DamageNumber>().Spawn(spawnPos, damage);
-                }
-                else
-                {
-                    Managers.Resource.Load<GameObject>(FixedValue.Load.VFX_ENV_DAMAGE_TO_PLAYER_SHIELD)
-                                     .GetComponent<DamageNumber>().Spawn(spawnPos, damage);
-                }
+                Managers.Resource.Load<GameObject>(FixedValue.Load.VFX_ENV_DAMAGE_TO_PLAYER)
+                        .GetComponent<DamageNumber>().Spawn(spawnPos, damage);
             }
         }
 
@@ -637,3 +624,50 @@ namespace STELLAREST_2D
         private Material MakeClonedMaterial(Material matTarget) => new Material(matTarget);
     }
 }
+
+// ===================================================================================================================
+//         public void Damage(CreatureController cc, float damage, bool isCritical)
+//         {
+//             if (cc.IsValid() == false)
+//                 return;
+//             if (damage <= 0f)
+//                 return;
+
+//             Vector3 spawnPos = (cc?.IsPlayer == false && cc.GetComponent<MonsterController>() != null)
+//                                 ? cc.GetComponent<MonsterController>().LoadVFXEnvSpawnPos(VFXEnvType.Damage)
+//                                 : cc.GetComponent<PlayerController>().LoadVFXEnvSpawnPos(VFXEnvType.Damage);
+
+// #if UNITY_EDITOR
+//             if (spawnPos == Vector3.zero)
+//                 Utils.LogCritical(nameof(VFXManager), nameof(Environment), "Failed to load VFX Env Spawn Pos.");
+// #endif
+//             if (cc.IsMonster) // 현재 크티티컬은 몬스터만 받아서 필요 없을수도
+//             {
+//                 if (isCritical)
+//                 {
+//                     Managers.Resource.Load<GameObject>(FixedValue.Load.VFX_ENV_DAMAGE_TO_MONSTER_CRITICAL_FONT)
+//                                      .GetComponent<DamageNumber>().Spawn(spawnPos);
+
+//                     Managers.Resource.Load<GameObject>(FixedValue.Load.VFX_ENV_DAMAGE_TO_MONSTER_CRITICAL)
+//                                      .GetComponent<DamageNumber>().Spawn(spawnPos, damage);
+//                 }
+//                 else
+//                 {
+//                     Managers.Resource.Load<GameObject>(FixedValue.Load.VFX_ENV_DAMAGE_TO_MONSTER)
+//                                      .GetComponent<DamageNumber>().Spawn(spawnPos, damage);
+//                 }
+//             }
+//             else // Damage to Player
+//             {
+//                 if (cc.SkillBook.IsOnShield == false)
+//                 {
+//                     Managers.Resource.Load<GameObject>(FixedValue.Load.VFX_ENV_DAMAGE_TO_PLAYER)
+//                                     .GetComponent<DamageNumber>().Spawn(spawnPos, damage);
+//                 }
+//                 else
+//                 {
+//                     Managers.Resource.Load<GameObject>(FixedValue.Load.VFX_ENV_DAMAGE_TO_PLAYER_SHIELD)
+//                                      .GetComponent<DamageNumber>().Spawn(spawnPos, damage);
+//                 }
+//             }
+//         }
