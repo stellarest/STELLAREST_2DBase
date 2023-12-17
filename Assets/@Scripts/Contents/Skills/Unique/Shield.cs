@@ -109,7 +109,6 @@ namespace STELLAREST_2D
 
         public override void OnActiveEliteActionHandler() => this.IsOnShield = true;
         public void Hit() => _hitBurst.Play();
-        private const float SHIELD_MAX_HP_RATIO = 0.5f;
 
         [SerializeField] private float _maxShiledHPRatio = 0f;
         [SerializeField] private float _recoveryRate = 0f;
@@ -119,7 +118,6 @@ namespace STELLAREST_2D
             {
                 if (i == 0)
                     _maxShiledHPRatio = this.Data.CustomValue.Floatings[(int)ShieldValue.MAX_HP_RATIO];
-
                 if (i == 1)
                     _recoveryRate = this.Data.CustomValue.Floatings[(int)ShieldValue.RECOVERY_RATIO_PER_SECOND];
             }
@@ -127,9 +125,7 @@ namespace STELLAREST_2D
             EnableParticles(_offShields, false);
             EnableParticles(_onShields, true);
 
-            //_shieldMaxHp = (this.Owner.Stat.MaxHP * SHIELD_MAX_HP_RATIO);
             _shieldMaxHp = (this.Owner.Stat.MaxHP * _maxShiledHPRatio);
-
             this.Owner.Stat.ShieldHP = _shieldMaxHp;
 
             if (_coRecoveryShield != null)

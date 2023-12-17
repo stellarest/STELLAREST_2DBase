@@ -65,7 +65,6 @@ namespace STELLAREST_2D
         }
 
         public SkillBook SkillBook { get; protected set; } = null;
-
         public SkillAnimationType CreatureSkillAnimType { get; set; } =  SkillAnimationType.None;
         [SerializeField] private CreatureState _cretureState = CreatureState.Idle;
         public Define.CreatureState CreatureState { get => _cretureState; set { _cretureState = value; UpdateAnimation(); } }
@@ -201,7 +200,7 @@ namespace STELLAREST_2D
         private void LoadUniqueSkills(CreatureData creatureData)
         {
             GameObject goUniqueSkills = new GameObject { name = "@UniqueSkills" };
-            goUniqueSkills.transform.SetParent(SkillBook.transform);
+            goUniqueSkills.transform.SetParent(this.SkillBook.transform);
             goUniqueSkills.transform.localPosition = Vector3.zero;
             goUniqueSkills.transform.localScale = Vector3.one;
             foreach (FixedValue.TemplateID.Skill uniqueSkillTemplateOrigin in creatureData.UniqueSkills)
@@ -209,27 +208,6 @@ namespace STELLAREST_2D
                 int templateOrigin = (int)uniqueSkillTemplateOrigin;
                 if (Managers.Data.SkillsDict.TryGetValue(templateOrigin, out SkillData skillData) == false)
                     Utils.LogCritical(nameof(CreatureController), nameof(LoadUniqueSkills), $"Input : {templateOrigin}");
-
-                // Mastery
-                // 100100
-                // 3
-
-                // Unique Elite
-                // 100103 ~ 100104
-                // for (int i = templateID; i < templateID + (int)skillData.MaxGrade; ++i)
-                // {
-                //     SkillData data = Managers.Data.SkillsDict[i];
-                //     GameObject go = Managers.Resource.Instantiate(data.PrimaryLabel);
-                //     go.name = data.Name;
-                //     go.transform.SetParent(goUniqueSkills.transform);
-                //     go.transform.localPosition = Vector3.zero;
-                //     if (data.UsePresetLocalScale == false)
-                //         go.transform.localScale = Vector3.one;
-
-                //     UniqueSkill uniqueSkill = go.GetComponent<UniqueSkill>();
-                //     uniqueSkill.InitOrigin(this, data);
-                //     SkillBook.SkillGroupsDict.AddGroup(templateID, new SkillGroup(uniqueSkill));
-                // }
 
                 for (int i = templateOrigin; i < templateOrigin + skillData.GradeCount; ++i)
                 {
@@ -251,16 +229,16 @@ namespace STELLAREST_2D
         private void LoadPublicSkills(CreatureData creatureData)
         {
             GameObject goPublicSkills = new GameObject { name = "@PublicSkills" };
-            goPublicSkills.transform.SetParent(SkillBook.transform);
+            goPublicSkills.transform.SetParent(this.SkillBook.transform);
             goPublicSkills.transform.localPosition = Vector3.zero;
             goPublicSkills.transform.localScale = Vector3.one;
-            foreach (FixedValue.TemplateID.Skill publicSkillTemplateID in creatureData.PublicSkills)
+            foreach (FixedValue.TemplateID.Skill publicSkillTemplateOrigin in creatureData.PublicSkills)
             {
-                int templateID = (int)publicSkillTemplateID;
-                if (Managers.Data.SkillsDict.TryGetValue(templateID, out Data.SkillData skillData) == false)
-                    Utils.LogCritical(nameof(CreatureController), nameof(LoadPublicSkills), $"Input : {templateID}");
+                int templateOrigin = (int)publicSkillTemplateOrigin;
+                if (Managers.Data.SkillsDict.TryGetValue(templateOrigin, out SkillData skillData) == false)
+                    Utils.LogCritical(nameof(CreatureController), nameof(LoadPublicSkills), $"Input : {templateOrigin}");
 
-                for (int i = templateID; i < templateID + (int)skillData.MaxGrade; ++i)
+                for (int i = templateOrigin; i < templateOrigin + skillData.GradeCount; ++i)
                 {
                     SkillData data = Managers.Data.SkillsDict[i];
                     GameObject go = Managers.Resource.Instantiate(data.PrimaryLabel);
@@ -272,7 +250,7 @@ namespace STELLAREST_2D
 
                     PublicSkill publicSkill = go.GetComponent<PublicSkill>();
                     publicSkill.InitOrigin(this, data);
-                    SkillBook.SkillGroupsDict.AddGroup(i, new SkillGroup(publicSkill));
+                    SkillBook.SkillGroupsDict.AddGroup(templateOrigin, new SkillGroup(publicSkill));
                 }
             }
         }

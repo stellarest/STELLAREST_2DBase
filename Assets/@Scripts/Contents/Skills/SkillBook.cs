@@ -92,7 +92,7 @@ namespace STELLAREST_2D
             {
                 if (Members[i].IsLearned == false)
                 {
-                    if (i == 0) // FIRST SKILL
+                    if (i == 0) // FIRST GRADE SKILL
                     {
                         SkillBase unlockSkill = Members[0].Unlock();
                         if (unlockSkill.Data.IsOnFromEventHandler && unlockSkill.Data.Type == SkillType.Unique)
@@ -158,6 +158,7 @@ namespace STELLAREST_2D
                             }
                         }
 
+                        Book.RefreshCachedSkill(unlockSkill);
                         return unlockSkill;
                     }
                 }
@@ -258,6 +259,7 @@ namespace STELLAREST_2D
         public int SequenceIdx { get; set; } = 0;
         [field: SerializeField] public List<UniqueSkill> ActionSkills { get; private set; } = new List<UniqueSkill>();
 
+        // PRE CACHED SKILLS
         public Shield CachedShield { get; private set; } = null;
         public SecondWind CachedSecondWind { get; private set; } = null;
         public ForestBarrier CachedForestBarrier { get; private set; } = null;
@@ -285,28 +287,31 @@ namespace STELLAREST_2D
 
                             case FixedValue.TemplateID.Skill.AssassinMastery:
                             case FixedValue.TemplateID.Skill.NinjaMastery:
-                                this.UniqueMasteryTemplate = skill.Data.TemplateOrigin;
+                                if(skill.Data.Grade == InGameGrade.Elite)
+                                    this.UniqueMasteryTemplate = skill.Data.TemplateOrigin;
                                 break;
 
                             case FixedValue.TemplateID.Skill.Paladin_Unique_Elite:
                             case FixedValue.TemplateID.Skill.Knight_Unique_Elite:
-                            case FixedValue.TemplateID.Skill.PhantomKnight_Unique_Elite_C1:
-
-                            case FixedValue.TemplateID.Skill.ArrowMaster_Unique_Elite:
-                            case FixedValue.TemplateID.Skill.ElementalArcher_Unique_Elite:
                             case FixedValue.TemplateID.Skill.ForestGuardian_Unique_Elite:
-
-                            case FixedValue.TemplateID.Skill.Assassin_Unique_Elite:
-                            case FixedValue.TemplateID.Skill.Ninja_Unique_Elite:
                                 {
-                                    if (skill.Data.TemplateOrigin == FixedValue.TemplateID.Skill.Paladin_Unique_Mastery)
+                                    if (skill.Data.TemplateID == (int)FixedValue.TemplateID.Skill.Paladin_Unique_Elite)
                                         this.CachedShield = skill.GetComponent<Shield>();
-                                    else if (skill.Data.TemplateOrigin == FixedValue.TemplateID.Skill.Knight_Unique_Elite)
+                                    else if (skill.Data.TemplateID == (int)FixedValue.TemplateID.Skill.Knight_Unique_Elite)
                                         this.CachedSecondWind = skill.GetComponent<SecondWind>();
-                                    else if (skill.Data.TemplateOrigin == FixedValue.TemplateID.Skill.ForestGuardian_Unique_Elite)
+                                    else if (skill.Data.TemplateID == (int)FixedValue.TemplateID.Skill.ForestGuardian_Unique_Elite)
                                         this.CachedForestBarrier = skill.GetComponent<ForestBarrier>();
 
                                     this.UniqueEliteTemplate = skill.Data.TemplateOrigin;
+                                    // ====================================================================================
+                                    // if (skill.Data.TemplateOrigin == FixedValue.TemplateID.Skill.Paladin_Unique_Elite)
+                                    //     this.CachedShield = skill.GetComponent<Shield>();
+                                    // else if (skill.Data.TemplateOrigin == FixedValue.TemplateID.Skill.Knight_Unique_Elite)
+                                    //     this.CachedSecondWind = skill.GetComponent<SecondWind>();
+                                    // else if (skill.Data.TemplateOrigin == FixedValue.TemplateID.Skill.ForestGuardian_Unique_Elite)
+                                    //     this.CachedForestBarrier = skill.GetComponent<ForestBarrier>();
+
+                                    //this.UniqueEliteTemplate = skill.Data.TemplateOrigin;
                                 }
                                 break;
 
@@ -337,12 +342,31 @@ namespace STELLAREST_2D
             Utils.LogAddEvent(nameof(this.Owner.Stat.OnResetSkillCooldown), nameof(OnResetSkillCooldownHandler));
         }
 
+        public void RefreshCachedSkill(SkillBase skill)
+        {
+            switch (skill.Data.TemplateOrigin)
+            {
+                case FixedValue.TemplateID.Skill.Paladin_Unique_Elite:
+                    this.CachedShield = skill.GetComponent<Shield>();
+                    Utils.Log($"Success to Refresh Cached Skill : {skill.Data.Name} / {skill.Data.Grade}");
+                    return;
+                case FixedValue.TemplateID.Skill.Knight_Unique_Elite:
+                    Utils.Log($"Success to Refresh Cached Skill : {skill.Data.Name} / {skill.Data.Grade}");
+                    this.CachedSecondWind = skill.GetComponent<SecondWind>();
+                    return;
+                case FixedValue.TemplateID.Skill.ForestGuardian_Unique_Elite:
+                    Utils.Log($"Success to Refresh Cached Skill : {skill.Data.Name} / {skill.Data.Grade}");
+                    this.CachedForestBarrier = skill.GetComponent<ForestBarrier>();
+                    return;
+            }
+        }
+
         public void OnAddSkillCooldownRatioHandler(FixedValue.TemplateID.Skill skillTemplateID, float addRatio)
         {
             SkillBase currentSkill = GetLastLearnedSkillMember(skillTemplateID);
             if (currentSkill == null)
                 return;
-            
+
             float cooldown = currentSkill.Data.Cooldown;
             currentSkill.Data.Cooldown = cooldown + (cooldown * addRatio);
 
@@ -382,7 +406,7 @@ namespace STELLAREST_2D
         {
             SkillBase newSkill = Unlock(skillTemplateID);
             /*
-                DO SOMETHING BELOW
+                DO SOMETHING BELOW AFTER UNLOCK SKILL WHEN YOU NEED
             */
         }
 
@@ -458,7 +482,7 @@ namespace STELLAREST_2D
         public bool IsOnShield => (this.CachedShield != null) ? this.CachedShield.IsOnShield : false;
         public void HitShield() => this.CachedShield.Hit();
         public void OffSheild() => this.CachedShield.IsOnShield = false;
-        
+
         public bool IsOnBarrier => (this.CachedForestBarrier != null) ? this.CachedForestBarrier.IsOnBarrier : false;
         public void HitBarrier() => this.CachedForestBarrier.BarrierCount -= 1;
 
