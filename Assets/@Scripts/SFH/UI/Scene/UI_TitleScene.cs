@@ -56,8 +56,10 @@ namespace STELLAREST_SFH
                 if (loadCount == totalCount)
                 {
                     Util.Log("Success load complete.");
+                    Managers.Data.Init();
+
                     GetObject((int)GameObjects.StartImage).SetActive(true);
-                    GetText((int)Texts.DisplayText).text = $"TOUCH TO START";
+                    GetText((int)Texts.DisplayText).text = $"SFH_TOUCH TO START";
                 }
             });
         }

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.UI;
 using static STELLAREST_SFH.Define;
@@ -19,7 +20,7 @@ namespace STELLAREST_SFH
             get
             {
                 GameObject root = GameObject.Find(FixedValue.String.UI_ROOT);
-                return root != null ? root : null;
+                return root != null ? root : new GameObject { name = FixedValue.String.UI_ROOT };
             }
         }
 

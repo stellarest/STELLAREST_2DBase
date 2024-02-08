@@ -20,6 +20,7 @@ namespace STELLAREST_SFH
 
         public void Clear()
         {
+            //CurrentScene.Clear();
         }
     }
 }

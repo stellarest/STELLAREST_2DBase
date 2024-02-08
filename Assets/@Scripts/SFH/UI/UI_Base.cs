@@ -24,7 +24,7 @@ namespace STELLAREST_SFH
                     objects[i] = Util.FindChild(gameObject, names[i], true);
                 else
                     objects[i] = Util.FindChild<T>(gameObject, names[i], true);
-
+                    
 #if UNITY_EDITOR
                 if (objects[i] == null)
                     Util.LogCritical(nameof(Bind), $"Failed to bind : {names[i]}");

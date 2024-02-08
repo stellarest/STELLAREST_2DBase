@@ -5,25 +5,29 @@ using UnityEngine;
 
 namespace STELLAREST_SFH.Data
 {
+    // TestData
     [Serializable]
-    public class CreatureData
+    public class TestData
     {
-        public int DataId;
-        public string DescriptionTextID;
-        public string PrefabLabel;
+		public int Level;
+		public int Exp;
+		public List<int> Skills;
+		public float Speed;
+		public string Name;
     }
 
     [Serializable]
-    public class CreatureDataLoader : ILoader<int, CreatureData>
+    public class TestDataLoader : ILoader<int, TestData>
     {
-        public List<CreatureData> Creatures { get; } = new List<CreatureData>();
+        // Excel To Json -> public 접근 지정자만 가능 (프로퍼티 X)
+        public List<TestData> MySuperTests = new List<TestData>();
 
-        public Dictionary<int, CreatureData> MakeDict()
+        public Dictionary<int, TestData> MakeDict()
         {
-            Dictionary<int, CreatureData> dict = new Dictionary<int, CreatureData>();
-            
-            foreach (var creature in Creatures)
-                dict.Add(creature.DataId, creature);
+            Dictionary<int, TestData> dict = new Dictionary<int, TestData>();
+
+            foreach (var test in MySuperTests)
+                dict.Add(test.Level, test);
 
             return dict;
         }

@@ -13,12 +13,12 @@ namespace STELLAREST_SFH
 
     public class DataManager
     {
-        public Dictionary<int, Data.CreatureData> CreatureDic_Temp { get; private set; } = new Dictionary<int, Data.CreatureData>();
+        //public Dictionary<int, Data.CreatureData> CreatureDic_Temp { get; private set; } = new Dictionary<int, Data.CreatureData>();
+        public Dictionary<int, Data.TestData> TestData_Temp { get; private set; } = new Dictionary<int, Data.TestData>();
 
         public void Init()
         {
-            CreatureDic_Temp = this.LoadJson<Data.CreatureDataLoader, int, Data.CreatureData>
-                        (FixedValue.String.TEMP_CREATURE_DATA).MakeDict();
+            TestData_Temp = LoadJson<Data.TestDataLoader, int, Data.TestData>(FixedValue.String.TEST_DATA).MakeDict();
         }
 
         private T LoadJson<T, Key, Value>(string path) where T : ILoader<Key, Value>

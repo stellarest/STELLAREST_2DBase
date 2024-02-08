@@ -27,6 +27,11 @@ namespace STELLAREST_SFH
 
         public GameObject Instantiate(string key, Transform parent = null, bool pooling = false)
         {
+            // TEMP, 나중에 정리 끝나면 제거해야함.
+            if (key.Contains(FixedValue.String.SFH_) == false)
+                key = FixedValue.String.SFH_ + key;
+            //Debug.Log("KEY : " + key);
+
             GameObject prefab = this.Load<GameObject>(key);
             if (prefab == null)
             {

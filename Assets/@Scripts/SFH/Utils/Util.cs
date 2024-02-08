@@ -47,7 +47,7 @@ namespace STELLAREST_SFH
             }
             else
             {
-                foreach (T comp in go.GetComponentsInChildren<T>())
+                foreach (T comp in go.GetComponentsInChildren<T>(includeInactive: true))
                 {
                     if (string.IsNullOrEmpty(name) || comp.name == name)
                         return comp;
