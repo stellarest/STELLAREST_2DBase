@@ -14,18 +14,16 @@ namespace STELLAREST_SFH
                 return false;
 
             this.SceneType = EScene.GameScene;
-            Util.Log($"ENTERED : {SceneType}");
+            
+            // Util.Log("----------------------------------------------------------------------");
+            // Util.Log($"{nameof(GameScene)}, {nameof(Init)}, {nameof(Clear)}, hello world");
+            // Util.Log($"{nameof(GameScene)}, {nameof(Init)}, {nameof(Clear)}, hello world", true);
+            // Util.LogCritical($"{nameof(GameScene)}, {nameof(Init)}, {nameof(Clear)}, Log Critical Test,,,");
+            // Util.Log("----------------------------------------------------------------------");
 
             // DO SOMETHING,,,
-            Managers.UI.ShowBaseUI<UI_Joystick>();
-            //Managers.UI.ShowBaseUI<UI_Joystick>(FixedValue.String.UI_JOYSTICK);
-
-            // Util.Log($"Data Total Count : {Managers.Data.TestData_Temp.Count}");
-            // foreach (KeyValuePair<int, Data.TestData> pair in Managers.Data.TestData_Temp)
-            // {
-            //     Util.Log($"LEVEL : {pair.Key}");
-            //     Util.Log($"EXP : {pair.Value.Exp}");
-            // }
+            // Managers.UI.ShowBaseUI<UI_Joystick>();
+            //Hero hero = Managers.Object.Spawn<Hero>(Vector3.zero, -1);
 
             return true;
         }

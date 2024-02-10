@@ -108,6 +108,12 @@ namespace STELLAREST_SFH
             Success
         }
 
+        public enum ELookAtDirection
+        {
+            Left = 1,
+            Right = -1
+        }
+
         public static class FixedValue
         {
             public static class String
@@ -115,18 +121,25 @@ namespace STELLAREST_SFH
                 public const string SFH_ = "SFH_";
                 public const string PRE_LOAD = SFH_ + "PreLoad";
                 public const string TEST_DATA = SFH_ + "TestData";
+                public const string CREATURE_DATA = SFH_ + "CreatureData";
                 public const string UI_JOYSTICK = SFH_ + "UI_Joystick";
-
                 public const string MANAGERS = "@Managers";
                 public const string UI_ROOT = "@UI_Root";
                 public const string EVENT_SYSTEM = "@EventSystem";
                 public const string DOT_SPRITE = ".sprite";
+                public const string ANIMATION_BODY = "AnimationBody";
+                public const string ROOT_HERO = "@Heroes";
+                public const string ROOT_MONSTER = "@Monsters";
+                public const string ROOT_PROJECTILE = "@Projectiles";
+                public const string ROOT_ENV = "@Envs";
             }
 
             public static class Numeric
             {
                 public const float GLOW_BG_FOCUS_MIN = -0.15F;
                 public const float GLOW_BG_FOCUS_MAX = 0.15F;
+                public const float HERO_LOCAL_SCALE_X = 1F;
+                public const float HERO_LOCAL_SCALE_Y = 1F;
             }
         }
     }

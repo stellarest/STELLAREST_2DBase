@@ -56,30 +56,28 @@ namespace STELLAREST_SFH
 
             return default(T);
         }
-        
+
         public static T ParseEnum<T>(string value)
             => (T)System.Enum.Parse(typeof(T), value, true);
 
 #if UNITY_EDITOR
+        #region Dev Logger
         [Conditional("UNITY_EDITOR")]
-        public static void Log(object message) 
-            => Debug.Log($"{message}");
-
-        [Conditional("UNITY_EDITOR")]
-        public static void Log(object method, object message)
-            => Debug.Log($"<color=white>{{{method}}}</color> {message}");
+        public static void Log(object message, bool onBreak = false)
+        {
+            if (onBreak)
+            {
+                Debug.Log($"<color=white>[BREAK]</color>: {message}");
+                Debug.Break();
+            }
+            else
+                Debug.Log($"{message}");
+        }
 
         [Conditional("UNITY_EDITOR")]
         public static void LogCritical(object message)
         {
-            Debug.LogError($"<color=red>[BREAK]</color> {message}");
-            Debug.Break();
-        }
-
-        [Conditional("UNITY_EDITOR")]
-        public static void LogCritical(object method, object message)
-        {
-            Debug.LogError($"<color=red>[BREAK]</color><color=white> {{{method}}}</color> {message}");
+            Debug.LogError($"<color=red>[BREAK]</color>: {message}");
             Debug.Break();
         }
 
@@ -92,6 +90,7 @@ namespace STELLAREST_SFH
             method.Invoke(new object(), null);
             Debug.Log("##### [[[ Debug Message ]]] #####");
         }
+        #endregion
 #endif
     }
 }

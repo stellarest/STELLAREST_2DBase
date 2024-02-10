@@ -31,6 +31,18 @@ namespace STELLAREST_SFH
             }
         }
 
+        #region Contents
+        private GameManager _game = new GameManager();
+        public static GameManager Game => Instance?._game;
+
+        private MapManager _map = new MapManager();
+        public static MapManager Map => Instance?._map;
+
+        private ObjectManager _object = new ObjectManager();
+        public static ObjectManager Object => Instance?._object;
+        #endregion
+
+        #region Core
         private DataManager _data = new DataManager();
         public static DataManager Data => Instance?._data;
 
@@ -45,6 +57,7 @@ namespace STELLAREST_SFH
 
         private UIManager _ui = new UIManager();
         public static UIManager UI => Instance?._ui;
+        #endregion
 
         private void OnApplicationQuit() => s_isApplicationQuitting = true;
     }

@@ -27,7 +27,7 @@ namespace STELLAREST_SFH
                     
 #if UNITY_EDITOR
                 if (objects[i] == null)
-                    Util.LogCritical(nameof(Bind), $"Failed to bind : {names[i]}");
+                    Util.LogCritical($"{nameof(Bind)}, Failed to bind : {names[i]}");
 #endif
             }
         }

@@ -39,7 +39,6 @@ namespace STELLAREST_SFH
                 scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
                 scaler.referenceResolution = new Vector2(1080, 1920);
             }
-            // S.KURARA, S.ASUKA
             go.GetOrAddComponent<GraphicRaycaster>();
             if (sort)
                 canvas.sortingOrder = _order++;
@@ -112,7 +111,7 @@ namespace STELLAREST_SFH
 
             if (_popupStack.Peek() != popupUI)
             {
-                Util.Log(nameof(ClosePopupUI), "Failed to close Popup UI");
+                Util.Log($"{nameof(ClosePopupUI)}, Failed to close Popup UI", true);
                 return;
             }
 
