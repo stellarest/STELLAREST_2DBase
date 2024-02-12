@@ -132,6 +132,14 @@ namespace STELLAREST_SFH
                 public const string ROOT_MONSTER = "@Monsters";
                 public const string ROOT_PROJECTILE = "@Projectiles";
                 public const string ROOT_ENV = "@Envs";
+
+                public const string HERO_CAMP = "HeroCamp";
+                public const string PIVOT = "Pivot";
+                public const string DESTINATION = "Destination";
+
+                // UPPER vs LOWER LAYER HOW ??
+                public const string ANIM_PARAM_IDLE = "Idle";
+                public const string ANIM_PARAM_MOVE = "Move";
             }
 
             public static class Numeric
@@ -140,6 +148,7 @@ namespace STELLAREST_SFH
                 public const float GLOW_BG_FOCUS_MAX = 0.15F;
                 public const float HERO_LOCAL_SCALE_X = 1F;
                 public const float HERO_LOCAL_SCALE_Y = 1F;
+                public const float CAM_DEFAULT_ORTHO_SIZE = 8F;
             }
         }
     }

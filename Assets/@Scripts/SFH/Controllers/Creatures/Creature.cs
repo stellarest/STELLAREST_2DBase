@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.AccessControl;
 using UnityEngine;
 using static STELLAREST_SFH.Define;
 
@@ -9,9 +10,19 @@ namespace STELLAREST_SFH
     {
         public float Speed { get; protected set; } = 1f;
         public ECreatureType CreatureType { get; protected set; } = ECreatureType.None;
-        
         protected ECreatureState _creatureState = ECreatureState.None;
-        
+        public ECreatureState CreatureState
+        {
+            get => _creatureState;
+            set
+            {
+                if (_creatureState != value)
+                {
+                    _creatureState = value;
+                    // UpdateAnimation
+                }
+            }
+        }
 
         public override bool Init()
         {

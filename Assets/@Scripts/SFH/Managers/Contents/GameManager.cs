@@ -8,6 +8,7 @@ namespace STELLAREST_SFH
 {
     public class GameManager
     {
+        public event Action<Vector2> OnMoveDirChanged = null;
         private Vector2 _moveDir = Vector2.zero;
         public Vector2 MoveDir
         {
@@ -19,6 +20,7 @@ namespace STELLAREST_SFH
             }
         }
 
+        public event Action<EJoystickState> OnJoystickStateChanged = null;
         private EJoystickState _joystickState = EJoystickState.PointerUp;
         public EJoystickState JoystickState
         {
@@ -29,8 +31,5 @@ namespace STELLAREST_SFH
                 OnJoystickStateChanged?.Invoke(value);
             }
         }
-
-        public event Action<Vector2> OnMoveDirChanged = null;
-        public event Action<EJoystickState> OnJoystickStateChanged = null;
     }
 }

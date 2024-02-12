@@ -1,14 +1,14 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 using static STELLAREST_SFH.Define;
 
 namespace STELLAREST_SFH
 {
-    public class BaseAnimController : InitBase
+    public class AnimationEvent : InitBase
     {
-        public BaseObject Owner { get; protected set; } = null;
+        public event Action OnDustVFX = null;
 
         public override bool Init()
         {
@@ -17,6 +17,8 @@ namespace STELLAREST_SFH
 
             return true;
         }
+
+        public void OnDustVFXHandler()
+            => OnDustVFX?.Invoke();
     }
 }
-

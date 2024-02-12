@@ -37,7 +37,7 @@ namespace STELLAREST_SFH
             if (scaler != null)
             {
                 scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-                scaler.referenceResolution = new Vector2(1080, 1920);
+                scaler.referenceResolution = new Vector2(1920, 1080); // 16:9
             }
             go.GetOrAddComponent<GraphicRaycaster>();
             if (sort)

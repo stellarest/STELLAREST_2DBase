@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 
 namespace STELLAREST_SFH
@@ -18,5 +19,11 @@ namespace STELLAREST_SFH
         }
 
         private void Awake() => Init();
+
+#if UNITY_EDITOR
+        [Conditional("UNITY_EDITOR")]
+        public void InitLog(object type)
+            => Util.Log($"{nameof(type)}::{nameof(Init)}");
+#endif        
     }
 }

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using Unity.VisualScripting;
 using UnityEngine;
 using static STELLAREST_SFH.Define;
 
@@ -14,16 +15,19 @@ namespace STELLAREST_SFH
                 return false;
 
             this.SceneType = EScene.GameScene;
-            
-            // Util.Log("----------------------------------------------------------------------");
-            // Util.Log($"{nameof(GameScene)}, {nameof(Init)}, {nameof(Clear)}, hello world");
-            // Util.Log($"{nameof(GameScene)}, {nameof(Init)}, {nameof(Clear)}, hello world", true);
-            // Util.LogCritical($"{nameof(GameScene)}, {nameof(Init)}, {nameof(Clear)}, Log Critical Test,,,");
-            // Util.Log("----------------------------------------------------------------------");
 
-            // DO SOMETHING,,,
-            // Managers.UI.ShowBaseUI<UI_Joystick>();
-            //Hero hero = Managers.Object.Spawn<Hero>(Vector3.zero, -1);
+            HeroCamp camp = Managers.Resource.Instantiate(FixedValue.String.HERO_CAMP).GetOrAddComponent<HeroCamp>();
+
+            CameraController cam = Camera.main.GetOrAddComponent<CameraController>();
+            cam.Target = camp;
+
+            UI_Joystick ui = Managers.UI.ShowBaseUI<UI_Joystick>();
+            ui.CampDestinationSPR = camp.Destination.GetComponent<SpriteRenderer>();
+
+            {
+                Hero hero = Managers.Object.Spawn<Hero>(Vector3.zero, -1);
+                hero.transform.SetParent(camp.transform);
+            }
 
             return true;
         }

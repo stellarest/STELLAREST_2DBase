@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static STELLAREST_SFH.Define;
 
 namespace STELLAREST_SFH
 {
@@ -10,6 +11,8 @@ namespace STELLAREST_SFH
         {
             if (base.Init() == false)
                 return false;
+
+            CreatureType = ECreatureType.Monster;
 
             return true;
         }

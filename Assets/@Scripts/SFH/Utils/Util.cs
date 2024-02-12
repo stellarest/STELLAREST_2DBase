@@ -42,7 +42,11 @@ namespace STELLAREST_SFH
                 {
                     Transform tr = go.transform.GetChild(i);
                     if (string.IsNullOrEmpty(name) || tr.name == name)
-                        return tr.GetComponent<T>() != null ? tr.GetComponent<T>() : null;
+                    {
+                        T component = tr.GetComponent<T>();
+                        if (component != null)
+                            return component;
+                    }
                 }
             }
             else
@@ -54,7 +58,7 @@ namespace STELLAREST_SFH
                 }
             }
 
-            return default(T);
+            return null;
         }
 
         public static T ParseEnum<T>(string value)
